@@ -1,0 +1,253 @@
+import 'package:dropdown_search/dropdown_search.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:minna/Electyicity%20&%20Water/application/providers/providers_bloc.dart';
+import 'package:minna/Electyicity%20&%20Water/water%20bill/water%20bill%20info%20/bill%20confirm%20page.dart';
+import 'package:minna/comman/const/const.dart';
+import 'package:minna/Electyicity%20&%20Water/kseb/bill%20info/bill_details.dart';
+
+class WaterBillInputPage extends StatefulWidget {
+  const WaterBillInputPage({super.key});
+
+  @override
+  State<WaterBillInputPage> createState() => _WaterBillInputPageState();
+}
+
+class _WaterBillInputPageState extends State<WaterBillInputPage> {
+  final TextEditingController customerIdController = TextEditingController();
+  final TextEditingController mobileNumberController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  BillerModel? selectedProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<ProvidersBloc>().add(getWaterProviders());
+  }
+
+  OutlineInputBorder customBorder(Color color) => OutlineInputBorder(
+    borderRadius: BorderRadius.circular(6),
+    borderSide: BorderSide(color: color, width: 1.2),
+  );
+
+  TextStyle fieldTextStyle = const TextStyle(fontSize: 14);
+  TextStyle labelStyle = const TextStyle(fontSize: 13, color: Colors.black87);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: maincolor1,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text(
+          'Water Bill',
+          style: TextStyle(fontSize: 16, color: Colors.white),
+        ),
+      ),
+      body: BlocBuilder<ProvidersBloc, ProvidersState>(
+        builder: (context, state) {
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.1),
+                          blurRadius: 8,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 15,
+                      horizontal: 12,
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 18,
+                              backgroundColor: Colors.blue.shade50,
+                              child: Icon(
+                                Icons.water_drop_outlined,
+                                color: maincolor1,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            const Text(
+                              "Water",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: DropdownSearch<BillerModel>(
+                            items: state.waterList ?? [],
+                            selectedItem: selectedProvider,
+                            onChanged: (value) {
+                              setState(() => selectedProvider = value);
+                            },
+                            itemAsString: (BillerModel? item) =>
+                                item?.name ?? '', // 👈 This shows provider name
+                            dropdownDecoratorProps: DropDownDecoratorProps(
+                              dropdownSearchDecoration: InputDecoration(
+                                labelText: "Select Electricity Provider",
+                                labelStyle: labelStyle,
+                                prefixIcon: Icon(
+                                  Icons.business_outlined,
+                                  color: maincolor1,
+                                ),
+                                filled: true,
+                                fillColor: Colors.white,
+                                border: customBorder(Colors.grey),
+                                enabledBorder: customBorder(
+                                  Colors.grey.shade400,
+                                ),
+                                focusedBorder: customBorder(maincolor1!),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                  horizontal: 12,
+                                ),
+                                isDense: true,
+                              ),
+                            ),
+                            popupProps: PopupProps.menu(
+                              showSearchBox: true,
+                              searchFieldProps: TextFieldProps(
+                                decoration: InputDecoration(
+                                  hintText: 'Search provider...',
+                                  hintStyle: const TextStyle(fontSize: 14),
+                                  prefixIcon: const Icon(Icons.search),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              constraints: const BoxConstraints(maxHeight: 300),
+                              emptyBuilder: (context, _) => const Center(
+                                child: Text("No providers found"),
+                              ),
+                            ),
+                            validator: (value) => value == null
+                                ? 'Please select a provider'
+                                : null,
+                          ),
+                        ),
+
+                        const SizedBox(height: 5),
+
+                        TextFormField(
+                          controller: customerIdController,
+                          style: fieldTextStyle,
+                          decoration: InputDecoration(
+                            labelText: "Customer ID",
+                            labelStyle: labelStyle,
+                            border: customBorder(Colors.grey),
+                            enabledBorder: customBorder(Colors.grey.shade400),
+                            focusedBorder: customBorder(maincolor1!),
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
+                          ),
+                          validator: (value) => value == null || value.isEmpty
+                              ? 'Please enter Customer ID'
+                              : null,
+                        ),
+                        const SizedBox(height: 14),
+
+                        TextFormField(
+                          controller: mobileNumberController,
+                          keyboardType: TextInputType.phone,
+                          style: fieldTextStyle,
+                          decoration: InputDecoration(
+                            labelText: "Mobile Number",
+                            labelStyle: labelStyle,
+                            border: customBorder(Colors.grey),
+                            enabledBorder: customBorder(Colors.grey.shade400),
+                            focusedBorder: customBorder(maincolor1!),
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter mobile number';
+                            }
+                            if (!RegExp(r'^\d{10}$').hasMatch(value)) {
+                              return 'Enter valid 10-digit number';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: maincolor1,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        foregroundColor: Colors.white,
+                      ),
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+
+
+
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => WaterBillDetailsPage(
+                                provider: selectedProvider!.name,
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      child: const Text(
+                        "Fetch Bill",
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
