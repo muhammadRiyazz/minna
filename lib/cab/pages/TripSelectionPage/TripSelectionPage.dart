@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:minna/cab/pages/cabs_list/cabs_list_data.dart';
 import 'package:minna/comman/const/const.dart';
 
 class TripSelectionPage extends StatefulWidget {
@@ -11,7 +12,7 @@ class TripSelectionPage extends StatefulWidget {
 
 class _TripSelectionPageState extends State<TripSelectionPage> {
   int _selectedTripType = 1;
-  int? _selectedCabType;
+  Set<int> _selectedCabTypes = {};
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay.now();
   final TextEditingController _sourceController = TextEditingController();
@@ -49,80 +50,96 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        return Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                blurRadius: 10,
-                spreadRadius: 0,
-              ),
-            ],
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Drag handle
-              Center(
-                child: Container(
-                  width: 60,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(5),
-                  ),
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(25),
                 ),
-              ),
-              const SizedBox(height: 15),
-
-              // Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Choose Your Vehicle',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[800],
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.close, color: Colors.grey[600]),
-                    onPressed: () => Navigator.pop(context),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 10,
+                    spreadRadius: 0,
                   ),
                 ],
               ),
-
-              // Vehicle list
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.5,
-                child: ListView.separated(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  itemCount: cabTypes.length,
-                  separatorBuilder: (context, index) => Divider(
-                    height: 1,
-                    color: Colors.grey[200],
-                    indent: 20,
-                    endIndent: 20,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Drag handle
+                  Center(
+                    child: Container(
+                      width: 60,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                    ),
                   ),
-                  itemBuilder: (context, index) {
-                    final entry = cabTypes.entries.elementAt(index);
-                    return _buildVehicleItem(entry.key, entry.value);
-                  },
-                ),
+                  const SizedBox(height: 15),
+
+                  // Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Choose Your Vehicle',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[800],
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.close, color: Colors.grey[600]),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+
+                  // Vehicle list
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.5,
+                    child: ListView.separated(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      itemCount: cabTypes.length,
+                      separatorBuilder: (context, index) => Divider(
+                        height: 1,
+                        color: Colors.grey[200],
+                        indent: 20,
+                        endIndent: 20,
+                      ),
+                      itemBuilder: (context, index) {
+                        final entry = cabTypes.entries.elementAt(index);
+                        return _buildVehicleItem(
+                          entry.key,
+                          entry.value,
+                          setModalState,
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         );
       },
     );
   }
 
-  Widget _buildVehicleItem(int cabId, String cabName) {
+  Widget _buildVehicleItem(
+    int cabId,
+    String cabName,
+    StateSetter setModalState,
+  ) {
+    final bool isSelected = _selectedCabTypes.contains(cabId);
+
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
       leading: Container(
@@ -142,14 +159,20 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
           color: Colors.grey[800],
         ),
       ),
-      trailing: _selectedCabType == cabId
+      trailing: isSelected
           ? Icon(Icons.check_circle, color: Colors.blue[700])
-          : null,
+          : Icon(Icons.radio_button_unchecked, color: Colors.grey[400]),
       onTap: () {
-        setState(() {
-          _selectedCabType = cabId;
+        setModalState(() {
+          if (isSelected) {
+            _selectedCabTypes.remove(cabId);
+          } else {
+            _selectedCabTypes.add(cabId);
+          }
         });
-        Navigator.pop(context);
+
+        // also update main page
+        setState(() {});
       },
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     );
@@ -210,22 +233,27 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
   }
 
   void _proceedToBooking() {
-    if (_sourceController.text.isEmpty ||
-        _destinationController.text.isEmpty ||
-        _selectedCabType == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Please fill all required fields'),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          backgroundColor: Colors.red[400],
-        ),
-      );
-      return;
-    }
+    // if (_sourceController.text.isEmpty ||
+    //     _destinationController.text.isEmpty ||
+    //     _selectedCabTypes.isEmpty) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(
+    //       content: const Text('Please fill all required fields'),
+    //       behavior: SnackBarBehavior.floating,
+    //       shape: RoundedRectangleBorder(
+    //         borderRadius: BorderRadius.circular(10),
+    //       ),
+    //       backgroundColor: Colors.red[400],
+    //     ),
+    //   );
+    //   return;
+    // }
     // Navigate to booking summary
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CabsListPage()),
+    );
   }
 
   @override
@@ -430,7 +458,8 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                   children: [
                     Icon(
                       Icons.directions_car,
-                      color: _selectedCabType != null
+                      // ignore: unnecessary_null_comparison
+                      color: _selectedCabTypes != null
                           ? primaryColor
                           : hintColor,
                       size: 30,
@@ -446,13 +475,15 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            _selectedCabType != null
-                                ? cabTypes[_selectedCabType]!
+                            _selectedCabTypes.isNotEmpty
+                                ? _selectedCabTypes
+                                      .map((id) => cabTypes[id])
+                                      .join(", ")
                                 : 'Select your vehicle',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
-                              color: _selectedCabType != null
+                              color: _selectedCabTypes.isNotEmpty
                                   ? textColor
                                   : hintColor,
                             ),
