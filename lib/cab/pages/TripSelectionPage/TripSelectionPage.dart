@@ -1,8 +1,9 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:minna/cab/application/bloc/fetch_cabs_bloc.dart';
+import 'package:minna/cab/application/fetch%20cab/fetch_cabs_bloc.dart';
 import 'package:minna/cab/pages/cabs_list/cabs_list_data.dart';
 import 'package:minna/comman/const/const.dart';
 
@@ -522,10 +523,9 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
     log('Request JSON: $requestJson');
 
 
-
-FetchCabsBloc().add(FetchCabsEvent.fetchCabs(
-  requestData: requestJson
-));
+context.read<FetchCabsBloc>().add(
+  FetchCabsEvent.fetchCabs(requestData: requestJson),
+);
 
     // Navigate to booking summary with the JSON data
     Navigator.push(

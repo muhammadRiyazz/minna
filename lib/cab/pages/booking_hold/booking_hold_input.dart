@@ -1,8 +1,21 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:minna/cab/application/hold%20cab/hold_cab_bloc.dart';
+import 'package:minna/cab/domain/cab%20list%20model/cab_list_data.dart';
 import 'package:minna/cab/pages/payment%20page/payment.dart';
 import 'package:minna/comman/const/const.dart';
 
 class BookingPage extends StatefulWidget {
+  final CabRate selectedCab;
+  final Map<String, dynamic> requestData;
+
+  const BookingPage({
+    Key? key,
+    required this.selectedCab,
+    required this.requestData,
+  }) : super(key: key);
+
   @override
   _BookingPageState createState() => _BookingPageState();
 }
@@ -12,7 +25,7 @@ class _BookingPageState extends State<BookingPage> {
   final _primaryPhoneCodeController = TextEditingController(text: '+91');
   final _alternatePhoneCodeController = TextEditingController(text: '+91');
 
-  // Form state variables
+ 
   String _firstName = '';
   String _lastName = '';
   String _primaryPhone = '';
@@ -34,10 +47,116 @@ class _BookingPageState extends State<BookingPage> {
     super.dispose();
   }
 
+Map<String, dynamic>  _onConfirmBooking() {
+  
+
+  final cab = widget.selectedCab;
+  final req = widget.requestData;
+
+  // Function to get cab type ID
+  int getCabTypeId(String type) {
+    switch (type.toLowerCase()) {
+      case "compact":
+        return 1;
+      case "suv":
+        return 2;
+      case "sedan":
+        return 3;
+      case "assured dzire":
+        return 5;
+      case "assured innova":
+        return 6;
+      case "compact (cng)":
+        return 72;
+      case "sedan (cng)":
+        return 73;
+      case "suv (cng)":
+        return 74;
+      default:
+        return 1; // fallback to compact if type not found
+    }
+  }
+
+  // Build traveller info
+  final traveller = {
+    "firstName": _firstName,
+    "lastName": _lastName,
+    "primaryContact": {
+      "code": int.tryParse(_primaryPhoneCodeController.text.replaceAll('+', '')) ?? 91,
+      "number": _primaryPhone,
+    },
+    "alternateContact": {
+      "code": int.tryParse(_alternatePhoneCodeController.text.replaceAll('+', '')) ?? 91,
+      "number": _alternatePhone,
+    },
+    "email": _email,
+  };
+
+  // Build additional info
+  final additionalInfo = {
+    "specialInstructions": _specialInstructions,
+    "noOfPerson": _numPersons,
+    "noOfLargeBags": _numLargeBags,
+    "noOfSmallBags": _numSmallBags,
+    "carrierRequired": _carrierRequired ? 1 : 0,
+    "kidsTravelling": _kidsTravelling ? 1 : 0,
+    "seniorCitizenTravelling": _seniorCitizenTravelling ? 1 : 0,
+    "womanTravelling": _womanTravelling ? 1 : 0,
+  };
+
+  // Build routes array
+  final List<Map<String, dynamic>> routes = [];
+  if (req["routes"] != null && req["routes"].isNotEmpty) {
+    for (var route in req["routes"]) {
+      routes.add({
+        "startDate": route["startDate"],
+        "startTime": route["startTime"],
+        "source": {
+          "address": route["source"]["address"] ?? "",
+          "coordinates": {
+            "latitude": route["source"]["coordinates"]["latitude"],
+            "longitude": route["source"]["coordinates"]["longitude"],
+          }
+        },
+        "destination": {
+          "address": route["destination"]["address"] ?? "",
+          "coordinates": {
+            "latitude": route["destination"]["coordinates"]["latitude"],
+            "longitude": route["destination"]["coordinates"]["longitude"],
+          }
+        }
+      });
+    }
+  }
+
+  // Build the final JSON
+  final bookingJson = {
+    "tnc": 1,
+    "referenceId": "tttt", // unique reference
+    "tripType": req["tripType"], // 1,2,3,4,10,11 based on selection
+    "cabType": getCabTypeId(cab.cab.type), // <-- use type ID
+    "fare": {
+      "advanceReceived": 0,
+      "totalAmount": cab.fare.totalAmount ?? 0,
+    },
+    "sendEmail": 1,
+    "sendSms": 1,
+    "routes": routes,
+    "traveller": traveller,
+    "additionalInfo": additionalInfo,
+    "platform": "android", // optional
+    "apkVersion": "1.0.0", // optional
+  };
+
+  log("Booking JSON: ${bookingJson.toString()}");
+  return bookingJson;
+}
+
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
+    final cab = widget.selectedCab;
+    final req = widget.requestData;
 
     return Scaffold(
       appBar: AppBar(
@@ -63,6 +182,137 @@ class _BookingPageState extends State<BookingPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+          
+            Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 4,
+              shadowColor: Colors.black12,
+              margin: const EdgeInsets.only(bottom: 16),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Car Image
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade100,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      height: 80,
+                      width: 100,
+                      child: cab.cab.image.isNotEmpty
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.network(
+                                cab.cab.image,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Icon(Icons.directions_car, 
+                                      size: 40, color: maincolor1);
+                                },
+                              ),
+                            )
+                          : Icon(Icons.directions_car, size: 40, color: maincolor1),
+                    ),
+                    const SizedBox(width: 12),
+    
+                    // Cab Info
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            cab.cab.category,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            cab.cab.model,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.event_seat,
+                                size: 18,
+                                color: maincolor1,
+                              ),
+                              SizedBox(width: 4),
+                              Text("${cab.cab.seatingCapacity} seats"),
+                              SizedBox(width: 12),
+                              Icon(
+                                Icons.work,
+                                size: 18,
+                                color: Colors.orange,
+                              ),
+                              SizedBox(width: 4),
+                              Text("${cab.cab.bagCapacity} bags"),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+    
+                    // Fare
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          "₹${cab.fare.totalAmount?.toStringAsFixed(0) ?? '0'}",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: maincolor1,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          "Base: ₹${cab.fare.baseFare.toStringAsFixed(0)}",
+                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+    
+                const Divider(height: 20),
+    
+                // Extra Info Row
+                Row(
+                  children: [
+                    Icon(
+                      Icons.local_gas_station,
+                      size: 16,
+                      color: maincolor1,
+                    ),
+                    SizedBox(width: 4),
+                    Text(cab.cab.fuelType ?? "Petrol"),
+                    Spacer(),
+                    Text(
+                      "Policy: ${cab.cancellationPolicy}",
+                      style: TextStyle(color: Colors.red[700], fontSize: 12),
+                    ),
+                  ],
+                ),
+                  ],
+                ),
+              ),
+            )
+      ,
             // Trip Info Card
             Card(
               shape: RoundedRectangleBorder(
@@ -109,13 +359,13 @@ class _BookingPageState extends State<BookingPage> {
                                 ),
                               ),
                               SizedBox(height: 4),
-                              Text(
-                                "Kochi",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
+                                Text(
+                      req["routes"][0]["source"]["address"] ?? "N/A",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
                             ],
                           ),
                           Container(
@@ -142,46 +392,44 @@ class _BookingPageState extends State<BookingPage> {
                               ),
                               SizedBox(height: 4),
                               Text(
-                                "Bangalore",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
+                      req["routes"][0]["destination"]["address"] ?? "N/A",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
                             ],
                           ),
                         ],
                       ),
                     ),
                     SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.calendar_today,
-                          size: 16,
-                          color: Colors.grey,
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          "Today, 12:30 PM",
-                          style: TextStyle(color: Colors.grey.shade600),
-                        ),
-                      ],
-                    ),
+                     if (req["routes"] != null && req["routes"].isNotEmpty)
+          Row(
+            children: [
+              Icon(Icons.calendar_today, size: 16, color: Colors.grey),
+              SizedBox(width: 8),
+              Text(
+                "${req["routes"][0]["startDate"]} at ${req["routes"][0]["startTime"]}",
+                style: TextStyle(color: Colors.grey.shade600),
+              ),
+            ],
+          ),
+                   
                   ],
                 ),
               ),
             ),
-
+      
             SizedBox(height: 24),
-
+      
             // Passenger Info Section
             Text(
               "Passenger Information",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: isDarkMode ? Colors.white : maincolor1,
+                color: maincolor1,
               ),
             ),
             SizedBox(height: 12),
@@ -210,7 +458,9 @@ class _BookingPageState extends State<BookingPage> {
                                 ),
                                 border: _outlineInputBorder(),
                                 enabledBorder: _outlineInputBorder(),
-                                focusedBorder: _outlineInputBorder(maincolor1!),
+                                focusedBorder: _outlineInputBorder(
+                                  maincolor1!,
+                                ),
                                 contentPadding: EdgeInsets.symmetric(
                                   vertical: 12,
                                   horizontal: 12,
@@ -218,7 +468,8 @@ class _BookingPageState extends State<BookingPage> {
                                 isDense: true,
                               ),
                               style: TextStyle(fontSize: 14),
-                              validator: (v) => v!.isEmpty ? "Required" : null,
+                              validator: (v) =>
+                                  v!.isEmpty ? "Required" : null,
                               onChanged: (value) => _firstName = value,
                             ),
                           ),
@@ -229,7 +480,9 @@ class _BookingPageState extends State<BookingPage> {
                                 labelText: "Last Name",
                                 border: _outlineInputBorder(),
                                 enabledBorder: _outlineInputBorder(),
-                                focusedBorder: _outlineInputBorder(maincolor1!),
+                                focusedBorder: _outlineInputBorder(
+                                  maincolor1!,
+                                ),
                                 contentPadding: EdgeInsets.symmetric(
                                   vertical: 12,
                                   horizontal: 12,
@@ -237,14 +490,15 @@ class _BookingPageState extends State<BookingPage> {
                                 isDense: true,
                               ),
                               style: TextStyle(fontSize: 14),
-                              validator: (v) => v!.isEmpty ? "Required" : null,
+                              validator: (v) =>
+                                  v!.isEmpty ? "Required" : null,
                               onChanged: (value) => _lastName = value,
                             ),
                           ),
                         ],
                       ),
                       SizedBox(height: 16),
-
+      
                       // Primary Phone Row
                       Row(
                         children: [
@@ -256,7 +510,9 @@ class _BookingPageState extends State<BookingPage> {
                                 labelText: "Code",
                                 border: _outlineInputBorder(),
                                 enabledBorder: _outlineInputBorder(),
-                                focusedBorder: _outlineInputBorder(maincolor1!),
+                                focusedBorder: _outlineInputBorder(
+                                  maincolor1!,
+                                ),
                                 contentPadding: EdgeInsets.symmetric(
                                   vertical: 12,
                                   horizontal: 12,
@@ -276,7 +532,9 @@ class _BookingPageState extends State<BookingPage> {
                                 prefixIcon: Icon(Icons.phone, size: 20),
                                 border: _outlineInputBorder(),
                                 enabledBorder: _outlineInputBorder(),
-                                focusedBorder: _outlineInputBorder(maincolor1!),
+                                focusedBorder: _outlineInputBorder(
+                                  maincolor1!,
+                                ),
                                 contentPadding: EdgeInsets.symmetric(
                                   vertical: 12,
                                   horizontal: 12,
@@ -285,14 +543,15 @@ class _BookingPageState extends State<BookingPage> {
                               ),
                               style: TextStyle(fontSize: 14),
                               keyboardType: TextInputType.phone,
-                              validator: (v) => v!.isEmpty ? "Required" : null,
+                              validator: (v) =>
+                                  v!.isEmpty ? "Required" : null,
                               onChanged: (value) => _primaryPhone = value,
                             ),
                           ),
                         ],
                       ),
                       SizedBox(height: 16),
-
+      
                       // Alternate Phone Row
                       Row(
                         children: [
@@ -304,7 +563,9 @@ class _BookingPageState extends State<BookingPage> {
                                 labelText: "Code",
                                 border: _outlineInputBorder(),
                                 enabledBorder: _outlineInputBorder(),
-                                focusedBorder: _outlineInputBorder(maincolor1!),
+                                focusedBorder: _outlineInputBorder(
+                                  maincolor1!,
+                                ),
                                 contentPadding: EdgeInsets.symmetric(
                                   vertical: 12,
                                   horizontal: 12,
@@ -324,7 +585,9 @@ class _BookingPageState extends State<BookingPage> {
                                 prefixIcon: Icon(Icons.phone, size: 20),
                                 border: _outlineInputBorder(),
                                 enabledBorder: _outlineInputBorder(),
-                                focusedBorder: _outlineInputBorder(maincolor1!),
+                                focusedBorder: _outlineInputBorder(
+                                  maincolor1!,
+                                ),
                                 contentPadding: EdgeInsets.symmetric(
                                   vertical: 12,
                                   horizontal: 12,
@@ -339,7 +602,7 @@ class _BookingPageState extends State<BookingPage> {
                         ],
                       ),
                       SizedBox(height: 16),
-
+      
                       // Email Field
                       TextFormField(
                         decoration: InputDecoration(
@@ -368,17 +631,17 @@ class _BookingPageState extends State<BookingPage> {
                 ),
               ),
             ),
-
+      
             // Helper method for consistent borders
             SizedBox(height: 24),
-
+      
             // Additional Info Section
             Text(
               "Additional Information",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: isDarkMode ? Colors.white : maincolor1,
+                color:  maincolor1,
               ),
             ),
             SizedBox(height: 8),
@@ -411,7 +674,7 @@ class _BookingPageState extends State<BookingPage> {
                       maxLines: 2,
                       onChanged: (value) => _specialInstructions = value,
                     ),
-
+      
                     SizedBox(height: 15),
                     TextFormField(
                       decoration: InputDecoration(
@@ -481,14 +744,14 @@ class _BookingPageState extends State<BookingPage> {
                         ),
                       ],
                     ),
-
+      
                     SizedBox(height: 8),
                     Divider(
                       height: 24,
                       thickness: 1,
                       color: Colors.grey.shade200,
                     ),
-
+      
                     // Switch Tiles
                     _buildSwitchTile(
                       title: "Carrier Required",
@@ -522,9 +785,9 @@ class _BookingPageState extends State<BookingPage> {
                 ),
               ),
             ),
-
+      
             SizedBox(height: 32),
-
+      
             // Submit Button
             SizedBox(
               width: double.infinity,
@@ -547,38 +810,36 @@ class _BookingPageState extends State<BookingPage> {
                   ),
                 ),
                 onPressed: () {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder: (context) => PaymentScreen(
-                  //       bookingDetails: // Example of how to pass data to this screen
-                  //       {
-                  //         'from': 'Kochi',
-                  //         'to': 'Bangalore',
-                  //         'date': '15 Aug 2023',
-                  //         'time': '12:30 PM',
-                  //         'cabType': 'Sedan',
-                  //         'distance': 45.5,
-                  //         'duration': '1 hr 15 min',
-                  //         'firstName': 'John',
-                  //         'lastName': 'Doe',
-                  //         'primaryPhone': '+91 9876543210',
-                  //         'alternatePhone': '+91 9876543211',
-                  //         'email': 'john.doe@example.com',
-                  //         'specialInstructions': 'Please arrive 5 mins early',
-                  //         'baseFare': 150,
-                  //         'distanceFare': 227.5,
-                  //         'durationFare': 75,
-                  //         'taxes': 45.25,
-                  //         'totalAmount': 497.75,
-                  //       },
-                  //     ),
-                  //   ),
-                  // );
 
-                  // if (_formKey.currentState!.validate()) {
-                  //   _submitBooking();
-                  // }
+
+
+                
+  if (_formKey.currentState!.validate()) {
+    // Build the booking JSON
+    final bookingData = _onConfirmBooking();
+
+    // Print for debugging
+    log(bookingData.toString());
+
+context.read<HoldCabBloc>().add(
+HoldCabEvent.holdCab(requestData: bookingData),
+);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BookingConfirmationPage(
+        ),
+      ),
+    );
+  } else {
+    // Show error snackbar if form invalid
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Please fill all required fields')),
+    );
+  }
+
+
                 },
               ),
             ),
@@ -614,7 +875,7 @@ OutlineInputBorder _outlineInputBorder([Color color = Colors.grey]) {
   );
 }
 
-// Switch Tile Widget (should be defined in your class)
+// // Switch Tile Widget (should be defined in your class)
 Widget _buildSwitchTile({
   required String title,
   required bool value,

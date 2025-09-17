@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:minna/cab/application/bloc/fetch_cabs_bloc.dart';
-import 'package:minna/cab/application/bloc/fetch_cabs_state.dart';
+import 'package:minna/cab/application/fetch%20cab/fetch_cabs_bloc.dart';
+import 'package:minna/cab/application/fetch%20cab/fetch_cabs_state.dart';
 import 'package:minna/cab/domain/cab%20list%20model/cab_list_data.dart';
 import 'package:minna/cab/pages/booking_hold/booking_hold_input.dart';
 import 'package:minna/comman/const/const.dart';
@@ -138,9 +138,9 @@ class CabsListPage extends StatelessWidget {
         final cabData = cabRateList[index];
         final cab = cabData.cab;
         final fare = cabData.fare;
-
+    
         return Card(
-
+    
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -178,7 +178,7 @@ class CabsListPage extends StatelessWidget {
                           : Icon(Icons.directions_car, size: 40, color: maincolor1),
                     ),
                     const SizedBox(width: 12),
-
+    
                     // Cab Info
                     Expanded(
                       child: Column(
@@ -223,7 +223,7 @@ class CabsListPage extends StatelessWidget {
                         ],
                       ),
                     ),
-
+    
                     // Fare
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -245,9 +245,9 @@ class CabsListPage extends StatelessWidget {
                     ),
                   ],
                 ),
-
+    
                 const Divider(height: 20),
-
+    
                 // Extra Info Row
                 Row(
                   children: [
@@ -265,9 +265,9 @@ class CabsListPage extends StatelessWidget {
                     ),
                   ],
                 ),
-
+    
                 const SizedBox(height: 10),
-
+    
                 // Instructions
                 Wrap(
                   spacing: 6,
@@ -290,20 +290,21 @@ class CabsListPage extends StatelessWidget {
                     ),
                   ),
                 ),
-
+    
                 const SizedBox(height: 12),
-
+    
                 // Book Button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => BookingPage(),
-                        ),
-                      );
+
+ 
+                //  context.read<FetchCabsBloc>().add(FetchCabsEvent.cabSelected(selectedCabData: cabData));
+Navigator.push(context, MaterialPageRoute(builder: (context) =>  BookingPage(
+          selectedCab: cabData,
+          requestData: requestData, // pass your trip request
+        ),));
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: maincolor1,

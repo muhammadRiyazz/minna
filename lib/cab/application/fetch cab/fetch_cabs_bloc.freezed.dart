@@ -17,39 +17,38 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$FetchCabsEvent {
-  Map<String, dynamic> get requestData => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(Map<String, dynamic> requestData) fetchCabs,
+    required TResult Function(CabRate selectedCabData) cabSelected,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(Map<String, dynamic> requestData)? fetchCabs,
+    TResult? Function(CabRate selectedCabData)? cabSelected,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(Map<String, dynamic> requestData)? fetchCabs,
+    TResult Function(CabRate selectedCabData)? cabSelected,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_FetchCabs value) fetchCabs,
+    required TResult Function(_CabSelected value) cabSelected,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_FetchCabs value)? fetchCabs,
+    TResult? Function(_CabSelected value)? cabSelected,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_FetchCabs value)? fetchCabs,
+    TResult Function(_CabSelected value)? cabSelected,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
-
-  /// Create a copy of FetchCabsEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $FetchCabsEventCopyWith<FetchCabsEvent> get copyWith =>
-      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -58,8 +57,6 @@ abstract class $FetchCabsEventCopyWith<$Res> {
     FetchCabsEvent value,
     $Res Function(FetchCabsEvent) then,
   ) = _$FetchCabsEventCopyWithImpl<$Res, FetchCabsEvent>;
-  @useResult
-  $Res call({Map<String, dynamic> requestData});
 }
 
 /// @nodoc
@@ -74,29 +71,14 @@ class _$FetchCabsEventCopyWithImpl<$Res, $Val extends FetchCabsEvent>
 
   /// Create a copy of FetchCabsEvent
   /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? requestData = null}) {
-    return _then(
-      _value.copyWith(
-            requestData: null == requestData
-                ? _value.requestData
-                : requestData // ignore: cast_nullable_to_non_nullable
-                      as Map<String, dynamic>,
-          )
-          as $Val,
-    );
-  }
 }
 
 /// @nodoc
-abstract class _$$FetchCabsImplCopyWith<$Res>
-    implements $FetchCabsEventCopyWith<$Res> {
+abstract class _$$FetchCabsImplCopyWith<$Res> {
   factory _$$FetchCabsImplCopyWith(
     _$FetchCabsImpl value,
     $Res Function(_$FetchCabsImpl) then,
   ) = __$$FetchCabsImplCopyWithImpl<$Res>;
-  @override
   @useResult
   $Res call({Map<String, dynamic> requestData});
 }
@@ -174,6 +156,7 @@ class _$FetchCabsImpl implements _FetchCabs {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(Map<String, dynamic> requestData) fetchCabs,
+    required TResult Function(CabRate selectedCabData) cabSelected,
   }) {
     return fetchCabs(requestData);
   }
@@ -182,6 +165,7 @@ class _$FetchCabsImpl implements _FetchCabs {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(Map<String, dynamic> requestData)? fetchCabs,
+    TResult? Function(CabRate selectedCabData)? cabSelected,
   }) {
     return fetchCabs?.call(requestData);
   }
@@ -190,6 +174,7 @@ class _$FetchCabsImpl implements _FetchCabs {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(Map<String, dynamic> requestData)? fetchCabs,
+    TResult Function(CabRate selectedCabData)? cabSelected,
     required TResult orElse(),
   }) {
     if (fetchCabs != null) {
@@ -202,6 +187,7 @@ class _$FetchCabsImpl implements _FetchCabs {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_FetchCabs value) fetchCabs,
+    required TResult Function(_CabSelected value) cabSelected,
   }) {
     return fetchCabs(this);
   }
@@ -210,6 +196,7 @@ class _$FetchCabsImpl implements _FetchCabs {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_FetchCabs value)? fetchCabs,
+    TResult? Function(_CabSelected value)? cabSelected,
   }) {
     return fetchCabs?.call(this);
   }
@@ -218,6 +205,7 @@ class _$FetchCabsImpl implements _FetchCabs {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_FetchCabs value)? fetchCabs,
+    TResult Function(_CabSelected value)? cabSelected,
     required TResult orElse(),
   }) {
     if (fetchCabs != null) {
@@ -231,13 +219,155 @@ abstract class _FetchCabs implements FetchCabsEvent {
   const factory _FetchCabs({required final Map<String, dynamic> requestData}) =
       _$FetchCabsImpl;
 
-  @override
   Map<String, dynamic> get requestData;
 
   /// Create a copy of FetchCabsEvent
   /// with the given fields replaced by the non-null parameter values.
-  @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$FetchCabsImplCopyWith<_$FetchCabsImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$CabSelectedImplCopyWith<$Res> {
+  factory _$$CabSelectedImplCopyWith(
+    _$CabSelectedImpl value,
+    $Res Function(_$CabSelectedImpl) then,
+  ) = __$$CabSelectedImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({CabRate selectedCabData});
+}
+
+/// @nodoc
+class __$$CabSelectedImplCopyWithImpl<$Res>
+    extends _$FetchCabsEventCopyWithImpl<$Res, _$CabSelectedImpl>
+    implements _$$CabSelectedImplCopyWith<$Res> {
+  __$$CabSelectedImplCopyWithImpl(
+    _$CabSelectedImpl _value,
+    $Res Function(_$CabSelectedImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of FetchCabsEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? selectedCabData = null}) {
+    return _then(
+      _$CabSelectedImpl(
+        selectedCabData: null == selectedCabData
+            ? _value.selectedCabData
+            : selectedCabData // ignore: cast_nullable_to_non_nullable
+                  as CabRate,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+
+class _$CabSelectedImpl implements _CabSelected {
+  const _$CabSelectedImpl({required this.selectedCabData});
+
+  @override
+  final CabRate selectedCabData;
+
+  @override
+  String toString() {
+    return 'FetchCabsEvent.cabSelected(selectedCabData: $selectedCabData)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CabSelectedImpl &&
+            (identical(other.selectedCabData, selectedCabData) ||
+                other.selectedCabData == selectedCabData));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, selectedCabData);
+
+  /// Create a copy of FetchCabsEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CabSelectedImplCopyWith<_$CabSelectedImpl> get copyWith =>
+      __$$CabSelectedImplCopyWithImpl<_$CabSelectedImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(Map<String, dynamic> requestData) fetchCabs,
+    required TResult Function(CabRate selectedCabData) cabSelected,
+  }) {
+    return cabSelected(selectedCabData);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(Map<String, dynamic> requestData)? fetchCabs,
+    TResult? Function(CabRate selectedCabData)? cabSelected,
+  }) {
+    return cabSelected?.call(selectedCabData);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(Map<String, dynamic> requestData)? fetchCabs,
+    TResult Function(CabRate selectedCabData)? cabSelected,
+    required TResult orElse(),
+  }) {
+    if (cabSelected != null) {
+      return cabSelected(selectedCabData);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_FetchCabs value) fetchCabs,
+    required TResult Function(_CabSelected value) cabSelected,
+  }) {
+    return cabSelected(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_FetchCabs value)? fetchCabs,
+    TResult? Function(_CabSelected value)? cabSelected,
+  }) {
+    return cabSelected?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_FetchCabs value)? fetchCabs,
+    TResult Function(_CabSelected value)? cabSelected,
+    required TResult orElse(),
+  }) {
+    if (cabSelected != null) {
+      return cabSelected(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _CabSelected implements FetchCabsEvent {
+  const factory _CabSelected({required final CabRate selectedCabData}) =
+      _$CabSelectedImpl;
+
+  CabRate get selectedCabData;
+
+  /// Create a copy of FetchCabsEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CabSelectedImplCopyWith<_$CabSelectedImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
