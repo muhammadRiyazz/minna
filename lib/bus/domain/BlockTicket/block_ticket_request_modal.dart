@@ -14,8 +14,9 @@ class BlockTicketRequest {
     this.destination,
     this.inventoryItems,
     this.source,
+    this.callFareBreakUpAPI,
   });
-
+    String?  callFareBreakUpAPI;
   String? availableTripID;
   String? boardingPointID;
   String? droppingPointID;
@@ -23,8 +24,9 @@ class BlockTicketRequest {
   String? source;
   List<InventoryItem>? inventoryItems;
 
-  factory BlockTicketRequest.fromJson(Map<String, dynamic> json) =>
+  factory BlockTicketRequest.fromJson(Map<String, dynamic>  json) =>
       BlockTicketRequest(
+        callFareBreakUpAPI:  json["callFareBreakUpAPI"],
         availableTripID: json["availableTripId"],
         boardingPointID: json["boardingPointId"],
         droppingPointID: json["droppingPointId"],
@@ -37,6 +39,7 @@ class BlockTicketRequest {
       );
 
   Map<String, dynamic> toJson() => {
+    "callFareBreakUpAPI":callFareBreakUpAPI,
         "availableTripId": availableTripID,
         "boardingPointId": boardingPointID,
         "droppingPointId": droppingPointID,

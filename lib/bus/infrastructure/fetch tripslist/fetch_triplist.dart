@@ -41,12 +41,12 @@ class BusAvailability {
           .post(Uri.parse("${baseUrl}CallBackWithParams"), body: requestBody)
           .timeout(const Duration(seconds: 30));
 
-      log(
-        'API Response',
-        name: 'BusAPI',
-        error: 'Status: ${response.statusCode}, Body: ${response.body}',
-      );
-
+      // log(
+      //   'API Response',
+      //   name: 'BusAPI',
+      //   error: 'Status: ${response.statusCode}, Body: ${response.body}',
+      // );
+log(response.body);
       return response;
     } catch (e) {
       log('API Error', name: 'BusAPI', error: e.toString());

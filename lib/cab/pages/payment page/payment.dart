@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:minna/cab/application/hold%20cab/hold_cab_bloc.dart';
@@ -188,6 +190,7 @@ class BookingConfirmationPage extends StatelessWidget {
   }
 
   Widget _buildTripInformation(BookingData bookingData) {
+    log(bookingData.tripType.toString());
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -219,7 +222,7 @@ class BookingConfirmationPage extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            // SizedBox(height: 20),
             
             // Display different UI based on trip type
             if (bookingData.tripType == 1) // One Way
@@ -484,6 +487,7 @@ class BookingConfirmationPage extends StatelessWidget {
               margin: EdgeInsets.only(left: 14),
               height: 20,
               width: 2,
+              // ignore: deprecated_member_use
               color: maincolor1!.withOpacity(0.3),
             ),
           ),
@@ -636,7 +640,7 @@ class BookingConfirmationPage extends StatelessWidget {
                     child: cab.image.isNotEmpty
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: Image.network(cab.image, fit: BoxFit.cover),
+                            child: Image.network(cab.image, fit: BoxFit.contain),
                           )
                         : Icon(
                             Icons.directions_car,

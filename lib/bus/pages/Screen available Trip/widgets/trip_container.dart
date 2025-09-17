@@ -194,6 +194,7 @@ class TripCountainer extends StatelessWidget {
                               boardingTimeList: trip.boardingTimes,
                               dropingTimeList: trip.droppingTimes,
                               alldata: BlockTicketRequest(
+                                callFareBreakUpAPI: trip.callFareBreakUpApi,
                                 availableTripID: trip.id,
                               ),
                               travelsname: trip.travels,

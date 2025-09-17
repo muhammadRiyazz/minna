@@ -158,17 +158,17 @@ class CabsListPage extends StatelessWidget {
                     // Car Image
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.blue.shade100,
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       height: 80,
-                      width: 100,
+                      width: 90,
                       child: cab.image.isNotEmpty
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(12),
                               child: Image.network(
                                 cab.image,
-                                fit: BoxFit.cover,
+                                fit: BoxFit.contain,
                                 errorBuilder: (context, error, stackTrace) {
                                   return Icon(Icons.directions_car, 
                                       size: 40, color: maincolor1);

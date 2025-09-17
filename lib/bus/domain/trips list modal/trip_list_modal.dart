@@ -15,6 +15,10 @@ class BusLog {
     required this.availableTrips,
   });
 
+
+
+
+
   factory BusLog.fromJson(Map<String, dynamic> json) => BusLog(
     agentMappedToCp: json["agentMappedToCp"] ?? "false",
     agentMappedToEarning: json["agentMappedToEarning"] ?? "false",

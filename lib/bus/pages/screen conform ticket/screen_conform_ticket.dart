@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:minna/bus/application/change%20location/location_bloc.dart';
 import 'package:minna/bus/domain/BlockTicket/block_ticket_request_modal.dart';
 import 'package:minna/bus/domain/seatlayout/seatlayoutmodal.dart';
+import 'package:minna/bus/domain/updated%20fare%20respo/update_fare.dart';
 import 'package:minna/bus/infrastructure/bookTicket/book_ticket.dart';
 import 'package:minna/bus/infrastructure/inset%20data/insert_data.dart';
 import 'package:minna/bus/pages/screen%20conform%20ticket/widget/bottom_sheet.dart';
@@ -15,14 +16,17 @@ import 'package:minna/comman/core/api.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart'; // ✅ ADDED FOR RAZORPAY
 
 class ScreenConfirmTicket extends StatefulWidget {
-  const ScreenConfirmTicket({
+   ScreenConfirmTicket({
     super.key,
     required this.alldata,
     required this.blockKey,
     required this.selectedSeats,
+     this.updatedFare,
   });
 
   final BlockTicketRequest alldata;
+     UpdatedFareResponse? updatedFare;
+
   final String blockKey;
   final List<Seat> selectedSeats;
 

@@ -1,11 +1,17 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:minna/bus/application/change%20location/location_bloc.dart';
 import 'package:minna/bus/domain/BlockTicket/block_ticket_request_modal.dart';
 import 'package:minna/bus/domain/seatlayout/seatlayoutmodal.dart';
+import 'package:minna/bus/domain/updated%20fare%20respo/update_fare.dart';
 import 'package:minna/bus/infrastructure/get%20block%20key/block_ticket.dart';
+import 'package:minna/bus/infrastructure/get%20update%20fare/update%20fare%20api.dart';
 import 'package:minna/bus/pages/screen%20conform%20ticket/screen_conform_ticket.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/application/login/login_bloc.dart';
@@ -36,18 +42,23 @@ class ScreenPassengerInput extends StatefulWidget {
 class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
   final TextEditingController passengerNumber = TextEditingController();
   final TextEditingController passengerEmail = TextEditingController();
+
   final List<TextEditingController> passengerNameControllers = [];
   final List<TextEditingController> passengerAgeControllers = [];
   final List<String> passengerGenderSelections = [];
 
-  final formKey2 = GlobalKey<FormState>();
+  final GlobalKey<FormState> formKey2 = GlobalKey<FormState>();
   bool _isLoading = false;
   bool _showRetryButton = false;
   int retryCount = 0;
 
   @override
   void initState() {
+    super.initState();
+    // ensure login info is loaded
     context.read<LoginBloc>().add(const LoginEvent.loginInfo());
+
+    // initialize controllers and gender selection for each seat
     for (int i = 0; i < widget.selctseat.length; i++) {
       passengerNameControllers.add(TextEditingController());
       passengerAgeControllers.add(TextEditingController());
@@ -55,18 +66,17 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
         widget.selctseat[i].ladiesSeat == 'true' ? 'Female' : 'Male',
       );
     }
-    super.initState();
   }
 
   @override
   void dispose() {
     passengerNumber.dispose();
     passengerEmail.dispose();
-    for (final controller in passengerNameControllers) {
-      controller.dispose();
+    for (final c in passengerNameControllers) {
+      c.dispose();
     }
-    for (final controller in passengerAgeControllers) {
-      controller.dispose();
+    for (final c in passengerAgeControllers) {
+      c.dispose();
     }
     super.dispose();
   }
@@ -85,12 +95,11 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
               child: Form(
                 key: formKey2,
                 child: ListView(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                   children: [
                     _buildContactCard(),
-                    ...List.generate(
-                      widget.selctseat.length,
-                      buildPassengerCard,
-                    ),
+                    const SizedBox(height: 8),
+                    ...List.generate(widget.selctseat.length, (i) => buildPassengerCard(i)),
                     const SizedBox(height: 10),
                   ],
                 ),
@@ -111,11 +120,14 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
                     ),
                     elevation: 2,
                   ),
-                  onPressed: () {
-                    if (formKey2.currentState!.validate()) {
-                      callApi();
-                    }
-                  },
+                  // disable button while loading
+                  onPressed: _isLoading
+                      ? null
+                      : () async {
+                          if (formKey2.currentState!.validate()) {
+                            await callApi();
+                          }
+                        },
                   child: Text(
                     _showRetryButton ? 'Retry' : 'Continue',
                     style: const TextStyle(
@@ -158,19 +170,19 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
             TextFormField(
               controller: passengerEmail,
               validator: (value) {
-                final email = value?.trim() ?? '';
-                final emailRegEx = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-                if (email.isEmpty) {
-                  return 'Please enter an Email ID.';
-                }
+                final email = (value ?? '').trim();
+                if (email.isEmpty) return 'Please enter an Email ID.';
+                // simpler but robust email check
+                final emailRegEx = RegExp(r"^[^\s@]+@[^\s@]+\.[^\s@]+$");
                 if (!emailRegEx.hasMatch(email)) {
                   return 'Please enter a valid email address';
                 }
                 return null;
               },
-
+              keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(hintText: 'Email ID'),
             ),
+            const SizedBox(height: 10),
             Row(
               children: [
                 const SizedBox(
@@ -185,10 +197,9 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
                   child: TextFormField(
                     controller: passengerNumber,
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter phone number';
-                      }
-                      if (!RegExp(r'^[0-9]{10}$').hasMatch(value)) {
+                      final v = (value ?? '').trim();
+                      if (v.isEmpty) return 'Please enter phone number';
+                      if (!RegExp(r'^[0-9]{10}$').hasMatch(v)) {
                         return 'Enter valid 10-digit number';
                       }
                       return null;
@@ -207,6 +218,8 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
 
   Widget buildPassengerCard(int index) {
     final seat = widget.selctseat[index];
+    final isRestricted = (seat.ladiesSeat == 'true') || (seat.malesSeat == 'true');
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Container(
@@ -228,18 +241,21 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
               title: Text('Passenger ${index + 1}'),
               subtitle: Text('Seat No: ${seat.name}'),
             ),
+            const SizedBox(height: 6),
             TextFormField(
               controller: passengerNameControllers[index],
               validator: (value) =>
-                  (value == null || value.isEmpty) ? 'Please enter name' : null,
+                  (value == null || value.trim().isEmpty) ? 'Please enter name' : null,
               decoration: const InputDecoration(hintText: 'Name'),
             ),
+            const SizedBox(height: 8),
             TextFormField(
               controller: passengerAgeControllers[index],
               keyboardType: TextInputType.number,
               validator: (value) {
-                final age = int.tryParse(value ?? '');
-                if (age == null || age < 1 || age > 100) {
+                final text = (value ?? '').trim();
+                final age = int.tryParse(text);
+                if (age == null || age < 1 || age > 120) {
                   return 'Enter valid age';
                 }
                 return null;
@@ -249,18 +265,18 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
             const SizedBox(height: 10),
             Row(
               children: ['Male', 'Female'].map((gender) {
-                bool isSelectable =
-                    seat.ladiesSeat != 'true' && seat.malesSeat != 'true';
+                final canChange = !isRestricted;
                 return Expanded(
                   child: Row(
                     children: [
                       Radio<String>(
                         value: gender,
                         groupValue: passengerGenderSelections[index],
-                        onChanged: isSelectable
+                        onChanged: canChange
                             ? (value) {
+                                if (value == null) return;
                                 setState(() {
-                                  passengerGenderSelections[index] = value!;
+                                  passengerGenderSelections[index] = value;
                                 });
                               }
                             : null,
@@ -298,7 +314,11 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
       }
     }
 
-    if (retryCount >= 3) return;
+    // limit retries to 3 attempts
+    if (retryCount >= 3) {
+      _showCustomSnackbar('Maximum retry attempts reached', isError: true);
+      return;
+    }
     retryCount++;
 
     setState(() {
@@ -312,9 +332,10 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
 
       for (int i = 0; i < widget.selctseat.length; i++) {
         final seat = widget.selctseat[i];
+
         final passenger = Passenger(
-          name: passengerNameControllers[i].text,
-          age: passengerAgeControllers[i].text,
+          name: passengerNameControllers[i].text.trim(),
+          age: passengerAgeControllers[i].text.trim(),
           gender: passengerGenderSelections[i],
           email: passengerEmail.text.trim(),
           mobile: passengerNumber.text.trim(),
@@ -324,6 +345,7 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
           primary: i == 0 ? 'true' : 'false',
           title: passengerGenderSelections[i] == 'Male' ? 'Mr' : 'Ms',
         );
+
         inventoryItems.add(
           InventoryItem(
             seatName: seat.name,
@@ -334,6 +356,7 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
         );
       }
 
+      // populate block request
       widget.alldata.source = locationState.from?.id.toString() ?? '';
       widget.alldata.destination = locationState.to?.id.toString() ?? '';
       widget.alldata.boardingPointID = widget.boardingpoint;
@@ -341,30 +364,68 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
       widget.alldata.inventoryItems = inventoryItems;
 
       final _bodyParams = blockTicketRequestToJson(widget.alldata);
-      log(_bodyParams);
-      final response = await getblockticket(data: _bodyParams);
-      log(response.body.toString());
+      log('Block ticket request: $_bodyParams');
 
-      if (response.statusCode == 200 &&
-          !response.body.contains("Authorization failed") &&
-          !response.body.contains("Error")) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ScreenConfirmTicket(
-              blockKey: response.body,
-              selectedSeats: widget.selctseat,
-              alldata: widget.alldata,
+      final response = await getblockticket(data: _bodyParams);
+
+      log('Block ticket response status: ${response.statusCode}');
+      log('Block ticket response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final body = response.body;
+        if (body.contains("Authorization failed") || body.contains("Error")) {
+          _showCustomSnackbar('Server returned error. Please try again.', isError: true);
+          setState(() => _showRetryButton = true);
+          return;
+        }
+
+        final blockKey = body;
+
+        // reset retryCount on success
+        retryCount = 0;
+
+        if (widget.alldata.callFareBreakUpAPI == 'false') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ScreenConfirmTicket(
+                blockKey: blockKey,
+                selectedSeats: widget.selctseat,
+                alldata: widget.alldata,
+              ),
             ),
-          ),
-        );
+          );
+        } else {
+          // call updated fare API
+          final UpdatedFareResponse? updatedFareResponse = await getUpdatedFare(blockKey: blockKey);
+
+          if (updatedFareResponse != null) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ScreenConfirmTicket(
+                  blockKey: blockKey,
+                  selectedSeats: widget.selctseat,
+                  alldata: widget.alldata,
+                  updatedFare: updatedFareResponse,
+                ),
+              ),
+            );
+          } else {
+            // couldn't get updated fare
+            // _showCustomSnackbar('Failed to fetch updated fare. Please retry.', isError: true);
+            setState(() => _showRetryButton = true);
+          }
+        }
       } else {
-        // _showCustomSnackbar(response.body, isError: true);
+        // Non-200 status
+        _showCustomSnackbar('Server error: ${response.statusCode}', isError: true);
         setState(() => _showRetryButton = true);
       }
-    } catch (e) {
+    } catch (e, st) {
       log('API error: ${e.toString()}');
-      // _showCustomSnackbar('Something went wrong.', isError: true);
+      log(st.toString());
+      _showCustomSnackbar('Something went wrong. Please try again.', isError: true);
       setState(() => _showRetryButton = true);
     } finally {
       setState(() => _isLoading = false);
@@ -378,7 +439,6 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
     final snackBar = SnackBar(
       margin: const EdgeInsets.fromLTRB(16, 20, 16, 10),
       behavior: SnackBarBehavior.floating,
-
       backgroundColor: color,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       duration: const Duration(seconds: 3),

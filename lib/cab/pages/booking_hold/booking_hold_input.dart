@@ -201,17 +201,17 @@ Map<String, dynamic>  _onConfirmBooking() {
                     // Car Image
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.blue.shade100,
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       height: 80,
-                      width: 100,
+                      width: 90,
                       child: cab.cab.image.isNotEmpty
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(12),
                               child: Image.network(
                                 cab.cab.image,
-                                fit: BoxFit.cover,
+                                fit: BoxFit.contain,
                                 errorBuilder: (context, error, stackTrace) {
                                   return Icon(Icons.directions_car, 
                                       size: 40, color: maincolor1);
@@ -314,112 +314,112 @@ Map<String, dynamic>  _onConfirmBooking() {
             )
       ,
             // Trip Info Card
-            Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              elevation: 0,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.directions_car, color: maincolor1),
-                        SizedBox(width: 8),
-                        Text(
-                          "Trip Details",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: maincolor1,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 12),
-                    Container(
-                      padding: EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.shade50.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "From",
-                                style: TextStyle(
-                                  color: Colors.grey.shade600,
-                                  fontSize: 12,
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                                Text(
-                      req["routes"][0]["source"]["address"] ?? "N/A",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
-                    ),
-                            ],
-                          ),
-                          Container(
-                            padding: EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: Colors.blue.shade100,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.arrow_forward,
-                              color: maincolor1,
-                              size: 18,
-                            ),
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "To",
-                                style: TextStyle(
-                                  color: Colors.grey.shade600,
-                                  fontSize: 12,
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                      req["routes"][0]["destination"]["address"] ?? "N/A",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
-                    ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                     if (req["routes"] != null && req["routes"].isNotEmpty)
-          Row(
-            children: [
-              Icon(Icons.calendar_today, size: 16, color: Colors.grey),
-              SizedBox(width: 8),
-              Text(
-                "${req["routes"][0]["startDate"]} at ${req["routes"][0]["startTime"]}",
-                style: TextStyle(color: Colors.grey.shade600),
-              ),
-            ],
-          ),
+          //   Card(
+          //     shape: RoundedRectangleBorder(
+          //       borderRadius: BorderRadius.circular(12),
+          //     ),
+          //     elevation: 0,
+          //     child: Padding(
+          //       padding: const EdgeInsets.all(16),
+          //       child: Column(
+          //         crossAxisAlignment: CrossAxisAlignment.start,
+          //         children: [
+          //           Row(
+          //             children: [
+          //               Icon(Icons.directions_car, color: maincolor1),
+          //               SizedBox(width: 8),
+          //               Text(
+          //                 "Trip Details",
+          //                 style: TextStyle(
+          //                   fontSize: 18,
+          //                   fontWeight: FontWeight.bold,
+          //                   color: maincolor1,
+          //                 ),
+          //               ),
+          //             ],
+          //           ),
+          //           SizedBox(height: 12),
+          //           Container(
+          //             padding: EdgeInsets.all(12),
+          //             decoration: BoxDecoration(
+          //               color: Colors.blue.shade50.withOpacity(0.3),
+          //               borderRadius: BorderRadius.circular(10),
+          //             ),
+          //             child: Row(
+          //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //               children: [
+          //                 Column(
+          //                   crossAxisAlignment: CrossAxisAlignment.start,
+          //                   children: [
+          //                     Text(
+          //                       "From",
+          //                       style: TextStyle(
+          //                         color: Colors.grey.shade600,
+          //                         fontSize: 12,
+          //                       ),
+          //                     ),
+          //                     SizedBox(height: 4),
+          //                       Text(
+          //             req["routes"][0]["source"]["address"] ?? "N/A",
+          //             style: TextStyle(
+          //               fontWeight: FontWeight.w600,
+          //               fontSize: 16,
+          //             ),
+          //           ),
+          //                   ],
+          //                 ),
+          //                 Container(
+          //                   padding: EdgeInsets.all(6),
+          //                   decoration: BoxDecoration(
+          //                     color: Colors.blue.shade100,
+          //                     shape: BoxShape.circle,
+          //                   ),
+          //                   child: Icon(
+          //                     Icons.arrow_forward,
+          //                     color: maincolor1,
+          //                     size: 18,
+          //                   ),
+          //                 ),
+          //                 Column(
+          //                   crossAxisAlignment: CrossAxisAlignment.start,
+          //                   children: [
+          //                     Text(
+          //                       "To",
+          //                       style: TextStyle(
+          //                         color: Colors.grey.shade600,
+          //                         fontSize: 12,
+          //                       ),
+          //                     ),
+          //                     SizedBox(height: 4),
+          //                     Text(
+          //             req["routes"][0]["destination"]["address"] ?? "N/A",
+          //             style: TextStyle(
+          //               fontWeight: FontWeight.w600,
+          //               fontSize: 16,
+          //             ),
+          //           ),
+          //                   ],
+          //                 ),
+          //               ],
+          //             ),
+          //           ),
+          //           SizedBox(height: 8),
+          //            if (req["routes"] != null && req["routes"].isNotEmpty)
+          // Row(
+          //   children: [
+          //     Icon(Icons.calendar_today, size: 16, color: Colors.grey),
+          //     SizedBox(width: 8),
+          //     Text(
+          //       "${req["routes"][0]["startDate"]} at ${req["routes"][0]["startTime"]}",
+          //       style: TextStyle(color: Colors.grey.shade600),
+          //     ),
+          //   ],
+          // ),
                    
-                  ],
-                ),
-              ),
-            ),
+          //         ],
+          //       ),
+          //     ),
+          //   ),
       
             SizedBox(height: 24),
       
