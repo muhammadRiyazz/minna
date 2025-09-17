@@ -12,7 +12,6 @@ class GradientSplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Trigger location fetch
-    BlocProvider.of<BusLocationFetchBloc>(context).add(const GetData());
 
     // Navigate after 3 seconds
     Future.delayed(const Duration(seconds: 3), () {

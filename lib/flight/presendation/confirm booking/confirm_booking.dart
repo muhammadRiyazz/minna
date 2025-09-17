@@ -51,6 +51,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
+    
     log("Payment Error: ${response.code} - ${response.message}");
     setState(() => _isProcessingPayment = false);
     ScaffoldMessenger.of(context).showSnackBar(

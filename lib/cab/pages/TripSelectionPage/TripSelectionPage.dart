@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:minna/cab/application/bloc/fetch_cabs_bloc.dart';
 import 'package:minna/cab/pages/cabs_list/cabs_list_data.dart';
 import 'package:minna/comman/const/const.dart';
 
@@ -17,6 +20,23 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
   TimeOfDay _selectedTime = TimeOfDay.now();
   final TextEditingController _sourceController = TextEditingController();
   final TextEditingController _destinationController = TextEditingController();
+  
+  // For multi-city trips
+  List<Map<String, dynamic>> _multiCityRoutes = [
+    {
+      'source': TextEditingController(),
+      'destination': TextEditingController(),
+      'date': DateTime.now(),
+      'time': TimeOfDay.now(),
+    }
+  ];
+  
+  // For round trip
+  DateTime? _returnDate;
+  TimeOfDay? _returnTime;
+  
+  // For airport transfer
+  bool _isAirportPickup = true;
 
   // Color scheme
   final Color primaryColor = maincolor1!;
@@ -34,6 +54,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
     10: 'DAY RENTAL (8HR/80KM)',
     11: 'DAY RENTAL (12HR/120KM)',
   };
+  
   final Map<int, String> cabTypes = {
     1: 'Compact',
     2: 'SUV',
@@ -44,6 +65,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
     73: 'Sedan CNG',
     74: 'SUV CNG',
   };
+
   void _showVehicleSelectionSheet() {
     showModalBottomSheet(
       context: context,
@@ -178,10 +200,14 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
     );
   }
 
-  Future<void> _selectDate(BuildContext context) async {
+  Future<void> _selectDate(BuildContext context, {bool isReturnDate = false, int? multiCityIndex}) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: _selectedDate,
+      initialDate: isReturnDate 
+          ? _returnDate ?? DateTime.now().add(const Duration(days: 1))
+          : multiCityIndex != null
+            ? _multiCityRoutes[multiCityIndex]['date']
+            : _selectedDate,
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365)),
       builder: (context, child) {
@@ -199,17 +225,28 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
         );
       },
     );
-    if (picked != null && picked != _selectedDate) {
+    
+    if (picked != null) {
       setState(() {
-        _selectedDate = picked;
+        if (isReturnDate) {
+          _returnDate = picked;
+        } else if (multiCityIndex != null) {
+          _multiCityRoutes[multiCityIndex]['date'] = picked;
+        } else {
+          _selectedDate = picked;
+        }
       });
     }
   }
 
-  Future<void> _selectTime(BuildContext context) async {
+  Future<void> _selectTime(BuildContext context, {bool isReturnTime = false, int? multiCityIndex}) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: _selectedTime,
+      initialTime: isReturnTime 
+          ? _returnTime ?? TimeOfDay.now()
+          : multiCityIndex != null
+            ? _multiCityRoutes[multiCityIndex]['time']
+            : _selectedTime,
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -225,34 +262,277 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
         );
       },
     );
-    if (picked != null && picked != _selectedTime) {
+    
+    if (picked != null) {
       setState(() {
-        _selectedTime = picked;
+        if (isReturnTime) {
+          _returnTime = picked;
+        } else if (multiCityIndex != null) {
+          _multiCityRoutes[multiCityIndex]['time'] = picked;
+        } else {
+          _selectedTime = picked;
+        }
       });
     }
   }
 
-  void _proceedToBooking() {
-    // if (_sourceController.text.isEmpty ||
-    //     _destinationController.text.isEmpty ||
-    //     _selectedCabTypes.isEmpty) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(
-    //       content: const Text('Please fill all required fields'),
-    //       behavior: SnackBarBehavior.floating,
-    //       shape: RoundedRectangleBorder(
-    //         borderRadius: BorderRadius.circular(10),
-    //       ),
-    //       backgroundColor: Colors.red[400],
-    //     ),
-    //   );
-    //   return;
-    // }
-    // Navigate to booking summary
+  void _addMultiCityRoute() {
+    setState(() {
+      _multiCityRoutes.add({
+        'source': TextEditingController(),
+        'destination': TextEditingController(),
+        'date': DateTime.now(),
+        'time': TimeOfDay.now(),
+      });
+    });
+  }
 
+  void _removeMultiCityRoute(int index) {
+    if (_multiCityRoutes.length > 1) {
+      setState(() {
+        _multiCityRoutes.removeAt(index);
+      });
+    }
+  }
+
+  Map<String, dynamic> _buildRequestJson() {
+    // Basic structure
+    Map<String, dynamic> request = {
+      "tripType": _selectedTripType,
+      "cabType": _selectedCabTypes.toList(),
+    };
+
+    // Add return date for round trips
+    if (_selectedTripType == 2 && _returnDate != null && _returnTime != null) {
+      request["returnDate"] = DateFormat('yyyy-MM-dd HH:mm:ss').format(
+        DateTime(
+          _returnDate!.year,
+          _returnDate!.month,
+          _returnDate!.day,
+          _returnTime!.hour,
+          _returnTime!.minute,
+        ),
+      );
+    }
+
+    // Build routes based on trip type
+    List<Map<String, dynamic>> routes = [];
+
+    if (_selectedTripType == 3) {
+      // Multi-city
+      for (var route in _multiCityRoutes) {
+        routes.add({
+          "startDate": DateFormat('yyyy-MM-dd').format(route['date']),
+          "startTime": "${route['time'].hour.toString().padLeft(2, '0')}:${route['time'].minute.toString().padLeft(2, '0')}:00",
+          "source": {
+            "address": route['source'].text,
+            "coordinates": {
+               "latitude": 22.6531496,
+            "longitude": 88.4448719
+            }
+          },
+          "destination": {
+            "address": route['destination'].text,
+            "coordinates": {
+             "latitude": 22.7008099,
+            "longitude": 88.3747597,
+            }
+          },
+        });
+      }
+    } else if (_selectedTripType == 4) {
+      // Airport transfer
+      if (_isAirportPickup) {
+        routes.add({
+          "startDate": DateFormat('yyyy-MM-dd').format(_selectedDate),
+          "startTime": "${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}:00",
+          "source": {
+            "isAirport": 1,
+            "address": _sourceController.text,
+            "coordinates": {
+              "latitude": 22.6531496,
+            "longitude": 88.4448719
+            }
+          },
+          "destination": {
+            "address": _destinationController.text,
+            "coordinates": {
+              "latitude": 22.7008099,
+            "longitude": 88.3747597,
+            }
+          },
+        });
+      } else {
+        routes.add({
+          "startDate": DateFormat('yyyy-MM-dd').format(_selectedDate),
+          "startTime": "${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}:00",
+          "source": {
+            "address": _sourceController.text,
+            "coordinates": {
+               "latitude": 22.6531496,
+            "longitude": 88.4448719
+            }
+          },
+          "destination": {
+            "isAirport": 1,
+            "address": _destinationController.text,
+            "coordinates": {
+             "latitude": 22.7008099,
+            "longitude": 88.3747597,
+            }
+          },
+        });
+      }
+    } else if (_selectedTripType == 10 || _selectedTripType == 11) {
+      // Day rental - source and destination are the same
+      routes.add({
+        "startDate": DateFormat('yyyy-MM-dd').format(_selectedDate),
+        "startTime": "${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}:00",
+        "source": {
+          "address": _sourceController.text,
+          "coordinates": {
+             "latitude": 22.6531496,
+            "longitude": 88.4448719
+          }
+        },
+        "destination": {
+          "address": _sourceController.text, // Same as source for day rental
+          "coordinates": {
+            "latitude": 22.7008099,
+            "longitude": 88.3747597,
+          }
+        },
+      });
+    } else {
+      // One way or round trip (first leg)
+      routes.add({
+        "startDate": DateFormat('yyyy-MM-dd').format(_selectedDate),
+        "startTime": "${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}:00",
+        "source": {
+          "address": _sourceController.text,
+          "coordinates": {
+             "latitude": 22.6531496,
+            "longitude": 88.4448719
+          }
+        },
+        "destination": {
+          "address": _destinationController.text,
+          "coordinates": {
+            "latitude": 22.7008099,
+            "longitude": 88.3747597,
+          }
+        },
+      });
+
+      // Add return trip for round trip
+      if (_selectedTripType == 2 && _returnDate != null && _returnTime != null) {
+        routes.add({
+          "startDate": DateFormat('yyyy-MM-dd').format(_returnDate!),
+          "startTime": "${_returnTime!.hour.toString().padLeft(2, '0')}:${_returnTime!.minute.toString().padLeft(2, '0')}:00",
+          "source": {
+            "address": _destinationController.text,
+            "coordinates": {
+              "latitude": 22.6531496,
+            "longitude": 88.4448719
+            }
+          },
+          "destination": {
+            "address": _sourceController.text,
+            "coordinates": {
+               "latitude": 22.7008099,
+            "longitude": 88.3747597,
+            }
+          },
+        });
+      }
+    }
+
+    request["routes"] = routes;
+    return request;
+  }
+
+  void _proceedToBooking() {
+    // Validate required fields
+    if (_selectedCabTypes.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Please select at least one vehicle type'),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          backgroundColor: Colors.red[400],
+        ),
+      );
+      return;
+    }
+
+    // Validate based on trip type
+    if (_selectedTripType == 3) {
+      // Multi-city validation
+      for (var route in _multiCityRoutes) {
+        if (route['source'].text.isEmpty || route['destination'].text.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Please fill all source and destination fields'),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              backgroundColor: Colors.red[400],
+            ),
+          );
+          return;
+        }
+      }
+    } else if (_selectedTripType == 2) {
+      // Round trip validation
+      if (_returnDate == null || _returnTime == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Please select return date and time'),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            backgroundColor: Colors.red[400],
+          ),
+        );
+        return;
+      }
+    } else {
+      // Other trip types validation
+      if (_sourceController.text.isEmpty || _destinationController.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Please fill all required fields'),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            backgroundColor: Colors.red[400],
+          ),
+        );
+        return;
+      }
+    }
+
+    // Generate the request JSON
+    final requestJson = _buildRequestJson();
+    log('Request JSON: $requestJson');
+
+
+
+FetchCabsBloc().add(FetchCabsEvent.fetchCabs(
+  requestData: requestJson
+));
+
+    // Navigate to booking summary with the JSON data
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => CabsListPage()),
+      MaterialPageRoute(
+        builder: (context) => CabsListPage( requestData: requestJson,),
+      ),
     );
   }
 
@@ -325,6 +605,17 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                       onTap: () {
                         setState(() {
                           _selectedTripType = entry.key;
+                          // Reset multi-city routes when changing trip type
+                          if (entry.key != 3) {
+                            _multiCityRoutes = [
+                              {
+                                'source': TextEditingController(),
+                                'destination': TextEditingController(),
+                                'date': DateTime.now(),
+                                'time': TimeOfDay.now(),
+                              }
+                            ];
+                          }
                         });
                       },
                       child: Container(
@@ -380,52 +671,282 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
             ),
             const SizedBox(height: 10),
 
+            // Airport Transfer Type Selection
+            if (_selectedTripType == 4)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'TRANSFER TYPE',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: hintColor,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _isAirportPickup = true;
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: _isAirportPickup
+                                  ? primaryColor
+                                  : cardColor,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: _isAirportPickup
+                                    ? primaryColor
+                                    : Colors.grey.shade300,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.flight_land,
+                                  color: _isAirportPickup
+                                      ? Colors.white
+                                      : primaryColor,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Airport Pickup',
+                                  style: TextStyle(
+                                    color: _isAirportPickup
+                                        ? Colors.white
+                                        : textColor,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _isAirportPickup = false;
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: !_isAirportPickup
+                                  ? primaryColor
+                                  : cardColor,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: !_isAirportPickup
+                                    ? primaryColor
+                                    : Colors.grey.shade300,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.flight_takeoff,
+                                  color: !_isAirportPickup
+                                      ? Colors.white
+                                      : primaryColor,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Airport Drop',
+                                  style: TextStyle(
+                                    color: !_isAirportPickup
+                                        ? Colors.white
+                                        : textColor,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                ],
+              ),
+
             // Location Fields
-            _buildLocationCard(
-              children: [
-                _buildLocationField(
-                  controller: _sourceController,
-                  label: 'Pickup Location',
-                  icon: Icons.local_taxi_outlined,
-                  iconColor: primaryColor,
-                ),
-                const SizedBox(height: 16),
-                _buildLocationField(
-                  controller: _destinationController,
-                  label: 'Drop Location',
-                  icon: Icons.local_taxi_outlined,
-                  iconColor: primaryColor,
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
+            if (_selectedTripType != 3) // Not multi-city
+              _buildLocationCard(
+                children: [
+                  _buildLocationField(
+                    controller: _sourceController,
+                    label: _selectedTripType == 4 && _isAirportPickup
+                        ? 'Airport'
+                        : 'Pickup Location',
+                    icon: Icons.local_taxi_outlined,
+                    iconColor: primaryColor,
+                  ),
+                  const SizedBox(height: 16),
+                  if (_selectedTripType != 10 && _selectedTripType != 11) // Not day rental
+                    _buildLocationField(
+                      controller: _destinationController,
+                      label: _selectedTripType == 4 && !_isAirportPickup
+                          ? 'Airport'
+                          : 'Drop Location',
+                      icon: Icons.local_taxi_outlined,
+                      iconColor: primaryColor,
+                    ),
+                ],
+              ),
+
+            // Multi-city routes
+            if (_selectedTripType == 3)
+              Column(
+                children: [
+                  for (int i = 0; i < _multiCityRoutes.length; i++)
+                    Column(
+                      children: [
+                        _buildLocationCard(
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  'Route ${i + 1}',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: primaryColor,
+                                  ),
+                                ),
+                                const Spacer(),
+                                if (_multiCityRoutes.length > 1)
+                                  IconButton(
+                                    icon: Icon(Icons.remove_circle, color: Colors.red),
+                                    onPressed: () => _removeMultiCityRoute(i),
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            _buildLocationField(
+                              controller: _multiCityRoutes[i]['source'],
+                              label: 'Pickup Location',
+                              icon: Icons.local_taxi_outlined,
+                              iconColor: primaryColor,
+                            ),
+                            const SizedBox(height: 16),
+                            _buildLocationField(
+                              controller: _multiCityRoutes[i]['destination'],
+                              label: 'Drop Location',
+                              icon: Icons.local_taxi_outlined,
+                              iconColor: primaryColor,
+                            ),
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _buildDateTimeField(
+                                    label: 'Pickup Date',
+                                    value: DateFormat('MMM dd, yyyy').format(_multiCityRoutes[i]['date']),
+                                    icon: Icons.calendar_today,
+                                    onTap: () => _selectDate(context, multiCityIndex: i),
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: _buildDateTimeField(
+                                    label: 'Pickup Time',
+                                    value: _multiCityRoutes[i]['time'].format(context),
+                                    icon: Icons.access_time,
+                                    onTap: () => _selectTime(context, multiCityIndex: i),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                      ],
+                    ),
+                  ElevatedButton.icon(
+                    onPressed: _addMultiCityRoute,
+                    icon: Icon(Icons.add, color: Colors.white),
+                    label: Text('Add Another Route', style: TextStyle(color: Colors.white)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryColor,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                ],
+              ),
 
             // Date and Time
-            _buildLocationCard(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildDateTimeField(
-                        label: 'Pickup Date',
-                        value: DateFormat('MMM dd, yyyy').format(_selectedDate),
-                        icon: Icons.calendar_today,
-                        onTap: () => _selectDate(context),
+            if (_selectedTripType != 3) // Not multi-city
+              _buildLocationCard(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildDateTimeField(
+                          label: 'Pickup Date',
+                          value: DateFormat('MMM dd, yyyy').format(_selectedDate),
+                          icon: Icons.calendar_today,
+                          onTap: () => _selectDate(context),
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: _buildDateTimeField(
-                        label: 'Pickup Time',
-                        value: _selectedTime.format(context),
-                        icon: Icons.access_time,
-                        onTap: () => _selectTime(context),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _buildDateTimeField(
+                          label: 'Pickup Time',
+                          value: _selectedTime.format(context),
+                          icon: Icons.access_time,
+                          onTap: () => _selectTime(context),
+                        ),
                       ),
+                    ],
+                  ),
+                  
+                  // Return date and time for round trip
+                  if (_selectedTripType == 2)
+                    Column(
+                      children: [
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildDateTimeField(
+                                label: 'Return Date',
+                                value: _returnDate != null
+                                    ? DateFormat('MMM dd, yyyy').format(_returnDate!)
+                                    : 'Select date',
+                                icon: Icons.calendar_today,
+                                onTap: () => _selectDate(context, isReturnDate: true),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: _buildDateTimeField(
+                                label: 'Return Time',
+                                value: _returnTime != null
+                                    ? _returnTime!.format(context)
+                                    : 'Select time',
+                                icon: Icons.access_time,
+                                onTap: () => _selectTime(context, isReturnTime: true),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ],
-            ),
+                ],
+              ),
             const SizedBox(height: 25),
 
             // Cab Type Selection

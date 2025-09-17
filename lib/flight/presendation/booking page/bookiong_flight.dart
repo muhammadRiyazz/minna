@@ -2274,12 +2274,10 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
                               firstDate: DateTime(1900),
                               lastDate: DateTime.now(),
                             );
-                            if (pickedDate != null) {
-                              dobControllers[index].text = DateFormat(
-                                'dd-MM-yyyy',
-                              ).format(pickedDate);
-                            }
-                          },
+                            dobControllers[index].text = DateFormat(
+                              'dd-MM-yyyy',
+                            ).format(pickedDate!);
+                                                    },
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please select date of birth';
@@ -2364,12 +2362,10 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
                                 firstDate: DateTime.now(),
                                 lastDate: DateTime(2100),
                               );
-                              if (pickedDate != null) {
-                                expiryControllers[index].text = DateFormat(
-                                  'dd-MM-yyyy',
-                                ).format(pickedDate);
-                              }
-                            },
+                              expiryControllers[index].text = DateFormat(
+                                'dd-MM-yyyy',
+                              ).format(pickedDate!);
+                                                        },
                             validator: (value) {
                               if (!isInfant &&
                                   (value == null || value.isEmpty)) {

@@ -6,6 +6,7 @@ import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/application/oparator
 import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/pages/home%20page/recharge_home.dart';
 import 'package:minna/Electyicity%20&%20Water/kseb/kseb%20home/electricity_home.dart';
 import 'package:minna/Electyicity%20&%20Water/water%20bill/water%20bill%20home/water_input.dart';
+import 'package:minna/bus/application/location%20fetch/bus_location_fetch_bloc.dart';
 import 'package:minna/bus/pages/screen%20bus%20home%20/bus_home.dart';
 import 'package:minna/cab/pages/TripSelectionPage/TripSelectionPage.dart';
 import 'package:minna/comman/const/const.dart';
@@ -343,6 +344,9 @@ class _HomeContentPageState extends State<HomeContentPage> {
                 ' Bus ',
                 Colors.red[400]!,
                 () {
+
+ BlocProvider.of<BusLocationFetchBloc>(context).add(const GetData());
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => BusHomeTab()),

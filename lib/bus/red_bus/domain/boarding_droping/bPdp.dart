@@ -73,7 +73,6 @@ import 'dart:convert';
 //     final bpDp = bpDpFromMap(jsondynamic);
 
 import 'package:meta/meta.dart';
-import 'dart:convert';
 
 BpDp bpDpFromMap(dynamic str) => BpDp.fromMap(json.decode(str));
 

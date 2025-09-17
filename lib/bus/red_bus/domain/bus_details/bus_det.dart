@@ -29,7 +29,7 @@ class BusAvaDet {
     Map<String, dynamic> toMap() => {
         "agentMappedToCp": agentMappedToCp,
         "agentMappedToEarning": agentMappedToEarning,
-        "availableTrips": availableTrips == null ? [] : List<dynamic>.from(availableTrips.map((x) => x!.toMap())),
+        "availableTrips": List<dynamic>.from(availableTrips.map((x) => x!.toMap())),
     };
 }
 
