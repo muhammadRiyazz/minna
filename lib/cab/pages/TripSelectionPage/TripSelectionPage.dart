@@ -419,8 +419,8 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
         "destination": {
           "address": _destinationController.text,
           "coordinates": {
-            "latitude": 22.7008099,
-            "longitude": 88.3747597,
+            "latitude": 27.176670,
+            "longitude": 78.008072,
           }
         },
       });

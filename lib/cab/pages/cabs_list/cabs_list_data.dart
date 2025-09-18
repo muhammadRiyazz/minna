@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:minna/cab/application/fetch%20cab/fetch_cabs_bloc.dart';
@@ -305,6 +307,8 @@ Navigator.push(context, MaterialPageRoute(builder: (context) =>  BookingPage(
           selectedCab: cabData,
           requestData: requestData, // pass your trip request
         ),));
+log(cabData.toJson().toString());
+       
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: maincolor1,

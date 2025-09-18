@@ -196,11 +196,11 @@ class BookingConfirmationPage extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
+          // BoxShadow(
+          //   color: Colors.black12,
+          //   blurRadius: 8,
+          //   offset: Offset(0, 2),
+          // ),
         ],
       ),
       child: Padding(
@@ -256,6 +256,7 @@ class BookingConfirmationPage extends StatelessWidget {
                   "Date",
                   bookingData.startDate,
                 ),
+
                 _buildInfoChip(
                   Icons.access_time,
                   "Time",
@@ -266,11 +267,12 @@ class BookingConfirmationPage extends StatelessWidget {
                   "Distance",
                   "${bookingData.totalDistance} km",
                 ),
-                _buildInfoChip(
-                  Icons.timer,
-                  "Duration",
-                  "${bookingData.estimatedDuration} mins",
-                ),
+              _buildInfoChip(
+  Icons.timer,
+  "Duration",
+  formatDuration(bookingData.estimatedDuration.toInt()),
+),
+
                 _buildInfoChip(
                   Icons.directions_car,
                   "Trip Type",
@@ -282,292 +284,152 @@ class BookingConfirmationPage extends StatelessWidget {
         ),
       ),
     );
+  }String formatDuration(int minutes) {
+  final hours = minutes ~/ 60; // integer division
+  final mins = minutes % 60;   // remainder
+  if (hours > 0 && mins > 0) {
+    return "$hours hr $mins min";
+  } else if (hours > 0) {
+    return "$hours hr";
+  } else {
+    return "$mins min";
   }
+}
 
-  Widget _buildOneWayTrip(BookingData bookingData) {
-    final route = bookingData.routes.isNotEmpty ? bookingData.routes.first : null;
-    
-    return Column(
+// ✅ One Way Trip UI
+Widget _buildOneWayTrip(BookingData bookingData) {
+  final route = bookingData.routes.first;
+  return _buildHorizontalRouteCard(
+    route.source.address,
+    route.destination.address,
+  );
+}
+
+// ✅ Round Trip UI
+Widget _buildRoundTrip(BookingData bookingData) {
+  final route = bookingData.routes.first;
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      _buildHorizontalRouteCard(
+        route.source.address,
+        route.destination.address,
+        label: "Onward",
+      ),
+      SizedBox(height: 10),
+      _buildHorizontalRouteCard(
+        route.destination.address,
+        route.source.address,
+        label: "Return",
+      ),
+    ],
+  );
+}
+
+// ✅ Multi-City Trip UI
+Widget _buildMultiCityTrip(BookingData bookingData) {
+  return SizedBox(
+    height: 100,
+    child: ListView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: bookingData.routes.length,
+      itemBuilder: (context, index) {
+        final route = bookingData.routes[index];
+        return _buildHorizontalRouteCard(
+          route.source.address,
+          route.destination.address,
+          label: "Leg ${index + 1}",
+        );
+      },
+    ),
+  );
+}
+
+// ✅ Airport Transfer UI
+Widget _buildAirportTransfer(BookingData bookingData) {
+  final route = bookingData.routes.first;
+  return _buildHorizontalRouteCard(
+    route.source.address,
+    route.destination.address,
+    label: "Airport Transfer",
+  );
+}
+
+// ✅ Day Rental UI
+Widget _buildDayRental(BookingData bookingData) {
+  final route = bookingData.routes.first;
+  return _buildHorizontalRouteCard(
+    route.source.address,
+    route.destination.address,
+    label: "Day Rental",
+  );
+}
+
+/// 🔥 Reusable Horizontal Route Card
+Widget _buildHorizontalRouteCard(
+  String source,
+  String destination, {
+  String? label,
+}) {
+  return Container(
+    margin: EdgeInsets.symmetric(vertical: 8),
+    padding: EdgeInsets.all(12),
+    decoration: BoxDecoration(
+      color: Colors.grey[100],
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: Row(
       children: [
-        if (route != null) ...[
-          _buildEnhancedLocationRow(
-            "Pickup Location",
-            route.source.address,
-            Icons.location_on,
-            Colors.green,
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 8),
-            child: Container(
-              margin: EdgeInsets.only(left: 14),
-              height: 20,
+        Column(
+          children: [
+            Icon(Icons.circle, size: 10, color: Colors.green),
+            Container(
               width: 2,
-              color: maincolor1?.withOpacity(0.3),
+              height: 30,
+              color: Colors.grey,
             ),
-          ),
-          _buildEnhancedLocationRow(
-            "Drop Location",
-            route.destination.address,
-            Icons.flag,
-            Colors.red,
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildRoundTrip(BookingData bookingData) {
-    return Column(
-      children: [
-        if (bookingData.routes.length >= 2) ...[
-          _buildEnhancedLocationRow(
-            "Outbound - From",
-            bookingData.routes[0].source.address,
-            Icons.location_on,
-            Colors.green,
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 4),
-            child: Container(
-              margin: EdgeInsets.only(left: 14),
-              height: 10,
-              width: 2,
-              color: maincolor1!.withOpacity(0.3),
-            ),
-          ),
-          _buildEnhancedLocationRow(
-            "Outbound - To",
-            bookingData.routes[0].destination.address,
-            Icons.flag,
-            Colors.blue,
-          ),
-          SizedBox(height: 16),
-          _buildEnhancedLocationRow(
-            "Return - From",
-            bookingData.routes[1].source.address,
-            Icons.location_on,
-            Colors.orange,
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 4),
-            child: Container(
-              margin: EdgeInsets.only(left: 14),
-              height: 10,
-              width: 2,
-              color: maincolor1!.withOpacity(0.3),
-            ),
-          ),
-          _buildEnhancedLocationRow(
-            "Return - To",
-            bookingData.routes[1].destination.address,
-            Icons.flag,
-            Colors.purple,
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildMultiCityTrip(BookingData bookingData) {
-    return Column(
-      children: [
-        for (int i = 0; i < bookingData.routes.length; i++)
-          Column(
-            children: [
-              if (i > 0) SizedBox(height: 16),
-              Text(
-                "Stop ${i + 1}",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: maincolor1,
-                  fontSize: 14,
-                ),
-              ),
-              SizedBox(height: 8),
-              _buildEnhancedLocationRow(
-                "From",
-                bookingData.routes[i].source.address,
-                Icons.location_on,
-                Colors.blue,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 4),
-                child: Container(
-                  margin: EdgeInsets.only(left: 14),
-                  height: 10,
-                  width: 2,
-                  color: maincolor1!.withOpacity(0.3),
-                ),
-              ),
-              _buildEnhancedLocationRow(
-                "To",
-                bookingData.routes[i].destination.address,
-                Icons.flag,
-                Colors.green,
-              ),
-            ],
-          ),
-      ],
-    );
-  }
-
-  Widget _buildAirportTransfer(BookingData bookingData) {
-    final route = bookingData.routes.isNotEmpty ? bookingData.routes.first : null;
-    final isAirportPickup = route?.source.address.toLowerCase().contains("airport") ?? false;
-    
-    return Column(
-      children: [
-        if (route != null) ...[
-          _buildEnhancedLocationRow(
-            isAirportPickup ? "Airport" : "Pickup Location",
-            route.source.address,
-            isAirportPickup ? Icons.airplanemode_active : Icons.location_on,
-            isAirportPickup ? Colors.blue : Colors.green,
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 8),
-            child: Container(
-              margin: EdgeInsets.only(left: 14),
-              height: 20,
-              width: 2,
-              color: maincolor1!.withOpacity(0.3),
-            ),
-          ),
-          _buildEnhancedLocationRow(
-            isAirportPickup ? "Drop Location" : "Airport",
-            route.destination.address,
-            isAirportPickup ? Icons.flag : Icons.airplanemode_active,
-            isAirportPickup ? Colors.red : Colors.blue,
-          ),
-          SizedBox(height: 16),
-          Container(
-            padding: EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.blue[50],
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.info_outline, color: Colors.blue, size: 18),
-                SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    isAirportPickup 
-                      ? "Airport pickup with flight tracking included"
-                      : "Airport drop with flight details",
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.blue[700],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildDayRental(BookingData bookingData) {
-    final route = bookingData.routes.isNotEmpty ? bookingData.routes.first : null;
-    
-    return Column(
-      children: [
-        if (route != null) ...[
-          _buildEnhancedLocationRow(
-            "Starting Location",
-            route.source.address,
-            Icons.location_on,
-            Colors.green,
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 8),
-            child: Container(
-              margin: EdgeInsets.only(left: 14),
-              height: 20,
-              width: 2,
-              // ignore: deprecated_member_use
-              color: maincolor1!.withOpacity(0.3),
-            ),
-          ),
-          _buildEnhancedLocationRow(
-            "Ending Location",
-            route.destination.address,
-            Icons.flag,
-            Colors.red,
-          ),
-          SizedBox(height: 16),
-          Container(
-            padding: EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.orange[50],
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.timer, color: Colors.orange, size: 18),
-                SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    "Day rental package: ${bookingData.totalDistance} km / ${bookingData.estimatedDuration ~/ 60} hours",
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.orange[700],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildEnhancedLocationRow(String title, String address, IconData icon, Color color) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 30,
-          height: 30,
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(icon, size: 18, color: color),
+            Icon(Icons.location_on, size: 18, color: Colors.red),
+          ],
         ),
-        SizedBox(width: 12),
+        SizedBox(width: 10),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
-                  fontWeight: FontWeight.w500,
+              if (label != null)
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.blueGrey,
+                  ),
                 ),
+              Text(
+                source,
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                overflow: TextOverflow.ellipsis,
               ),
-              SizedBox(height: 4),
+              Row(
+                children: [
+                  Expanded(child: Divider(color: Colors.grey)),
+                  Icon(Icons.arrow_forward, size: 16, color: Colors.grey),
+                  Expanded(child: Divider(color: Colors.grey)),
+                ],
+              ),
               Text(
-                address,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey[800],
-                ),
-                maxLines: 2,
+                destination,
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
         ),
       ],
-    );
-  }
+    ),
+  );
+}
+
 
   Widget _buildInfoChip(IconData icon, String label, String value) {
     return Container(
@@ -611,7 +473,7 @@ class BookingConfirmationPage extends StatelessWidget {
     final cab = bookingData.cabRate?.cab;
 
     return Card(
-      elevation: 2,
+      elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: EdgeInsets.all(16),
@@ -634,7 +496,7 @@ class BookingConfirmationPage extends StatelessWidget {
                     width: 60,
                     height: 60,
                     decoration: BoxDecoration(
-                      color: Colors.blue.shade100,
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: cab.image.isNotEmpty
@@ -695,7 +557,7 @@ class BookingConfirmationPage extends StatelessWidget {
     final fare = bookingData.cabRate?.fare;
 
     return Card(
-      elevation: 2,
+      elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: EdgeInsets.all(16),

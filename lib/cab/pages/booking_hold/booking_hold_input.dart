@@ -49,33 +49,52 @@ class _BookingPageState extends State<BookingPage> {
 
 Map<String, dynamic>  _onConfirmBooking() {
   
-
   final cab = widget.selectedCab;
   final req = widget.requestData;
 
-  // Function to get cab type ID
-  int getCabTypeId(String type) {
-    switch (type.toLowerCase()) {
-      case "compact":
-        return 1;
-      case "suv":
-        return 2;
-      case "sedan":
-        return 3;
-      case "assured dzire":
-        return 5;
-      case "assured innova":
-        return 6;
-      case "compact (cng)":
-        return 72;
-      case "sedan (cng)":
-        return 73;
-      case "suv (cng)":
-        return 74;
-      default:
-        return 1; // fallback to compact if type not found
-    }
+ // Function to get cab type ID from cab response string
+int getCabTypeId(String type) {
+  final t = type.toLowerCase().trim();
+  log("Cab type from API: $t");
+
+  // ✅ Compact
+  if (t.contains("compact") && t.contains("value")) {
+    return 1; // Compact (Value)
   }
+  if (t.contains("compact") && (t.contains("cng") || t.contains("economy"))) {
+    return 72; // Compact (CNG / Economy)
+  }
+
+  // ✅ SUV
+  if (t.contains("suv") && t.contains("value")) {
+    return 2; // SUV (Value)
+  }
+  if (t.contains("suv") && (t.contains("cng") || t.contains("economy"))) {
+    return 74; // SUV (CNG / Economy)
+  }
+
+  // ✅ Sedan
+  if (t.contains("sedan") && t.contains("value")) {
+    return 3; // Sedan (Value)
+  }
+  if (t.contains("sedan") && (t.contains("cng") || t.contains("economy"))) {
+    return 73; // Sedan (CNG / Economy)
+  }
+
+  // ✅ Assured Dzire
+  if (t.contains("assured dzire")) {
+    return 5;
+  }
+
+  // ✅ Assured Innova → sometimes shown as "Toyota Innova (Value)"
+  if (t.contains("assured innova") || t.contains("toyota innova")) {
+    return 6;
+  }
+
+  // ✅ Default fallback
+  return 1; // Default to Compact (Value) if no match found
+}
+
 
   // Build traveller info
   final traveller = {

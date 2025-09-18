@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
 import 'package:minna/bus/application/change%20location/location_bloc.dart';
 import 'package:minna/bus/domain/BlockTicket/block_ticket_request_modal.dart';
 import 'package:minna/bus/domain/seatlayout/seatlayoutmodal.dart';
@@ -13,20 +14,19 @@ import 'package:minna/bus/pages/screen%20conform%20ticket/widget/bottom_sheet.da
 import 'package:minna/bus/pages/sceen%20Time%20out/screen_time_out.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/core/api.dart';
-import 'package:razorpay_flutter/razorpay_flutter.dart'; // ✅ ADDED FOR RAZORPAY
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class ScreenConfirmTicket extends StatefulWidget {
-   ScreenConfirmTicket({
+  const ScreenConfirmTicket({
     super.key,
     required this.alldata,
     required this.blockKey,
     required this.selectedSeats,
-     this.updatedFare,
+    this.updatedFare,
   });
 
   final BlockTicketRequest alldata;
-     UpdatedFareResponse? updatedFare;
-
+  final UpdatedFareResponse? updatedFare;
   final String blockKey;
   final List<Seat> selectedSeats;
 
@@ -42,12 +42,14 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
   bool _isBooking = false;
   bool isLoading = false;
   bool isError = false;
-
+  String? _paymentId;
+  String? _orderId; // Added to store order ID
+ 
   static const int _initialSeconds = 7 * 60;
   int _secondsRemaining = _initialSeconds;
   Timer? _timer;
 
-  late Razorpay _razorpay; // ✅ ADDED FOR RAZORPAY
+  late Razorpay _razorpay;
 
   @override
   void initState() {
@@ -59,8 +61,9 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
         .map((s) => double.tryParse(s.fare) ?? 0.0)
         .fold(0.0, (a, b) => a + b);
     _startTimer();
+
     _insertData();
-    _initRazorpay(); // ✅ ADDED FOR RAZORPAY
+    _initRazorpay();
   }
 
   void _initRazorpay() {
@@ -73,7 +76,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
   @override
   void dispose() {
     _timer?.cancel();
-    _razorpay.clear(); // ✅ ADDED FOR RAZORPAY
+    _razorpay.clear();
     super.dispose();
   }
 
@@ -109,15 +112,156 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
 
   void _navigateToTimeout() {
     _timer?.cancel();
-    Navigator.of(
-      context,
-    ).pushReplacement(MaterialPageRoute(builder: (_) => const ScreenTimeOut()));
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const ScreenTimeOut()));
   }
 
-  Future<void> _onBookNow() async {
+  // API Payment Details Save
+  Future<Map<String, dynamic>> _savePaymentDetails(
+      String orderId, String transactionId, int status) async {
+    log("_savePaymentDetails --called");
+
+    try {
+      final response = await http.post(
+        Uri.parse('${baseUrl}paysave'),
+        body: {
+          'id': _blockId,
+          'order_id': orderId,
+          'transaction_id': transactionId,
+          'status': status.toString(),
+          'table':"bus_blockrequest"
+        },
+      );
+      log(response.body.toString());
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        return {
+          'success': jsonResponse['statusCode'] == 200,
+          'message': jsonResponse['message']
+        };
+      }
+      return {'success': false, 'message': 'Failed to save payment details'};
+    } catch (e) {
+      log(e.toString());
+      return {'success': false, 'message': 'Error: $e'};
+    }
+  }
+
+//   // API Payment Capture
+//  Future<Map<String, dynamic>> _capturePayment(
+//     String paymentId,
+//     String signature,
+//     String orderId,
+//     String amount) async {
+//   log("_capturePayment --called");
+
+//   final body = {
+//     'id': _blockId,
+//     'payment_id': paymentId,
+//     'signature': signature,
+//     'order_id': orderId,
+//     'amount': amount,
+//     'table': "bus_blockrequest",
+//   };
+
+//   log("Capture Payment Request Body: ${jsonEncode(body)}"); // ✅ log body
+
+//   try {
+    // final response = await http.post(
+    //   Uri.parse('${baseUrl}paycapture'),
+    //   body: body,
+    // );
+
+    // log("Capture Payment Response: ${response.body}");
+
+    // if (response.statusCode == 200) {
+    //   final jsonResponse = jsonDecode(response.body);
+    //   return {
+    //     'success': jsonResponse['statusCode'] == 200,
+    //     'message': jsonResponse['message']
+    //   };
+    // }
+//     return {'success': false, 'message': 'Failed to capture payment'};
+//   } catch (e) {
+//     log("Capture Payment Error: $e");
+//     return {'success': false, 'message': 'Error: $e'};
+//   }
+// }
+
+  // API Payment Refund
+  Future<Map<String, dynamic>> _refundPayment(
+      String transactionId, double amount) async {
+    log('_refundPayment --callled');
+    try {
+      final response = await http.post(
+        Uri.parse('${baseUrl}refundPay'),
+        body: {
+          'id': _blockId,
+          'transaction_id': transactionId,
+          'amount': amount.toString(),
+          'table':"bus_blockrequest"
+
+        },
+      );
+      log(response.body);
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        return {
+          'success': jsonResponse['statusCode'] == 200,
+          'message': jsonResponse['message']
+        };
+      }
+      return {'success': false, 'message': 'Failed to process refund'};
+    } catch (e) {
+      log(e.toString());
+      return {'success': false, 'message': 'Error: $e'};
+    }
+  }
+
+  // Create Order API
+  Future<String?> _createOrder(double amount) async {
+    try {
+      final response = await http.post(
+        Uri.parse("${baseUrl}createOrder"),
+        body: {
+          "amount": (amount * 100).toStringAsFixed(0),
+        },
+      );
+log(response.body);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['statusCode'] == 200) {
+          return data['message']['order_id']; // Extract order_id from response
+        } else {
+          log("Error creating order: ${data['message']}");
+          return null;
+        }
+      } else {
+        log("HTTP Error: ${response.statusCode} - ${response.body}");
+        return null;
+      }
+    } catch (e) {
+      log("Exception in createOrder: $e");
+      return null;
+    }
+  }
+
+  void _onBookNow() async {
     setState(() => _isBooking = true);
 
-    // Get passenger info safely
+    // Create order first
+    final orderId = await _createOrder(totalFare);
+    if (orderId == null) {
+      setState(() => _isBooking = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Failed to create order. Please try again.")));
+      return;
+    }
+    
+    setState(() {
+      _orderId = orderId;
+    });
+
     final passenger = widget.alldata.inventoryItems?.isNotEmpty == true
         ? widget.alldata.inventoryItems!.first.passenger
         : null;
@@ -129,8 +273,9 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
 
     var options = {
       'key': razorpaykey,
-      'amount': int.parse(amount) * 100, // Amount in paise
+      'amount': (double.parse(amount) * 100),
       'name': name,
+      'order_id': _orderId, // Use the created order ID
       'description': 'Bus Ticket Payment',
       'prefill': {'contact': phone, 'email': email},
       'theme': {'color': maincolor1!.value.toRadixString(16)},
@@ -141,36 +286,106 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
     } catch (e) {
       setState(() => _isBooking = false);
       log("Razorpay Error: $e");
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Error starting Razorpay")));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Error starting Razorpay")));
     }
   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
-    log("Payment Success: ${response.paymentId}");
+    log("Payment paymentId: ${response.paymentId}");
+    log("Payment orderId: ${response.orderId}");
+    log("Payment signature: ${response.signature}");
 
-    await bookNow(
-      selectedseatsCount: widget.selectedSeats.length,
-      blockID: _blockId,
-      blockKey: widget.blockKey,
-      context: context,
-    );
+    setState(() {
+      _paymentId = response.paymentId;
+    });
 
-    _timer?.cancel();
+    // Step 1: Save payment details
+    final saveResult = await _savePaymentDetails(
+        response.orderId!, response.paymentId!, 1);
+    
+    if (!saveResult['success']) {
+      _showErrorDialog("Payment details could not be saved. Please contact support.");
+      setState(() => _isBooking = false);
+      return;
+    }
+
+    // Step 2: Capture payment
+    // final captureResult = await _capturePayment(
+    //     response.paymentId!,
+    //     response.signature!,
+    //     response.orderId!,
+    //     totalFare .toString() );
+    
+    // if (!captureResult['success']) {
+    //   // If capture fails, initiate refund
+    //   final refundResult = await _refundPayment(response.paymentId!, totalFare);
+      
+    //   _showErrorDialog(
+    //     "Payment capture failed. ${refundResult['success'] ? 
+    //       'Refund has been initiated.' : 
+    //       'Please contact support for refund.'}");
+      
+    //   setState(() => _isBooking = false);
+    //   return;
+    // }
+
+    // Step 3: Proceed to book tickets 
+    try {
+      await bookNow(
+        selectedseatsCount: widget.selectedSeats.length,
+        blockID: _blockId,
+        blockKey: widget.blockKey,
+        context: context,
+      );
+      
+      _timer?.cancel();
+    } catch (e) {
+      // If booking fails, initiate refund
+      final refundResult = await _refundPayment(response.paymentId!, 1);
+      
+      _showErrorDialog(
+        "Booking failed. ${refundResult['success'] ? 
+          'Refund has been initiated.' : 
+          'Please contact support for refund.'}");
+      
+      log("Booking Error: $e");
+    }
+    
     setState(() => _isBooking = false);
   }
 
-  void _handlePaymentError(PaymentFailureResponse response) {
+  void _handlePaymentError(PaymentFailureResponse response) async {
     log("Payment Failed: ${response.message}");
+    
+    // Save failed payment details
+    if (_paymentId != null && _orderId != null) {
+      await _savePaymentDetails(_orderId!, _paymentId!, 2);
+    }
+    
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Payment failed. Please try again.")),
-    );
+        const SnackBar(content: Text("Payment failed. Please try again.")));
     setState(() => _isBooking = false);
   }
 
   void _handleExternalWallet(ExternalWalletResponse response) {
     log("External Wallet: ${response.walletName}");
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Booking Issue"),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _insertData() async {
@@ -255,14 +470,14 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
           child: isLoading
               ? const Center(child: CircularProgressIndicator())
               : isError
-              ? const Center(child: Text("Something went wrong!"))
-              : Column(
-                  children: [
-                    const SizedBox(height: 5),
-                    Expanded(child: _buildDetailsCard()),
-                    _buildBookButton(),
-                  ],
-                ),
+                  ? const Center(child: Text("Something went wrong!"))
+                  : Column(
+                      children: [
+                        const SizedBox(height: 5),
+                        Expanded(child: _buildDetailsCard()),
+                        _buildBookButton(),
+                      ],
+                    ),
         ),
       ),
     );
