@@ -7,10 +7,10 @@ import 'package:minna/bus/domain/CncelData/cancel_data.dart';
 import 'package:minna/bus/domain/Ticket%20details/ticket_details_more1.dart';
 import 'package:minna/bus/domain/cancel%20succes%20modal/cancel_succes_modal.dart';
 import 'package:minna/bus/infrastructure/cancelTicket/conform_cancel_seat.dart';
+import 'package:minna/bus/presendation/Screen%20cancel%20Succes/screen_cancel_succes.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/core/api.dart';
 
-import '../Screen cancel Succes/screen_cancel_succes.dart';
 
 class ScreenCancelInfo extends StatefulWidget {
   const ScreenCancelInfo({

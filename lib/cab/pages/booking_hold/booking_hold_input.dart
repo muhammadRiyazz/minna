@@ -4,7 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:minna/cab/application/hold%20cab/hold_cab_bloc.dart';
 import 'package:minna/cab/domain/cab%20list%20model/cab_list_data.dart';
 import 'package:minna/cab/pages/payment%20page/payment.dart';
+import 'package:minna/comman/application/login/login_bloc.dart';
 import 'package:minna/comman/const/const.dart';
+import 'package:minna/comman/pages/log%20in/login_page.dart';
 
 class BookingPage extends StatefulWidget {
   final CabRate selectedCab;
@@ -25,7 +27,6 @@ class _BookingPageState extends State<BookingPage> {
   final _primaryPhoneCodeController = TextEditingController(text: '+91');
   final _alternatePhoneCodeController = TextEditingController(text: '+91');
 
- 
   String _firstName = '';
   String _lastName = '';
   String _primaryPhone = '';
@@ -47,130 +48,170 @@ class _BookingPageState extends State<BookingPage> {
     super.dispose();
   }
 
-Map<String, dynamic>  _onConfirmBooking() {
-  
-  final cab = widget.selectedCab;
-  final req = widget.requestData;
+  Future<Map<String, dynamic>> _onConfirmBooking() async {
+    final isLoggedIn = context.read<LoginBloc>().state.isLoggedIn ?? false;
 
- // Function to get cab type ID from cab response string
-int getCabTypeId(String type) {
-  final t = type.toLowerCase().trim();
-  log("Cab type from API: $t");
+    if (!isLoggedIn) {
+      // Show login bottom sheet and wait for result
+      final loginResult = await showModalBottomSheet<bool>(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => const LoginBottomSheet(login: 1),
+      );
 
-  // ✅ Compact
-  if (t.contains("compact") && t.contains("value")) {
-    return 1; // Compact (Value)
-  }
-  if (t.contains("compact") && (t.contains("cng") || t.contains("economy"))) {
-    return 72; // Compact (CNG / Economy)
-  }
-
-  // ✅ SUV
-  if (t.contains("suv") && t.contains("value")) {
-    return 2; // SUV (Value)
-  }
-  if (t.contains("suv") && (t.contains("cng") || t.contains("economy"))) {
-    return 74; // SUV (CNG / Economy)
-  }
-
-  // ✅ Sedan
-  if (t.contains("sedan") && t.contains("value")) {
-    return 3; // Sedan (Value)
-  }
-  if (t.contains("sedan") && (t.contains("cng") || t.contains("economy"))) {
-    return 73; // Sedan (CNG / Economy)
-  }
-
-  // ✅ Assured Dzire
-  if (t.contains("assured dzire")) {
-    return 5;
-  }
-
-  // ✅ Assured Innova → sometimes shown as "Toyota Innova (Value)"
-  if (t.contains("assured innova") || t.contains("toyota innova")) {
-    return 6;
-  }
-
-  // ✅ Default fallback
-  return 1; // Default to Compact (Value) if no match found
-}
-
-
-  // Build traveller info
-  final traveller = {
-    "firstName": _firstName,
-    "lastName": _lastName,
-    "primaryContact": {
-      "code": int.tryParse(_primaryPhoneCodeController.text.replaceAll('+', '')) ?? 91,
-      "number": _primaryPhone,
-    },
-    "alternateContact": {
-      "code": int.tryParse(_alternatePhoneCodeController.text.replaceAll('+', '')) ?? 91,
-      "number": _alternatePhone,
-    },
-    "email": _email,
-  };
-
-  // Build additional info
-  final additionalInfo = {
-    "specialInstructions": _specialInstructions,
-    "noOfPerson": _numPersons,
-    "noOfLargeBags": _numLargeBags,
-    "noOfSmallBags": _numSmallBags,
-    "carrierRequired": _carrierRequired ? 1 : 0,
-    "kidsTravelling": _kidsTravelling ? 1 : 0,
-    "seniorCitizenTravelling": _seniorCitizenTravelling ? 1 : 0,
-    "womanTravelling": _womanTravelling ? 1 : 0,
-  };
-
-  // Build routes array
-  final List<Map<String, dynamic>> routes = [];
-  if (req["routes"] != null && req["routes"].isNotEmpty) {
-    for (var route in req["routes"]) {
-      routes.add({
-        "startDate": route["startDate"],
-        "startTime": route["startTime"],
-        "source": {
-          "address": route["source"]["address"] ?? "",
-          "coordinates": {
-            "latitude": route["source"]["coordinates"]["latitude"],
-            "longitude": route["source"]["coordinates"]["longitude"],
-          }
-        },
-        "destination": {
-          "address": route["destination"]["address"] ?? "",
-          "coordinates": {
-            "latitude": route["destination"]["coordinates"]["latitude"],
-            "longitude": route["destination"]["coordinates"]["longitude"],
-          }
-        }
-      });
+      // Check if login was successful
+      if (loginResult != true) {
+        _showCustomSnackbar('Please login to continue', isError: true);
+        return {};
+      }
     }
+
+    final cab = widget.selectedCab;
+    final req = widget.requestData;
+
+    // Function to get cab type ID from cab response string
+    int getCabTypeId(String type) {
+      final t = type.toLowerCase().trim();
+      log("Cab type from API: $t");
+
+      // ✅ Compact
+      if (t.contains("compact") && t.contains("value")) {
+        return 1; // Compact (Value)
+      }
+      if (t.contains("compact") && (t.contains("cng") || t.contains("economy"))) {
+        return 72; // Compact (CNG / Economy)
+      }
+
+      // ✅ SUV
+      if (t.contains("suv") && t.contains("value")) {
+        return 2; // SUV (Value)
+      }
+      if (t.contains("suv") && (t.contains("cng") || t.contains("economy"))) {
+        return 74; // SUV (CNG / Economy)
+      }
+
+      // ✅ Sedan
+      if (t.contains("sedan") && t.contains("value")) {
+        return 3; // Sedan (Value)
+      }
+      if (t.contains("sedan") && (t.contains("cng") || t.contains("economy"))) {
+        return 73; // Sedan (CNG / Economy)
+      }
+
+      // ✅ Assured Dzire
+      if (t.contains("assured dzire")) {
+        return 5;
+      }
+
+      // ✅ Assured Innova → sometimes shown as "Toyota Innova (Value)"
+      if (t.contains("assured innova") || t.contains("toyota innova")) {
+        return 6;
+      }
+
+      // ✅ Default fallback
+      return 1; // Default to Compact (Value) if no match found
+    }
+
+    // Build traveller info
+    final traveller = {
+      "firstName": _firstName,
+      "lastName": _lastName,
+      "primaryContact": {
+        "code": int.tryParse(_primaryPhoneCodeController.text.replaceAll('+', '')) ?? 91,
+        "number": _primaryPhone,
+      },
+      "alternateContact": {
+        "code": int.tryParse(_alternatePhoneCodeController.text.replaceAll('+', '')) ?? 91,
+        "number": _alternatePhone,
+      },
+      "email": _email,
+    };
+
+    // Build additional info
+    final additionalInfo = {
+      "specialInstructions": _specialInstructions,
+      "noOfPerson": _numPersons,
+      "noOfLargeBags": _numLargeBags,
+      "noOfSmallBags": _numSmallBags,
+      "carrierRequired": _carrierRequired ? 1 : 0,
+      "kidsTravelling": _kidsTravelling ? 1 : 0,
+      "seniorCitizenTravelling": _seniorCitizenTravelling ? 1 : 0,
+      "womanTravelling": _womanTravelling ? 1 : 0,
+    };
+
+    // Build routes array
+    final List<Map<String, dynamic>> routes = [];
+    if (req["routes"] != null && req["routes"].isNotEmpty) {
+      for (var route in req["routes"]) {
+        routes.add({
+          "startDate": route["startDate"],
+          "startTime": route["startTime"],
+          "source": {
+            "address": route["source"]["address"] ?? "",
+            "coordinates": {
+              "latitude": route["source"]["coordinates"]["latitude"],
+              "longitude": route["source"]["coordinates"]["longitude"],
+            }
+          },
+          "destination": {
+            "address": route["destination"]["address"] ?? "",
+            "coordinates": {
+              "latitude": route["destination"]["coordinates"]["latitude"],
+              "longitude": route["destination"]["coordinates"]["longitude"],
+            }
+          }
+        });
+      }
+    }
+
+    // Build the final JSON
+    final bookingJson = {
+      "tnc": 1,
+      "referenceId": "tttt", // unique reference
+      "tripType": req["tripType"], // 1,2,3,4,10,11 based on selection
+      "cabType": getCabTypeId(cab.cab.type), // <-- use type ID
+      "fare": {
+        "advanceReceived": 0,
+        "totalAmount": cab.fare.totalAmount ?? 0,
+      },
+      "sendEmail": 1,
+      "sendSms": 1,
+      "routes": routes,
+      "traveller": traveller,
+      "additionalInfo": additionalInfo,
+      "platform": "android", // optional
+      "apkVersion": "1.0.0", // optional
+    };
+
+    log("Booking JSON: ${bookingJson.toString()}");
+    return bookingJson;
   }
 
-  // Build the final JSON
-  final bookingJson = {
-    "tnc": 1,
-    "referenceId": "tttt", // unique reference
-    "tripType": req["tripType"], // 1,2,3,4,10,11 based on selection
-    "cabType": getCabTypeId(cab.cab.type), // <-- use type ID
-    "fare": {
-      "advanceReceived": 0,
-      "totalAmount": cab.fare.totalAmount ?? 0,
-    },
-    "sendEmail": 1,
-    "sendSms": 1,
-    "routes": routes,
-    "traveller": traveller,
-    "additionalInfo": additionalInfo,
-    "platform": "android", // optional
-    "apkVersion": "1.0.0", // optional
-  };
+  void _showCustomSnackbar(String message, {bool isError = false}) {
+    final color = isError ? Colors.redAccent : Colors.green;
+    final icon = isError ? Icons.error_outline : Icons.check_circle_outline;
 
-  log("Booking JSON: ${bookingJson.toString()}");
-  return bookingJson;
-}
+    final snackBar = SnackBar(
+      margin: const EdgeInsets.fromLTRB(16, 20, 16, 10),
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: color,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      duration: const Duration(seconds: 3),
+      content: Row(
+        children: [
+          Icon(icon, color: Colors.white),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(message, style: const TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
 
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -201,7 +242,6 @@ int getCabTypeId(String type) {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-          
             Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -215,231 +255,123 @@ int getCabTypeId(String type) {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Car Image
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      height: 80,
-                      width: 90,
-                      child: cab.cab.image.isNotEmpty
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.network(
-                                cab.cab.image,
-                                fit: BoxFit.contain,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Icon(Icons.directions_car, 
-                                      size: 40, color: maincolor1);
-                                },
-                              ),
-                            )
-                          : Icon(Icons.directions_car, size: 40, color: maincolor1),
-                    ),
-                    const SizedBox(width: 12),
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Car Image
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          height: 80,
+                          width: 90,
+                          child: cab.cab.image.isNotEmpty
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.network(
+                                    cab.cab.image,
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Icon(Icons.directions_car, 
+                                          size: 40, color: maincolor1);
+                                    },
+                                  ),
+                                )
+                              : Icon(Icons.directions_car, size: 40, color: maincolor1),
+                        ),
+                        const SizedBox(width: 12),
     
-                    // Cab Info
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            cab.cab.category,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            cab.cab.model,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey[700],
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Row(
+                        // Cab Info
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Icon(
-                                Icons.event_seat,
-                                size: 18,
-                                color: maincolor1,
+                              Text(
+                                cab.cab.category,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
                               ),
-                              SizedBox(width: 4),
-                              Text("${cab.cab.seatingCapacity} seats"),
-                              SizedBox(width: 12),
-                              Icon(
-                                Icons.work,
-                                size: 18,
-                                color: Colors.orange,
+                              const SizedBox(height: 6),
+                              Text(
+                                cab.cab.model,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey[700],
+                                ),
                               ),
-                              SizedBox(width: 4),
-                              Text("${cab.cab.bagCapacity} bags"),
+                              const SizedBox(height: 6),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.event_seat,
+                                    size: 18,
+                                    color: maincolor1,
+                                  ),
+                                  SizedBox(width: 4),
+                                  Text("${cab.cab.seatingCapacity} seats"),
+                                  SizedBox(width: 12),
+                                  Icon(
+                                    Icons.work,
+                                    size: 18,
+                                    color: Colors.orange,
+                                  ),
+                                  SizedBox(width: 4),
+                                  Text("${cab.cab.bagCapacity} bags"),
+                                ],
+                              ),
                             ],
                           ),
-                        ],
-                      ),
+                        ),
+    
+                        // Fare
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              "₹${cab.fare.totalAmount?.toStringAsFixed(0) ?? '0'}",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: maincolor1,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              "Base: ₹${cab.fare.baseFare.toStringAsFixed(0)}",
+                              style: TextStyle(fontSize: 12, color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
     
-                    // Fare
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                    const Divider(height: 20),
+    
+                    // Extra Info Row
+                    Row(
                       children: [
-                        Text(
-                          "₹${cab.fare.totalAmount?.toStringAsFixed(0) ?? '0'}",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: maincolor1,
-                          ),
+                        Icon(
+                          Icons.local_gas_station,
+                          size: 16,
+                          color: maincolor1,
                         ),
-                        const SizedBox(height: 6),
+                        SizedBox(width: 4),
+                        Text(cab.cab.fuelType ?? "Petrol"),
+                        Spacer(),
                         Text(
-                          "Base: ₹${cab.fare.baseFare.toStringAsFixed(0)}",
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                          "Policy: ${cab.cancellationPolicy}",
+                          style: TextStyle(color: Colors.red[700], fontSize: 12),
                         ),
                       ],
                     ),
                   ],
                 ),
-    
-                const Divider(height: 20),
-    
-                // Extra Info Row
-                Row(
-                  children: [
-                    Icon(
-                      Icons.local_gas_station,
-                      size: 16,
-                      color: maincolor1,
-                    ),
-                    SizedBox(width: 4),
-                    Text(cab.cab.fuelType ?? "Petrol"),
-                    Spacer(),
-                    Text(
-                      "Policy: ${cab.cancellationPolicy}",
-                      style: TextStyle(color: Colors.red[700], fontSize: 12),
-                    ),
-                  ],
-                ),
-                  ],
-                ),
               ),
-            )
-      ,
-            // Trip Info Card
-          //   Card(
-          //     shape: RoundedRectangleBorder(
-          //       borderRadius: BorderRadius.circular(12),
-          //     ),
-          //     elevation: 0,
-          //     child: Padding(
-          //       padding: const EdgeInsets.all(16),
-          //       child: Column(
-          //         crossAxisAlignment: CrossAxisAlignment.start,
-          //         children: [
-          //           Row(
-          //             children: [
-          //               Icon(Icons.directions_car, color: maincolor1),
-          //               SizedBox(width: 8),
-          //               Text(
-          //                 "Trip Details",
-          //                 style: TextStyle(
-          //                   fontSize: 18,
-          //                   fontWeight: FontWeight.bold,
-          //                   color: maincolor1,
-          //                 ),
-          //               ),
-          //             ],
-          //           ),
-          //           SizedBox(height: 12),
-          //           Container(
-          //             padding: EdgeInsets.all(12),
-          //             decoration: BoxDecoration(
-          //               color: Colors.blue.shade50.withOpacity(0.3),
-          //               borderRadius: BorderRadius.circular(10),
-          //             ),
-          //             child: Row(
-          //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //               children: [
-          //                 Column(
-          //                   crossAxisAlignment: CrossAxisAlignment.start,
-          //                   children: [
-          //                     Text(
-          //                       "From",
-          //                       style: TextStyle(
-          //                         color: Colors.grey.shade600,
-          //                         fontSize: 12,
-          //                       ),
-          //                     ),
-          //                     SizedBox(height: 4),
-          //                       Text(
-          //             req["routes"][0]["source"]["address"] ?? "N/A",
-          //             style: TextStyle(
-          //               fontWeight: FontWeight.w600,
-          //               fontSize: 16,
-          //             ),
-          //           ),
-          //                   ],
-          //                 ),
-          //                 Container(
-          //                   padding: EdgeInsets.all(6),
-          //                   decoration: BoxDecoration(
-          //                     color: Colors.blue.shade100,
-          //                     shape: BoxShape.circle,
-          //                   ),
-          //                   child: Icon(
-          //                     Icons.arrow_forward,
-          //                     color: maincolor1,
-          //                     size: 18,
-          //                   ),
-          //                 ),
-          //                 Column(
-          //                   crossAxisAlignment: CrossAxisAlignment.start,
-          //                   children: [
-          //                     Text(
-          //                       "To",
-          //                       style: TextStyle(
-          //                         color: Colors.grey.shade600,
-          //                         fontSize: 12,
-          //                       ),
-          //                     ),
-          //                     SizedBox(height: 4),
-          //                     Text(
-          //             req["routes"][0]["destination"]["address"] ?? "N/A",
-          //             style: TextStyle(
-          //               fontWeight: FontWeight.w600,
-          //               fontSize: 16,
-          //             ),
-          //           ),
-          //                   ],
-          //                 ),
-          //               ],
-          //             ),
-          //           ),
-          //           SizedBox(height: 8),
-          //            if (req["routes"] != null && req["routes"].isNotEmpty)
-          // Row(
-          //   children: [
-          //     Icon(Icons.calendar_today, size: 16, color: Colors.grey),
-          //     SizedBox(width: 8),
-          //     Text(
-          //       "${req["routes"][0]["startDate"]} at ${req["routes"][0]["startTime"]}",
-          //       style: TextStyle(color: Colors.grey.shade600),
-          //     ),
-          //   ],
-          // ),
-                   
-          //         ],
-          //       ),
-          //     ),
-          //   ),
-      
+            ),
+         
             SizedBox(height: 24),
       
             // Passenger Info Section
@@ -455,7 +387,6 @@ int getCabTypeId(String type) {
             Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                // side: BorderSide(color: Colors.grey.shade200, width: 1),
               ),
               elevation: 0,
               child: Padding(
@@ -651,7 +582,6 @@ int getCabTypeId(String type) {
               ),
             ),
       
-            // Helper method for consistent borders
             SizedBox(height: 24),
       
             // Additional Info Section
@@ -828,37 +758,35 @@ int getCabTypeId(String type) {
                     letterSpacing: 0.5,
                   ),
                 ),
-                onPressed: () {
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    // Build the booking JSON
+                    final bookingData = await _onConfirmBooking();
 
+                    // Check if bookingData is empty (login failed)
+                    if (bookingData.isEmpty) {
+                      return; // Don't proceed with booking
+                    }
 
+                    // Print for debugging
+                    log(bookingData.toString());
 
-                
-  if (_formKey.currentState!.validate()) {
-    // Build the booking JSON
-    final bookingData = _onConfirmBooking();
+                    context.read<HoldCabBloc>().add(
+                      HoldCabEvent.holdCab(requestData: bookingData),
+                    );
 
-    // Print for debugging
-    log(bookingData.toString());
-
-context.read<HoldCabBloc>().add(
-HoldCabEvent.holdCab(requestData: bookingData),
-);
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => BookingConfirmationPage(
-        ),
-      ),
-    );
-  } else {
-    // Show error snackbar if form invalid
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Please fill all required fields')),
-    );
-  }
-
-
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => BookingConfirmationPage(),
+                      ),
+                    );
+                  } else {
+                    // Show error snackbar if form invalid
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Please fill all required fields')),
+                    );
+                  }
                 },
               ),
             ),
@@ -891,26 +819,5 @@ OutlineInputBorder _outlineInputBorder([Color color = Colors.grey]) {
   return OutlineInputBorder(
     borderRadius: BorderRadius.circular(8),
     borderSide: BorderSide(color: color.withOpacity(0.3), width: 1),
-  );
-}
-
-// // Switch Tile Widget (should be defined in your class)
-Widget _buildSwitchTile({
-  required String title,
-  required bool value,
-  required IconData icon,
-  required Function(bool) onChanged,
-}) {
-  return ListTile(
-    contentPadding: EdgeInsets.zero,
-    minLeadingWidth: 24,
-    leading: Icon(icon, size: 20, color: Colors.blue.shade700),
-    title: Text(title, style: TextStyle(fontSize: 14)),
-    trailing: Switch(
-      value: value,
-      onChanged: onChanged,
-      activeColor: maincolor1!,
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-    ),
   );
 }
