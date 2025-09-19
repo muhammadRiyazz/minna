@@ -33,15 +33,21 @@ Future<http.Response?> cancelSeats({
     final String url = "$baseUrl$endpoint";
 
     final Map<String, dynamic> requestBody = {
-      "url": "http://api.seatseller.travel/cancelticket",
-      "method": "POST",
       "user_id": userId,
       "franch_id": "",
-      "data": jsonEncode({"tin": tin, "seatsToCancel": seatList}),
+      "path": "http://api.seatseller.travel/cancelticket", // ✅ use path, not url
+      "method": "POST",
+      "data": jsonEncode({
+        "tin": tin,
+        "seatsToCancel": seatList,
+      }),
     };
 
     log("Sending seat cancellation request to: $url");
-    final response = await http.post(Uri.parse(url), body: requestBody);
+    final response = await http.post(
+      Uri.parse(url),
+      body: requestBody,
+    );
 
     log("Seat cancellation response received: ${response.statusCode}");
     log("Response body: ${response.body}");

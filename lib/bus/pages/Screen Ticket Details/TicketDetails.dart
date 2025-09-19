@@ -14,7 +14,7 @@ import '../../domain/CncelData/cancel_data.dart';
 import '../../domain/Ticket details/ticket_details_more1.dart';
 import '../../infrastructure/cancelTicket/cancel_Ticket_Details.dart';
 import '../../infrastructure/fetch ticket details/fetch_ticket_details.dart';
-import '../../presendation/screen Cancel Info/screen_cancel_info.dart';
+import '../screen Cancel Info/screen_cancel_info.dart';
 import '../../presendation/widgets/error_widget.dart';
 import '../../presendation/widgets/loading_widget.dart';
 
@@ -68,8 +68,8 @@ class _TicketDetailsState extends State<TicketDetails> {
       body: isLoading
           ? _buildShimmerLoading()
           : isError
-          ? Erroricon(ontap: () => _fetchTicketData(widget.tin))
-          : _buildTicketDetails(),
+              ? Erroricon(ontap: () => _fetchTicketData(widget.tin))
+              : _buildTicketDetails(),
     );
   }
 
@@ -103,13 +103,19 @@ class _TicketDetailsState extends State<TicketDetails> {
 
                 // Fare Details Card
                 _buildFareCard(ticket, isCancelled),
+                
+                // Cancellation Details (if cancelled)
+                if (isCancelled) ...[
+                  const SizedBox(height: 20),
+                  _buildCancellationDetailsCard(),
+                ],
               ],
             ),
           ),
         ),
 
         // Cancel Button (if not cancelled)
-        // if (!isCancelled) _buildCancelButton(),
+        if (!isCancelled) _buildCancelButton(),
       ],
     );
   }
@@ -170,15 +176,15 @@ class _TicketDetailsState extends State<TicketDetails> {
                       size: 16,
                       color: isCancelled ? Colors.red : Colors.green,
                     ),
-                    // const SizedBox(width: 6),
-                    // Text(
-                    //   'status',
-                    //   style: TextStyle(
-                    //     fontSize: 14,
-                    //     fontWeight: FontWeight.w600,
-                    //     color: isCancelled ? Colors.red : Colors.green,
-                    //   ),
-                    // ),
+                    const SizedBox(width: 6),
+                    Text(
+                      isCancelled ? 'Cancelled' : 'Confirmed',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: isCancelled ? Colors.red : Colors.green,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -441,6 +447,16 @@ class _TicketDetailsState extends State<TicketDetails> {
                             color: Colors.grey.shade600,
                           ),
                         ),
+                        if (item.cancellationReason != null && 
+                            item.cancellationReason!.isNotEmpty)
+                          Text(
+                            'Cancelled: ${item.cancellationReason}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.red.shade600,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -462,10 +478,53 @@ class _TicketDetailsState extends State<TicketDetails> {
   }
 
   Widget _buildFareCard(TicketinfoMore ticket, bool isCancelled) {
-    final baseFare = totalbasefare(seats: ticket.inventoryItems);
-    final totalFare = totalfare(seats: ticket.inventoryItems);
-    final gst = totalFare - baseFare;
+  // Convert string values to numbers for calculations
+  final baseFare = totalbasefare(seats: ticket.inventoryItems);
+  final totalFare = totalfare(seats: ticket.inventoryItems);
+  final gst = totalFare - baseFare;
 
+  // Handle refund amount for cancelled tickets - convert to number
+  num refundAmount = 0;
+  if (isCancelled && responseJson!.containsKey("refundAmount")) {
+    final refundString = responseJson!["refundAmount"].toString();
+    refundAmount = double.tryParse(refundString) ?? 0;
+  }
+
+  return Container(
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.1),
+          blurRadius: 10,
+          spreadRadius: 2,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    ),
+    padding: const EdgeInsets.all(16),
+    child: Column(
+      children: [
+        _buildFareRow('Base Fare', baseFare),
+        const SizedBox(height: 8),
+        _buildFareRow('Taxes & Fees', gst),
+        const Divider(height: 24),
+        _buildFareRow('Total Paid', totalFare, isTotal: true),
+        if (isCancelled) ...[
+          const Divider(height: 24),
+          _buildFareRow(
+            'Refund Amount',
+            refundAmount,
+            isRefund: true,
+          ),
+        ],
+      ],
+    ),
+  );
+}
+
+  Widget _buildCancellationDetailsCard() {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -481,61 +540,106 @@ class _TicketDetailsState extends State<TicketDetails> {
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildFareRow('Base Fare', baseFare),
-          const SizedBox(height: 8),
-          _buildFareRow('Taxes & Fees', gst),
-          const Divider(height: 24),
-          _buildFareRow('Total Paid', totalFare, isTotal: true),
-          if (isCancelled) ...[
-            const Divider(height: 24),
-            _buildFareRow(
-              'Refund Amount',
-              responseJson!["refundAmount"],
-              isRefund: true,
+          Text(
+            'CANCELLATION DETAILS',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey.shade600,
+              fontWeight: FontWeight.w500,
             ),
-          ],
+          ),
+          const SizedBox(height: 12),
+          if (responseJson!.containsKey("dateOfCancellation"))
+            _buildCancellationInfoRow(
+              'Cancelled On',
+              _formatDateTime(responseJson!["dateOfCancellation"]),
+            ),
+          if (responseJson!.containsKey("cancellationReason"))
+            _buildCancellationInfoRow(
+              'Reason',
+              responseJson!["cancellationReason"],
+            ),
+          if (responseJson!.containsKey("cancellationCharges"))
+            _buildCancellationInfoRow(
+              'Cancellation Charges',
+              '₹${responseJson!["cancellationCharges"]}',
+            ),
         ],
       ),
     );
   }
 
-  Widget _buildFareRow(
-    String label,
-    num amount, {
-    bool isTotal = false,
-    bool isRefund = false,
-  }) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 16,
-            color: isTotal || isRefund ? Colors.black : Colors.grey.shade600,
-            fontWeight: isTotal || isRefund
-                ? FontWeight.w600
-                : FontWeight.normal,
+  Widget _buildCancellationInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey.shade600,
+            ),
           ),
-        ),
-        Text(
-          '₹$amount',
-          style: TextStyle(
-            fontSize: 16,
-            color: isRefund
-                ? Colors.green
-                : isTotal
-                ? maincolor1
-                : Colors.black,
-            fontWeight: isTotal || isRefund
-                ? FontWeight.w600
-                : FontWeight.normal,
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
+
+  String _formatDateTime(String dateTimeString) {
+    try {
+      final dateTime = DateTime.parse(dateTimeString);
+      return DateFormat('dd MMM yyyy, hh:mm a').format(dateTime);
+    } catch (e) {
+      return dateTimeString;
+    }
+  }
+Widget _buildFareRow(
+  String label,
+  num amount, {
+  bool isTotal = false,
+  bool isRefund = false,
+}) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Text(
+        label,
+        style: TextStyle(
+          fontSize: 16,
+          color: isTotal || isRefund ? Colors.black : Colors.grey.shade600,
+          fontWeight: isTotal || isRefund
+              ? FontWeight.w600
+              : FontWeight.normal,
+        ),
+      ),
+      Text(
+        '₹${amount.toStringAsFixed(2)}', // Format to 2 decimal places
+        style: TextStyle(
+          fontSize: 16,
+          color: isRefund
+              ? Colors.green
+              : isTotal
+                  ? maincolor1
+                  : Colors.black,
+          fontWeight: isTotal || isRefund
+              ? FontWeight.w600
+              : FontWeight.normal,
+        ),
+      ),
+    ],
+  );
+}
 
   Widget _buildCancelButton() {
     return Container(
@@ -596,8 +700,20 @@ class _TicketDetailsState extends State<TicketDetails> {
       final data = await getTicketData(tIn: tinid);
       if (data?.statusCode == 200 &&
           !data!.body.contains("Authorization failed")) {
-        ticketMoreData = ticketinfoMoreFromJson(data.body);
+        // Parse the response
         responseJson = json.decode(data.body);
+        
+        // Check if the ticket is cancelled and handle the different structure
+        if (responseJson!["status"] == "CANCELLED") {
+          // For cancelled tickets, we need to handle the different structure
+          // The inventoryItems might be a single object instead of a list
+          if (responseJson!["inventoryItems"] is Map<String, dynamic>) {
+            // Convert single object to list
+            responseJson!["inventoryItems"] = [responseJson!["inventoryItems"]];
+          }
+        }
+        
+        ticketMoreData = ticketinfoMoreFromJson(data.body);
         setState(() {
           isLoading = false;
         });
@@ -605,7 +721,7 @@ class _TicketDetailsState extends State<TicketDetails> {
         throw Exception("Unauthorized");
       }
     } catch (e) {
-      log(e.toString());
+      log("Error fetching ticket data: $e");
       setState(() {
         isLoading = false;
         isError = true;
@@ -624,7 +740,12 @@ class _TicketDetailsState extends State<TicketDetails> {
       final body = resp!.body;
 
       if (body.contains('Error') && !body.contains("Authorization failed")) {
-        Fluttertoast.showToast(msg: body.replaceAll('Error:', '').trim());
+        _showCustomSnackBar(
+          context,
+          body.replaceAll('Error:', '').trim(),
+          Colors.red,
+          Icons.error,
+        );
         setState(() {
           isButtonLoading = false;
           isButtonError = true;
@@ -647,13 +768,24 @@ class _TicketDetailsState extends State<TicketDetails> {
           ),
         );
       } else {
-        Fluttertoast.showToast(msg: 'Sorry, cancellation not possible.');
+        _showCustomSnackBar(
+          context,
+          'Sorry, cancellation not possible.',
+          Colors.orange,
+          Icons.warning,
+        );
         setState(() {
           isButtonError = true;
         });
       }
     } catch (e) {
       log("Cancel Error: $e");
+      _showCustomSnackBar(
+        context,
+        'Something went wrong. Please try again.',
+        Colors.red,
+        Icons.error_outline,
+      );
       setState(() {
         isButtonError = true;
       });
@@ -662,6 +794,37 @@ class _TicketDetailsState extends State<TicketDetails> {
         isButtonLoading = false;
       });
     }
+  }
+
+  /// Custom Snackbar widget
+  void _showCustomSnackBar(
+      BuildContext context, String message, Color bgColor, IconData icon) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        backgroundColor: bgColor,
+        content: Row(
+          children: [
+            Icon(icon, color: Colors.white),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                message,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500),
+              ),
+            ),
+          ],
+        ),
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 
   Widget _buildShimmerLoading() {

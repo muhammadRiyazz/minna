@@ -2,14 +2,15 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
 import 'package:minna/bus/domain/CncelData/cancel_data.dart';
 import 'package:minna/bus/domain/Ticket%20details/ticket_details_more1.dart';
 import 'package:minna/bus/domain/cancel%20succes%20modal/cancel_succes_modal.dart';
 import 'package:minna/bus/infrastructure/cancelTicket/conform_cancel_seat.dart';
-import 'package:minna/bus/infrastructure/canecl%20refund%20wallet/cancel_refund_wallet.dart';
-import 'package:minna/bus/presendation/screen%20cancel%20Succes/screen_cancel_succes.dart';
 import 'package:minna/comman/const/const.dart';
+import 'package:minna/comman/core/api.dart';
+
+import '../Screen cancel Succes/screen_cancel_succes.dart';
 
 class ScreenCancelInfo extends StatefulWidget {
   const ScreenCancelInfo({
@@ -300,55 +301,127 @@ class _ScreenCancelInfoState extends State<ScreenCancelInfo> {
   }
 
   Future<void> callApi() async {
-    if (widget.cancelData.cancellable != 'true') return;
+  if (widget.cancelData.cancellable != 'true') return;
 
-    setState(() {
-      isLoading = true;
-      isError = false;
-    });
+  setState(() {
+    isLoading = true;
+    isError = false;
+  });
 
-    try {
-      final data = await cancelSeats(tin: widget.tin, seats: widget.seats);
-      final respo = data!.body;
+  try {
+    // Step 1: Cancel Seat API
+    final data = await cancelSeats(tin: widget.tin, seats: widget.seats);
+    final respo = data!.body;
 
-      if (respo.contains('Error')) {
-        if (respo !=
-            'Error: Authorization failed please send valid consumer key and secret in the api request.') {
-          final msg = respo.replaceAll('Error:', '').trim();
-          Fluttertoast.showToast(msg: msg);
-          setState(() {
-            isLoading = false;
-            isError = true;
-          });
-          return;
-        } else {
-          // Retry if authorization failed
-          await callApi();
-          return;
-        }
+    if (respo.contains('Error')) {
+      if (respo !=
+          'Error: Authorization failed please send valid consumer key and secret in the api request.') {
+        final msg = respo.replaceAll('Error:', '').trim();
+        showAppSnackBar(context, msg,
+            bgColor: Colors.orange, icon: Icons.warning_amber_rounded);
+
+        setState(() {
+          isLoading = false;
+          isError = true;
+        });
+        return;
+      } else {
+        // Retry if authorization failed
+        await callApi();
+        return;
       }
+    }
 
-      cancelSuccesData = cancelSuccesModalFromJson(data.body);
-      final respoRefund = await cancelRefund(
-        blocid: widget.blocid,
-        response: data.body,
-      );
+    cancelSuccesData = cancelSuccesModalFromJson(data.body);
 
+    // Step 2: Call Refund API
+    final refundRes = await cancelRefund(
+      id: widget.blocid,
+      transactionId:  "pay_RJOzJKwWB7WFl3",
+      amount:cancelSuccesData!.refundAmount ,
+      table: "bus_blockrequest",
+    );
+
+    final refundJson = jsonDecode(refundRes.body);
+
+    if (refundJson["statusCode"] == 200) {
+      // ✅ Refund success
       if (!mounted) return;
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) =>
               ScreenCancelSucces(cancelSuccesdata: cancelSuccesData!),
         ),
       );
-    } catch (e) {
-      log('Cancellation error: $e');
+    } else {
+      // ❌ Refund failed
+      showAppSnackBar(context,
+          refundJson["message"] ?? "Refund not possible. Please contact support.",
+          bgColor: Colors.red,
+          icon: Icons.support_agent);
+
       setState(() {
         isLoading = false;
         isError = true;
       });
-      Fluttertoast.showToast(msg: 'An error occurred. Please try again.');
     }
+  } catch (e) {
+    log('Cancellation error: $e');
+    setState(() {
+      isLoading = false;
+      isError = true;
+    });
+    showAppSnackBar(context, "An error occurred. Please try again.",
+        bgColor: Colors.red, icon: Icons.error_outline);
   }
+}
+
+}
+void showAppSnackBar(BuildContext context, String message,
+    {Color bgColor = Colors.red, IconData icon = Icons.error}) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      behavior: SnackBarBehavior.floating,
+      margin: const EdgeInsets.all(16),
+      backgroundColor: bgColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      content: Row(
+        children: [
+          Icon(icon, color: Colors.white),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+            ),
+          ),
+        ],
+      ),
+      duration: const Duration(seconds: 3),
+    ),
+  );
+}
+
+Future<http.Response> cancelRefund({
+  required String id,
+  required String transactionId,
+  required String amount, // ensure in paise (e.g. 100 = ₹1)
+  required String table,
+}) async {
+  final url = Uri.parse("${baseUrl}payrefund");
+
+  final response = await http.post(
+    url,
+    body: {
+      "id": id,
+      "transaction_id": transactionId,
+      "amount": amount,
+      "table": table,
+    },
+  );
+log(response.body);
+  return response;
 }

@@ -16,7 +16,7 @@ Future<Response> conformTicketApi({required String blockKey}) async {
     var _urlPhpAvaiBus = "${baseUrl}CallBackWithParams";
 
     var bodyBackend = {
-      "url": "http://api.seatseller.travel/bookticket?blocKy=$blockKey",
+      "url": "http://api.seatseller.travel/bookticket?blockKey=$blockKey",
       "url_no_param": "http://api.seatseller.travel/bookticket",
       "json_params": jsonEncode({"blockKey": blockKey}),
       "method": "POST",
