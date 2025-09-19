@@ -194,11 +194,11 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
     log('_refundPayment --callled');
     try {
       final response = await http.post(
-        Uri.parse('${baseUrl}refundPay'),
+        Uri.parse('${baseUrl}payrefund'),
         body: {
           'id': _blockId,
           'transaction_id': transactionId,
-          'amount': amount.toString(),
+          'amount': (amount* 100).toString(),
           'table':"bus_blockrequest"
 
         },
@@ -310,33 +310,14 @@ log(response.body);
       return;
     }
 
-    // Step 2: Capture payment
-    // final captureResult = await _capturePayment(
-    //     response.paymentId!,
-    //     response.signature!,
-    //     response.orderId!,
-    //     totalFare .toString() );
-    
-    // if (!captureResult['success']) {
-    //   // If capture fails, initiate refund
-    //   final refundResult = await _refundPayment(response.paymentId!, totalFare);
-      
-    //   _showErrorDialog(
-    //     "Payment capture failed. ${refundResult['success'] ? 
-    //       'Refund has been initiated.' : 
-    //       'Please contact support for refund.'}");
-      
-    //   setState(() => _isBooking = false);
-    //   return;
-    // }
-
-    // Step 3: Proceed to book tickets 
     try {
       await bookNow(
         selectedseatsCount: widget.selectedSeats.length,
         blockID: _blockId,
         blockKey: widget.blockKey,
         context: context,
+        paymentId: response.paymentId!,
+        amount: totalFare
       );
       
       _timer?.cancel();
