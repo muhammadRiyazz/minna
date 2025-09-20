@@ -84,9 +84,12 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
           title: passengerData['title'] ?? '',
           firstName: passengerData['firstName'] ?? '',
           lastName: passengerData['lastName'] ?? '',
-          dob: passengerData['dob'] != null
-              ? '/Date(${DateFormat("dd-MM-yyyy").parse(passengerData["dob"]).millisecondsSinceEpoch})/'
-              : '',
+       dob: passengerData['dob'] != null
+    ? DateFormat("yyyy-MM-dd").format(
+        DateFormat("dd-MM-yyyy").parse(passengerData["dob"]),
+      )
+    : '',
+
           contact: passengerData['contact'] ?? '',
           email: passengerData['email'] ?? '',
           address: passengerData['address'] ?? '',

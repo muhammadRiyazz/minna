@@ -1,19 +1,19 @@
 import 'dart:async';
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:minna/bus/pages/screen%20conform%20ticket/widget/refundinitiated.dart';
+import 'package:minna/bus/pages/screen%20fail%20ticket/screen_fail_ticket.dart';
 import 'package:minna/cab/application/confirm%20booking/confirm_booking_bloc.dart';
 import 'package:minna/cab/application/hold%20cab/hold_cab_bloc.dart';
 import 'package:minna/cab/domain/hold%20data/hold_data.dart';
 import 'package:minna/cab/pages/payment%20page/confirmed_page.dart';
-import 'package:minna/cab/pages/payment%20page/loading.dart';
-
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/core/api.dart';
 import 'package:minna/comman/functions/create_order_id.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:shimmer/shimmer.dart';
+
 
 class BookingConfirmationPage extends StatefulWidget {
   const BookingConfirmationPage({
@@ -22,13 +22,14 @@ class BookingConfirmationPage extends StatefulWidget {
     required this.tableID,
     required this.bookingId,
   });
-  
+
   final Map<String, dynamic> requestData;
   final String tableID;
   final String bookingId;
 
   @override
-  State<BookingConfirmationPage> createState() => _BookingConfirmationPageState();
+  State<BookingConfirmationPage> createState() =>
+      _BookingConfirmationPageState();
 }
 
 class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
@@ -37,6 +38,27 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
   bool _isTimerExpired = false;
   late Razorpay _razorpay;
   String? _orderId;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   @override
   void initState() {
@@ -64,6 +86,14 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
     log("Payment orderId: ${response.orderId}");
     log("Payment signature: ${response.signature}");
 
+
+     double? amount ;
+final state = context.read<HoldCabBloc>().state;
+
+if (state is HoldCabSuccess) {
+  final BookingData cabData = state.data;
+  amount=double.parse(cabData.cabRate!.fare.totalAmount.toString()) ;
+}
     // Trigger the payment done event
     context.read<ConfirmBookingBloc>().add(
       ConfirmBookingEvent.paymentDone(
@@ -73,16 +103,19 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
         tableid: widget.tableID,
         table: "cab_data",
         bookingid: widget.bookingId,
-        amount: double.parse(widget.requestData['totalAmount'] ?? '0'),
+        amount: amount??0,
       ),
     );
+
+
+
 
     _timer.cancel();
   }
 
   void _handlePaymentError(PaymentFailureResponse response) async {
     log("Payment Failed: ${response.message}");
-    
+
     // Trigger the payment fail event
     context.read<ConfirmBookingBloc>().add(
       ConfirmBookingEvent.paymentFail(
@@ -192,7 +225,10 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: maincolor1,
                       ),
-                      child: const Text("Exit"),
+                      child: const Text(
+                        "Exit",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
                 ],
@@ -211,11 +247,13 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
     if (orderId == null) {
       log("orderId creating error");
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Failed to create order. Please try again.")),
+        const SnackBar(
+          content: Text("Failed to create order. Please try again."),
+        ),
       );
       return;
     }
-    
+
     setState(() {
       _orderId = orderId;
     });
@@ -239,9 +277,9 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
       _razorpay.open(options);
     } catch (e) {
       log("Razorpay Error: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Payment error: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Payment error: $e")));
     }
   }
 
@@ -252,83 +290,98 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
         BlocListener<ConfirmBookingBloc, ConfirmBookingState>(
           listener: (context, state) {
             state.whenOrNull(
-              refundProcessing: (orderId, transactionId, amount, tableid, bookingid) {
-                // Show processing dialog
-                showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (context) => const AlertDialog(
-                    title: Text("Processing Refund"),
-                    content: Text("Please wait while we process your refund."),
-                  ),
-                );
-              },
-              refundInitiated: (message, orderId, transactionId, amount, tableid, bookingid) {
-
-                log('Navigate to refund initiated page');
-                // Navigate to refund initiated page
-                // Navigator.pushReplacement(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => RefundInitiatedPage(
-                //       message: message,
-                //       amount: amount,
-                //     ),
-                //   ),
-                // );
-              },
-              refundFailed: (message, orderId, transactionId, amount, tableid, bookingid) {
-                // Navigate to failed page with refund failure
-                log(' Navigate to failed page with refund failure');
-                // Navigator.pushReplacement(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => FailedPage(
-                //       message: message,
-                //       onRetry: () {
-                //         context.read<ConfirmBookingBloc>().add(
-                //           ConfirmBookingEvent.initiateRefund(
-                //             orderId: orderId,
-                //             transactionId: transactionId,
-                //             amount: amount,
-                //             tableid: tableid,
-                //             bookingid: bookingid,
-                //           ),
-                //         );
-                //       },
-                //     ),
-                //   ),
-                // );
-              },
-              error: (message, shouldRefund, orderId, transactionId, amount, tableid, bookingid) {
-                if (shouldRefund) {
-                  // Initiate refund automatically
-                  context.read<ConfirmBookingBloc>().add(
-                    ConfirmBookingEvent.initiateRefund(
-                      orderId: orderId,
-                      transactionId: transactionId,
-                      amount: amount,
-                      tableid: tableid,
-                      bookingid: bookingid,
-                    ),
-                  );
-                } else {
-                  // Show error dialog
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text("Error"),
-                      content: Text(message),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text("OK"),
+              refundProcessing:
+                  (orderId, transactionId, amount, tableid, bookingid) {
+                    // Show processing dialog
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) => const AlertDialog(
+                        title: Text("Processing Refund"),
+                        content: Text(
+                          "Please wait while we process your refund.",
                         ),
-                      ],
-                    ),
-                  );
-                }
-              },
+                      ),
+                    );
+                  },
+              refundInitiated:
+                  (
+                    message,
+                    orderId,
+                    transactionId,
+                    amount,
+                    tableid,
+                    bookingid,
+                  ) {
+                    log('Navigate to refund initiated page');
+                    // Navigate to refund initiated page
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ScreenRefundInitiated(
+                         
+                        ),
+                      ),
+                    );
+                  },
+              refundFailed:
+                  (
+                    message,
+                    orderId,
+                    transactionId,
+                    amount,
+                    tableid,
+                    bookingid,
+                  ) {
+                    // Navigate to failed page with refund failure
+                    log(' Navigate to failed page with refund failure');
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ScreenFailTicket(
+                       
+                        ),
+                      ),
+                    );
+                  },
+              error:
+                  (
+                    message,
+                    shouldRefund,
+                    orderId,
+                    transactionId,
+                    amount,
+                    tableid,
+                    bookingid,
+                  ) {
+                    if (shouldRefund) {
+                      // Initiate refund automatically
+                      context.read<ConfirmBookingBloc>().add(
+                        ConfirmBookingEvent.initiateRefund(
+                          orderId: orderId,
+                          transactionId: transactionId,
+                          amount: amount,
+                          tableid: tableid,
+                          bookingid: bookingid,
+                        ),
+                      );
+                    } else {
+                      // Show error dialog
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text("Error"),
+                          content: Text(message),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text("OK"),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  },
               success: (data) {
                 // Navigate to success page
                 log('Navigate to success page');
@@ -382,17 +435,15 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: _remainingSeconds < 60 ? Colors.red : Colors.white.withOpacity(0.2),
+                    color: _remainingSeconds < 60
+                        ? Colors.red
+                        : Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
-                        Icons.timer,
-                        size: 16,
-                        color: Colors.white,
-                      ),
+                      Icon(Icons.timer, size: 16, color: Colors.white),
                       SizedBox(width: 4),
                       Text(
                         _formatTime(_remainingSeconds),
@@ -432,7 +483,10 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
                         SizedBox(height: 16),
                         Text(
                           "Error Occurred",
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         SizedBox(height: 8),
                         Text(
@@ -443,7 +497,9 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
                         SizedBox(height: 24),
                         ElevatedButton(
                           onPressed: () {
-                            Navigator.of(context).popUntil((route) => route.isFirst);
+                            Navigator.of(
+                              context,
+                            ).popUntil((route) => route.isFirst);
                           },
                           child: Text("Go to Home"),
                         ),
@@ -491,11 +547,7 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
+          BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 2)),
         ],
       ),
       child: Padding(
@@ -518,29 +570,25 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
               ],
             ),
             SizedBox(height: 16),
-            
+
             // Display different UI based on trip type
             if (bookingData.tripType == 1) // One Way
               _buildOneWayTrip(bookingData),
-            
+
             if (bookingData.tripType == 2) // Round Trip
               _buildRoundTrip(bookingData),
-            
+
             if (bookingData.tripType == 3) // Multi City
               _buildMultiCityTrip(bookingData),
-            
+
             if (bookingData.tripType == 4) // Airport Transfer
               _buildAirportTransfer(bookingData),
-            
+
             if (bookingData.tripType == 10) // Day Rental
               _buildDayRental(bookingData),
-            
-            Divider(
-              height: 30,
-              thickness: 1,
-              color: Colors.grey[200],
-            ),
-            
+
+            Divider(height: 30, thickness: 1, color: Colors.grey[200]),
+
             // Common trip details
             Wrap(
               spacing: 20,
@@ -583,7 +631,7 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
 
   String formatDuration(int minutes) {
     final hours = minutes ~/ 60; // integer division
-    final mins = minutes % 60;   // remainder
+    final mins = minutes % 60; // remainder
     if (hours > 0 && mins > 0) {
       return "$hours hr $mins min";
     } else if (hours > 0) {
@@ -623,19 +671,25 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
     );
   }
 
-  // ✅ Multi-City Trip UI
   Widget _buildMultiCityTrip(BookingData bookingData) {
     return SizedBox(
-      height: 100,
+      height: 110,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
+        shrinkWrap: true, // ✅ prevents unbounded height
         itemCount: bookingData.routes.length,
         itemBuilder: (context, index) {
           final route = bookingData.routes[index];
-          return _buildHorizontalRouteCard(
-            route.source.address,
-            route.destination.address,
-            label: "Leg ${index + 1}",
+          return Padding(
+            padding: const EdgeInsets.only(right: 7),
+            child: SizedBox(
+              width: 200, // ✅ give fixed width for each card
+              child: _buildHorizontalRouteCard(
+                route.source.address,
+                route.destination.address,
+                label: "Leg ${index + 1}",
+              ),
+            ),
           );
         },
       ),
@@ -680,11 +734,7 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
           Column(
             children: [
               Icon(Icons.circle, size: 10, color: Colors.green),
-              Container(
-                width: 2,
-                height: 30,
-                color: Colors.grey,
-              ),
+              Container(width: 2, height: 30, color: Colors.grey),
               Icon(Icons.location_on, size: 18, color: Colors.red),
             ],
           ),
@@ -697,14 +747,14 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
                   Text(
                     label,
                     style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 8,
+                      fontWeight: FontWeight.w500,
                       color: Colors.blueGrey,
                     ),
                   ),
                 Text(
                   source,
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                   overflow: TextOverflow.ellipsis,
                 ),
                 Row(
@@ -716,7 +766,7 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
                 ),
                 Text(
                   destination,
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
@@ -745,10 +795,7 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
             children: [
               Text(
                 label,
-                style: TextStyle(
-                  fontSize: 10,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 10, color: Colors.grey[600]),
               ),
               Text(
                 value,
@@ -798,7 +845,10 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
                     child: cab.image.isNotEmpty
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: Image.network(cab.image, fit: BoxFit.contain),
+                            child: Image.network(
+                              cab.image,
+                              fit: BoxFit.contain,
+                            ),
                           )
                         : Icon(
                             Icons.directions_car,
@@ -936,31 +986,50 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
             ],
           ),
           SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
-              onPressed: _isTimerExpired 
-                ? null 
-                : () {
-                    _onBookNow(bookingData.cabRate!.fare.totalAmount.toString());
-                  },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _isTimerExpired ? Colors.grey : maincolor1,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+          BlocBuilder<ConfirmBookingBloc, ConfirmBookingState>(
+            builder: (context, state) {
+              return SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: (_isTimerExpired || state is ConfirmBookingLoading)
+                      ? null
+                      : () {
+                          _onBookNow(
+                            bookingData.cabRate!.fare.totalAmount.toString(),
+                          );
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _isTimerExpired ? Colors.grey : maincolor1,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 2,
+                  ),
+                  child: state is ConfirmBookingLoading
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          ),
+                        )
+                      : Text(
+                          _isTimerExpired
+                              ? "TIME EXPIRED"
+                              : "PROCEED TO PAYMENT",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
                 ),
-                elevation: 2,
-              ),
-              child: Text(
-                _isTimerExpired ? "TIME EXPIRED" : "PROCEED TO PAYMENT",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
+              );
+            },
           ),
         ],
       ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-
 import 'package:minna/cab/domain/confirm%20model/confirm_model.dart';
 import 'package:minna/comman/const/const.dart';
+import 'package:minna/comman/pages/main%20home/home.dart';
 
 class CabSuccessPage extends StatelessWidget {
   final BookingConfirmData bookingResponse;
@@ -14,13 +14,16 @@ class CabSuccessPage extends StatelessWidget {
     
     return WillPopScope(
       onWillPop: () async {
-        // Navigate to home instead of going back
-        Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => HomePage()),
+          (route) => false,
+        );
         return false;
       },
       child: Scaffold(
         body: Container(
-       color: maincolor1,
+          color: maincolor1,
           child: Column(
             children: [
               // Header section
@@ -70,7 +73,6 @@ class CabSuccessPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ...[
                         // Booking ID
                         _buildInfoCard(
                           icon: Icons.confirmation_number,
@@ -90,9 +92,9 @@ class CabSuccessPage extends StatelessWidget {
                         
                         const SizedBox(height: 24),
                         
-                        // Trip Details
+                        // Date and Time Section - Redesigned
                         Text(
-                          'Trip Details',
+                          'Date & Time',
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
@@ -102,9 +104,7 @@ class CabSuccessPage extends StatelessWidget {
                         
                         const SizedBox(height: 10),
                         
-                        // Route information
-                        if (data.routes.isNotEmpty) 
-                          _buildRouteCard(data.routes.first),
+                        _buildDateTimeCard(data.startDate,data.startTime),
                         
                         const SizedBox(height: 24),
                         
@@ -137,9 +137,8 @@ class CabSuccessPage extends StatelessWidget {
                         const SizedBox(height: 16),
                         
                         _buildFareCard(data.cabRate.fare),
-                      ],
                         
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 10),
                         
                         // Action buttons
                         Row(
@@ -147,36 +146,19 @@ class CabSuccessPage extends StatelessWidget {
                             Expanded(
                               child: OutlinedButton(
                                 onPressed: () {
-                                  // Share booking details
-                                },
+  Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => HomePage()),
+          (route) => false,
+        );},
                                 style: OutlinedButton.styleFrom(
                                   padding: const EdgeInsets.symmetric(vertical: 16),
-                                  side: BorderSide(color: Colors.blue.shade700),
+                                  side: BorderSide(color: maincolor1!),
                                 ),
                                 child: Text(
-                                  'SHARE',
-                                  style: TextStyle(
-                                    color: Colors.blue.shade700,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.pushNamedAndRemoveUntil(
-                                    context, '/home', (route) => false);
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue.shade700,
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
-                                ),
-                                child: const Text(
                                   'GO TO HOME',
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: maincolor1,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -213,7 +195,7 @@ class CabSuccessPage extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: highlight ? Colors.blue.shade700 : Colors.grey.shade600,
+              color: highlight ? maincolor1 : Colors.grey.shade600,
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -233,7 +215,7 @@ class CabSuccessPage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: highlight ? Colors.blue.shade700 : Colors.grey.shade800,
+                      color: highlight ? maincolor1: Colors.grey.shade800,
                     ),
                   ),
                 ],
@@ -245,135 +227,87 @@ class CabSuccessPage extends StatelessWidget {
     );
   }
 
-  Widget _buildRouteCard(RouteInfo route) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            // Source
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+Widget _buildDateTimeCard(String dateString, String timeString) {
+  // Parse the date and time
+  final date = DateTime.parse(dateString);
+  
+  // Parse time string (assuming format like "14:30:00")
+  final timeParts = timeString.split(':');
+  final hour = int.parse(timeParts[0]);
+  final minute = int.parse(timeParts[1]);
+  
+  // Create a DateTime object for time formatting
+  final timeDateTime = DateTime(2023, 1, 1, hour, minute);
+
+  // Format time in 12-hour format with AM/PM
+  final formattedTime = _formatTime12Hour(timeDateTime);
+  
+  // Format date with month name and year
+  final formattedDate = _formatDateWithMonthName(date);
+  
+  return Card(
+    elevation: 0,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          // Calendar icon section
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              color: Colors.blue.shade50,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade700,
-                    shape: BoxShape.circle,
+                Text(
+                  date.day.toString(),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: maincolor1,
                   ),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'From',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                      Text(
-                        route.source.address,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey.shade800,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
+                Text(
+                  _getMonthAbbreviation(date.month),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: maincolor1,
                   ),
                 ),
               ],
             ),
-            
-            // Divider with line
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Row(
-                children: [
-                  const SizedBox(width: 12),
-                  Container(
-                    width: 2,
-                    height: 20,
-                    color: Colors.grey.shade300,
-                    margin: const EdgeInsets.only(left: 10),
-                  ),
-                ],
-              ),
-            ),
-            
-            // Destination
-            Row(
+          ),
+          
+          const SizedBox(width: 16),
+          
+          // Date and time details
+          Expanded(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: Colors.green.shade600,
-                    shape: BoxShape.circle,
+                Text(
+                  'Scheduled Pickup',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade600,
                   ),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'To',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                      Text(
-                        route.destination.address,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey.shade800,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
+                const SizedBox(height: 4),
+                Text(
+                  formattedDate,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade800,
                   ),
                 ),
-              ],
-            ),
-            
-            const SizedBox(height: 16),
-            
-            // Date and Time
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.calendar_today,
-                      size: 16,
-                      color: Colors.grey.shade600,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      route.startDate,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
-                ),
+                const SizedBox(height: 4),
                 Row(
                   children: [
                     Icon(
@@ -381,9 +315,9 @@ class CabSuccessPage extends StatelessWidget {
                       size: 16,
                       color: Colors.grey.shade600,
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 4),
                     Text(
-                      route.startTime,
+                      formattedTime,
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey.shade600,
@@ -393,10 +327,35 @@ class CabSuccessPage extends StatelessWidget {
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
+    ),
+  );
+}
+  String _formatTime12Hour(DateTime dateTime) {
+    final hour = dateTime.hour % 12;
+    final minute = dateTime.minute.toString().padLeft(2, '0');
+    final period = dateTime.hour < 12 ? 'AM' : 'PM';
+    return '${hour == 0 ? 12 : hour}:$minute $period';
+  }
+
+  String _formatDateWithMonthName(DateTime dateTime) {
+    const monthNames = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    
+    return '${dateTime.day} ${monthNames[dateTime.month - 1]}, ${dateTime.year}';
+  }
+
+  String _getMonthAbbreviation(int month) {
+    const monthAbbreviations = [
+      'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
+      'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'
+    ];
+    
+    return monthAbbreviations[month - 1];
   }
 
   Widget _buildCabInfoCard(Cab cab) {
@@ -487,7 +446,7 @@ class CabSuccessPage extends StatelessWidget {
 
   Widget _buildFareCard(Fare fare) {
     return Card(
-      elevation: 2,
+      elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -550,7 +509,7 @@ class CabSuccessPage extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.blue.shade700,
+                    color: maincolor1,
                   ),
                 ),
               ],
@@ -583,4 +542,3 @@ class CabSuccessPage extends StatelessWidget {
     );
   }
 }
-
