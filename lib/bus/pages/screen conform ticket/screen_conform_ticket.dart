@@ -14,6 +14,9 @@ import 'package:minna/bus/pages/screen%20conform%20ticket/widget/bottom_sheet.da
 import 'package:minna/bus/pages/sceen%20Time%20out/screen_time_out.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/core/api.dart';
+import 'package:minna/comman/functions/create_order_id.dart';
+import 'package:minna/comman/functions/refund_payment.dart';
+import 'package:minna/comman/functions/save_payment.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class ScreenConfirmTicket extends StatefulWidget {
@@ -45,7 +48,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
   String? _paymentId;
   String? _orderId; // Added to store order ID
  
-  static const int _initialSeconds = 7 * 60;
+  static const int _initialSeconds = 8 * 60;
   int _secondsRemaining = _initialSeconds;
   Timer? _timer;
 
@@ -117,35 +120,35 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
   }
 
   // API Payment Details Save
-  Future<Map<String, dynamic>> _savePaymentDetails(
-      String orderId, String transactionId, int status) async {
-    log("_savePaymentDetails --called");
+  // Future<Map<String, dynamic>> _savePaymentDetails(
+  //     String orderId, String transactionId, int status) async {
+  //   log("_savePaymentDetails --called");
 
-    try {
-      final response = await http.post(
-        Uri.parse('${baseUrl}paysave'),
-        body: {
-          'id': _blockId,
-          'order_id': orderId,
-          'transaction_id': transactionId,
-          'status': status.toString(),
-          'table':"bus_blockrequest"
-        },
-      );
-      log(response.body.toString());
-      if (response.statusCode == 200) {
-        final jsonResponse = jsonDecode(response.body);
-        return {
-          'success': jsonResponse['statusCode'] == 200,
-          'message': jsonResponse['message']
-        };
-      }
-      return {'success': false, 'message': 'Failed to save payment details'};
-    } catch (e) {
-      log(e.toString());
-      return {'success': false, 'message': 'Error: $e'};
-    }
-  }
+  //   try {
+  //     final response = await http.post(
+  //       Uri.parse('${baseUrl}paysave'),
+  //       body: {
+  //         'id': _blockId,
+  //         'order_id': orderId,
+  //         'transaction_id': transactionId,
+  //         'status': status.toString(),
+  //         'table':"bus_blockrequest"
+  //       },
+  //     );
+  //     log(response.body.toString());
+  //     if (response.statusCode == 200) {
+  //       final jsonResponse = jsonDecode(response.body);
+  //       return {
+  //         'success': jsonResponse['statusCode'] == 200,
+  //         'message': jsonResponse['message']
+  //       };
+  //     }
+  //     return {'success': false, 'message': 'Failed to save payment details'};
+  //   } catch (e) {
+  //     log(e.toString());
+  //     return {'success': false, 'message': 'Error: $e'};
+  //   }
+  // }
 
 //   // API Payment Capture
 //  Future<Map<String, dynamic>> _capturePayment(
@@ -191,7 +194,6 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
   // API Payment Refund
   Future<Map<String, dynamic>> _refundPayment(
       String transactionId, double amount) async {
-    log('_refundPayment --callled');
     try {
       final response = await http.post(
         Uri.parse('${baseUrl}payrefund'),
@@ -219,38 +221,13 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
   }
 
   // Create Order API
-  Future<String?> _createOrder(double amount) async {
-    try {
-      final response = await http.post(
-        Uri.parse("${baseUrl}createOrder"),
-        body: {
-          "amount": (amount * 100).toStringAsFixed(0),
-        },
-      );
-log(response.body);
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        if (data['statusCode'] == 200) {
-          return data['message']['order_id']; // Extract order_id from response
-        } else {
-          log("Error creating order: ${data['message']}");
-          return null;
-        }
-      } else {
-        log("HTTP Error: ${response.statusCode} - ${response.body}");
-        return null;
-      }
-    } catch (e) {
-      log("Exception in createOrder: $e");
-      return null;
-    }
-  }
+ 
 
   void _onBookNow() async {
     setState(() => _isBooking = true);
 
     // Create order first
-    final orderId = await _createOrder(totalFare);
+    final orderId = await createOrder(totalFare);
     if (orderId == null) {
       setState(() => _isBooking = false);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -301,8 +278,8 @@ log(response.body);
     });
 
     // Step 1: Save payment details
-    final saveResult = await _savePaymentDetails(
-        response.orderId!, response.paymentId!, 1);
+    final saveResult = await savePaymentDetails(orderId: response.orderId??'',status: 1,table: "bus_blockrequest",tableid: _blockId,transactionId: response.paymentId??'',
+       );
     
     if (!saveResult['success']) {
       _showErrorDialog("Payment details could not be saved. Please contact support.");
@@ -322,9 +299,11 @@ log(response.body);
       
       _timer?.cancel();
     } catch (e) {
-      // If booking fails, initiate refund
-      final refundResult = await _refundPayment(response.paymentId!, 1);
-      
+        final refundResult = await refundPayment(
+        transactionId: response.paymentId!,
+        amount: totalFare,
+       tableId: _blockId, table: 'bus_blockrequest',
+      );
       _showErrorDialog(
         "Booking failed. ${refundResult['success'] ? 
           'Refund has been initiated.' : 
@@ -341,7 +320,8 @@ log(response.body);
     
     // Save failed payment details
     if (_paymentId != null && _orderId != null) {
-      await _savePaymentDetails(_orderId!, _paymentId!, 2);
+       await savePaymentDetails(orderId: _orderId??'',status: 2,table: "bus_blockrequest",tableid:_blockId,transactionId: ''
+       );
     }
     
     ScaffoldMessenger.of(context).showSnackBar(

@@ -40,7 +40,11 @@ class _BookingPageState extends State<BookingPage> {
   bool _kidsTravelling = false;
   bool _seniorCitizenTravelling = false;
   bool _womanTravelling = false;
-
+@override
+  void initState() {
+    context.read<LoginBloc>().add(const LoginEvent.loginInfo());
+    super.initState();
+  }
   @override
   void dispose() {
     _primaryPhoneCodeController.dispose();
@@ -738,58 +742,85 @@ class _BookingPageState extends State<BookingPage> {
             SizedBox(height: 32),
       
             // Submit Button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: maincolor1,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 2,
+         BlocConsumer<HoldCabBloc, HoldCabState>(
+  listener: (context, state) {
+    if (state is HoldCabError) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(state.message)),
+      );
+    }
+
+    if (state is HoldCabSuccess) {
+      // Navigate only after success
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => BookingConfirmationPage(
+            requestData: state.requestData,       // Pass your booking data
+            bookingId: state.bookingId,
+            tableID: state.tableID,
+          ),
+        ),
+      );
+    }
+  },
+  builder: (context, state) {
+    final isLoading = state is HoldCabLoading;
+
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          backgroundColor: maincolor1,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 2,
+        ),
+        onPressed: isLoading
+            ? null
+            : () async {
+                if (_formKey.currentState!.validate()) {
+                  final bookingData = await _onConfirmBooking();
+
+                  if (bookingData.isEmpty) return;
+
+                  log(bookingData.toString());
+
+                  context.read<HoldCabBloc>().add(
+                        HoldCabEvent.holdCab(requestData: bookingData),
+                      );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('Please fill all required fields')),
+                  );
+                }
+              },
+        child: isLoading
+            ? const SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
                 ),
-                child: Text(
-                  "CONFIRM BOOKING",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
-                  ),
+              )
+            : const Text(
+                "CONFIRM BOOKING",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
                 ),
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    // Build the booking JSON
-                    final bookingData = await _onConfirmBooking();
-
-                    // Check if bookingData is empty (login failed)
-                    if (bookingData.isEmpty) {
-                      return; // Don't proceed with booking
-                    }
-
-                    // Print for debugging
-                    log(bookingData.toString());
-
-                    context.read<HoldCabBloc>().add(
-                      HoldCabEvent.holdCab(requestData: bookingData),
-                    );
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => BookingConfirmationPage(),
-                      ),
-                    );
-                  } else {
-                    // Show error snackbar if form invalid
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Please fill all required fields')),
-                    );
-                  }
-                },
               ),
-            ),
+      ),
+    );
+  },
+),
+
           ],
         ),
       ),

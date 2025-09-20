@@ -1,75 +1,462 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:minna/cab/application/confirm%20booking/confirm_booking_bloc.dart';
 import 'package:minna/cab/application/hold%20cab/hold_cab_bloc.dart';
 import 'package:minna/cab/domain/hold%20data/hold_data.dart';
+import 'package:minna/cab/pages/payment%20page/confirmed_page.dart';
+import 'package:minna/cab/pages/payment%20page/loading.dart';
+
 import 'package:minna/comman/const/const.dart';
+import 'package:minna/comman/core/api.dart';
+import 'package:minna/comman/functions/create_order_id.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:shimmer/shimmer.dart';
 
-class BookingConfirmationPage extends StatelessWidget {
-  const BookingConfirmationPage({super.key});
+class BookingConfirmationPage extends StatefulWidget {
+  const BookingConfirmationPage({
+    super.key,
+    required this.requestData,
+    required this.tableID,
+    required this.bookingId,
+  });
+  
+  final Map<String, dynamic> requestData;
+  final String tableID;
+  final String bookingId;
+
+  @override
+  State<BookingConfirmationPage> createState() => _BookingConfirmationPageState();
+}
+
+class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
+  late Timer _timer;
+  int _remainingSeconds = 6 * 60; // 6 minutes in seconds
+  bool _isTimerExpired = false;
+  late Razorpay _razorpay;
+  String? _orderId;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+    _initRazorpay();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    _razorpay.clear();
+    super.dispose();
+  }
+
+  void _initRazorpay() {
+    _razorpay = Razorpay();
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+  }
+
+  void _handlePaymentSuccess(PaymentSuccessResponse response) async {
+    log("Payment paymentId: ${response.paymentId}");
+    log("Payment orderId: ${response.orderId}");
+    log("Payment signature: ${response.signature}");
+
+    // Trigger the payment done event
+    context.read<ConfirmBookingBloc>().add(
+      ConfirmBookingEvent.paymentDone(
+        orderId: response.orderId ?? _orderId ?? '',
+        transactionId: response.paymentId ?? '',
+        status: 1,
+        tableid: widget.tableID,
+        table: "cab_data",
+        bookingid: widget.bookingId,
+        amount: double.parse(widget.requestData['totalAmount'] ?? '0'),
+      ),
+    );
+
+    _timer.cancel();
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) async {
+    log("Payment Failed: ${response.message}");
+    
+    // Trigger the payment fail event
+    context.read<ConfirmBookingBloc>().add(
+      ConfirmBookingEvent.paymentFail(
+        orderId: _orderId ?? '',
+        tableid: widget.tableID,
+        bookingid: widget.bookingId,
+      ),
+    );
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    log("External Wallet: ${response.walletName}");
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_remainingSeconds > 0) {
+        setState(() {
+          _remainingSeconds--;
+        });
+      } else {
+        setState(() {
+          _isTimerExpired = true;
+        });
+        _timer.cancel();
+        _showTimeExpiredDialog();
+      }
+    });
+  }
+
+  String _formatTime(int seconds) {
+    int minutes = seconds ~/ 60;
+    int remainingSeconds = seconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
+  }
+
+  void _showTimeExpiredDialog() {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.timer_off, size: 64, color: Colors.red),
+              const SizedBox(height: 16),
+              const Text(
+                "Time Expired",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                "Your booking time has expired. Please try again.",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  },
+                  child: const Text("Go to Home"),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<bool> _onWillPop() async {
+    final shouldExit = await showModalBottomSheet<bool>(
+      context: context,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "Exit Booking?",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                "Are you sure you want to exit the booking process?",
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text("Continue Booking"),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: maincolor1,
+                      ),
+                      child: const Text("Exit"),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    return shouldExit ?? false;
+  }
+
+  void _onBookNow(String amount) async {
+    final orderId = await createOrder(double.parse(amount));
+    if (orderId == null) {
+      log("orderId creating error");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Failed to create order. Please try again.")),
+      );
+      return;
+    }
+    
+    setState(() {
+      _orderId = orderId;
+    });
+
+    final passenger = widget.requestData;
+    final name = passenger['name'] ?? "Passenger";
+    final phone = passenger['mobile'] ?? "0000000000";
+    final email = passenger['email'] ?? "email@example.com";
+
+    var options = {
+      'key': razorpaykey,
+      'amount': (double.parse(amount) * 100).toString(),
+      'name': name,
+      'order_id': orderId,
+      'description': 'Cab Booking Payment',
+      'prefill': {'contact': phone, 'email': email},
+      'theme': {'color': maincolor1!.value.toRadixString(16)},
+    };
+
+    try {
+      _razorpay.open(options);
+    } catch (e) {
+      log("Razorpay Error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Payment error: $e")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Booking Confirmation",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<ConfirmBookingBloc, ConfirmBookingState>(
+          listener: (context, state) {
+            state.whenOrNull(
+              refundProcessing: (orderId, transactionId, amount, tableid, bookingid) {
+                // Show processing dialog
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) => const AlertDialog(
+                    title: Text("Processing Refund"),
+                    content: Text("Please wait while we process your refund."),
+                  ),
+                );
+              },
+              refundInitiated: (message, orderId, transactionId, amount, tableid, bookingid) {
+
+                log('Navigate to refund initiated page');
+                // Navigate to refund initiated page
+                // Navigator.pushReplacement(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => RefundInitiatedPage(
+                //       message: message,
+                //       amount: amount,
+                //     ),
+                //   ),
+                // );
+              },
+              refundFailed: (message, orderId, transactionId, amount, tableid, bookingid) {
+                // Navigate to failed page with refund failure
+                log(' Navigate to failed page with refund failure');
+                // Navigator.pushReplacement(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => FailedPage(
+                //       message: message,
+                //       onRetry: () {
+                //         context.read<ConfirmBookingBloc>().add(
+                //           ConfirmBookingEvent.initiateRefund(
+                //             orderId: orderId,
+                //             transactionId: transactionId,
+                //             amount: amount,
+                //             tableid: tableid,
+                //             bookingid: bookingid,
+                //           ),
+                //         );
+                //       },
+                //     ),
+                //   ),
+                // );
+              },
+              error: (message, shouldRefund, orderId, transactionId, amount, tableid, bookingid) {
+                if (shouldRefund) {
+                  // Initiate refund automatically
+                  context.read<ConfirmBookingBloc>().add(
+                    ConfirmBookingEvent.initiateRefund(
+                      orderId: orderId,
+                      transactionId: transactionId,
+                      amount: amount,
+                      tableid: tableid,
+                      bookingid: bookingid,
+                    ),
+                  );
+                } else {
+                  // Show error dialog
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text("Error"),
+                      content: Text(message),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text("OK"),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              },
+              success: (data) {
+                // Navigate to success page
+                log('Navigate to success page');
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CabSuccessPage(bookingResponse: data),
+                  ),
+                );
+              },
+              paymentFailed: (message, orderId, tableid, bookingid) {
+                // Navigate to failed page
+                log("Navigate to failed page");
+                // Navigator.pushReplacement(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => FailedPage(
+                //       message: message,
+                //       onRetry: () {
+                //         // Retry payment logic
+                //         final holdState = context.read<HoldCabBloc>().state;
+                //         if (holdState is HoldCabSuccess) {
+                //           _onBookNow(holdState.data.cabRate!.fare.totalAmount.toString());
+                //         }
+                //       },
+                //     ),
+                //   ),
+                // );
+              },
+            );
+          },
+        ),
+      ],
+      child: WillPopScope(
+        onWillPop: _onWillPop,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    "Booking Confirmation",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: _remainingSeconds < 60 ? Colors.red : Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.timer,
+                        size: 16,
+                        color: Colors.white,
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        _formatTime(_remainingSeconds),
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            centerTitle: true,
+            backgroundColor: maincolor1,
+            iconTheme: IconThemeData(color: Colors.white),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
+            ),
+          ),
+          body: BlocBuilder<HoldCabBloc, HoldCabState>(
+            builder: (context, state) {
+              if (state is HoldCabLoading) {
+                return buildShimmerLoading();
+              } else if (state is HoldCabSuccess) {
+                final bookingData = state.data;
+                return _buildContent(bookingData, context);
+              } else if (state is HoldCabError) {
+                return Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.error_outline, size: 64, color: Colors.red),
+                        SizedBox(height: 16),
+                        Text(
+                          "Error Occurred",
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          state.message,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        SizedBox(height: 24),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).popUntil((route) => route.isFirst);
+                          },
+                          child: Text("Go to Home"),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              } else {
+                return Container();
+              }
+            },
           ),
         ),
-        centerTitle: true,
-        backgroundColor: maincolor1,
-        iconTheme: IconThemeData(color: Colors.white),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
-        ),
-      ),
-      body: BlocBuilder<HoldCabBloc, HoldCabState>(
-        builder: (context, state) {
-          if (state is HoldCabLoading) {
-            return _buildShimmerLoading();
-          } else if (state is HoldCabSuccess) {
-            final bookingData = state.data;
-            return _buildContent(bookingData, context);
-          } else if (state is HoldCabError) {
-            return Center(
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.error_outline, size: 64, color: Colors.red),
-                    SizedBox(height: 16),
-                    Text(
-                      "Error Occurred",
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      state.message,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text("Go Back"),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          } else {
-            return Container();
-          }
-        },
       ),
     );
   }
@@ -97,98 +484,6 @@ class BookingConfirmationPage extends StatelessWidget {
     );
   }
 
-  Widget _buildShimmerLoading() {
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(16),
-      child: Column(
-        children: [
-          Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
-            child: Container(
-              width: double.infinity,
-              height: 200,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-          ),
-          SizedBox(height: 20),
-          
-          Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
-            child: Container(
-              width: double.infinity,
-              height: 180,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-          SizedBox(height: 20),
-          
-          Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
-            child: Container(
-              width: double.infinity,
-              height: 220,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-          SizedBox(height: 20),
-          
-          Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
-            child: Container(
-              width: double.infinity,
-              height: 160,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-          SizedBox(height: 20),
-          
-          Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
-            child: Container(
-              width: double.infinity,
-              height: 200,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-          SizedBox(height: 20),
-          
-          Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
-            child: Container(
-              width: double.infinity,
-              height: 100,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildTripInformation(BookingData bookingData) {
     log(bookingData.tripType.toString());
     return Container(
@@ -196,11 +491,11 @@ class BookingConfirmationPage extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          // BoxShadow(
-          //   color: Colors.black12,
-          //   blurRadius: 8,
-          //   offset: Offset(0, 2),
-          // ),
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
         ],
       ),
       child: Padding(
@@ -222,7 +517,7 @@ class BookingConfirmationPage extends StatelessWidget {
                 ),
               ],
             ),
-            // SizedBox(height: 20),
+            SizedBox(height: 16),
             
             // Display different UI based on trip type
             if (bookingData.tripType == 1) // One Way
@@ -267,11 +562,11 @@ class BookingConfirmationPage extends StatelessWidget {
                   "Distance",
                   "${bookingData.totalDistance} km",
                 ),
-              _buildInfoChip(
-  Icons.timer,
-  "Duration",
-  formatDuration(bookingData.estimatedDuration.toInt()),
-),
+                _buildInfoChip(
+                  Icons.timer,
+                  "Duration",
+                  formatDuration(bookingData.estimatedDuration.toInt()),
+                ),
 
                 _buildInfoChip(
                   Icons.directions_car,
@@ -284,152 +579,153 @@ class BookingConfirmationPage extends StatelessWidget {
         ),
       ),
     );
-  }String formatDuration(int minutes) {
-  final hours = minutes ~/ 60; // integer division
-  final mins = minutes % 60;   // remainder
-  if (hours > 0 && mins > 0) {
-    return "$hours hr $mins min";
-  } else if (hours > 0) {
-    return "$hours hr";
-  } else {
-    return "$mins min";
   }
-}
 
-// ✅ One Way Trip UI
-Widget _buildOneWayTrip(BookingData bookingData) {
-  final route = bookingData.routes.first;
-  return _buildHorizontalRouteCard(
-    route.source.address,
-    route.destination.address,
-  );
-}
+  String formatDuration(int minutes) {
+    final hours = minutes ~/ 60; // integer division
+    final mins = minutes % 60;   // remainder
+    if (hours > 0 && mins > 0) {
+      return "$hours hr $mins min";
+    } else if (hours > 0) {
+      return "$hours hr";
+    } else {
+      return "$mins min";
+    }
+  }
 
-// ✅ Round Trip UI
-Widget _buildRoundTrip(BookingData bookingData) {
-  final route = bookingData.routes.first;
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      _buildHorizontalRouteCard(
-        route.source.address,
-        route.destination.address,
-        label: "Onward",
-      ),
-      SizedBox(height: 10),
-      _buildHorizontalRouteCard(
-        route.destination.address,
-        route.source.address,
-        label: "Return",
-      ),
-    ],
-  );
-}
+  // ✅ One Way Trip UI
+  Widget _buildOneWayTrip(BookingData bookingData) {
+    final route = bookingData.routes.first;
+    return _buildHorizontalRouteCard(
+      route.source.address,
+      route.destination.address,
+    );
+  }
 
-// ✅ Multi-City Trip UI
-Widget _buildMultiCityTrip(BookingData bookingData) {
-  return SizedBox(
-    height: 100,
-    child: ListView.builder(
-      scrollDirection: Axis.horizontal,
-      itemCount: bookingData.routes.length,
-      itemBuilder: (context, index) {
-        final route = bookingData.routes[index];
-        return _buildHorizontalRouteCard(
+  // ✅ Round Trip UI
+  Widget _buildRoundTrip(BookingData bookingData) {
+    final route = bookingData.routes.first;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildHorizontalRouteCard(
           route.source.address,
           route.destination.address,
-          label: "Leg ${index + 1}",
-        );
-      },
-    ),
-  );
-}
-
-// ✅ Airport Transfer UI
-Widget _buildAirportTransfer(BookingData bookingData) {
-  final route = bookingData.routes.first;
-  return _buildHorizontalRouteCard(
-    route.source.address,
-    route.destination.address,
-    label: "Airport Transfer",
-  );
-}
-
-// ✅ Day Rental UI
-Widget _buildDayRental(BookingData bookingData) {
-  final route = bookingData.routes.first;
-  return _buildHorizontalRouteCard(
-    route.source.address,
-    route.destination.address,
-    label: "Day Rental",
-  );
-}
-
-/// 🔥 Reusable Horizontal Route Card
-Widget _buildHorizontalRouteCard(
-  String source,
-  String destination, {
-  String? label,
-}) {
-  return Container(
-    margin: EdgeInsets.symmetric(vertical: 8),
-    padding: EdgeInsets.all(12),
-    decoration: BoxDecoration(
-      color: Colors.grey[100],
-      borderRadius: BorderRadius.circular(12),
-    ),
-    child: Row(
-      children: [
-        Column(
-          children: [
-            Icon(Icons.circle, size: 10, color: Colors.green),
-            Container(
-              width: 2,
-              height: 30,
-              color: Colors.grey,
-            ),
-            Icon(Icons.location_on, size: 18, color: Colors.red),
-          ],
+          label: "Onward",
         ),
-        SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (label != null)
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.blueGrey,
-                  ),
-                ),
-              Text(
-                source,
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                overflow: TextOverflow.ellipsis,
-              ),
-              Row(
-                children: [
-                  Expanded(child: Divider(color: Colors.grey)),
-                  Icon(Icons.arrow_forward, size: 16, color: Colors.grey),
-                  Expanded(child: Divider(color: Colors.grey)),
-                ],
-              ),
-              Text(
-                destination,
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
+        SizedBox(height: 10),
+        _buildHorizontalRouteCard(
+          route.destination.address,
+          route.source.address,
+          label: "Return",
         ),
       ],
-    ),
-  );
-}
+    );
+  }
 
+  // ✅ Multi-City Trip UI
+  Widget _buildMultiCityTrip(BookingData bookingData) {
+    return SizedBox(
+      height: 100,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: bookingData.routes.length,
+        itemBuilder: (context, index) {
+          final route = bookingData.routes[index];
+          return _buildHorizontalRouteCard(
+            route.source.address,
+            route.destination.address,
+            label: "Leg ${index + 1}",
+          );
+        },
+      ),
+    );
+  }
+
+  // ✅ Airport Transfer UI
+  Widget _buildAirportTransfer(BookingData bookingData) {
+    final route = bookingData.routes.first;
+    return _buildHorizontalRouteCard(
+      route.source.address,
+      route.destination.address,
+      label: "Airport Transfer",
+    );
+  }
+
+  // ✅ Day Rental UI
+  Widget _buildDayRental(BookingData bookingData) {
+    final route = bookingData.routes.first;
+    return _buildHorizontalRouteCard(
+      route.source.address,
+      route.destination.address,
+      label: "Day Rental",
+    );
+  }
+
+  /// 🔥 Reusable Horizontal Route Card
+  Widget _buildHorizontalRouteCard(
+    String source,
+    String destination, {
+    String? label,
+  }) {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 8),
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Column(
+            children: [
+              Icon(Icons.circle, size: 10, color: Colors.green),
+              Container(
+                width: 2,
+                height: 30,
+                color: Colors.grey,
+              ),
+              Icon(Icons.location_on, size: 18, color: Colors.red),
+            ],
+          ),
+          SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (label != null)
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.blueGrey,
+                    ),
+                  ),
+                Text(
+                  source,
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Row(
+                  children: [
+                    Expanded(child: Divider(color: Colors.grey)),
+                    Icon(Icons.arrow_forward, size: 16, color: Colors.grey),
+                    Expanded(child: Divider(color: Colors.grey)),
+                  ],
+                ),
+                Text(
+                  destination,
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildInfoChip(IconData icon, String label, String value) {
     return Container(
@@ -532,7 +828,9 @@ Widget _buildHorizontalRouteCard(
                   ),
                 ],
               ),
-              SizedBox(height: 12),
+            ],
+            SizedBox(height: 12),
+            if (cab != null) ...[
               Wrap(
                 spacing: 8,
                 runSpacing: 4,
@@ -642,18 +940,20 @@ Widget _buildHorizontalRouteCard(
             width: double.infinity,
             height: 50,
             child: ElevatedButton(
-              onPressed: () {
-                // Handle payment
-              },
+              onPressed: _isTimerExpired 
+                ? null 
+                : () {
+                    _onBookNow(bookingData.cabRate!.fare.totalAmount.toString());
+                  },
               style: ElevatedButton.styleFrom(
-                backgroundColor: maincolor1,
+                backgroundColor: _isTimerExpired ? Colors.grey : maincolor1,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 elevation: 2,
               ),
               child: Text(
-                "PROCEED TO PAYMENT",
+                _isTimerExpired ? "TIME EXPIRED" : "PROCEED TO PAYMENT",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -699,6 +999,51 @@ Widget _buildHorizontalRouteCard(
       backgroundColor: Colors.blue.shade50,
       labelStyle: TextStyle(fontSize: 12),
       visualDensity: VisualDensity.compact,
+    );
+  }
+
+  Widget buildShimmerLoading() {
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Container(
+              height: 200,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+          ),
+          SizedBox(height: 16),
+          Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Container(
+              height: 150,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+          ),
+          SizedBox(height: 16),
+          Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Container(
+              height: 200,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

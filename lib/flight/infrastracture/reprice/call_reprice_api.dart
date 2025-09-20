@@ -10,11 +10,12 @@ import 'package:minna/flight/infrastracture/log%20call%20back/log_call_back.dart
 Future<RePriceResponse> repriceRequestApi(RepriceRequest rePriceRequest) async {
   final uri = Uri.parse('${baseUrl}api-call');
   final requestBody = {
+
+
     'datas': jsonEncode(rePriceRequest.toJson()),
     'isLive': liveOrStage.toString(),
-    'url': 'Api/webapi/GetFare?type=json',
+    'url': 'Api/webapi/Reprice?type=json',
   };
-
   final encodedRequest = json.encode(requestBody);
 
   // 🔹 Log the request externally

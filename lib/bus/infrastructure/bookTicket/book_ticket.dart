@@ -10,6 +10,7 @@ import 'package:minna/bus/pages/screen%20fail%20ticket/screen_fail_ticket.dart';
 import 'package:minna/bus/pages/screen%20success%20ticket/screen_Success_ticket.dart';
 import 'package:minna/bus/infrastructure/conformTicket/conform_ticket.dart';
 import 'package:minna/bus/infrastructure/tin%20updation/tin_updation.dart';
+import 'package:minna/comman/functions/refund_payment.dart';
 
 Future<void> bookNow({
   required String blockKey,
@@ -32,7 +33,7 @@ Future<void> bookNow({
       final refundResult = await refundPayment(
         transactionId: paymentId,
         amount: amount,
-        blockId: blockID,
+       tableId: blockID, table: 'bus_blockrequest',
       );
       
       if (refundResult['success']) {
@@ -77,10 +78,10 @@ Future<void> bookNow({
       await tinUpdation(status: 0, tableID: blockID, tin: 'null');
       
       // Initiate refund when TIN API returns invalid response
-      final refundResult = await refundPayment(
+    final refundResult = await refundPayment(
         transactionId: paymentId,
         amount: amount,
-        blockId: blockID,
+       tableId: blockID, table: 'bus_blockrequest',
       );
       
       if (refundResult['success']) {
@@ -100,10 +101,10 @@ Future<void> bookNow({
     
     // Initiate refund on any unexpected error
     final refundResult = await refundPayment(
-      transactionId: paymentId,
-      amount: amount,
-      blockId: blockID,
-    );
+        transactionId: paymentId,
+        amount: amount,
+       tableId: blockID, table: 'bus_blockrequest',
+      );
     
     if (refundResult['success']) {
       Navigator.pushReplacement(
@@ -137,7 +138,7 @@ Future<void> booknowRetry({
       final refundResult = await refundPayment(
         transactionId: paymentId,
         amount: amount,
-        blockId: blockID,
+       tableId: blockID, table: 'bus_blockrequest',
       );
       
       if (refundResult['success']) {
@@ -157,10 +158,10 @@ Future<void> booknowRetry({
     if (respotin.body == 'Error: Authorization failed please send valid consumer key and secret in the api request.') {
       log('conformTicketApi retry failed again with authorization error');
       
-      final refundResult = await refundPayment(
+     final refundResult = await refundPayment(
         transactionId: paymentId,
         amount: amount,
-        blockId: blockID,
+       tableId: blockID, table: 'bus_blockrequest',
       );
       
       if (refundResult['success']) {
@@ -191,10 +192,10 @@ Future<void> booknowRetry({
       log('TIN retry failed with response: ${respotin.body}');
       await tinUpdation(status: 0, tableID: blockID, tin: 'null');
       
-      final refundResult = await refundPayment(
+     final refundResult = await refundPayment(
         transactionId: paymentId,
         amount: amount,
-        blockId: blockID,
+       tableId: blockID, table: 'bus_blockrequest',
       );
       
       if (refundResult['success']) {
@@ -215,7 +216,8 @@ Future<void> booknowRetry({
     final refundResult = await refundPayment(
       transactionId: paymentId,
       amount: amount,
-      blockId: blockID,
+      table: "bus_blockrequest",
+      tableId: blockID
     );
     
     if (refundResult['success']) {
@@ -244,49 +246,4 @@ bool hasIntegerValue(String input) {
   // TIN can be alphanumeric, so we check for reasonable format instead of just digits
   final RegExp validTINRegex = RegExp(r'^[A-Z0-9]{4,12}$');
   return validTINRegex.hasMatch(input);
-}
-Future<Map<String, dynamic>> refundPayment({
-  required String transactionId,
-  required double amount,
-  required String blockId,
-}) async {
-  try {
-    log('Initiating refund for transaction: $transactionId, amount: $amount');
-    
-    final response = await http.post(
-      Uri.parse('${baseUrl}payrefund'),
-      body: {
-        'id': blockId,
-        'transaction_id': transactionId,
-        'amount':  (amount* 100).toString(),
-        'table': "bus_blockrequest"
-      },
-    ).timeout(const Duration(seconds: 30));
-    
-    log('Refund API response: ${response.statusCode}, ${response.body}');
-    
-    if (response.statusCode == 200) {
-      final jsonResponse = jsonDecode(response.body);
-      return {
-        'success': jsonResponse['statusCode'] == 200,
-        'message': jsonResponse['message'] ?? 'Refund processed successfully'
-      };
-    }
-    return {
-      'success': false, 
-      'message': 'Failed to process refund. HTTP Status: ${response.statusCode}'
-    };
-  } on TimeoutException {
-    log('Refund API timeout');
-    return {
-      'success': false, 
-      'message': 'Refund request timed out. Please check with support.'
-    };
-  } catch (e) {
-    log('Refund API error: $e');
-    return {
-      'success': false, 
-      'message': 'Error processing refund: ${e.toString()}'
-    };
-  }
 }

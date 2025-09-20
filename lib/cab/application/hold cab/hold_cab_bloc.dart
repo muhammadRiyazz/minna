@@ -20,7 +20,7 @@ class HoldCabBloc extends Bloc<HoldCabEvent, HoldCabState> {
 
       try {
          SharedPreferences preferences = await SharedPreferences.getInstance();
-  final userId = preferences.getString('userId') ?? '';
+       final userId = preferences.getString('userId') ?? '';
 
         /// Step 1: Call HOLD API
         final response = await http.post(
@@ -41,22 +41,26 @@ class HoldCabBloc extends Bloc<HoldCabEvent, HoldCabState> {
         if (holdResponse.success) {
           /// Step 2: Save Hold Data to backend
           try {
-            final saveResponse = await http.post(
-              Uri.parse('${baseUrl}cab-hold'),
-             
-              body: {
-                "request": jsonEncode(event.requestData,) , // ✅ request JSON
-                "hold":jsonEncode(jsonData) , // ✅ raw hold API response JSON
-                "user_id":userId, // ✅ user id from event
-              },
-            );
+         final saveResponse = await http.post(
+  Uri.parse('${baseUrl}cab-hold'),
+  body: {
+    "request": jsonEncode(event.requestData), // ✅ request JSON
+    "hold": jsonEncode(jsonData),             // ✅ raw hold API response JSON
+    "user_id": userId,                        // ✅ string, no int.parse
+  },
+);
+
 
             log("Cab-Hold Save Response: ${saveResponse.body}");
 
             final saveJson = jsonDecode(saveResponse.body);
 
             if (saveJson["status"] == "success") {
-              emit(HoldCabSuccess(data: holdResponse.data!));
+              emit(HoldCabSuccess(
+                requestData: event.requestData,
+                bookingId:holdResponse.data!.bookingId ,tableID:saveJson["booking_id"].toString()   ,
+                
+                data: holdResponse.data!));
             } else {
               emit(HoldCabError(
                   message: saveJson["message"] ??
