@@ -8,7 +8,6 @@ part 'plans_bloc.freezed.dart';
 class PlansBloc extends Bloc<PlansEvent, PlansState> {
   PlansBloc() : super(_Initial()) {
     on<PlansEvent>((event, emit) {
-      // TODO: implement event handler
     });
   }
 }

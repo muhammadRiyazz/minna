@@ -1,9 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:minna/comman/const/const.dart';
-
-
-
+import 'package:minna/hotel%20booking/domain/Nation%20and%20city/city.dart';
+import 'package:minna/hotel%20booking/domain/Nation%20and%20city/nation';
+import 'package:minna/hotel%20booking/functions/get_city_and_nation.dart';
+import 'package:minna/hotel%20booking/pages/hotel%20list/hotel_list.dart';
 
 class HotelBookingHome extends StatefulWidget {
   const HotelBookingHome({super.key});
@@ -13,52 +15,88 @@ class HotelBookingHome extends StatefulWidget {
 }
 
 class _HotelBookingHomeState extends State<HotelBookingHome> {
-  String selectedCountry = "India";
-  String selectedCity = "Mumbai";
+  String? selectedCountry;
+  String? selectedCity;
 
-  // Sample data
-  final List<String> countries = [
-    "India",
-    "United States",
-    "United Kingdom",
-    "France",
-    "Germany",
-    "Japan",
-    "Australia",
-    "Canada",
-    "Brazil",
-    "Mexico",
-    "Spain",
-    "Italy",
-    "Thailand",
-    "Singapore",
-    "Dubai",
-  ];
+  List<CountryModel> countries = [];
+  List<HotelCityHotel> cities = [];
 
-  final Map<String, List<String>> citiesByCountry = {
-    "India": ["Mumbai", "Delhi", "Bangalore", "Chennai", "Kolkata", "Hyderabad"],
-    "United States": ["New York", "Los Angeles", "Chicago", "Houston", "Phoenix"],
-    "United Kingdom": ["London", "Manchester", "Liverpool", "Birmingham", "Edinburgh"],
-    "France": ["Paris", "Marseille", "Lyon", "Toulouse", "Nice"],
-    "Germany": ["Berlin", "Munich", "Hamburg", "Frankfurt", "Cologne"],
-  };
+  bool isLoadingCountries = false; // We load in bottom sheet
+  bool isLoadingCities = false;
+
+  final ApiService apiService = ApiService();
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch countries in background
+    fetchCountries();
+  }
+
+  Future<void> fetchCountries() async {
+    setState(() => isLoadingCountries = true);
+    try {
+      countries = await apiService.getCountries();
+      if (countries.isNotEmpty) {
+        // selectedCountry ??= countries.first.name;
+        // await fetchCities(selectedCountry!);
+      }
+    } catch (e) {
+      debugPrint('Error fetching countries: $e');
+    } finally {
+      setState(() => isLoadingCountries = false);
+    }
+  }
+
+  Future<void> fetchCities(String countryName) async {
+    setState(() => isLoadingCities = true);
+    try {
+      final countryCode =
+          countries.firstWhere((c) => c.name == countryName).code;
+      cities = await apiService.getCities(countryCode);
+      if (cities.isNotEmpty) {
+        selectedCity ??= cities.first.name;
+      } else {
+        selectedCity = null;
+      }
+    } catch (e) {
+      log('Error fetching cities: $e');
+      selectedCity = null;
+      cities = [];
+    } finally {
+      setState(() => isLoadingCities = false);
+    }
+  }
 
   void _showCountryBottomSheet() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => CountrySelectionSheet(
-        countries: countries,
-        selectedCountry: selectedCountry,
-        onCountrySelected: (country) {
-          setState(() {
-            selectedCountry = country;
-            // Reset city when country changes
-            selectedCity = citiesByCountry[country]?.first ?? "";
-          });
-          Navigator.pop(context);
-        },
+      builder: (context) => Container(
+        margin: const EdgeInsets.only(top: 50),
+        padding: const EdgeInsets.all(16),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius:
+              BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+        ),
+        child: isLoadingCountries
+            ? const Center(child: CircularProgressIndicator())
+            : CountrySelectionSheet(
+                countries: countries.map((e) => e.name).toList(),
+                selectedCountry: selectedCountry ?? "",
+                onCountrySelected: (country) async {
+                  setState(() {
+                    selectedCountry = country;
+                    selectedCity = null;
+                    cities = [];
+                    isLoadingCities = true;
+                  });
+                  Navigator.pop(context);
+                  await fetchCities(country);
+                },
+              ),
       ),
     );
   }
@@ -68,15 +106,26 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => CitySelectionSheet(
-        cities: citiesByCountry[selectedCountry] ?? [],
-        selectedCity: selectedCity,
-        onCitySelected: (city) {
-          setState(() {
-            selectedCity = city;
-          });
-          Navigator.pop(context);
-        },
+      builder: (context) => Container(
+        margin: const EdgeInsets.only(top: 50),
+        padding: const EdgeInsets.all(16),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius:
+              BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+        ),
+        child: isLoadingCities
+            ? const Center(child: CircularProgressIndicator())
+            : CitySelectionSheet(
+                cities: cities.map((e) => e.name).toList(),
+                selectedCity: selectedCity ?? "",
+                onCitySelected: (city) {
+                  setState(() {
+                    selectedCity = city;
+                  });
+                  Navigator.pop(context);
+                },
+              ),
       ),
     );
   }
@@ -84,65 +133,41 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Colors.amberAccent,
-      // extendBodyBehindAppBar: true,
-      appBar:  AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
-        title: Text(
+      appBar: AppBar(
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text(
           'Hotel Booking',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
         ),
         centerTitle: true,
         backgroundColor: maincolor1,
         elevation: 0,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
         ),
       ),
-      
-      
-      
-      
-   
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 80, 16, 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Welcome message
               const Text(
                 "Find Your Perfect Stay",
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black),
               ),
               const SizedBox(height: 4),
               const Text(
                 "Discover luxury hotels at the best prices",
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black38,
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.black38),
               ),
-              
               const SizedBox(height: 40),
-            
-              
-              
-              // Location selection cards
               Row(
                 children: [
                   Expanded(
                     child: _buildLocationCard(
                       title: "Country",
-                      value: selectedCountry,
+                      value: selectedCountry ?? "Select Country",
                       icon: Icons.flag,
                       onTap: _showCountryBottomSheet,
                     ),
@@ -151,30 +176,33 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
                   Expanded(
                     child: _buildLocationCard(
                       title: "City",
-                      value: selectedCity,
+                      value: selectedCity ?? (isLoadingCities ? "Loading..." : "Select City"),
                       icon: Icons.location_city,
                       onTap: _showCityBottomSheet,
                     ),
                   ),
                 ],
               ),
-              
               const SizedBox(height: 20),
-              
-              // Search hotels button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Handle search
-                  },
+                onPressed: (selectedCountry != null && selectedCity != null)
+      ? () {
+          final cityCode = cities.firstWhere((c) => c.name == selectedCity!).code;
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => HotelListPage(cityCode: cityCode, cityName: selectedCity!),
+            ),
+          );
+        }
+      : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: maincolor1,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   child: const Text(
                     "Search Hotels",
@@ -182,9 +210,6 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
                   ),
                 ),
               ),
-              
-            
-             
             ],
           ),
         ),
@@ -196,7 +221,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
     required String title,
     required String value,
     required IconData icon,
-    required VoidCallback onTap,
+    required VoidCallback? onTap,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -221,31 +246,19 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
               children: [
                 Icon(icon, color: Colors.blue, size: 20),
                 const SizedBox(width: 8),
-                Text(
-                  title,
-                  style: const TextStyle(fontSize: 14, color: Colors.grey),
-                ),
+                Text(title, style: const TextStyle(fontSize: 14, color: Colors.grey)),
               ],
             ),
             const SizedBox(height: 8),
-            Text(
-              value,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
+            Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
     );
   }
-
-
-
-  
-
-
 }
 
-
+// ====== Country Bottom Sheet ======
 class CountrySelectionSheet extends StatefulWidget {
   final List<String> countries;
   final String selectedCountry;
@@ -276,13 +289,9 @@ class _CountrySelectionSheetState extends State<CountrySelectionSheet> {
   void _filterCountries() {
     final query = _searchController.text.toLowerCase();
     setState(() {
-      if (query.isEmpty) {
-        filteredCountries = widget.countries;
-      } else {
-        filteredCountries = widget.countries
-            .where((country) => country.toLowerCase().contains(query))
-            .toList();
-      }
+      filteredCountries = query.isEmpty
+          ? widget.countries
+          : widget.countries.where((c) => c.toLowerCase().contains(query)).toList();
     });
   }
 
@@ -294,82 +303,48 @@ class _CountrySelectionSheetState extends State<CountrySelectionSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(margin: EdgeInsets.only(top: 50),
-      padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Center(
+          child: Container(
+            width: 40,
+            height: 5,
+            decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(5)),
+          ),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Center(
-            child: Container(
-              width: 40,
-              height: 5,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(5),
-              ),
-            ),
+        const SizedBox(height: 16),
+        const Text("Select Country", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 16),
+        TextField(
+          controller: _searchController,
+          decoration: InputDecoration(
+            hintText: "Search countries...",
+            prefixIcon: const Icon(Icons.search),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
           ),
-          const SizedBox(height: 16),
-          const Text(
-            "Select Country",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 16),
+        Expanded(
+          child: ListView.builder(
+            itemCount: filteredCountries.length,
+            itemBuilder: (context, index) {
+              final country = filteredCountries[index];
+              return ListTile(
+                title: Text(country),
+                trailing: country == widget.selectedCountry ? const Icon(Icons.check, color: Colors.blue) : null,
+                onTap: () => widget.onCountrySelected(country),
+              );
+            },
           ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _searchController,
-            decoration: InputDecoration(
-              hintText: "Search countries...",
-              prefixIcon: const Icon(Icons.search),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: ListView.builder(
-              itemCount: filteredCountries.length,
-              itemBuilder: (context, index) {
-                final country = filteredCountries[index];
-                return ListTile(
-                  title: Text(country),
-                  trailing: country == widget.selectedCountry
-                      ? const Icon(Icons.check, color: Colors.blue)
-                      : null,
-                  onTap: () => widget.onCountrySelected(country),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// ====== City Bottom Sheet ======
 class CitySelectionSheet extends StatefulWidget {
   final List<String> cities;
   final String selectedCity;
@@ -400,13 +375,9 @@ class _CitySelectionSheetState extends State<CitySelectionSheet> {
   void _filterCities() {
     final query = _searchController.text.toLowerCase();
     setState(() {
-      if (query.isEmpty) {
-        filteredCities = widget.cities;
-      } else {
-        filteredCities = widget.cities
-            .where((city) => city.toLowerCase().contains(query))
-            .toList();
-      }
+      filteredCities = query.isEmpty
+          ? widget.cities
+          : widget.cities.where((c) => c.toLowerCase().contains(query)).toList();
     });
   }
 
@@ -418,63 +389,43 @@ class _CitySelectionSheetState extends State<CitySelectionSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(margin: EdgeInsets.only(top: 50),
-      padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Center(
+          child: Container(
+            width: 40,
+            height: 5,
+            decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(5)),
+          ),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Center(
-            child: Container(
-              width: 40,
-              height: 5,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(5),
-              ),
-            ),
+        const SizedBox(height: 16),
+        const Text("Select City", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 16),
+        TextField(
+          controller: _searchController,
+          decoration: InputDecoration(
+            hintText: "Search cities...",
+            prefixIcon: const Icon(Icons.search),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
           ),
-          const SizedBox(height: 16),
-          const Text(
-            "Select City",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 16),
+        Expanded(
+          child: ListView.builder(
+            itemCount: filteredCities.length,
+            itemBuilder: (context, index) {
+              final city = filteredCities[index];
+              return ListTile(
+                title: Text(city),
+                trailing: city == widget.selectedCity ? const Icon(Icons.check, color: Colors.blue) : null,
+                onTap: () => widget.onCitySelected(city),
+              );
+            },
           ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _searchController,
-            decoration: InputDecoration(
-              hintText: "Search cities...",
-              prefixIcon: const Icon(Icons.search),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: ListView.builder(
-              itemCount: filteredCities.length,
-              itemBuilder: (context, index) {
-                final city = filteredCities[index];
-                return ListTile(
-                  title: Text(city),
-                  trailing: city == widget.selectedCity
-                      ? const Icon(Icons.check, color: Colors.blue)
-                      : null,
-                  onTap: () => widget.onCitySelected(city),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
