@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:minna/comman/const/const.dart';
 
 class PassengerInputPage extends StatefulWidget {
+  const PassengerInputPage({super.key});
+
   @override
   _PassengerInputPageState createState() => _PassengerInputPageState();
 }
@@ -135,7 +137,7 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
 
   Widget _buildTitleDropdown(int index) {
     return DropdownButtonFormField<String>(
-      value: passengers[index]['Title'],
+      initialValue: passengers[index]['Title'],
       decoration: InputDecoration(
         labelText: 'Title',
         labelStyle: TextStyle(color: Colors.grey[700]),
@@ -493,7 +495,7 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
                   passengers[index]['LeadPassenger'] = value;
                 });
               },
-              activeColor: maincolor1,
+              activeThumbColor: maincolor1,
             ),
           ],
         ),

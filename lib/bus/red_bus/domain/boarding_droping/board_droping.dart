@@ -3,7 +3,6 @@
 
 //     final boardingDroping = boardingDropingFromJson(jsonString);
 
-import 'package:meta/meta.dart';
 import 'dart:convert';
 
 BoardingDropingList boardingDropingFromJson(String str) =>

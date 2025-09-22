@@ -2,7 +2,6 @@
 //
 //     final boardDropingPointModelClass = boardDropingPointModelClassFromMap(jsonString);
 
-import 'package:meta/meta.dart';
 import 'dart:convert';
 
 //// Test case model class for redBus

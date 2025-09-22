@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class PassangerList extends StatelessWidget {
   const PassangerList({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

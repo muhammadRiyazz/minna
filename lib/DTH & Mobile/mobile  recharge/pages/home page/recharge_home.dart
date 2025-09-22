@@ -4,7 +4,6 @@ import 'package:minna/comman/const/const.dart';
 import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/application/oparator/operators_bloc.dart';
 import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/pages/add%20amount/add_amount.dart';
 import 'package:shimmer/shimmer.dart';
-import '../packageslist/rechargelist.dart';
 
 class MobileRechargeInputPage extends StatefulWidget {
   const MobileRechargeInputPage({super.key});

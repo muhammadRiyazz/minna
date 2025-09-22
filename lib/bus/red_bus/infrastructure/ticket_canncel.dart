@@ -5,24 +5,24 @@ import 'package:http/http.dart';
 import '../constants/urls.dart';
 
 class TicketCancelApi {
-  getDataTicketCance({required tIn, required seatsCancel}) async {
-    var _urlPhp = 'CallAPI';
+  Future<void> getDataTicketCance({required tIn, required seatsCancel}) async {
+    var urlPhp = 'CallAPI';
 
-    var _bodyParams = {
-      "tin": "${tIn}",
-      "seatsToCancel": "${seatsCancel}",
+    var bodyParams = {
+      "tin": "$tIn",
+      "seatsToCancel": "$seatsCancel",
     };
-    print(_bodyParams);
+    print(bodyParams);
     print('json encode');
-    print(jsonEncode(_bodyParams));
+    print(jsonEncode(bodyParams));
     var bodyBackend = {
       "url": "http://api.seatseller.travel/cancelticket",
       "method": "POST",
-      "data": jsonEncode(_bodyParams),
+      "data": jsonEncode(bodyParams),
     };
-    Response _resCanel = await post(Uri.parse(_urlPhp), body: bodyBackend);
+    Response resCanel = await post(Uri.parse(urlPhp), body: bodyBackend);
 
-    print('Blocke key issssssssssss${_resCanel.body}');
+    print('Blocke key issssssssssss${resCanel.body}');
 
     // _res.statusCode == 200
     //     ? globalPostRedBus = globalPostRedBus.copyWith(blockKey: _res.body)

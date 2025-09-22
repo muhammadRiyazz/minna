@@ -5,7 +5,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:http/http.dart' as http;
 import 'package:minna/cab/application/fetch%20cab/fetch_cabs_state.dart';
 import 'package:minna/cab/domain/cab%20list%20model/cab_list_data.dart';
-import 'package:minna/comman/core/api.dart';
       part 'fetch_cabs_bloc.freezed.dart';                                                                     
 part 'fetch_cabs_event.dart';
 

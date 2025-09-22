@@ -1,6 +1,7 @@
+import 'package:minna/cab/pages/booked%20list/booking_list.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:flutter/material.dart';
-import 'package:minna/comman/pages/screen%20bookings/bus%20report/screen_reports.dart';
+import 'package:minna/bus/pages/bus%20report/screen_reports.dart';
 
 class ScreenBooking extends StatefulWidget {
   const ScreenBooking({super.key});
@@ -10,15 +11,14 @@ class ScreenBooking extends StatefulWidget {
 }
 
 class _ScreenBookingState extends State<ScreenBooking> {
-  int _selectedTab = 0; // 0 for Bus, 1 for Flight
-  bool _isLoggedIn = false; // Track login state for demo purposes
+  int _selectedTab = 0; // 0 = Bus, 1 = Flight, 2 = Cab, 3 = Hotel
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
-        title: Text(
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text(
           'My Bookings',
           style: TextStyle(
             color: Colors.white,
@@ -29,56 +29,49 @@ class _ScreenBookingState extends State<ScreenBooking> {
         centerTitle: true,
         backgroundColor: maincolor1,
         elevation: 0,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
         ),
       ),
       body: Column(
         children: [
-          // Tab selector
           _buildBookingTypeSelector(),
-          // const SizedBox(height: 16),
-
-          // Content based on selected tab
           Expanded(
-            child: _selectedTab == 0 ? ScreenReport() : _buildFlightContent(),
+            child: _buildSelectedContent(),
           ),
         ],
       ),
     );
   }
 
+  /// Tab Selector
   Widget _buildBookingTypeSelector() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
-      child: Column(
-        children: [
-          SizedBox(height: 10),
+    final tabs = ["Bus", "Flight", "Cab", "Hotel"];
 
-          Row(
-            children: [
-              Expanded(
-                child: _bookingTypeButton("Bus", _selectedTab == 0, () {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 18.0),
+      child: Row(
+        children: List.generate(tabs.length, (index) {
+          return Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: _bookingTypeButton(
+                tabs[index],
+                _selectedTab == index,
+                () {
                   setState(() {
-                    _selectedTab = 0;
+                    _selectedTab = index;
                   });
-                }),
+                },
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _bookingTypeButton("Flight", _selectedTab == 1, () {
-                  setState(() {
-                    _selectedTab = 1;
-                  });
-                }),
-              ),
-            ],
-          ),
-        ],
+            ),
+          );
+        }),
       ),
     );
   }
 
+  /// Booking Type Button
   Widget _bookingTypeButton(String label, bool isSelected, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
@@ -102,43 +95,65 @@ class _ScreenBookingState extends State<ScreenBooking> {
     );
   }
 
+  /// Content Based on Selected Tab
+  Widget _buildSelectedContent() {
+    switch (_selectedTab) {
+      case 0:
+        return const ScreenReport(); // Bus
+      case 1:
+        return _buildFlightContent(); // Flight
+      case 2:
+        return CabBookingList(); // Cab
+      case 3:
+        return _buildHotelContent(); // Hotel
+      default:
+        return const SizedBox();
+    }
+  }
+
+  /// Flight Section
   Widget _buildFlightContent() {
+    return _emptySection(
+      icon: Icons.flight,
+      title: "No trips yet",
+      subtitle: "You haven’t booked any flight trips yet\nPlan Your Next Journey",
+    );
+  }
+
+  /// Cab Section
+  Widget _buildCabContent() {
+    return _emptySection(
+      icon: Icons.local_taxi,
+      title: "No cabs yet",
+      subtitle: "You haven’t booked any cab rides yet\nBook your first ride today",
+    );
+  }
+
+  /// Hotel Section
+  Widget _buildHotelContent() {
+    return _emptySection(
+      icon: Icons.hotel,
+      title: "No bookings yet",
+      subtitle: "You haven’t booked any hotels yet\nPlan your next stay",
+    );
+  }
+
+  /// Reusable Empty Section Widget
+  Widget _emptySection({required IconData icon, required String title, required String subtitle}) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.flight, size: 80, color: Colors.grey[400]),
+          Icon(icon, size: 80, color: Colors.grey[400]),
           const SizedBox(height: 16),
-          const Text(
-            'No trips yet',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
+          Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 5),
-          const Text(
-            'You haven\'t booked any flight trips yet\nPlan Your Next Journey',
-            style: TextStyle(fontSize: 14, color: Colors.grey),
+          Text(
+            subtitle,
+            style: const TextStyle(fontSize: 14, color: Colors.grey),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 15),
-          // ElevatedButton(
-          //   onPressed: () {
-          //     // Navigate to bus booking screen
-          //   },
-          //   style: ElevatedButton.styleFrom(
-          //     backgroundColor: Colors.grey.shade200, // Button color
-          //     foregroundColor: maincolor1, // Text color
-          //     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-          //     shape: RoundedRectangleBorder(
-          //       borderRadius: BorderRadius.circular(8), // Border radius
-          //     ),
-          //     elevation: 0, // Remove shadow
-          //   ),
-          //   child: const Text(
-          //     'Book Now',
-          //     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          //   ),
-          // ),
         ],
       ),
     );

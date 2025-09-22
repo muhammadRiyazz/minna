@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ReportNetwork {
-  static addreport1({
+  static Future<void> addreport1({
     required availableTripID,
     required boardingPointId,
     required droppingPointId,
@@ -33,7 +33,7 @@ class ReportNetwork {
     log(franid.toString());
     log(userid.toString());
 
-    var _bodyParams = {
+    var bodyParams = {
       "availableTripID": availableTripID,
       "boardingPointId": boardingPointId,
       "destination": destination,
@@ -65,12 +65,12 @@ class ReportNetwork {
     // log(json.toString());
     final url = Uri.parse('https://tictechnologies.in/stage/redbus/BlockReq');
 
-    final resp = await http.post(url, body: _bodyParams);
+    final resp = await http.post(url, body: bodyParams);
     log(resp.statusCode.toString());
     log(resp.body.toString());
   }
 
-  static addreport2({
+  static Future<void> addreport2({
     required availableTripID,
     required boardingPointId,
     required droppingPointId,
@@ -111,7 +111,7 @@ class ReportNetwork {
     log(franid.toString());
     log(userid.toString());
 
-    var _bodyParams = {
+    var bodyParams = {
       "availableTripID": "6547",
       "boardingPointId": "6",
       "destination": "89",
@@ -160,12 +160,12 @@ class ReportNetwork {
     // log(json.toString());
     final url = Uri.parse('https://tictechnologies.in/stage/redbus/BlockReq');
 
-    final resp = await http.post(url, body: _bodyParams);
+    final resp = await http.post(url, body: bodyParams);
     log(resp.statusCode.toString());
     log(resp.body.toString());
   }
 
-  static addreport3({
+  static Future<void> addreport3({
     required availableTripID,
     required boardingPointId,
     required droppingPointId,
@@ -219,7 +219,7 @@ class ReportNetwork {
     log(franid.toString());
     log(userid.toString());
 
-    var _bodyParams = {
+    var bodyParams = {
       "availableTripID": "6547",
       "boardingPointId": "6",
       "destination": "89",
@@ -285,12 +285,12 @@ class ReportNetwork {
     // log(json.toString());
     final url = Uri.parse('https://tictechnologies.in/stage/redbus/BlockReq');
 
-    final resp = await http.post(url, body: _bodyParams);
+    final resp = await http.post(url, body: bodyParams);
     log(resp.statusCode.toString());
     log(resp.body.toString());
   }
 
-  static addreport4({
+  static Future<void> addreport4({
     required availableTripID,
     required boardingPointId,
     required droppingPointId,
@@ -357,7 +357,7 @@ class ReportNetwork {
     log(franid.toString());
     log(userid.toString());
 
-    var _bodyParams = {
+    var bodyParams = {
       "availableTripID": "6547",
       "boardingPointId": "6",
       "destination": "89",
@@ -440,12 +440,12 @@ class ReportNetwork {
     // log(json.toString());
     final url = Uri.parse('https://tictechnologies.in/stage/redbus/BlockReq');
 
-    final resp = await http.post(url, body: _bodyParams);
+    final resp = await http.post(url, body: bodyParams);
     log(resp.statusCode.toString());
     log(resp.body.toString());
   }
 
-  static addreport5({
+  static Future<void> addreport5({
     required availableTripID,
     required boardingPointId,
     required droppingPointId,
@@ -525,7 +525,7 @@ class ReportNetwork {
     log(franid.toString());
     log(userid.toString());
 
-    var _bodyParams = {
+    var bodyParams = {
       "availableTripID": "6547",
       "boardingPointId": "6",
       "destination": "89",
@@ -625,12 +625,12 @@ class ReportNetwork {
     // log(json.toString());
     final url = Uri.parse('https://tictechnologies.in/stage/redbus/BlockReq');
 
-    final resp = await http.post(url, body: _bodyParams);
+    final resp = await http.post(url, body: bodyParams);
     log(resp.statusCode.toString());
     log(resp.body.toString());
   }
 
-  static addreport6({
+  static Future<void> addreport6({
     required availableTripID,
     required boardingPointId,
     required droppingPointId,
@@ -723,7 +723,7 @@ class ReportNetwork {
     log(franid.toString());
     log(userid.toString());
 
-    var _bodyParams = {
+    var bodyParams = {
       "availableTripID": "6547",
       "boardingPointId": "6",
       "destination": "89",
@@ -823,7 +823,7 @@ class ReportNetwork {
     // log(json.toString());
     final url = Uri.parse('https://tictechnologies.in/stage/redbus/BlockReq');
 
-    final resp = await http.post(url, body: _bodyParams);
+    final resp = await http.post(url, body: bodyParams);
     log(resp.statusCode.toString());
     log(resp.body.toString());
   }

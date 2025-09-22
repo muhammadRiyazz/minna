@@ -6,7 +6,7 @@ class ConfirmPlanPage extends StatelessWidget {
   final String operator;
   final Map<String, String> selectedPlan;
 
-  const ConfirmPlanPage({
+  const ConfirmPlanPage({super.key, 
     required this.mobileNumber,
     required this.operator,
     required this.selectedPlan,

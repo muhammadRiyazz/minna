@@ -84,19 +84,14 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
           title: passengerData['title'] ?? '',
           firstName: passengerData['firstName'] ?? '',
           lastName: passengerData['lastName'] ?? '',
-       dob: passengerData['dob'] != null
-    ? DateFormat("yyyy-MM-dd").format(
-        DateFormat("dd-MM-yyyy").parse(passengerData["dob"]),
-      )
-    : '',
-
+          dob: formatDateForApi(passengerData['dob']),
           contact: passengerData['contact'] ?? '',
           email: passengerData['email'] ?? '',
           address: passengerData['address'] ?? '',
           nationality: passengerData['nationality'] ?? '',
           passportNo: passengerData['passportNumber'],
           countryOfIssue: passengerData['countryOfIssue'],
-          dateOfExpiry: formatPassportExpiry(passengerData['passportExpiry']),
+          dateOfExpiry: formatDateForApi(passengerData['passportExpiry']),
           pinCode: passengerData['pincode'],
           ssrAvailability: ReSsrAvailability(
             mealInfo: mealInfoList,
@@ -171,7 +166,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
             title: passengerData['title'] ?? '',
             firstName: passengerData['firstName'] ?? '',
             lastName: passengerData['lastName'] ?? '',
-            dob: passengerData['dob'] ?? '',
+            dob: formatDateForApi(passengerData['dob']),
             contact: passengerData['contact'] ?? '',
             email: passengerData['email'] ?? '',
             nationality: passengerData['nationality'] ?? '',
@@ -436,14 +431,21 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     emit(BookingState.initial());
   }
 
-  String formatPassportExpiry(String? expiryDate) {
-    if (expiryDate == null || expiryDate.isEmpty) return '0001-01-01';
-
+  String formatDateForApi(String? dateString) {
+    if (dateString == null || dateString.isEmpty) return '0001-01-01';
+    
     try {
-      final parsedDate = DateFormat('dd-MM-yyyy').parse(expiryDate);
+      // Try to parse as yyyy-MM-dd (the format from your form)
+      final parsedDate = DateFormat('yyyy-MM-dd').parse(dateString);
       return DateFormat('yyyy-MM-dd').format(parsedDate);
     } catch (e) {
-      return '0001-01-01'; // fallback if parsing fails
+      try {
+        // If that fails, try to parse as dd-MM-yyyy (fallback)
+        final parsedDate = DateFormat('dd-MM-yyyy').parse(dateString);
+        return DateFormat('yyyy-MM-dd').format(parsedDate);
+      } catch (e) {
+        return '0001-01-01'; // fallback if parsing fails
+      }
     }
   }
 }

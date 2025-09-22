@@ -310,8 +310,9 @@ class _ProfilePageState extends State<ProfilePage> {
       controller: controller,
       validator: (value) {
         if (value == null || value.trim().isEmpty) return 'Required';
-        if (isEmail && !RegExp(r'\S+@\S+\.\S+').hasMatch(value))
+        if (isEmail && !RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
           return 'Enter a valid email';
+        }
         return null;
       },
       decoration: InputDecoration(

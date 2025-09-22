@@ -37,7 +37,7 @@ class DpBpApiNew {
   Future<Either<String, BoardDropingPointModelClass>> getDataBoardingnew({
     tripIdee,
   }) async {
-    var _urlPhpAvaiBus = "}CallBackWithParams";
+    var urlPhpAvaiBus = "}CallBackWithParams";
 
     var bodyBackend = {
       "url": "http://api.seatseller.travel/bpdpDetails?id=$tripIdee",
@@ -46,7 +46,7 @@ class DpBpApiNew {
       "method": "GET",
     };
 
-    Response resp = await post(Uri.parse(_urlPhpAvaiBus), body: bodyBackend);
+    Response resp = await post(Uri.parse(urlPhpAvaiBus), body: bodyBackend);
 
     log(resp.body.toString());
 

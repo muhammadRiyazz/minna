@@ -7,11 +7,11 @@ import 'infolabel.dart';
 
 class BerthGridView extends StatefulWidget {
   const BerthGridView({
-    Key? key,
+    super.key,
     required this.seatlist,
     required this.selectedseats,
     required this.onSeatSelected,
-  }) : super(key: key);
+  });
 
   final List<Seat> seatlist;
   final List<Seat> selectedseats;

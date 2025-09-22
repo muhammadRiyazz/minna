@@ -2,8 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class CheckBoxListTileDemo extends StatefulWidget {
+  const CheckBoxListTileDemo({super.key});
+
   @override
-  CheckBoxListTileDemoState createState() => new CheckBoxListTileDemoState();
+  CheckBoxListTileDemoState createState() => CheckBoxListTileDemoState();
 }
 
 class CheckBoxListTileDemoState extends State<CheckBoxListTileDemo> {
@@ -19,28 +21,28 @@ class CheckBoxListTileDemoState extends State<CheckBoxListTileDemo> {
       });
     }
 
-    return new Scaffold(
-      appBar: new AppBar(
+    return Scaffold(
+      appBar: AppBar(
         backgroundColor: Colors.white,
         centerTitle: true,
-        title: new Text(
+        title: Text(
           'CheckBox ListTile Demo',
           style: TextStyle(color: Colors.black),
         ),
       ),
-      body: new ListView.builder(
+      body: ListView.builder(
           itemCount: checkBoxListTileModel.length,
           itemBuilder: (BuildContext context, int index) {
-            return new Card(
-              child: new Container(
-                padding: new EdgeInsets.all(10.0),
+            return Card(
+              child: Container(
+                padding: EdgeInsets.all(10.0),
                 child: Column(
                   children: <Widget>[
-                    new CheckboxListTile(
+                    CheckboxListTile(
                         activeColor: Colors.red,
                         dense: true,
                         //font change
-                        title: new Text(
+                        title: Text(
                           checkBoxListTileModel[index].title,
                           style: TextStyle(
                               fontSize: 14,

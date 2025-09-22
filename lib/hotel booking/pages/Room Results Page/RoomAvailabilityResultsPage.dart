@@ -312,7 +312,7 @@ class RoomAvailabilityResultsPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '${nights} ${nights > 1 ? 'nights' : 'night'}',
+                        '$nights ${nights > 1 ? 'nights' : 'night'}',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       Text(
@@ -536,7 +536,7 @@ class RoomAvailabilityResultsPage extends StatelessWidget {
                     .toString()
                     .split(',')
                     .map((e) => _buildFeatureChip(Icons.check, e.trim()))
-                    .toList(),
+                    ,
             ],
           ),
           const SizedBox(height: 16),

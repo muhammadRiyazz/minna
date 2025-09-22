@@ -2,7 +2,6 @@
 //
 //     final modelTickePerson2 = modelTickePerson2FromJson(jsondynamic);
 
-import 'package:meta/meta.dart';
 import 'dart:convert';
 
 ModelTickePerson2 modelTickePerson2FromJson(dynamic str) =>

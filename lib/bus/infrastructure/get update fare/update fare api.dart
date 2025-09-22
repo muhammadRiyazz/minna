@@ -15,7 +15,7 @@ Future<UpdatedFareResponse?> getUpdatedFare({required String blockKey}) async {
   SharedPreferences preferences = await SharedPreferences.getInstance();
   final userId = preferences.getString('userId') ?? '';
 
-  var _urlPhp = '${baseUrl}CallBackWithParams';
+  var urlPhp = '${baseUrl}CallBackWithParams';
 
   
 
@@ -33,7 +33,7 @@ final Map<String, dynamic> requestBody = {
 
   log("Calling GetUpdatedFare API with BlockKey: $blockKey");
 
-  final resRedBus = await post(Uri.parse(_urlPhp), body: requestBody);
+  final resRedBus = await post(Uri.parse(urlPhp), body: requestBody);
 
   log("UpdatedFare raw response: ${resRedBus.body}");
 

@@ -9,7 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 class BusHomeTab extends StatelessWidget {
-  const BusHomeTab({Key? key}) : super(key: key);
+  const BusHomeTab({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -163,8 +163,8 @@ class _LocationTile extends StatelessWidget {
     required this.location,
     required this.onTap,
     this.placeholderText = 'Please select',
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -312,8 +312,7 @@ class _DateChipButton extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
-  const _DateChipButton(this.label, this.isSelected, this.onTap, {Key? key})
-    : super(key: key);
+  const _DateChipButton(this.label, this.isSelected, this.onTap, {super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -3,7 +3,6 @@ import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/pages/log%20in/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:minna/comman/pages/screen%20my%20account/about%20us.dart';
 import 'package:minna/comman/pages/screen%20my%20account/contact%20us.dart';
 import 'package:minna/comman/pages/screen%20my%20account/profile.dart';

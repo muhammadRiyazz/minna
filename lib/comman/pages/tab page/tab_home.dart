@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:minna/flight/presendation/screen%20flight/home_flight.dart';
 
 class CommonTabPage extends StatefulWidget {
-  const CommonTabPage({Key? key}) : super(key: key);
+  const CommonTabPage({super.key});
 
   @override
   State<CommonTabPage> createState() => _CommonTabPageState();

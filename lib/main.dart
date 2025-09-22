@@ -7,6 +7,7 @@ import 'package:minna/Electyicity%20&%20Water/application/providers/providers_bl
 import 'package:minna/bus/application/busListfetch/bus_list_fetch_bloc.dart';
 import 'package:minna/bus/application/change%20location/location_bloc.dart';
 import 'package:minna/bus/application/location%20fetch/bus_location_fetch_bloc.dart';
+import 'package:minna/cab/application/booked%20info%20list/booked_info_bloc.dart';
 import 'package:minna/cab/application/confirm%20booking/confirm_booking_bloc.dart';
 import 'package:minna/cab/application/fetch%20cab/fetch_cabs_bloc.dart';
 import 'package:minna/cab/application/hold%20cab/hold_cab_bloc.dart';
@@ -140,6 +141,9 @@ class _MyAppState extends State<MyApp> {
 
         BlocProvider(create: (context) => HoldCabBloc()),
         BlocProvider(create: (context) => ConfirmBookingBloc()),
+        BlocProvider(create: (context) => BookedInfoBloc()),
+
+        
 
         
       ],

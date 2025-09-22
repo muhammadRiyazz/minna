@@ -41,7 +41,7 @@ class FlightBookingTab extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Container(
+                SizedBox(
                   // color: Colors.amberAccent,
                   height: 170,
                   child: Align(

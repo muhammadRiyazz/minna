@@ -6,7 +6,7 @@ import 'package:lottie/lottie.dart';
 
 
 class ScreenNoBalance extends StatelessWidget {
-  const ScreenNoBalance({Key? key}) : super(key: key);
+  const ScreenNoBalance({super.key});
 
   @override
   Widget build(BuildContext context) {

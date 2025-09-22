@@ -10,8 +10,7 @@ import 'package:shimmer/shimmer.dart'; // Add this import for shimmer effect
 class LocationSearchPage extends StatefulWidget {
   final String fromOrto;
 
-  const LocationSearchPage({Key? key, required this.fromOrto})
-    : super(key: key);
+  const LocationSearchPage({super.key, required this.fromOrto});
 
   @override
   State<LocationSearchPage> createState() => _LocationSearchPageState();
@@ -110,8 +109,8 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
       itemCount: 6, // Number of shimmer items
       itemBuilder: (context, index) {
         return Shimmer.fromColors(
-          baseColor: colorScheme.surfaceVariant.withOpacity(0.5),
-          highlightColor: colorScheme.surfaceVariant.withOpacity(0.2),
+          baseColor: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+          highlightColor: colorScheme.surfaceContainerHighest.withOpacity(0.2),
           child: Card(
             margin: const EdgeInsets.only(bottom: 8),
             elevation: 0,
@@ -121,7 +120,7 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
             child: Container(
               height: 72,
               decoration: BoxDecoration(
-                color: colorScheme.surfaceVariant,
+                color: colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(12),
               ),
             ),

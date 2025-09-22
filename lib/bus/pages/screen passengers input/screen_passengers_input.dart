@@ -26,14 +26,14 @@ class ScreenPassengerInput extends StatefulWidget {
   final List<Seat> selctseat;
 
   const ScreenPassengerInput({
-    Key? key,
+    super.key,
     required this.alldata,
     required this.selctseat,
     required this.boardingpoint,
     required this.droppingPoint,
     required this.travelsname,
     required this.trpinfo,
-  }) : super(key: key);
+  });
 
   @override
   State<ScreenPassengerInput> createState() => _ScreenPassengerInputState();
@@ -363,10 +363,10 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
       widget.alldata.droppingPointID = widget.droppingPoint;
       widget.alldata.inventoryItems = inventoryItems;
 
-      final _bodyParams = blockTicketRequestToJson(widget.alldata);
-      log('Block ticket request: $_bodyParams');
+      final bodyParams = blockTicketRequestToJson(widget.alldata);
+      log('Block ticket request: $bodyParams');
 
-      final response = await getblockticket(data: _bodyParams);
+      final response = await getblockticket(data: bodyParams);
 
       log('Block ticket response status: ${response.statusCode}');
       log('Block ticket response body: ${response.body}');

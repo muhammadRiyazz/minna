@@ -2,7 +2,6 @@
 //
 //     final modelTicket = modelTicketFromMap(jsonString);
 
-import 'package:meta/meta.dart';
 import 'dart:convert';
 
 ModelTicket modelTicketFromMap(String str) => ModelTicket.fromMap(json.decode(str));

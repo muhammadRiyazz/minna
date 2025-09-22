@@ -2,7 +2,6 @@
 //
 //     final boarding = boardingFromMap(jsonString);
 
-import 'package:meta/meta.dart';
 import 'dart:convert';
 
 BusAvaDet boardingFromMap(String str) => BusAvaDet.fromMap(json.decode(str));

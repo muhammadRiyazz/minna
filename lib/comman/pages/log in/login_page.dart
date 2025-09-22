@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LoginBottomSheet extends StatefulWidget {
   final int login;
-  const LoginBottomSheet({Key? key, required this.login}) : super(key: key);
+  const LoginBottomSheet({super.key, required this.login});
 
   @override
   _LoginBottomSheetState createState() => _LoginBottomSheetState();

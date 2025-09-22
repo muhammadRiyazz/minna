@@ -25,8 +25,9 @@ Future<Map<String, dynamic>> refundPayment({
     ).timeout(const Duration(seconds: 30));
     
     log('Refund API response: ${response.statusCode}, ${response.body}');
-    
-    if (response.statusCode == 200) {
+          final jsonResponse = jsonDecode(response.body);
+
+    if (jsonResponse['statusCode']== 200) {
       final jsonResponse = jsonDecode(response.body);
       return {
         'success': jsonResponse['statusCode'] == 200,

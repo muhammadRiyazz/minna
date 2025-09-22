@@ -10,7 +10,7 @@ import 'package:meta/meta.dart';
 import 'dart:convert';
 
 class NewScreenAddingDetals extends StatefulWidget {
-  const NewScreenAddingDetals({Key? key}) : super(key: key);
+  const NewScreenAddingDetals({super.key});
 
   @override
   State<NewScreenAddingDetals> createState() => _NewScreenAddingDetalsState();

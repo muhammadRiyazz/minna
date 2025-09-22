@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:minna/comman/const/const.dart';
 
 class AboutUsPage extends StatelessWidget {
+  const AboutUsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

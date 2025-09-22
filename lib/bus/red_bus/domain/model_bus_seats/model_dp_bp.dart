@@ -2,7 +2,6 @@
 // //
 // //     final boardDropingPointModelClass = boardDropingPointModelClassFromMap(jsondynamic);
 
-import 'package:meta/meta.dart';
 
 // BoardDropingPointModelClass boardDropingPointModelClassFromMap(dynamic str) =>
 //     BoardDropingPointModelClass.fromMap(json.decode(str));

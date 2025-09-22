@@ -242,14 +242,24 @@ if (state is HoldCabSuccess) {
     return shouldExit ?? false;
   }
 
-  void _onBookNow(String amount) async {
+ void _onBookNow(String amount) async {
+  // Start loading
+  context.read<ConfirmBookingBloc>().add(
+    ConfirmBookingEvent.startLoading(),
+  );
+
+  try {
     final orderId = await createOrder(double.parse(amount));
     if (orderId == null) {
       log("orderId creating error");
+      // Stop loading on error
+      context.read<ConfirmBookingBloc>().add(
+        ConfirmBookingEvent.stopLoading(),
+      );
+      
+      // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Failed to create order. Please try again."),
-        ),
+        SnackBar(content: Text("Failed to create order. Please try again."))
       );
       return;
     }
@@ -275,13 +285,28 @@ if (state is HoldCabSuccess) {
 
     try {
       _razorpay.open(options);
+      // Note: Don't stop loading here yet - wait for payment callback
     } catch (e) {
       log("Razorpay Error: $e");
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Payment error: $e")));
+      // Stop loading on error
+      context.read<ConfirmBookingBloc>().add(
+        ConfirmBookingEvent.stopLoading(),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Payment error: $e"))
+      );
     }
+  } catch (e) {
+    log("Error in _onBookNow: $e");
+    // Stop loading on any other error
+    context.read<ConfirmBookingBloc>().add(
+      ConfirmBookingEvent.stopLoading(),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("An error occurred: $e"))
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -293,17 +318,40 @@ if (state is HoldCabSuccess) {
               refundProcessing:
                   (orderId, transactionId, amount, tableid, bookingid) {
                     // Show processing dialog
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (context) => const AlertDialog(
-                        title: Text("Processing Refund"),
-                        content: Text(
-                          "Please wait while we process your refund.",
-                        ),
-                      ),
-                    );
+                    // showDialog(
+                    //   context: context,
+                    //   barrierDismissible: false,
+                    //   builder: (context) => const AlertDialog(
+                    //     title: Text("Processing Refund"),
+                    //     content: Text(
+                    //       "Please wait while we process your refund.",
+                    //     ),
+                    //   ),
+                    // );
                   },
+
+
+paymentSavedFailed:(message, orderId, transactionId, amount, tableid, shouldRefund, bookingid) {
+
+
+
+if (shouldRefund) {
+    context.read<ConfirmBookingBloc>().add(
+                        ConfirmBookingEvent.initiateRefund(
+                          orderId: orderId,
+                          transactionId: transactionId,
+                          amount: amount,
+                          tableid: tableid,
+                          bookingid: bookingid,
+                        ),
+                      );
+
+}
+
+
+
+},
+
               refundInitiated:
                   (
                     message,
@@ -313,8 +361,26 @@ if (state is HoldCabSuccess) {
                     tableid,
                     bookingid,
                   ) {
+
                     log('Navigate to refund initiated page');
                     // Navigate to refund initiated page
+
+
+
+  // context.read<ConfirmBookingBloc>().add(
+  //                       ConfirmBookingEvent.initiateRefund(
+  //                         orderId: orderId,
+  //                         transactionId: transactionId,
+  //                         amount: amount,
+  //                         tableid: tableid,
+  //                         bookingid: bookingid,
+  //                       ),
+  //                     );
+
+
+
+
+                    
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(

@@ -1,6 +1,5 @@
 import 'package:minna/flight/domain/reprice%20/reprice_respo.dart';
 import 'package:minna/flight/domain/trip%20resp/trip_respo.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 
 class FFlightResponse {
   final FJourney? journey;

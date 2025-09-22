@@ -22,7 +22,7 @@ import 'package:permission_handler/permission_handler.dart';
 // }
 
 class CreatePdf {
-  createPdf2() async {
+  Future<void> createPdf2() async {
     final pdf = pw.Document();
 
     pdf.addPage(

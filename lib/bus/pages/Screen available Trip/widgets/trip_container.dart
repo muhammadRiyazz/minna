@@ -8,13 +8,13 @@ import 'package:minna/comman/const/const.dart';
 
 class TripCountainer extends StatelessWidget {
   const TripCountainer({
-    Key? key,
+    super.key,
     required this.availableTriplist,
     required this.startfare,
     required this.index,
     required this.departureTime,
     required this.arrivalTime,
-  }) : super(key: key);
+  });
 
   final List<AvailableTrip> availableTriplist;
   final double? startfare;

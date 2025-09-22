@@ -24,11 +24,11 @@ class TicketDetails extends StatefulWidget {
   final String blocid;
 
   const TicketDetails({
-    Key? key,
+    super.key,
     required this.tin,
     required this.count,
     required this.blocid,
-  }) : super(key: key);
+  });
 
   @override
   State<TicketDetails> createState() => _TicketDetailsState();
@@ -471,7 +471,7 @@ class _TicketDetailsState extends State<TicketDetails> {
                 ],
               ),
             );
-          }).toList(),
+          }),
         ],
       ),
     );

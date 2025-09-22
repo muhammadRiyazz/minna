@@ -372,7 +372,7 @@ class _RoomAvailabilityRequestPageState
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
-                value: nationality,
+                initialValue: nationality,
                 decoration: InputDecoration(
                   labelText: 'Guest Nationality',
                   border: OutlineInputBorder(

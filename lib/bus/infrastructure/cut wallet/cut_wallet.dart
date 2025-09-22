@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:http/http.dart' as http;
 
 
- cutwalletbalance({required String blockKey, required String blockID}) async {
+ Future<http.Response> cutwalletbalance({required String blockKey, required String blockID}) async {
   log('cut wallet');
   var postUrl = Uri.parse('/confirmTicket');
   var responce = await http.post(

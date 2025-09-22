@@ -7,9 +7,9 @@ import '../../domain/cancel succes modal/cancel_succes_modal.dart';
 
 class ScreenCancelSucces extends StatelessWidget {
   const ScreenCancelSucces({
-    Key? key,
+    super.key,
     required this.cancelSuccesdata,
-  }) : super(key: key);
+  });
 
   final CancelSuccesModal cancelSuccesdata;
 

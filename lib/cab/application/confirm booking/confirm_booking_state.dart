@@ -3,8 +3,8 @@ part of 'confirm_booking_bloc.dart';
 
 @freezed
 class ConfirmBookingState with _$ConfirmBookingState {
-  const factory ConfirmBookingState.initial() = ConfirmBookingInitial;
-  const factory ConfirmBookingState.loading() = ConfirmBookingLoading;
+ const factory ConfirmBookingState.initial() = ConfirmBookingInitial;
+  const factory ConfirmBookingState.loading({ConfirmBookingState? previousState}) = ConfirmBookingLoading;
   const factory ConfirmBookingState.success({
     required BookingConfirmData data,
   }) = ConfirmBookingSuccess;
@@ -20,6 +20,8 @@ class ConfirmBookingState with _$ConfirmBookingState {
     required String transactionId,
     required double amount,
     required String tableid,
+        required bool shouldRefund,
+
     required String bookingid,
   }) = ConfirmBookingPaymentSavedFailed;
   const factory ConfirmBookingState.error({

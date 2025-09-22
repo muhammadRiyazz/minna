@@ -4,7 +4,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
 class TicketCancelScreeen extends StatelessWidget {
-  const TicketCancelScreeen({Key? key}) : super(key: key);
+  const TicketCancelScreeen({super.key});
 
   @override
   Widget build(BuildContext context) {

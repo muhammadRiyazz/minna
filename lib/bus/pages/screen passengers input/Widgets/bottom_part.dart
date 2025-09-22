@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
 class BottomPart extends StatelessWidget {
-  const BottomPart({Key? key, 
+  const BottomPart({super.key, 
   //required this.error, required this.isloading
-  })
-      : super(key: key);
+  });
  // final bool isloading;
  // final bool error;
   @override

@@ -5,13 +5,11 @@ import 'package:minna/bus/application/busListfetch/bus_list_fetch_state.dart';
 import 'package:minna/bus/application/change%20location/location_bloc.dart';
 import 'package:minna/bus/pages/Screen%20available%20Trip/widgets/trip_container.dart';
 import 'package:minna/bus/presendation/widgets/error_widget.dart';
-import 'package:minna/bus/presendation/widgets/loading_widget.dart';
 import 'package:minna/bus/domain/trips%20list%20modal/trip_list_modal.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:lottie/lottie.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ScreenAvailableTrips extends StatelessWidget {

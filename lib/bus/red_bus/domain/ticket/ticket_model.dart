@@ -2,7 +2,6 @@
 //
 //     final modelTicketReddBus = modelTicketReddBusFromMap(jsondynamic);
 
-import 'package:meta/meta.dart';
 import 'dart:convert';
 
 ModelTicketReddBus modelTicketReddBusFromMap(dynamic str) => ModelTicketReddBus.fromMap(json.decode(str));

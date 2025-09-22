@@ -17,9 +17,6 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$ConfirmBookingEvent {
-  String get orderId => throw _privateConstructorUsedError;
-  String get tableid => throw _privateConstructorUsedError;
-  String get bookingid => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(
@@ -42,6 +39,8 @@ mixin _$ConfirmBookingEvent {
       String bookingid,
     )
     initiateRefund,
+    required TResult Function() startLoading,
+    required TResult Function() stopLoading,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
@@ -65,6 +64,8 @@ mixin _$ConfirmBookingEvent {
       String bookingid,
     )?
     initiateRefund,
+    TResult? Function()? startLoading,
+    TResult? Function()? stopLoading,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
@@ -88,6 +89,8 @@ mixin _$ConfirmBookingEvent {
       String bookingid,
     )?
     initiateRefund,
+    TResult Function()? startLoading,
+    TResult Function()? stopLoading,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -95,26 +98,26 @@ mixin _$ConfirmBookingEvent {
     required TResult Function(_PaymentDone value) paymentDone,
     required TResult Function(_PaymentFail value) paymentFail,
     required TResult Function(_InitiateRefund value) initiateRefund,
+    required TResult Function(_StartLoading value) startLoading,
+    required TResult Function(_StopLoading value) stopLoading,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_PaymentDone value)? paymentDone,
     TResult? Function(_PaymentFail value)? paymentFail,
     TResult? Function(_InitiateRefund value)? initiateRefund,
+    TResult? Function(_StartLoading value)? startLoading,
+    TResult? Function(_StopLoading value)? stopLoading,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_PaymentDone value)? paymentDone,
     TResult Function(_PaymentFail value)? paymentFail,
     TResult Function(_InitiateRefund value)? initiateRefund,
+    TResult Function(_StartLoading value)? startLoading,
+    TResult Function(_StopLoading value)? stopLoading,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
-
-  /// Create a copy of ConfirmBookingEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $ConfirmBookingEventCopyWith<ConfirmBookingEvent> get copyWith =>
-      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -123,8 +126,6 @@ abstract class $ConfirmBookingEventCopyWith<$Res> {
     ConfirmBookingEvent value,
     $Res Function(ConfirmBookingEvent) then,
   ) = _$ConfirmBookingEventCopyWithImpl<$Res, ConfirmBookingEvent>;
-  @useResult
-  $Res call({String orderId, String tableid, String bookingid});
 }
 
 /// @nodoc
@@ -139,41 +140,14 @@ class _$ConfirmBookingEventCopyWithImpl<$Res, $Val extends ConfirmBookingEvent>
 
   /// Create a copy of ConfirmBookingEvent
   /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? orderId = null,
-    Object? tableid = null,
-    Object? bookingid = null,
-  }) {
-    return _then(
-      _value.copyWith(
-            orderId: null == orderId
-                ? _value.orderId
-                : orderId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            tableid: null == tableid
-                ? _value.tableid
-                : tableid // ignore: cast_nullable_to_non_nullable
-                      as String,
-            bookingid: null == bookingid
-                ? _value.bookingid
-                : bookingid // ignore: cast_nullable_to_non_nullable
-                      as String,
-          )
-          as $Val,
-    );
-  }
 }
 
 /// @nodoc
-abstract class _$$PaymentDoneImplCopyWith<$Res>
-    implements $ConfirmBookingEventCopyWith<$Res> {
+abstract class _$$PaymentDoneImplCopyWith<$Res> {
   factory _$$PaymentDoneImplCopyWith(
     _$PaymentDoneImpl value,
     $Res Function(_$PaymentDoneImpl) then,
   ) = __$$PaymentDoneImplCopyWithImpl<$Res>;
-  @override
   @useResult
   $Res call({
     String orderId,
@@ -335,6 +309,8 @@ class _$PaymentDoneImpl implements _PaymentDone {
       String bookingid,
     )
     initiateRefund,
+    required TResult Function() startLoading,
+    required TResult Function() stopLoading,
   }) {
     return paymentDone(
       orderId,
@@ -370,6 +346,8 @@ class _$PaymentDoneImpl implements _PaymentDone {
       String bookingid,
     )?
     initiateRefund,
+    TResult? Function()? startLoading,
+    TResult? Function()? stopLoading,
   }) {
     return paymentDone?.call(
       orderId,
@@ -405,6 +383,8 @@ class _$PaymentDoneImpl implements _PaymentDone {
       String bookingid,
     )?
     initiateRefund,
+    TResult Function()? startLoading,
+    TResult Function()? stopLoading,
     required TResult orElse(),
   }) {
     if (paymentDone != null) {
@@ -427,6 +407,8 @@ class _$PaymentDoneImpl implements _PaymentDone {
     required TResult Function(_PaymentDone value) paymentDone,
     required TResult Function(_PaymentFail value) paymentFail,
     required TResult Function(_InitiateRefund value) initiateRefund,
+    required TResult Function(_StartLoading value) startLoading,
+    required TResult Function(_StopLoading value) stopLoading,
   }) {
     return paymentDone(this);
   }
@@ -437,6 +419,8 @@ class _$PaymentDoneImpl implements _PaymentDone {
     TResult? Function(_PaymentDone value)? paymentDone,
     TResult? Function(_PaymentFail value)? paymentFail,
     TResult? Function(_InitiateRefund value)? initiateRefund,
+    TResult? Function(_StartLoading value)? startLoading,
+    TResult? Function(_StopLoading value)? stopLoading,
   }) {
     return paymentDone?.call(this);
   }
@@ -447,6 +431,8 @@ class _$PaymentDoneImpl implements _PaymentDone {
     TResult Function(_PaymentDone value)? paymentDone,
     TResult Function(_PaymentFail value)? paymentFail,
     TResult Function(_InitiateRefund value)? initiateRefund,
+    TResult Function(_StartLoading value)? startLoading,
+    TResult Function(_StopLoading value)? stopLoading,
     required TResult orElse(),
   }) {
     if (paymentDone != null) {
@@ -467,33 +453,27 @@ abstract class _PaymentDone implements ConfirmBookingEvent {
     required final double amount,
   }) = _$PaymentDoneImpl;
 
-  @override
   String get orderId;
   String get transactionId;
   int get status;
-  @override
   String get tableid;
   String get table;
-  @override
   String get bookingid;
   double get amount;
 
   /// Create a copy of ConfirmBookingEvent
   /// with the given fields replaced by the non-null parameter values.
-  @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$PaymentDoneImplCopyWith<_$PaymentDoneImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$PaymentFailImplCopyWith<$Res>
-    implements $ConfirmBookingEventCopyWith<$Res> {
+abstract class _$$PaymentFailImplCopyWith<$Res> {
   factory _$$PaymentFailImplCopyWith(
     _$PaymentFailImpl value,
     $Res Function(_$PaymentFailImpl) then,
   ) = __$$PaymentFailImplCopyWithImpl<$Res>;
-  @override
   @useResult
   $Res call({String orderId, String tableid, String bookingid});
 }
@@ -601,6 +581,8 @@ class _$PaymentFailImpl implements _PaymentFail {
       String bookingid,
     )
     initiateRefund,
+    required TResult Function() startLoading,
+    required TResult Function() stopLoading,
   }) {
     return paymentFail(orderId, tableid, bookingid);
   }
@@ -628,6 +610,8 @@ class _$PaymentFailImpl implements _PaymentFail {
       String bookingid,
     )?
     initiateRefund,
+    TResult? Function()? startLoading,
+    TResult? Function()? stopLoading,
   }) {
     return paymentFail?.call(orderId, tableid, bookingid);
   }
@@ -655,6 +639,8 @@ class _$PaymentFailImpl implements _PaymentFail {
       String bookingid,
     )?
     initiateRefund,
+    TResult Function()? startLoading,
+    TResult Function()? stopLoading,
     required TResult orElse(),
   }) {
     if (paymentFail != null) {
@@ -669,6 +655,8 @@ class _$PaymentFailImpl implements _PaymentFail {
     required TResult Function(_PaymentDone value) paymentDone,
     required TResult Function(_PaymentFail value) paymentFail,
     required TResult Function(_InitiateRefund value) initiateRefund,
+    required TResult Function(_StartLoading value) startLoading,
+    required TResult Function(_StopLoading value) stopLoading,
   }) {
     return paymentFail(this);
   }
@@ -679,6 +667,8 @@ class _$PaymentFailImpl implements _PaymentFail {
     TResult? Function(_PaymentDone value)? paymentDone,
     TResult? Function(_PaymentFail value)? paymentFail,
     TResult? Function(_InitiateRefund value)? initiateRefund,
+    TResult? Function(_StartLoading value)? startLoading,
+    TResult? Function(_StopLoading value)? stopLoading,
   }) {
     return paymentFail?.call(this);
   }
@@ -689,6 +679,8 @@ class _$PaymentFailImpl implements _PaymentFail {
     TResult Function(_PaymentDone value)? paymentDone,
     TResult Function(_PaymentFail value)? paymentFail,
     TResult Function(_InitiateRefund value)? initiateRefund,
+    TResult Function(_StartLoading value)? startLoading,
+    TResult Function(_StopLoading value)? stopLoading,
     required TResult orElse(),
   }) {
     if (paymentFail != null) {
@@ -705,29 +697,23 @@ abstract class _PaymentFail implements ConfirmBookingEvent {
     required final String bookingid,
   }) = _$PaymentFailImpl;
 
-  @override
   String get orderId;
-  @override
   String get tableid;
-  @override
   String get bookingid;
 
   /// Create a copy of ConfirmBookingEvent
   /// with the given fields replaced by the non-null parameter values.
-  @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$PaymentFailImplCopyWith<_$PaymentFailImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$InitiateRefundImplCopyWith<$Res>
-    implements $ConfirmBookingEventCopyWith<$Res> {
+abstract class _$$InitiateRefundImplCopyWith<$Res> {
   factory _$$InitiateRefundImplCopyWith(
     _$InitiateRefundImpl value,
     $Res Function(_$InitiateRefundImpl) then,
   ) = __$$InitiateRefundImplCopyWithImpl<$Res>;
-  @override
   @useResult
   $Res call({
     String orderId,
@@ -870,6 +856,8 @@ class _$InitiateRefundImpl implements _InitiateRefund {
       String bookingid,
     )
     initiateRefund,
+    required TResult Function() startLoading,
+    required TResult Function() stopLoading,
   }) {
     return initiateRefund(orderId, transactionId, amount, tableid, bookingid);
   }
@@ -897,6 +885,8 @@ class _$InitiateRefundImpl implements _InitiateRefund {
       String bookingid,
     )?
     initiateRefund,
+    TResult? Function()? startLoading,
+    TResult? Function()? stopLoading,
   }) {
     return initiateRefund?.call(
       orderId,
@@ -930,6 +920,8 @@ class _$InitiateRefundImpl implements _InitiateRefund {
       String bookingid,
     )?
     initiateRefund,
+    TResult Function()? startLoading,
+    TResult Function()? stopLoading,
     required TResult orElse(),
   }) {
     if (initiateRefund != null) {
@@ -944,6 +936,8 @@ class _$InitiateRefundImpl implements _InitiateRefund {
     required TResult Function(_PaymentDone value) paymentDone,
     required TResult Function(_PaymentFail value) paymentFail,
     required TResult Function(_InitiateRefund value) initiateRefund,
+    required TResult Function(_StartLoading value) startLoading,
+    required TResult Function(_StopLoading value) stopLoading,
   }) {
     return initiateRefund(this);
   }
@@ -954,6 +948,8 @@ class _$InitiateRefundImpl implements _InitiateRefund {
     TResult? Function(_PaymentDone value)? paymentDone,
     TResult? Function(_PaymentFail value)? paymentFail,
     TResult? Function(_InitiateRefund value)? initiateRefund,
+    TResult? Function(_StartLoading value)? startLoading,
+    TResult? Function(_StopLoading value)? stopLoading,
   }) {
     return initiateRefund?.call(this);
   }
@@ -964,6 +960,8 @@ class _$InitiateRefundImpl implements _InitiateRefund {
     TResult Function(_PaymentDone value)? paymentDone,
     TResult Function(_PaymentFail value)? paymentFail,
     TResult Function(_InitiateRefund value)? initiateRefund,
+    TResult Function(_StartLoading value)? startLoading,
+    TResult Function(_StopLoading value)? stopLoading,
     required TResult orElse(),
   }) {
     if (initiateRefund != null) {
@@ -982,21 +980,369 @@ abstract class _InitiateRefund implements ConfirmBookingEvent {
     required final String bookingid,
   }) = _$InitiateRefundImpl;
 
-  @override
   String get orderId;
   String get transactionId;
   double get amount;
-  @override
   String get tableid;
-  @override
   String get bookingid;
 
   /// Create a copy of ConfirmBookingEvent
   /// with the given fields replaced by the non-null parameter values.
-  @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$InitiateRefundImplCopyWith<_$InitiateRefundImpl> get copyWith =>
       throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$StartLoadingImplCopyWith<$Res> {
+  factory _$$StartLoadingImplCopyWith(
+    _$StartLoadingImpl value,
+    $Res Function(_$StartLoadingImpl) then,
+  ) = __$$StartLoadingImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$StartLoadingImplCopyWithImpl<$Res>
+    extends _$ConfirmBookingEventCopyWithImpl<$Res, _$StartLoadingImpl>
+    implements _$$StartLoadingImplCopyWith<$Res> {
+  __$$StartLoadingImplCopyWithImpl(
+    _$StartLoadingImpl _value,
+    $Res Function(_$StartLoadingImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of ConfirmBookingEvent
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$StartLoadingImpl implements _StartLoading {
+  const _$StartLoadingImpl();
+
+  @override
+  String toString() {
+    return 'ConfirmBookingEvent.startLoading()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$StartLoadingImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(
+      String orderId,
+      String transactionId,
+      int status,
+      String tableid,
+      String table,
+      String bookingid,
+      double amount,
+    )
+    paymentDone,
+    required TResult Function(String orderId, String tableid, String bookingid)
+    paymentFail,
+    required TResult Function(
+      String orderId,
+      String transactionId,
+      double amount,
+      String tableid,
+      String bookingid,
+    )
+    initiateRefund,
+    required TResult Function() startLoading,
+    required TResult Function() stopLoading,
+  }) {
+    return startLoading();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(
+      String orderId,
+      String transactionId,
+      int status,
+      String tableid,
+      String table,
+      String bookingid,
+      double amount,
+    )?
+    paymentDone,
+    TResult? Function(String orderId, String tableid, String bookingid)?
+    paymentFail,
+    TResult? Function(
+      String orderId,
+      String transactionId,
+      double amount,
+      String tableid,
+      String bookingid,
+    )?
+    initiateRefund,
+    TResult? Function()? startLoading,
+    TResult? Function()? stopLoading,
+  }) {
+    return startLoading?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(
+      String orderId,
+      String transactionId,
+      int status,
+      String tableid,
+      String table,
+      String bookingid,
+      double amount,
+    )?
+    paymentDone,
+    TResult Function(String orderId, String tableid, String bookingid)?
+    paymentFail,
+    TResult Function(
+      String orderId,
+      String transactionId,
+      double amount,
+      String tableid,
+      String bookingid,
+    )?
+    initiateRefund,
+    TResult Function()? startLoading,
+    TResult Function()? stopLoading,
+    required TResult orElse(),
+  }) {
+    if (startLoading != null) {
+      return startLoading();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_PaymentDone value) paymentDone,
+    required TResult Function(_PaymentFail value) paymentFail,
+    required TResult Function(_InitiateRefund value) initiateRefund,
+    required TResult Function(_StartLoading value) startLoading,
+    required TResult Function(_StopLoading value) stopLoading,
+  }) {
+    return startLoading(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_PaymentDone value)? paymentDone,
+    TResult? Function(_PaymentFail value)? paymentFail,
+    TResult? Function(_InitiateRefund value)? initiateRefund,
+    TResult? Function(_StartLoading value)? startLoading,
+    TResult? Function(_StopLoading value)? stopLoading,
+  }) {
+    return startLoading?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_PaymentDone value)? paymentDone,
+    TResult Function(_PaymentFail value)? paymentFail,
+    TResult Function(_InitiateRefund value)? initiateRefund,
+    TResult Function(_StartLoading value)? startLoading,
+    TResult Function(_StopLoading value)? stopLoading,
+    required TResult orElse(),
+  }) {
+    if (startLoading != null) {
+      return startLoading(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _StartLoading implements ConfirmBookingEvent {
+  const factory _StartLoading() = _$StartLoadingImpl;
+}
+
+/// @nodoc
+abstract class _$$StopLoadingImplCopyWith<$Res> {
+  factory _$$StopLoadingImplCopyWith(
+    _$StopLoadingImpl value,
+    $Res Function(_$StopLoadingImpl) then,
+  ) = __$$StopLoadingImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$StopLoadingImplCopyWithImpl<$Res>
+    extends _$ConfirmBookingEventCopyWithImpl<$Res, _$StopLoadingImpl>
+    implements _$$StopLoadingImplCopyWith<$Res> {
+  __$$StopLoadingImplCopyWithImpl(
+    _$StopLoadingImpl _value,
+    $Res Function(_$StopLoadingImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of ConfirmBookingEvent
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$StopLoadingImpl implements _StopLoading {
+  const _$StopLoadingImpl();
+
+  @override
+  String toString() {
+    return 'ConfirmBookingEvent.stopLoading()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$StopLoadingImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(
+      String orderId,
+      String transactionId,
+      int status,
+      String tableid,
+      String table,
+      String bookingid,
+      double amount,
+    )
+    paymentDone,
+    required TResult Function(String orderId, String tableid, String bookingid)
+    paymentFail,
+    required TResult Function(
+      String orderId,
+      String transactionId,
+      double amount,
+      String tableid,
+      String bookingid,
+    )
+    initiateRefund,
+    required TResult Function() startLoading,
+    required TResult Function() stopLoading,
+  }) {
+    return stopLoading();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(
+      String orderId,
+      String transactionId,
+      int status,
+      String tableid,
+      String table,
+      String bookingid,
+      double amount,
+    )?
+    paymentDone,
+    TResult? Function(String orderId, String tableid, String bookingid)?
+    paymentFail,
+    TResult? Function(
+      String orderId,
+      String transactionId,
+      double amount,
+      String tableid,
+      String bookingid,
+    )?
+    initiateRefund,
+    TResult? Function()? startLoading,
+    TResult? Function()? stopLoading,
+  }) {
+    return stopLoading?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(
+      String orderId,
+      String transactionId,
+      int status,
+      String tableid,
+      String table,
+      String bookingid,
+      double amount,
+    )?
+    paymentDone,
+    TResult Function(String orderId, String tableid, String bookingid)?
+    paymentFail,
+    TResult Function(
+      String orderId,
+      String transactionId,
+      double amount,
+      String tableid,
+      String bookingid,
+    )?
+    initiateRefund,
+    TResult Function()? startLoading,
+    TResult Function()? stopLoading,
+    required TResult orElse(),
+  }) {
+    if (stopLoading != null) {
+      return stopLoading();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_PaymentDone value) paymentDone,
+    required TResult Function(_PaymentFail value) paymentFail,
+    required TResult Function(_InitiateRefund value) initiateRefund,
+    required TResult Function(_StartLoading value) startLoading,
+    required TResult Function(_StopLoading value) stopLoading,
+  }) {
+    return stopLoading(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_PaymentDone value)? paymentDone,
+    TResult? Function(_PaymentFail value)? paymentFail,
+    TResult? Function(_InitiateRefund value)? initiateRefund,
+    TResult? Function(_StartLoading value)? startLoading,
+    TResult? Function(_StopLoading value)? stopLoading,
+  }) {
+    return stopLoading?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_PaymentDone value)? paymentDone,
+    TResult Function(_PaymentFail value)? paymentFail,
+    TResult Function(_InitiateRefund value)? initiateRefund,
+    TResult Function(_StartLoading value)? startLoading,
+    TResult Function(_StopLoading value)? stopLoading,
+    required TResult orElse(),
+  }) {
+    if (stopLoading != null) {
+      return stopLoading(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _StopLoading implements ConfirmBookingEvent {
+  const factory _StopLoading() = _$StopLoadingImpl;
 }
 
 /// @nodoc
@@ -1004,7 +1350,7 @@ mixin _$ConfirmBookingState {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
-    required TResult Function() loading,
+    required TResult Function(ConfirmBookingState? previousState) loading,
     required TResult Function(BookingConfirmData data) success,
     required TResult Function(
       String message,
@@ -1019,6 +1365,7 @@ mixin _$ConfirmBookingState {
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )
     paymentSavedFailed,
@@ -1062,7 +1409,7 @@ mixin _$ConfirmBookingState {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
-    TResult? Function()? loading,
+    TResult? Function(ConfirmBookingState? previousState)? loading,
     TResult? Function(BookingConfirmData data)? success,
     TResult? Function(
       String message,
@@ -1077,6 +1424,7 @@ mixin _$ConfirmBookingState {
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )?
     paymentSavedFailed,
@@ -1120,7 +1468,7 @@ mixin _$ConfirmBookingState {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
-    TResult Function()? loading,
+    TResult Function(ConfirmBookingState? previousState)? loading,
     TResult Function(BookingConfirmData data)? success,
     TResult Function(
       String message,
@@ -1135,6 +1483,7 @@ mixin _$ConfirmBookingState {
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )?
     paymentSavedFailed,
@@ -1287,7 +1636,7 @@ class _$ConfirmBookingInitialImpl implements ConfirmBookingInitial {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
-    required TResult Function() loading,
+    required TResult Function(ConfirmBookingState? previousState) loading,
     required TResult Function(BookingConfirmData data) success,
     required TResult Function(
       String message,
@@ -1302,6 +1651,7 @@ class _$ConfirmBookingInitialImpl implements ConfirmBookingInitial {
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )
     paymentSavedFailed,
@@ -1349,7 +1699,7 @@ class _$ConfirmBookingInitialImpl implements ConfirmBookingInitial {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
-    TResult? Function()? loading,
+    TResult? Function(ConfirmBookingState? previousState)? loading,
     TResult? Function(BookingConfirmData data)? success,
     TResult? Function(
       String message,
@@ -1364,6 +1714,7 @@ class _$ConfirmBookingInitialImpl implements ConfirmBookingInitial {
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )?
     paymentSavedFailed,
@@ -1411,7 +1762,7 @@ class _$ConfirmBookingInitialImpl implements ConfirmBookingInitial {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
-    TResult Function()? loading,
+    TResult Function(ConfirmBookingState? previousState)? loading,
     TResult Function(BookingConfirmData data)? success,
     TResult Function(
       String message,
@@ -1426,6 +1777,7 @@ class _$ConfirmBookingInitialImpl implements ConfirmBookingInitial {
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )?
     paymentSavedFailed,
@@ -1541,6 +1893,10 @@ abstract class _$$ConfirmBookingLoadingImplCopyWith<$Res> {
     _$ConfirmBookingLoadingImpl value,
     $Res Function(_$ConfirmBookingLoadingImpl) then,
   ) = __$$ConfirmBookingLoadingImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({ConfirmBookingState? previousState});
+
+  $ConfirmBookingStateCopyWith<$Res>? get previousState;
 }
 
 /// @nodoc
@@ -1554,33 +1910,76 @@ class __$$ConfirmBookingLoadingImplCopyWithImpl<$Res>
 
   /// Create a copy of ConfirmBookingState
   /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? previousState = freezed}) {
+    return _then(
+      _$ConfirmBookingLoadingImpl(
+        previousState: freezed == previousState
+            ? _value.previousState
+            : previousState // ignore: cast_nullable_to_non_nullable
+                  as ConfirmBookingState?,
+      ),
+    );
+  }
+
+  /// Create a copy of ConfirmBookingState
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $ConfirmBookingStateCopyWith<$Res>? get previousState {
+    if (_value.previousState == null) {
+      return null;
+    }
+
+    return $ConfirmBookingStateCopyWith<$Res>(_value.previousState!, (value) {
+      return _then(_value.copyWith(previousState: value));
+    });
+  }
 }
 
 /// @nodoc
 
 class _$ConfirmBookingLoadingImpl implements ConfirmBookingLoading {
-  const _$ConfirmBookingLoadingImpl();
+  const _$ConfirmBookingLoadingImpl({this.previousState});
+
+  @override
+  final ConfirmBookingState? previousState;
 
   @override
   String toString() {
-    return 'ConfirmBookingState.loading()';
+    return 'ConfirmBookingState.loading(previousState: $previousState)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ConfirmBookingLoadingImpl);
+            other is _$ConfirmBookingLoadingImpl &&
+            (identical(other.previousState, previousState) ||
+                other.previousState == previousState));
   }
 
   @override
-  int get hashCode => runtimeType.hashCode;
+  int get hashCode => Object.hash(runtimeType, previousState);
+
+  /// Create a copy of ConfirmBookingState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ConfirmBookingLoadingImplCopyWith<_$ConfirmBookingLoadingImpl>
+  get copyWith =>
+      __$$ConfirmBookingLoadingImplCopyWithImpl<_$ConfirmBookingLoadingImpl>(
+        this,
+        _$identity,
+      );
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
-    required TResult Function() loading,
+    required TResult Function(ConfirmBookingState? previousState) loading,
     required TResult Function(BookingConfirmData data) success,
     required TResult Function(
       String message,
@@ -1595,6 +1994,7 @@ class _$ConfirmBookingLoadingImpl implements ConfirmBookingLoading {
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )
     paymentSavedFailed,
@@ -1635,14 +2035,14 @@ class _$ConfirmBookingLoadingImpl implements ConfirmBookingLoading {
     )
     refundFailed,
   }) {
-    return loading();
+    return loading(previousState);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
-    TResult? Function()? loading,
+    TResult? Function(ConfirmBookingState? previousState)? loading,
     TResult? Function(BookingConfirmData data)? success,
     TResult? Function(
       String message,
@@ -1657,6 +2057,7 @@ class _$ConfirmBookingLoadingImpl implements ConfirmBookingLoading {
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )?
     paymentSavedFailed,
@@ -1697,14 +2098,14 @@ class _$ConfirmBookingLoadingImpl implements ConfirmBookingLoading {
     )?
     refundFailed,
   }) {
-    return loading?.call();
+    return loading?.call(previousState);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
-    TResult Function()? loading,
+    TResult Function(ConfirmBookingState? previousState)? loading,
     TResult Function(BookingConfirmData data)? success,
     TResult Function(
       String message,
@@ -1719,6 +2120,7 @@ class _$ConfirmBookingLoadingImpl implements ConfirmBookingLoading {
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )?
     paymentSavedFailed,
@@ -1761,7 +2163,7 @@ class _$ConfirmBookingLoadingImpl implements ConfirmBookingLoading {
     required TResult orElse(),
   }) {
     if (loading != null) {
-      return loading();
+      return loading(previousState);
     }
     return orElse();
   }
@@ -1825,7 +2227,17 @@ class _$ConfirmBookingLoadingImpl implements ConfirmBookingLoading {
 }
 
 abstract class ConfirmBookingLoading implements ConfirmBookingState {
-  const factory ConfirmBookingLoading() = _$ConfirmBookingLoadingImpl;
+  const factory ConfirmBookingLoading({
+    final ConfirmBookingState? previousState,
+  }) = _$ConfirmBookingLoadingImpl;
+
+  ConfirmBookingState? get previousState;
+
+  /// Create a copy of ConfirmBookingState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$ConfirmBookingLoadingImplCopyWith<_$ConfirmBookingLoadingImpl>
+  get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -1903,7 +2315,7 @@ class _$ConfirmBookingSuccessImpl implements ConfirmBookingSuccess {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
-    required TResult Function() loading,
+    required TResult Function(ConfirmBookingState? previousState) loading,
     required TResult Function(BookingConfirmData data) success,
     required TResult Function(
       String message,
@@ -1918,6 +2330,7 @@ class _$ConfirmBookingSuccessImpl implements ConfirmBookingSuccess {
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )
     paymentSavedFailed,
@@ -1965,7 +2378,7 @@ class _$ConfirmBookingSuccessImpl implements ConfirmBookingSuccess {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
-    TResult? Function()? loading,
+    TResult? Function(ConfirmBookingState? previousState)? loading,
     TResult? Function(BookingConfirmData data)? success,
     TResult? Function(
       String message,
@@ -1980,6 +2393,7 @@ class _$ConfirmBookingSuccessImpl implements ConfirmBookingSuccess {
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )?
     paymentSavedFailed,
@@ -2027,7 +2441,7 @@ class _$ConfirmBookingSuccessImpl implements ConfirmBookingSuccess {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
-    TResult Function()? loading,
+    TResult Function(ConfirmBookingState? previousState)? loading,
     TResult Function(BookingConfirmData data)? success,
     TResult Function(
       String message,
@@ -2042,6 +2456,7 @@ class _$ConfirmBookingSuccessImpl implements ConfirmBookingSuccess {
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )?
     paymentSavedFailed,
@@ -2272,7 +2687,7 @@ class _$ConfirmBookingPaymentFailedImpl implements ConfirmBookingPaymentFailed {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
-    required TResult Function() loading,
+    required TResult Function(ConfirmBookingState? previousState) loading,
     required TResult Function(BookingConfirmData data) success,
     required TResult Function(
       String message,
@@ -2287,6 +2702,7 @@ class _$ConfirmBookingPaymentFailedImpl implements ConfirmBookingPaymentFailed {
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )
     paymentSavedFailed,
@@ -2334,7 +2750,7 @@ class _$ConfirmBookingPaymentFailedImpl implements ConfirmBookingPaymentFailed {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
-    TResult? Function()? loading,
+    TResult? Function(ConfirmBookingState? previousState)? loading,
     TResult? Function(BookingConfirmData data)? success,
     TResult? Function(
       String message,
@@ -2349,6 +2765,7 @@ class _$ConfirmBookingPaymentFailedImpl implements ConfirmBookingPaymentFailed {
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )?
     paymentSavedFailed,
@@ -2396,7 +2813,7 @@ class _$ConfirmBookingPaymentFailedImpl implements ConfirmBookingPaymentFailed {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
-    TResult Function()? loading,
+    TResult Function(ConfirmBookingState? previousState)? loading,
     TResult Function(BookingConfirmData data)? success,
     TResult Function(
       String message,
@@ -2411,6 +2828,7 @@ class _$ConfirmBookingPaymentFailedImpl implements ConfirmBookingPaymentFailed {
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )?
     paymentSavedFailed,
@@ -2549,6 +2967,7 @@ abstract class _$$ConfirmBookingPaymentSavedFailedImplCopyWith<$Res> {
     String transactionId,
     double amount,
     String tableid,
+    bool shouldRefund,
     String bookingid,
   });
 }
@@ -2576,6 +2995,7 @@ class __$$ConfirmBookingPaymentSavedFailedImplCopyWithImpl<$Res>
     Object? transactionId = null,
     Object? amount = null,
     Object? tableid = null,
+    Object? shouldRefund = null,
     Object? bookingid = null,
   }) {
     return _then(
@@ -2600,6 +3020,10 @@ class __$$ConfirmBookingPaymentSavedFailedImplCopyWithImpl<$Res>
             ? _value.tableid
             : tableid // ignore: cast_nullable_to_non_nullable
                   as String,
+        shouldRefund: null == shouldRefund
+            ? _value.shouldRefund
+            : shouldRefund // ignore: cast_nullable_to_non_nullable
+                  as bool,
         bookingid: null == bookingid
             ? _value.bookingid
             : bookingid // ignore: cast_nullable_to_non_nullable
@@ -2619,6 +3043,7 @@ class _$ConfirmBookingPaymentSavedFailedImpl
     required this.transactionId,
     required this.amount,
     required this.tableid,
+    required this.shouldRefund,
     required this.bookingid,
   });
 
@@ -2633,11 +3058,13 @@ class _$ConfirmBookingPaymentSavedFailedImpl
   @override
   final String tableid;
   @override
+  final bool shouldRefund;
+  @override
   final String bookingid;
 
   @override
   String toString() {
-    return 'ConfirmBookingState.paymentSavedFailed(message: $message, orderId: $orderId, transactionId: $transactionId, amount: $amount, tableid: $tableid, bookingid: $bookingid)';
+    return 'ConfirmBookingState.paymentSavedFailed(message: $message, orderId: $orderId, transactionId: $transactionId, amount: $amount, tableid: $tableid, shouldRefund: $shouldRefund, bookingid: $bookingid)';
   }
 
   @override
@@ -2651,6 +3078,8 @@ class _$ConfirmBookingPaymentSavedFailedImpl
                 other.transactionId == transactionId) &&
             (identical(other.amount, amount) || other.amount == amount) &&
             (identical(other.tableid, tableid) || other.tableid == tableid) &&
+            (identical(other.shouldRefund, shouldRefund) ||
+                other.shouldRefund == shouldRefund) &&
             (identical(other.bookingid, bookingid) ||
                 other.bookingid == bookingid));
   }
@@ -2663,6 +3092,7 @@ class _$ConfirmBookingPaymentSavedFailedImpl
     transactionId,
     amount,
     tableid,
+    shouldRefund,
     bookingid,
   );
 
@@ -2683,7 +3113,7 @@ class _$ConfirmBookingPaymentSavedFailedImpl
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
-    required TResult Function() loading,
+    required TResult Function(ConfirmBookingState? previousState) loading,
     required TResult Function(BookingConfirmData data) success,
     required TResult Function(
       String message,
@@ -2698,6 +3128,7 @@ class _$ConfirmBookingPaymentSavedFailedImpl
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )
     paymentSavedFailed,
@@ -2744,6 +3175,7 @@ class _$ConfirmBookingPaymentSavedFailedImpl
       transactionId,
       amount,
       tableid,
+      shouldRefund,
       bookingid,
     );
   }
@@ -2752,7 +3184,7 @@ class _$ConfirmBookingPaymentSavedFailedImpl
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
-    TResult? Function()? loading,
+    TResult? Function(ConfirmBookingState? previousState)? loading,
     TResult? Function(BookingConfirmData data)? success,
     TResult? Function(
       String message,
@@ -2767,6 +3199,7 @@ class _$ConfirmBookingPaymentSavedFailedImpl
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )?
     paymentSavedFailed,
@@ -2813,6 +3246,7 @@ class _$ConfirmBookingPaymentSavedFailedImpl
       transactionId,
       amount,
       tableid,
+      shouldRefund,
       bookingid,
     );
   }
@@ -2821,7 +3255,7 @@ class _$ConfirmBookingPaymentSavedFailedImpl
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
-    TResult Function()? loading,
+    TResult Function(ConfirmBookingState? previousState)? loading,
     TResult Function(BookingConfirmData data)? success,
     TResult Function(
       String message,
@@ -2836,6 +3270,7 @@ class _$ConfirmBookingPaymentSavedFailedImpl
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )?
     paymentSavedFailed,
@@ -2884,6 +3319,7 @@ class _$ConfirmBookingPaymentSavedFailedImpl
         transactionId,
         amount,
         tableid,
+        shouldRefund,
         bookingid,
       );
     }
@@ -2955,6 +3391,7 @@ abstract class ConfirmBookingPaymentSavedFailed implements ConfirmBookingState {
     required final String transactionId,
     required final double amount,
     required final String tableid,
+    required final bool shouldRefund,
     required final String bookingid,
   }) = _$ConfirmBookingPaymentSavedFailedImpl;
 
@@ -2963,6 +3400,7 @@ abstract class ConfirmBookingPaymentSavedFailed implements ConfirmBookingState {
   String get transactionId;
   double get amount;
   String get tableid;
+  bool get shouldRefund;
   String get bookingid;
 
   /// Create a copy of ConfirmBookingState
@@ -3126,7 +3564,7 @@ class _$ConfirmBookingErrorImpl implements ConfirmBookingError {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
-    required TResult Function() loading,
+    required TResult Function(ConfirmBookingState? previousState) loading,
     required TResult Function(BookingConfirmData data) success,
     required TResult Function(
       String message,
@@ -3141,6 +3579,7 @@ class _$ConfirmBookingErrorImpl implements ConfirmBookingError {
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )
     paymentSavedFailed,
@@ -3196,7 +3635,7 @@ class _$ConfirmBookingErrorImpl implements ConfirmBookingError {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
-    TResult? Function()? loading,
+    TResult? Function(ConfirmBookingState? previousState)? loading,
     TResult? Function(BookingConfirmData data)? success,
     TResult? Function(
       String message,
@@ -3211,6 +3650,7 @@ class _$ConfirmBookingErrorImpl implements ConfirmBookingError {
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )?
     paymentSavedFailed,
@@ -3266,7 +3706,7 @@ class _$ConfirmBookingErrorImpl implements ConfirmBookingError {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
-    TResult Function()? loading,
+    TResult Function(ConfirmBookingState? previousState)? loading,
     TResult Function(BookingConfirmData data)? success,
     TResult Function(
       String message,
@@ -3281,6 +3721,7 @@ class _$ConfirmBookingErrorImpl implements ConfirmBookingError {
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )?
     paymentSavedFailed,
@@ -3556,7 +3997,7 @@ class _$ConfirmBookingRefundProcessingImpl
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
-    required TResult Function() loading,
+    required TResult Function(ConfirmBookingState? previousState) loading,
     required TResult Function(BookingConfirmData data) success,
     required TResult Function(
       String message,
@@ -3571,6 +4012,7 @@ class _$ConfirmBookingRefundProcessingImpl
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )
     paymentSavedFailed,
@@ -3618,7 +4060,7 @@ class _$ConfirmBookingRefundProcessingImpl
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
-    TResult? Function()? loading,
+    TResult? Function(ConfirmBookingState? previousState)? loading,
     TResult? Function(BookingConfirmData data)? success,
     TResult? Function(
       String message,
@@ -3633,6 +4075,7 @@ class _$ConfirmBookingRefundProcessingImpl
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )?
     paymentSavedFailed,
@@ -3686,7 +4129,7 @@ class _$ConfirmBookingRefundProcessingImpl
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
-    TResult Function()? loading,
+    TResult Function(ConfirmBookingState? previousState)? loading,
     TResult Function(BookingConfirmData data)? success,
     TResult Function(
       String message,
@@ -3701,6 +4144,7 @@ class _$ConfirmBookingRefundProcessingImpl
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )?
     paymentSavedFailed,
@@ -3983,7 +4427,7 @@ class _$ConfirmBookingRefundInitiatedImpl
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
-    required TResult Function() loading,
+    required TResult Function(ConfirmBookingState? previousState) loading,
     required TResult Function(BookingConfirmData data) success,
     required TResult Function(
       String message,
@@ -3998,6 +4442,7 @@ class _$ConfirmBookingRefundInitiatedImpl
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )
     paymentSavedFailed,
@@ -4052,7 +4497,7 @@ class _$ConfirmBookingRefundInitiatedImpl
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
-    TResult? Function()? loading,
+    TResult? Function(ConfirmBookingState? previousState)? loading,
     TResult? Function(BookingConfirmData data)? success,
     TResult? Function(
       String message,
@@ -4067,6 +4512,7 @@ class _$ConfirmBookingRefundInitiatedImpl
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )?
     paymentSavedFailed,
@@ -4121,7 +4567,7 @@ class _$ConfirmBookingRefundInitiatedImpl
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
-    TResult Function()? loading,
+    TResult Function(ConfirmBookingState? previousState)? loading,
     TResult Function(BookingConfirmData data)? success,
     TResult Function(
       String message,
@@ -4136,6 +4582,7 @@ class _$ConfirmBookingRefundInitiatedImpl
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )?
     paymentSavedFailed,
@@ -4418,7 +4865,7 @@ class _$ConfirmBookingRefundFailedImpl implements ConfirmBookingRefundFailed {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
-    required TResult Function() loading,
+    required TResult Function(ConfirmBookingState? previousState) loading,
     required TResult Function(BookingConfirmData data) success,
     required TResult Function(
       String message,
@@ -4433,6 +4880,7 @@ class _$ConfirmBookingRefundFailedImpl implements ConfirmBookingRefundFailed {
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )
     paymentSavedFailed,
@@ -4487,7 +4935,7 @@ class _$ConfirmBookingRefundFailedImpl implements ConfirmBookingRefundFailed {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
-    TResult? Function()? loading,
+    TResult? Function(ConfirmBookingState? previousState)? loading,
     TResult? Function(BookingConfirmData data)? success,
     TResult? Function(
       String message,
@@ -4502,6 +4950,7 @@ class _$ConfirmBookingRefundFailedImpl implements ConfirmBookingRefundFailed {
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )?
     paymentSavedFailed,
@@ -4556,7 +5005,7 @@ class _$ConfirmBookingRefundFailedImpl implements ConfirmBookingRefundFailed {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
-    TResult Function()? loading,
+    TResult Function(ConfirmBookingState? previousState)? loading,
     TResult Function(BookingConfirmData data)? success,
     TResult Function(
       String message,
@@ -4571,6 +5020,7 @@ class _$ConfirmBookingRefundFailedImpl implements ConfirmBookingRefundFailed {
       String transactionId,
       double amount,
       String tableid,
+      bool shouldRefund,
       String bookingid,
     )?
     paymentSavedFailed,

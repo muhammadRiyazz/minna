@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
 class Erroricon extends StatelessWidget {
-  const Erroricon({Key? key, required this.ontap}) : super(key: key);
+  const Erroricon({super.key, required this.ontap});
   final ontap;
   @override
   Widget build(BuildContext context) {

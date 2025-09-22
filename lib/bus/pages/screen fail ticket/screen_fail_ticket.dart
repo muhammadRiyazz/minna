@@ -4,7 +4,7 @@ import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/pages/main%20home/home.dart';
 
 class ScreenFailTicket extends StatelessWidget {
-  const ScreenFailTicket({Key? key}) : super(key: key);
+  const ScreenFailTicket({super.key});
 
   @override
   Widget build(BuildContext context) {

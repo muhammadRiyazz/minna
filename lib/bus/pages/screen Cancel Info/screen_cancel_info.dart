@@ -14,12 +14,12 @@ import 'package:minna/comman/core/api.dart';
 
 class ScreenCancelInfo extends StatefulWidget {
   const ScreenCancelInfo({
-    Key? key,
+    super.key,
     required this.cancelData,
     required this.seats,
     required this.blocid,
     required this.tin,
-  }) : super(key: key);
+  });
 
   final CancelDataModal cancelData;
   final List<InventoryItem> seats;

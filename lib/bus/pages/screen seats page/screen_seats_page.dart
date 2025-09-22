@@ -18,13 +18,13 @@ import '../../infrastructure/seats/seatcalculation.dart';
 
 class ScreenSeateLayout extends StatefulWidget {
   const ScreenSeateLayout({
-    Key? key,
+    super.key,
     required this.alldata,
     required this.travelsname,
     required this.trpinfo,
     required this.dropingTimeList,
     required this.boardingTimeList,
-  }) : super(key: key);
+  });
 
   final BlockTicketRequest alldata;
   final String trpinfo;

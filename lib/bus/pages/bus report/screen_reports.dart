@@ -5,10 +5,10 @@ import 'package:minna/comman/const/const.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:minna/bus/domain/report%20modal/report_Modal.dart';
 import 'package:minna/bus/infrastructure/fetch%20reports/fetch_reports.dart';
-import 'package:minna/comman/pages/screen%20bookings/bus%20report/widget/DetailsPartContainer.dart';
+import 'package:minna/bus/pages/bus%20report/widget/DetailsPartContainer.dart';
 
 class ScreenReport extends StatefulWidget {
-  const ScreenReport({Key? key}) : super(key: key);
+  const ScreenReport({super.key});
 
   @override
   State<ScreenReport> createState() => _ScreenReportState();

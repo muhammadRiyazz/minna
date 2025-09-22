@@ -26,4 +26,8 @@ class ConfirmBookingEvent with _$ConfirmBookingEvent {
     required String tableid,
     required String bookingid,
   }) = _InitiateRefund;
+  const factory ConfirmBookingEvent.startLoading() = _StartLoading;
+    const factory ConfirmBookingEvent.stopLoading() = _StopLoading;
+    
+
 }

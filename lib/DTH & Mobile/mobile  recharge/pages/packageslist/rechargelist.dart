@@ -6,7 +6,7 @@ class MobileRechargePlansPage extends StatefulWidget {
   final String mobileNumber;
   final String operator;
 
-  const MobileRechargePlansPage({
+  const MobileRechargePlansPage({super.key, 
     required this.mobileNumber,
     required this.operator,
   });

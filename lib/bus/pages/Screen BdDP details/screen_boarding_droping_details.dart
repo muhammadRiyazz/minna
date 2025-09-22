@@ -14,14 +14,14 @@ import 'package:minna/bus/presendation/screen%20view%20ticket/screen_view_ticket
 
 class ScreenBdDpDetails extends StatefulWidget {
   const ScreenBdDpDetails({
-    Key? key,
+    super.key,
     required this.selectedSeats,
     required this.alldata,
     required this.travelsname,
     required this.dropingTimeList,
     required this.boardingTimeList,
     required this.trpinfo,
-  }) : super(key: key);
+  });
 
   final BlockTicketRequest alldata;
   final String trpinfo;

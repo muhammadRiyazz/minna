@@ -5,8 +5,7 @@ import 'package:minna/bus/pages/Screen%20Ticket%20Details/TicketDetails.dart';
 import 'package:minna/comman/const/const.dart';
 
 class DetailsPart extends StatelessWidget {
-  const DetailsPart({Key? key, required this.reportData, required this.index})
-    : super(key: key);
+  const DetailsPart({super.key, required this.reportData, required this.index});
 
   final List<BusTicketReport> reportData;
   final int index;

@@ -13,7 +13,7 @@ Future<Response> conformTicketApi({required String blockKey}) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     final userId = preferences.getString('userId') ?? '';
 
-    var _urlPhpAvaiBus = "${baseUrl}CallBackWithParams";
+    var urlPhpAvaiBus = "${baseUrl}CallBackWithParams";
 
     var bodyBackend = {
       "url": "http://api.seatseller.travel/bookticket?blockKey=$blockKey",
@@ -26,7 +26,7 @@ Future<Response> conformTicketApi({required String blockKey}) async {
     
     log("Calling conformTicketApi with blockKey: $blockKey");
     
-    Response resp = await post(Uri.parse(_urlPhpAvaiBus), body: bodyBackend)
+    Response resp = await post(Uri.parse(urlPhpAvaiBus), body: bodyBackend)
         .timeout(const Duration(seconds: 30));
     
     log("conformTicketApi response status: ${resp.statusCode}");

@@ -26,6 +26,11 @@ class ConfirmBookingBloc extends Bloc<ConfirmBookingEvent, ConfirmBookingState> 
       'amount=${event.amount}');
 
   try {
+
+
+
+
+    
     log('🔹 Calling savePaymentDetails...');
     final saveResult = await savePaymentDetails(
       orderId: event.orderId,
@@ -37,10 +42,46 @@ class ConfirmBookingBloc extends Bloc<ConfirmBookingEvent, ConfirmBookingState> 
     log('✅ savePaymentDetails result: $saveResult');
 
     if (!saveResult['success']) {
+
+
+      // final refundResult = await refundPayment(
+     //       transactionId: event.transactionId,
+     //       amount: event.amount,
+     //       tableId: event.tableid,
+     //       table: 'cab_data',
+    //     );
+
+
+
+
+      // if (refundResult['success']) {
+      //     emit(ConfirmBookingRefundInitiated(
+      //       message: refundResult['message'] ?? "Refund initiated successfully",
+      //       orderId: event.orderId,
+      //       transactionId: event.transactionId,
+      //       amount: event.amount,
+      //       tableid: event.tableid,
+      //       bookingid: event.bookingid,
+      //     ));
+      //   } else {
+      //     emit(ConfirmBookingRefundFailed(
+      //       message: refundResult['message'] ?? "Refund failed",
+      //       orderId: event.orderId,
+      //       transactionId: event.transactionId,
+      //       amount: event.amount,
+      //       tableid: event.tableid,
+      //       bookingid: event.bookingid,
+      //     ));
+      //   }
+
+
+
+
       log('❌ Payment save failed');
       emit(ConfirmBookingPaymentSavedFailed(
         message: "Payment details could not be saved",
         orderId: event.orderId,
+        shouldRefund: true,
         transactionId: event.transactionId,
         amount: event.amount,
         tableid: event.tableid,
@@ -50,9 +91,12 @@ class ConfirmBookingBloc extends Bloc<ConfirmBookingEvent, ConfirmBookingState> 
       return;
     }
 
+
+
+
     log('🔹 Calling confirm booking API...');
     final response = await http.post(
-      Uri.parse('http://gozotech2.ddns.net:5192/api/cpapi/booking/'),
+      Uri.parse('http://gozotech2.ddns.net:5192/api/cpapi/booking/confirm'),
       headers: {
         'Authorization': 'Basic ZjA2MjljNTIxZjE2MjU0NTA2YmIyMDQzNWI4MTJmMmE=',
         'Content-Type': 'application/json',
@@ -126,6 +170,38 @@ class ConfirmBookingBloc extends Bloc<ConfirmBookingEvent, ConfirmBookingState> 
       
         log("📩 cab-status failed Response body: ${saveResponse.body}");
 
+
+
+  final refundResult = await refundPayment(
+          transactionId: event.transactionId,
+          amount: event.amount,
+          tableId: event.tableid,
+          table: 'cab_data',
+        );
+
+
+
+   if (refundResult['success']) {
+          emit(ConfirmBookingRefundInitiated(
+            message: refundResult['message'] ?? "Refund initiated successfully",
+            orderId: event.orderId,
+            transactionId: event.transactionId,
+            amount: event.amount,
+            tableid: event.tableid,
+            bookingid: event.bookingid,
+          ));
+        } else {
+          emit(ConfirmBookingRefundFailed(
+            message: refundResult['message'] ?? "Refund failed",
+            orderId: event.orderId,
+            transactionId: event.transactionId,
+            amount: event.amount,
+            tableid: event.tableid,
+            bookingid: event.bookingid,
+          ));
+        }
+
+
         emit(ConfirmBookingRefundInitiated(
           message: "Booking confirmation failed. Refund initiated.",
           orderId: event.orderId,
@@ -197,6 +273,33 @@ class ConfirmBookingBloc extends Bloc<ConfirmBookingEvent, ConfirmBookingState> 
         ));
       }
     });
+// In your ConfirmBookingBloc
+on<_StartLoading>((event, emit) async {
+  // Store the current state as previous state before going to loading
+  final currentState = state;
+  if (currentState is! ConfirmBookingLoading) {
+    emit(ConfirmBookingLoading(previousState: currentState));
+  }
+});
+
+on<_StopLoading>((event, emit) async {
+  // Return to the previous state if it exists, otherwise go to initial
+  if (state is ConfirmBookingLoading) {
+    final loadingState = state as ConfirmBookingLoading;
+    if (loadingState.previousState != null) {
+      emit(loadingState.previousState!);
+    } else {
+      emit(ConfirmBookingInitial());
+    }
+  }
+});
+
+
+
+
+
+
+
 
     on<_InitiateRefund>((event, emit) async {
       emit(ConfirmBookingRefundProcessing(

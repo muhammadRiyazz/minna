@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:minna/comman/const/const.dart';
 
 class ContactUsPage extends StatefulWidget {
+  const ContactUsPage({super.key});
+
   @override
   _ContactUsPageState createState() => _ContactUsPageState();
 }

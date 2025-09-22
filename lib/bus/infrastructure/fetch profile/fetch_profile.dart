@@ -4,7 +4,7 @@ import 'package:minna/bus/domain/profile%20modal/profile_modal.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-fetchProfileData() async {
+Future<ProfileModal> fetchProfileData() async {
   log('call function');
   SharedPreferences preferences = await SharedPreferences.getInstance();
   var userId = preferences.getString('userdbid');

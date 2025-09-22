@@ -16,7 +16,7 @@ class TripSelectionPage extends StatefulWidget {
 
 class _TripSelectionPageState extends State<TripSelectionPage> {
   int _selectedTripType = 1;
-  Set<int> _selectedCabTypes = {};
+  final Set<int> _selectedCabTypes = {};
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay.now();
   final TextEditingController _sourceController = TextEditingController();
@@ -219,8 +219,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
               onPrimary: Colors.white,
               surface: cardColor,
               onSurface: textColor,
-            ),
-            dialogBackgroundColor: backgroundColor,
+            ), dialogTheme: DialogThemeData(backgroundColor: backgroundColor),
           ),
           child: child!,
         );
@@ -256,8 +255,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
               onPrimary: Colors.white,
               surface: cardColor,
               onSurface: textColor,
-            ),
-            dialogBackgroundColor: backgroundColor,
+            ), dialogTheme: DialogThemeData(backgroundColor: backgroundColor),
           ),
           child: child!,
         );

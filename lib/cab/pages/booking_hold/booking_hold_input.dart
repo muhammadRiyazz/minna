@@ -13,10 +13,10 @@ class BookingPage extends StatefulWidget {
   final Map<String, dynamic> requestData;
 
   const BookingPage({
-    Key? key,
+    super.key,
     required this.selectedCab,
     required this.requestData,
-  }) : super(key: key);
+  });
 
   @override
   _BookingPageState createState() => _BookingPageState();
@@ -745,9 +745,9 @@ class _BookingPageState extends State<BookingPage> {
          BlocConsumer<HoldCabBloc, HoldCabState>(
   listener: (context, state) {
     if (state is HoldCabError) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(state.message)),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(content: Text(state.message)),
+      // );
     }
 
     if (state is HoldCabSuccess) {
@@ -840,7 +840,7 @@ class _BookingPageState extends State<BookingPage> {
       trailing: Switch(
         value: value,
         onChanged: onChanged,
-        activeColor: maincolor1!,
+        activeThumbColor: maincolor1!,
       ),
     );
   }

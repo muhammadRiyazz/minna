@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 
 class TripInformation extends StatelessWidget {
   const TripInformation(
-      {Key? key,
+      {super.key,
       required this.boardingpoint,
       required this.droppingPoint,
       required this.travelsname,
-      required this.trpinfo})
-      : super(key: key);
+      required this.trpinfo});
   final String boardingpoint;
   final String droppingPoint;
   final String trpinfo;

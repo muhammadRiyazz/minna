@@ -2,11 +2,10 @@ import 'package:flutter/cupertino.dart';
 
 class Infolabel extends StatelessWidget {
   const Infolabel(
-      {Key? key,
+      {super.key,
       required this.bordercolor,
       required this.color,
-      required this.infotext})
-      : super(key: key);
+      required this.infotext});
   final String infotext;
   final color;
   final bordercolor;

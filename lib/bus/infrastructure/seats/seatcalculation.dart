@@ -1,6 +1,6 @@
 import '../../domain/seatlayout/seatlayoutmodal.dart';
 
-getLowerBerth({required List<Seat> seatsList}) {
+List<Seat> getLowerBerth({required List<Seat> seatsList}) {
   final List<Seat> lowerBerth = [];
   for (var seat in seatsList) {
     if (seat.zIndex == '0') {
@@ -10,7 +10,7 @@ getLowerBerth({required List<Seat> seatsList}) {
   return lowerBerth;
 }
 
-getUpperBerth({required List<Seat> seatsList}) {
+List<Seat> getUpperBerth({required List<Seat> seatsList}) {
   final List<Seat> upperBerth = [];
   for (var seat in seatsList) {
     if (seat.zIndex == '1') {
@@ -20,7 +20,7 @@ getUpperBerth({required List<Seat> seatsList}) {
   return upperBerth;
 }
 
-totalRow({required List<Seat> seatsList}) {
+int totalRow({required List<Seat> seatsList}) {
   int maxRow = 0;
   for (var seat in seatsList) {
     int row = int.parse(seat.row);
@@ -31,7 +31,7 @@ totalRow({required List<Seat> seatsList}) {
   return maxRow;
 }
 
-totalColumn({required List<Seat> seatsList}) {
+int totalColumn({required List<Seat> seatsList}) {
   int maxColumn = 0;
   for (var seat in seatsList) {
     int column = int.parse(seat.column);

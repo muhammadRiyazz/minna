@@ -9,7 +9,7 @@ Future<Response> getblockticket({required String data}) async {
   SharedPreferences preferences = await SharedPreferences.getInstance();
   final userId = preferences.getString('userId') ?? '';
 
-  var _urlPhp = '${baseUrl}CallAPI';
+  var urlPhp = '${baseUrl}CallAPI';
 
   var bodyBackend = {
     "path": "http://api.seatseller.travel/blockTicket",
@@ -18,7 +18,7 @@ Future<Response> getblockticket({required String data}) async {
     "franch_id": '',
     "data": data,
   };
-  Response _resRedBus = await post(Uri.parse(_urlPhp), body: bodyBackend);
+  Response resRedBus = await post(Uri.parse(urlPhp), body: bodyBackend);
 
-  return _resRedBus;
+  return resRedBus;
 }

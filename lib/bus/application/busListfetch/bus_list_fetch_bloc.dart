@@ -189,7 +189,7 @@ class BusListFetchBloc extends Bloc<BusListFetchEvent, BusListFetchState> {
     });
   }
 }
-case1({required String time}) {
+bool case1({required String time}) {
   final currentHour = changetimeFilter(time: time);
 
   if (currentHour < 6) {
@@ -199,7 +199,7 @@ case1({required String time}) {
   }
 }
 
-case2({required String time}) {
+bool case2({required String time}) {
   final currentHour = changetimeFilter(time: time);
 
   if (currentHour >= 6 && currentHour < 12) {
@@ -209,7 +209,7 @@ case2({required String time}) {
   }
 }
 
-case3({required String time}) {
+bool case3({required String time}) {
   final currentHour = changetimeFilter(time: time);
 
   if (currentHour >= 12 && currentHour < 18) {
@@ -219,7 +219,7 @@ case3({required String time}) {
   }
 }
 
-case4({required String time}) {
+bool case4({required String time}) {
   final currentHour = changetimeFilter(time: time);
 
   if (currentHour >= 18) {

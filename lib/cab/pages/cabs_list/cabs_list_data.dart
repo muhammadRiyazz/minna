@@ -11,7 +11,7 @@ import 'package:minna/comman/const/const.dart';
 class CabsListPage extends StatelessWidget {
   final Map<String, dynamic> requestData;
 
-  const CabsListPage({Key? key, required this.requestData}) : super(key: key);
+  const CabsListPage({super.key, required this.requestData});
 
   @override
   Widget build(BuildContext context) {

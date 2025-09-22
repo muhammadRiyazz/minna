@@ -15,7 +15,7 @@ Future<dynamic> showBottomSheetbooking({
   return showModalBottomSheet(
     context: context,
     builder: (context) {
-      return Container(
+      return SizedBox(
         height: 300,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),

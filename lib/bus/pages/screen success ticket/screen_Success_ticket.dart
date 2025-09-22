@@ -8,10 +8,10 @@ class ScreenSuccessTicket extends StatefulWidget {
   final int passengercount;
 
   const ScreenSuccessTicket({
-    Key? key,
+    super.key,
     required this.tinid,
     required this.passengercount,
-  }) : super(key: key);
+  });
 
   @override
   State<ScreenSuccessTicket> createState() => _ScreenSuccessTicketState();

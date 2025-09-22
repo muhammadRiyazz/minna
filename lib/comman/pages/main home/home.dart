@@ -14,9 +14,12 @@ import 'package:minna/comman/pages/histoy/histoty.dart';
 import 'package:minna/comman/pages/screen%20bookings/screen_booking.dart';
 import 'package:minna/comman/pages/screen%20my%20account/my_account_page.dart';
 import 'package:minna/flight/presendation/screen%20flight/home_flight.dart';
+import 'package:minna/hotel%20booking/pages/holel%20home%20page/home_page_hotel.dart';
 import 'package:minna/hotel%20booking/pages/hotel%20details/hotel_details_page.dart';
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -80,6 +83,8 @@ class _HomePageState extends State<HomePage> {
 }
 
 class HomeContentPage extends StatefulWidget {
+  const HomeContentPage({super.key});
+
   @override
   State<HomeContentPage> createState() => _HomeContentPageState();
 }
@@ -161,7 +166,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> _filteredServices = _searchText.isEmpty
+    final List<Map<String, dynamic>> filteredServices = _searchText.isEmpty
         ? []
         : _allServices
               .where(
@@ -189,8 +194,8 @@ class _HomeContentPageState extends State<HomeContentPage> {
         child: Column(
           children: [
             _buildHeader(),
-            if (_filteredServices.isNotEmpty)
-              _buildSearchResults(_filteredServices),
+            if (filteredServices.isNotEmpty)
+              _buildSearchResults(filteredServices),
             _buildTravelServices(context),
             _buildPromoBanner(),
             _buildQuickActions(context),
@@ -373,7 +378,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) {
-                        return HotelDetailsPage();
+                        return HotelBookingHome();
                       },
                     ),
                   );
