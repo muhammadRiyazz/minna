@@ -1,4 +1,5 @@
-// lib/hotel booking/domain/hotel details/hotel_details.dart
+import 'dart:convert';
+
 class HotelDetailsResponse {
   final Status status;
   final List<HotelDetail> hotelDetails;
@@ -10,11 +11,27 @@ class HotelDetailsResponse {
 
   factory HotelDetailsResponse.fromJson(Map<String, dynamic> json) {
     return HotelDetailsResponse(
-      status: Status.fromJson(json['Status']),
-      hotelDetails: List<HotelDetail>.from(
-          json['HotelDetails'].map((x) => HotelDetail.fromJson(x))),
+      status: Status.fromJson(json['Status'] ?? {}),
+      hotelDetails: json['HotelDetails'] != null
+          ? List<HotelDetail>.from(
+              (json['HotelDetails'] as List<dynamic>)
+                  .map((x) => HotelDetail.fromJson(x)),
+            )
+          : [],
     );
   }
+
+  /// Helper: Parse from raw json string
+  static HotelDetailsResponse fromRawJson(String str) =>
+      HotelDetailsResponse.fromJson(json.decode(str));
+
+  /// Convert to raw json string
+  String toRawJson() => json.encode(toJson());
+
+  Map<String, dynamic> toJson() => {
+        "Status": status.toJson(),
+        "HotelDetails": List<dynamic>.from(hotelDetails.map((x) => x.toJson())),
+      };
 }
 
 class Status {
@@ -28,10 +45,15 @@ class Status {
 
   factory Status.fromJson(Map<String, dynamic> json) {
     return Status(
-      code: json['Code'],
-      description: json['Description'],
+      code: json['Code'] ?? 0,
+      description: json['Description'] ?? '',
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        "Code": code,
+        "Description": description,
+      };
 }
 
 class HotelDetail {
@@ -39,7 +61,7 @@ class HotelDetail {
   final String hotelName;
   final String description;
   final List<String> hotelFacilities;
-  final String attractions;
+  final List<String> attractions;
   final List<String> images;
   final String address;
   final String pinCode;
@@ -80,11 +102,13 @@ class HotelDetail {
       hotelCode: json['HotelCode'] ?? '',
       hotelName: json['HotelName'] ?? '',
       description: json['Description'] ?? '',
-      hotelFacilities: List<String>.from(json['HotelFacilities'] ?? []),
-      attractions: json['Attractions'] is String 
-          ? json['Attractions'] 
-          : json['Attractions']?.toString() ?? '',
-      images: List<String>.from(json['Images'] ?? []),
+      hotelFacilities: json['HotelFacilities'] != null
+          ? List<String>.from(json['HotelFacilities'])
+          : [],
+      attractions: _parseAttractions(json['Attractions']),
+      images: json['Images'] != null
+          ? List<String>.from(json['Images'])
+          : [],
       address: json['Address'] ?? '',
       pinCode: json['PinCode'] ?? '',
       cityId: json['CityId'] ?? '',
@@ -99,4 +123,53 @@ class HotelDetail {
       checkOutTime: json['CheckOutTime'] ?? '',
     );
   }
+
+  // Helper method to parse attractions safely
+  static List<String> _parseAttractions(dynamic attractionsData) {
+    if (attractionsData == null) return [];
+    
+    if (attractionsData is Map) {
+      // Check if it's an empty map {}
+      if (attractionsData.isEmpty) return [];
+      
+      // Handle map format like {"1) ": "Chinese Fishing Nets", "2) ": "The Delta Study"}
+      final List<String> attractions = [];
+      attractionsData.forEach((key, value) {
+        if (value is String && value.isNotEmpty) {
+          attractions.add(value);
+        }
+      });
+      return attractions;
+    }
+    
+    if (attractionsData is String) {
+      // Handle string format (if any)
+      return attractionsData.isNotEmpty ? [attractionsData] : [];
+    }
+    
+    return [];
+  }
+
+  Map<String, dynamic> toJson() => {
+        "HotelCode": hotelCode,
+        "HotelName": hotelName,
+        "Description": description,
+        "HotelFacilities": hotelFacilities,
+        "Attractions": attractions.isNotEmpty 
+            ? { for (int i = 0; i < attractions.length; i++) "${i + 1}) ": attractions[i] }
+            : {},
+        "Images": images,
+        "Address": address,
+        "PinCode": pinCode,
+        "CityId": cityId,
+        "CountryName": countryName,
+        "PhoneNumber": phoneNumber,
+        "FaxNumber": faxNumber,
+        "Map": map,
+        "HotelRating": hotelRating,
+        "CityName": cityName,
+        "CountryCode": countryCode,
+        "CheckInTime": checkInTime,
+        "CheckOutTime": checkOutTime,
+      };
 }
