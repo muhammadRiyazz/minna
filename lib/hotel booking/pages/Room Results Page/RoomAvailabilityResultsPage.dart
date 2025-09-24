@@ -1,179 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:minna/comman/const/const.dart';
+import 'package:minna/hotel%20booking/domain/rooms/rooms.dart' show HotelRoomResult, Room;
 import 'package:minna/hotel%20booking/pages/PassengerInputPage/PassengerInputPage.dart';
 
 class RoomAvailabilityResultsPage extends StatelessWidget {
-  final DateTime checkInDate;
-  final DateTime checkOutDate;
-  final List<Map<String, dynamic>> rooms;
-  final String nationality;
+  final List<HotelRoomResult> hotelRoomResult;
 
   const RoomAvailabilityResultsPage({
     super.key,
-    required this.checkInDate,
-    required this.checkOutDate,
-    required this.rooms,
-    required this.nationality,
+    required this.hotelRoomResult,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Calculate nights
-    final nights = checkOutDate.difference(checkInDate).inDays;
-
-    // Dummy data - replace with your API response
-    final roomResults = [
-      {
-        "Name": ["Room, 2 Queen Beds (Ocean)"],
-        "BookingCode":
-            "1279415!TB!2!TB!85d362b3-fbbf-11ee-b528-966483a6018a!TB!AFF!",
-        "Inclusion": "Free valet parking, Free self parking",
-        "DayRates": [
-          [
-            {"BasePrice": 566.10},
-          ],
-          [
-            {"BasePrice": 566.10},
-          ],
-        ],
-        "TotalFare": 2773.84,
-        "TotalTax": 509.44,
-        "RoomPromotion": ["Free waterpark access for 2 per day"],
-        "CancelPolicies": [
-          {
-            "Index": "1",
-            "FromDate": "15-04-2024 00:00:00",
-            "ChargeType": "Percentage",
-            "CancellationCharge": 100,
-          },
-        ],
-        "MealType": "Room_Only",
-        "IsRefundable": false,
-        "Supplements": [
-          {
-            "Index": 1,
-            "Type": "AtProperty",
-            "Description": "mandatory_tax",
-            "Price": 40,
-            "Currency": "₹",
-          },
-        ],
-        "WithTransfers": false,
-      },
-      {
-        "Name": ["Room, 2 Queen Beds (Ocean)"],
-        "BookingCode":
-            "1279415!TB!2!TB!85d362b3-fbbf-11ee-b528-966483a6018a!TB!AFF!",
-        "Inclusion": "Free valet parking, Free self parking",
-        "DayRates": [
-          [
-            {"BasePrice": 566.10},
-          ],
-          [
-            {"BasePrice": 566.10},
-          ],
-        ],
-        "TotalFare": 2773.84,
-        "TotalTax": 509.44,
-        "RoomPromotion": ["Free waterpark access for 2 per day"],
-        "CancelPolicies": [
-          {
-            "Index": "1",
-            "FromDate": "15-04-2024 00:00:00",
-            "ChargeType": "Percentage",
-            "CancellationCharge": 100,
-          },
-        ],
-        "MealType": "Room_Only",
-        "IsRefundable": false,
-        "Supplements": [
-          {
-            "Index": 1,
-            "Type": "AtProperty",
-            "Description": "mandatory_tax",
-            "Price": 40,
-            "Currency": "₹",
-          },
-        ],
-        "WithTransfers": false,
-      },
-      {
-        "Name": ["Room, 1 King Bed (Palm)"],
-        "BookingCode":
-            "1279415!TB!1!TB!85d362b3-fbbf-11ee-b528-966483a6018a!TB!AFF!",
-        "Inclusion": "Free valet parking, Free self parking",
-        "DayRates": [
-          [
-            {"BasePrice": 534.24},
-          ],
-          [
-            {"BasePrice": 534.24},
-          ],
-        ],
-        "TotalFare": 2617.84,
-        "TotalTax": 480.88,
-        "RoomPromotion": ["Free waterpark access for 2 per day"],
-        "CancelPolicies": [
-          {
-            "Index": "1",
-            "FromDate": "15-04-2024 00:00:00",
-            "ChargeType": "Percentage",
-            "CancellationCharge": 100,
-          },
-        ],
-        "MealType": "Room_Only",
-        "IsRefundable": false,
-        "Supplements": [
-          {
-            "Index": 1,
-            "Type": "AtProperty",
-            "Description": "mandatory_tax",
-            "Price": 40,
-            "Currency": "₹",
-          },
-        ],
-        "WithTransfers": false,
-      },
-      {
-        "Name": ["Room, 2 Queen Beds (Ocean)"],
-        "BookingCode":
-            "1279415!TB!2!TB!85d362b3-fbbf-11ee-b528-966483a6018a!TB!AFF!",
-        "Inclusion": "Free valet parking, Free self parking",
-        "DayRates": [
-          [
-            {"BasePrice": 566.10},
-          ],
-          [
-            {"BasePrice": 566.10},
-          ],
-        ],
-        "TotalFare": 2773.84,
-        "TotalTax": 509.44,
-        "RoomPromotion": ["Free waterpark access for 2 per day"],
-        "CancelPolicies": [
-          {
-            "Index": "1",
-            "FromDate": "15-04-2024 00:00:00",
-            "ChargeType": "Percentage",
-            "CancellationCharge": 100,
-          },
-        ],
-        "MealType": "Room_Only",
-        "IsRefundable": false,
-        "Supplements": [
-          {
-            "Index": 1,
-            "Type": "AtProperty",
-            "Description": "mandatory_tax",
-            "Price": 40,
-            "Currency": "₹",
-          },
-        ],
-        "WithTransfers": false,
-      },
-    ];
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Available Rooms'),
@@ -187,9 +27,15 @@ class RoomAvailabilityResultsPage extends StatelessWidget {
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.only(bottom: 16),
-              itemCount: roomResults.length,
+              itemCount: hotelRoomResult.length,
               itemBuilder: (context, index) {
-                return _buildRoomCard(context, roomResults[index], nights);
+                final hotelResult = hotelRoomResult[index];
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ...hotelResult.rooms.map((room) => _buildRoomCard(context, room, hotelResult.currency)),
+                  ],
+                );
               },
             ),
           ),
@@ -200,16 +46,16 @@ class RoomAvailabilityResultsPage extends StatelessWidget {
 
   Widget _buildRoomCard(
     BuildContext context,
-    Map<String, dynamic> room,
-    int nights,
+    Room room,
+    String currency,
   ) {
     final currencyFormat = NumberFormat.currency(
       symbol: '₹ ',
       decimalDigits: 2,
     );
-    final isRefundable = room['IsRefundable'] as bool;
-    final totalFare = room['TotalFare'] as double;
-    final avgNightlyRate = totalFare / nights;
+    final isRefundable = room.isRefundable;
+    final totalFare = room.totalFare;
+    final roomName = room.name.isNotEmpty ? room.name[0] : 'Room';
 
     return Card(
       margin: const EdgeInsets.fromLTRB(10, 8, 10, 8),
@@ -226,11 +72,11 @@ class RoomAvailabilityResultsPage extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.network(
-                    'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b',
+                  child: Container(
+                   color: Colors.white,
                     width: 100,
                     height: 80,
-                    fit: BoxFit.cover,
+                  child: Icon(Icons.king_bed,color: maincolor1,size: 35,),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -239,7 +85,7 @@ class RoomAvailabilityResultsPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        room['Name'][0],
+                        roomName,
                         style: Theme.of(context).textTheme.titleMedium
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
@@ -253,23 +99,28 @@ class RoomAvailabilityResultsPage extends StatelessWidget {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            room['Name'][0].contains('King')
-                                ? 'King Bed'
-                                : 'Queen Beds',
+                            roomName.contains('King') ? 'King Bed' : 'Queen Beds',
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
-                          const SizedBox(width: 12),
-                          Icon(
-                            Icons.smoke_free,
-                            color: Colors.grey[600],
-                            size: 16,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Non-smoking',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
+                          // const SizedBox(width: 12),
+                          // Icon(
+                          //   Icons.smoke_free,
+                          //   color: Colors.grey[600],
+                          //   size: 16,
+                          // ),
+                          // const SizedBox(width: 4),
+                          // Text(
+                          //   'Non-smoking',
+                          //   style: Theme.of(context).textTheme.bodySmall,
+                          // ),
                         ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Meal Type: ${room.mealType}',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Colors.grey[600],
+                            ),
                       ),
                     ],
                   ),
@@ -279,11 +130,11 @@ class RoomAvailabilityResultsPage extends StatelessWidget {
             const SizedBox(height: 16),
 
             // Room Features
-            if (room['RoomPromotion'] != null) ...[
+            if (room.roomPromotion.isNotEmpty) ...[
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: (room['RoomPromotion'] as List).map((promo) {
+                children: room.roomPromotion.map((promo) {
                   return Chip(
                     label: Text(promo),
                     backgroundColor: Colors.teal.withOpacity(0.1),
@@ -312,22 +163,6 @@ class RoomAvailabilityResultsPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '$nights ${nights > 1 ? 'nights' : 'night'}',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      Text(
-                        currencyFormat.format(avgNightlyRate),
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  const Divider(height: 1),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
                         'Total for stay',
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           fontWeight: FontWeight.bold,
@@ -344,15 +179,9 @@ class RoomAvailabilityResultsPage extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    'Includes taxes & fees',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodySmall?.copyWith(color: Colors.green),
-                  ),
-                  //       ],
-                  //     ),
-                  //   ],
+                  // Text(
+                  //   'Includes taxes & fees',
+                  //   style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.green),
                   // ),
                   const SizedBox(height: 16),
 
@@ -389,7 +218,7 @@ class RoomAvailabilityResultsPage extends StatelessWidget {
                         flex: 2,
                         child: OutlinedButton(
                           onPressed: () {
-                            _showRoomDetails(context, room);
+                            _showRoomDetails(context, room, currency);
                           },
                           style: OutlinedButton.styleFrom(
                             foregroundColor: maincolor1,
@@ -404,7 +233,7 @@ class RoomAvailabilityResultsPage extends StatelessWidget {
                               fontSize: 15,
                             ),
                           ),
-                          child: Text(
+                          child: const Text(
                             'View Details',
                             style: TextStyle(fontSize: 12),
                           ),
@@ -423,7 +252,6 @@ class RoomAvailabilityResultsPage extends StatelessWidget {
                                 },
                               ),
                             );
-                            // Handle booking
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: maincolor1,
@@ -433,6 +261,7 @@ class RoomAvailabilityResultsPage extends StatelessWidget {
                             ),
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             elevation: 2,
+                            // ignore: deprecated_member_use
                             shadowColor: maincolor1!.withOpacity(0.3),
                             textStyle: const TextStyle(
                               fontWeight: FontWeight.w600,
@@ -448,7 +277,7 @@ class RoomAvailabilityResultsPage extends StatelessWidget {
                             ],
                           ),
                         ),
-                      ),
+                       ),
                     ],
                   ),
                 ],
@@ -460,59 +289,55 @@ class RoomAvailabilityResultsPage extends StatelessWidget {
     );
   }
 
-  void _showRoomDetails(BuildContext context, Map<String, dynamic> room) {
+  void _showRoomDetails(BuildContext context, Room room, String currency) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (context) {
-        return _buildRoomDetailsSheet(context, room);
+        return _buildRoomDetailsSheet(context, room, currency);
       },
     );
   }
+Widget _buildRoomDetailsSheet(
+  BuildContext context,
+  Room room,
+  String currency,
+) {
+  final currencyFormat = NumberFormat.currency(symbol: '₹ ', decimalDigits: 2);
+  final isRefundable = room.isRefundable;
+  final roomName = room.name.isNotEmpty ? room.name[0] : 'Room';
 
-  Widget _buildRoomDetailsSheet(
-    BuildContext context,
-    Map<String, dynamic> room,
-  ) {
-    final currencyFormat = NumberFormat.currency(symbol: ' ', decimalDigits: 2);
-    final isRefundable = room['IsRefundable'] as bool;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
+  return Container(
+    padding: const EdgeInsets.all(16),
+    decoration: const BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    child: SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
+          // Drag Handle
           Center(
             child: Container(
               width: 40,
               height: 4,
+              margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
                 color: Colors.grey[300],
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
           ),
-          const SizedBox(height: 16),
+
+          // Room Name
           Text(
-            room['Name'][0],
-            style: Theme.of(
-              context,
-            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 16),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.network(
-              'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b',
-              height: 200,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
+            roomName,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
           ),
           const SizedBox(height: 16),
 
@@ -531,12 +356,10 @@ class RoomAvailabilityResultsPage extends StatelessWidget {
               _buildFeatureChip(Icons.wifi, 'Free WiFi'),
               _buildFeatureChip(Icons.ac_unit, 'Air Conditioning'),
               _buildFeatureChip(Icons.tv, 'Flat-screen TV'),
-              if (room['Inclusion'] != null)
-                ...room['Inclusion']
-                    .toString()
+              if (room.inclusion.isNotEmpty)
+                ...room.inclusion
                     .split(',')
-                    .map((e) => _buildFeatureChip(Icons.check, e.trim()))
-                    ,
+                    .map((e) => _buildFeatureChip(Icons.check, e.trim())),
             ],
           ),
           const SizedBox(height: 16),
@@ -563,7 +386,7 @@ class RoomAvailabilityResultsPage extends StatelessWidget {
                 Expanded(
                   child: Text(
                     isRefundable
-                        ? 'Free cancellation until ${DateFormat('MMM d, y').format(DateTime.now().add(const Duration(days: 3)))}'
+                        ? 'Free cancellation available'
                         : 'Non-refundable. No changes or cancellations allowed.',
                     style: TextStyle(
                       color: isRefundable ? Colors.green : Colors.red,
@@ -575,71 +398,76 @@ class RoomAvailabilityResultsPage extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          // Price Breakdown
+         
+       // Price Breakdown Section
+const Text(
+  'Price Breakdown',
+  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+),
+const SizedBox(height: 8),
+
+Container(
+  padding: const EdgeInsets.all(12),
+  decoration: BoxDecoration(
+    color: Colors.grey[100],
+    borderRadius: BorderRadius.circular(8),
+  ),
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      // Sum of Day Rates
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text('Room rate'),
+          Text(
+            currencyFormat.format(
+              room.dayRates.fold(
+                0.0,
+                (sum, days) => sum +
+                    days.fold(
+                      0.0,
+                      (s, d) => s + (d['BasePrice'] ?? 0.0),
+                    ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 4),
+
+      // Taxes
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text('Taxes & fees'),
+          Text(currencyFormat.format(room.totalTax)),
+        ],
+      ),
+      const Divider(height: 20, thickness: 1),
+
+      // Total
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
           const Text(
-            'Price Breakdown',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            'Total',
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 8),
-          Table(
-            columnWidths: const {0: FlexColumnWidth(3), 1: FlexColumnWidth(1)},
-            children: [
-              TableRow(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 4),
-                    child: Text('Room rate'),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Text(
-                      currencyFormat.format(
-                        room['TotalFare'] - room['TotalTax'],
-                      ),
-                      textAlign: TextAlign.end,
-                    ),
-                  ),
-                ],
-              ),
-              TableRow(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 4),
-                    child: Text('Taxes & fees'),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Text(
-                      currencyFormat.format(room['TotalTax']),
-                      textAlign: TextAlign.end,
-                    ),
-                  ),
-                ],
-              ),
-              TableRow(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 4),
-                    child: Text(
-                      'Total',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Text(
-                      currencyFormat.format(room['TotalFare']),
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: maincolor1,
-                      ),
-                      textAlign: TextAlign.end,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+          Text(
+            currencyFormat.format(room.totalFare),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: maincolor1,
+            ),
           ),
+        ],
+      ),
+    ],
+  ),
+),
+
+
           const SizedBox(height: 24),
 
           // Book Now Button
@@ -650,12 +478,9 @@ class RoomAvailabilityResultsPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) {
-                      return PassengerInputPage();
-                    },
+                    builder: (context) => PassengerInputPage(),
                   ),
                 );
-                // Handle booking
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: maincolor1,
@@ -671,8 +496,10 @@ class RoomAvailabilityResultsPage extends StatelessWidget {
           const SizedBox(height: 16),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   Widget _buildFeatureChip(IconData icon, String label) {
     return Chip(

@@ -6,6 +6,7 @@ import 'package:minna/hotel%20booking/domain/Nation%20and%20city/city.dart';
 import 'package:minna/hotel%20booking/domain/Nation%20and%20city/nation';
 import 'package:minna/hotel%20booking/functions/get_city_and_nation.dart';
 import 'package:minna/hotel%20booking/pages/hotel%20list/hotel_list.dart';
+  List<CountryModel> countries = [];
 
 class HotelBookingHome extends StatefulWidget {
   const HotelBookingHome({super.key});
@@ -18,7 +19,6 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
   String? selectedCountry;
   String? selectedCity;
 
-  List<CountryModel> countries = [];
   List<HotelCityHotel> cities = [];
 
   bool isLoadingCountries = false; // We load in bottom sheet

@@ -495,14 +495,15 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
                           'paxNo': state.respo!.passengerInfo![i].paxNo,
                           'paxKey': state.respo!.passengerInfo![i].paxKey,
                           'email': emailController.text,
-                          'contact': countryCodeController.text + contactNumberController.text,
-                          'title': selectedTitles[i],
+                          'contact': contactNumberController.text,
+                          'title': selectedTitles[i]!.trim(),
                           'firstName': firstNameControllers[i].text,
                           'lastName': lastNameControllers[i].text,
                           'dob': dobControllers[i].text,
                           'nationality': selectedNationalities[i]?.countryCode,
                           'passportNumber': passportControllers[i].text,
                           'passportExpiry': expiryControllers[i].text,
+                           "CountryCode": 91,
                           'countryOfIssue':
                               selectedCountriesOfIssue[i]?.countryCode,
                           'address': sameAsFirstPassenger[i] && i > 0

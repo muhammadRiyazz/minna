@@ -16,44 +16,55 @@ class BookedDetailsBloc extends Bloc<BookedDetailsEvent, BookedDetailsState> {
   }
 
 
-  Future<void> _onFetchDetails(
-    _FetchDetails event,
-    Emitter<BookedDetailsState> emit,
-  ) async {
-    emit(const BookedDetailsState.loading());
+Future<void> _onFetchDetails(
+  _FetchDetails event,
+  Emitter<BookedDetailsState> emit,
+) async {
+  emit(const BookedDetailsState.loading());
 
-    try {
-      log(event.bookingId);
-      final response = await http.post(
-        Uri.parse('http://gozotech2.ddns.net:5192/api/cpapi/booking/getDetails'),
-        headers: {
-          'Content-Type': 'text/plain',
-          'Authorization': 'Basic ZjA2MjljNTIxZjE2MjU0NTA2YmIyMDQzNWI4MTJmMmE=',
-        },
-        body: json.encode({'bookingId': "QT503908208"}),
-      );
-log(response.body);
-      if (response.statusCode == 200) {
-        final jsonResponse = json.decode(response.body);
-        final detailsResponse = BookingDetailsResponse.fromJson(jsonResponse);
+  final url = Uri.parse('http://gozotech2.ddns.net:5192/api/cpapi/booking/getDetails');
+  final headers = {
+    'Content-Type': 'text/plain',
+    'Authorization': 'Basic ZjA2MjljNTIxZjE2MjU0NTA2YmIyMDQzNWI4MTJmMmE=',
+  };
+  final body = json.encode({'bookingId': event.bookingId});
 
-        if (detailsResponse.success && detailsResponse.data != null) {
-          emit(BookedDetailsState.success(detailsResponse.data!));
-        } else {
-          emit(BookedDetailsState.error(
-            detailsResponse.errorMessage ?? 'Failed to fetch booking details',
-          ));
-        }
+  try {
+    // 🔹 Log request details
+    log('➡️ API REQUEST');
+    log('URL: $url');
+    log('Headers: ${jsonEncode(headers)}');
+    log('Body: $body');
+
+    final response = await http.post(url, headers: headers, body: body);
+
+    // 🔹 Log response details
+    log('⬅️ API RESPONSE');
+    log('Status Code: ${response.statusCode}');
+    log('Body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body);
+      final detailsResponse = BookingDetailsResponse.fromJson(jsonResponse);
+
+      if (detailsResponse.success && detailsResponse.data != null) {
+        emit(BookedDetailsState.success(detailsResponse.data!));
       } else {
         emit(BookedDetailsState.error(
-          'Failed to load booking details: ${response.statusCode}',
+          detailsResponse.errorMessage ?? 'Failed to fetch booking details',
         ));
       }
-    } catch (e) {
-      log(e.toString());
-      emit(BookedDetailsState.error('Error: $e'));
+    } else {
+      emit(BookedDetailsState.error(
+        'Failed to load booking details: ${response.statusCode}',
+      ));
     }
+  } catch (e, stackTrace) {
+    // 🔹 Log error with stack trace for debugging
+    log('❌ API CALL ERROR: $e', stackTrace: stackTrace);
+    emit(BookedDetailsState.error('Error: $e'));
   }
+}
 
   void _onReset(
     _Reset event,

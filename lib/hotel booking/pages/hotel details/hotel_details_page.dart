@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/hotel%20booking/domain/hotel%20details%20/hotel_details.dart';
 import 'package:minna/hotel%20booking/functions/hotel_details.dart';
+import 'package:minna/hotel%20booking/pages/RoomAvailabilityRequestPage/RoomAvailabilityRequestPage.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -904,15 +905,14 @@ final hasCoordinates = latitude != null && longitude != null;
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (_) => RoomAvailabilityRequestPage(
-                //       hotelCode: widget.hotelCode,
-                //       hotelName: hotel.hotelName,
-                //     ),
-                //   ),
-                // );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => RoomAvailabilityRequestPage(
+                     hotel:hotel
+                    ),
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: maincolor1,
@@ -1521,7 +1521,7 @@ final hasCoordinates = latitude != null && longitude != null;
                 style: ElevatedButton.styleFrom(
                   backgroundColor: maincolor1,
                 ),
-                child: const Text('Go Back'),
+                child: const Text('Go Back',style: TextStyle(color: Colors.white),),
               ),
             ],
           ),

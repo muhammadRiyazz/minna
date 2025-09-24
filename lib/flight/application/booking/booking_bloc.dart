@@ -82,7 +82,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
           paxKey: passengerData['paxKey'] ?? '',
           paxType: passengerData['passengerType'] ?? '',
           title: passengerData['title'] ?? '',
-          firstName: passengerData['firstName'] ?? '',
+          firstName: passengerData['firstName']?? '',
           lastName: passengerData['lastName'] ?? '',
           dob: formatDateForApi(passengerData['dob']),
           contact: passengerData['contact'] ?? '',

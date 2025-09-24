@@ -23,6 +23,14 @@ class HotelDetailsApiService {
           'Language': 'EN'
         }),
       ).timeout(const Duration(seconds: 30));
+
+
+      log(json.encode({
+          'Hotelcodes': hotelCode,
+          'Language': 'EN'
+        }).toString());
+
+        
 log(response.body);
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
