@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:minna/bus/application/change%20location/location_bloc.dart';
+import 'package:minna/bus/domain/BlockTicket/block_respo.dart';
 import 'package:minna/bus/domain/BlockTicket/block_ticket_request_modal.dart';
 import 'package:minna/bus/domain/seatlayout/seatlayoutmodal.dart';
 import 'package:minna/bus/domain/updated%20fare%20respo/update_fare.dart';
@@ -378,45 +379,23 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
           setState(() => _showRetryButton = true);
           return;
         }
-
-        final blockKey = body;
+       final BlockResponse respoData=           BlockResponse.fromJson(jsonDecode(body) );
+        final blockKey = respoData.blockKey;
 
         // reset retryCount on success
         retryCount = 0;
 
-        if (widget.alldata.callFareBreakUpAPI == 'false') {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => ScreenConfirmTicket(
+              builder: (_) => ScreenConfirmTicket(blockResponse: respoData,
                 blockKey: blockKey,
                 selectedSeats: widget.selctseat,
                 alldata: widget.alldata,
               ),
             ),
           );
-        } else {
-          // call updated fare API
-          final UpdatedFareResponse? updatedFareResponse = await getUpdatedFare(blockKey: blockKey);
-
-          if (updatedFareResponse != null) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => ScreenConfirmTicket(
-                  blockKey: blockKey,
-                  selectedSeats: widget.selctseat,
-                  alldata: widget.alldata,
-                  updatedFare: updatedFareResponse,
-                ),
-              ),
-            );
-          } else {
-            // couldn't get updated fare
-            // _showCustomSnackbar('Failed to fetch updated fare. Please retry.', isError: true);
-            setState(() => _showRetryButton = true);
-          }
-        }
+      
       } else {
         // Non-200 status
         _showCustomSnackbar('Server error: ${response.statusCode}', isError: true);

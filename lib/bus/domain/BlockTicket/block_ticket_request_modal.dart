@@ -39,7 +39,6 @@ class BlockTicketRequest {
       );
 
   Map<String, dynamic> toJson() => {
-    "callFareBreakUpAPI":callFareBreakUpAPI,
         "availableTripId": availableTripID,
         "boardingPointId": boardingPointID,
         "droppingPointId": droppingPointID,

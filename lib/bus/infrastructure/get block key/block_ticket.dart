@@ -12,7 +12,7 @@ Future<Response> getblockticket({required String data}) async {
   var urlPhp = '${baseUrl}CallAPI';
 
   var bodyBackend = {
-    "path": "http://api.seatseller.travel/blockTicket",
+    "path": "https://api.seatseller.travel/blockTicketV2",
     "method": "POST",
     "user_id": userId,
     "franch_id": '',
