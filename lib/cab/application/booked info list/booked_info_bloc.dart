@@ -19,54 +19,98 @@ class BookedInfoBloc extends Bloc<BookedInfoEvent, BookedInfoState> {
     on<_DateFilterChanged>(_onDateFilterChanged);
     on<_StatusFilterChanged>(_onStatusFilterChanged);
   }
+Future<void> _onFetchList(
+  _FetchList event,
+  Emitter<BookedInfoState> emit,
+) async {
+  emit(const BookedInfoState.loading());
 
-  Future<void> _onFetchList(
-    _FetchList event,
-    Emitter<BookedInfoState> emit,
-  ) async {
-    emit(const BookedInfoState.loading());
+  try {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    final userId = preferences.getString('userId') ?? '';
 
-    try {
+    /// Step 1: Call HO
+    final response = await http.post(
+      Uri.parse('${baseUrl}cab-report'),
+      body: {
+        'user_id': userId,
+        if (event.fromDate != null) 'from': event.fromDate!,
+        if (event.toDate != null) 'to': event.toDate!,
+      },
+    );
 
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body);
+      final cabResponse = CabBookingResponse.fromJson(jsonResponse);
 
-      SharedPreferences preferences = await SharedPreferences.getInstance();
-       final userId = preferences.getString('userId') ?? '';
+      if (cabResponse.status == 'success') {
+        // ✅ Update bookingId based on status & tripType
+        final updatedBookings = cabResponse.bookings.map((booking) {
+          if (booking.status.toLowerCase() == "confirmed") {
+            String prefix = "QT"; // default fallback
+            switch (booking.tripType.toUpperCase()) {
+              case "ONE WAY":
+                prefix = "OW";
+                break;
+              case "ROUND TRIP":
+                prefix = "RT";
+                break;
+              case "AIRPORT":
+                prefix = "AP";
+                break;
+              case "MULTI CITY":
+                prefix = "MW";
+                break;
+            }
 
-        /// Step 1: Call HO
+            // bookingId already has QTxxxxx → replace first 2 chars
+            String newBookingId = booking.bookingId;
+            if (newBookingId.length > 2) {
+              newBookingId = prefix + newBookingId.substring(2);
+            }
 
+            return CabBooking(
+              id: booking.id,
+              tripType: booking.tripType,
+              cabType: booking.cabType,
+              total: booking.total,
+              firstName: booking.firstName,
+              lastName: booking.lastName,
+              priContactCode: booking.priContactCode,
+              priContact: booking.priContact,
+              email: booking.email,
+              referenceId: booking.referenceId,
+              date: booking.date,
+              time: booking.time,
+              bookingId: newBookingId,
+              paymentId: booking.paymentId,
+              orderId: booking.orderId,
+              status: booking.status,
+              paidStatus: booking.paidStatus,
+            );
+          } else {
+            return booking;
+          }
+        }).toList();
 
-
-      final response = await http.post(
-        Uri.parse('${baseUrl}cab-report'),
-        body: {
-          'user_id': userId,
-          if (event.fromDate != null) 'from': event.fromDate!,
-          if (event.toDate != null) 'to': event.toDate!,
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final jsonResponse = json.decode(response.body);
-        final cabResponse = CabBookingResponse.fromJson(jsonResponse);
-
-        if (cabResponse.status == 'success') {
-          emit(BookedInfoState.success(
-            allBookings: cabResponse.bookings,
-            filteredBookings: cabResponse.bookings,
-            searchQuery: '',
-            selectedDate: null,
-            statusFilter: null,
-          ));
-        } else {
-          emit(BookedInfoState.error(cabResponse.errorMessage ?? 'Unknown error'));
-        }
+        emit(BookedInfoState.success(
+          allBookings: updatedBookings.reversed.toList(),
+          filteredBookings: updatedBookings.reversed.toList(),
+          searchQuery: '',
+          selectedDate: null,
+          statusFilter: null,
+        ));
       } else {
-        emit(BookedInfoState.error('Failed to load data: ${response.statusCode}'));
+        emit(BookedInfoState.error(cabResponse.errorMessage ?? 'Unknown error'));
       }
-    } catch (e) {
-      emit(BookedInfoState.error('Error: $e'));
+    } else {
+      emit(BookedInfoState.error('Failed to load data: ${response.statusCode}'));
     }
+  } catch (e) {
+    emit(BookedInfoState.error('Error: $e'));
   }
+}
+
 
   void _onSearchChanged(
     _SearchChanged event,

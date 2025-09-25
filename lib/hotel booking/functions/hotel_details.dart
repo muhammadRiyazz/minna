@@ -19,9 +19,10 @@ class HotelDetailsApiService {
           'Content-Type': 'application/json',
         },
         body: json.encode({
-          'Hotelcodes': hotelCode,
+        'Hotelcodes': 1011651,
+          // 'Hotelcodes': hotelCode,
           'Language': 'EN'
-        }),
+        }),      
       ).timeout(const Duration(seconds: 30));
 
 

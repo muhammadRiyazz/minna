@@ -297,7 +297,7 @@ void _submitForm() async {
         responseTime: double.tryParse(responseTimeController.text) ?? 30.0,
         isDetailedResponse: true,
         refundable: refundableOnly,
-        noOfRooms: int.tryParse(noOfRoomsController.text) ?? 0,
+        noOfRooms:  int.tryParse(noOfRoomsController.text) ??0,
         mealType: mealType,
         starRating: null,
       );
