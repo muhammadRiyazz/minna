@@ -1,5 +1,6 @@
 // lib/cab/presentation/booking_details_page.dart
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
@@ -7,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:minna/cab/application/booked%20details/booked_details_bloc.dart';
 import 'package:minna/cab/domain/cab%20list%20model/cab_booked_details.dart';
 import 'package:minna/comman/const/const.dart';
+import 'package:minna/comman/core/api.dart';
 
 class BookingDetailsPage extends StatefulWidget {
   final String bookingId;
@@ -285,7 +287,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                               });
                             },
                           );
-                        }).toList(),
+                        }),
                         const SizedBox(height: 12),
                         TextField(
                           minLines: 1,
@@ -369,7 +371,7 @@ Future<void> _confirmCancellation({
     setState(() {
       _isConfirmingCancellation = false;
     });
-
+log(response.body.toString());
     if (response.statusCode == 200) {
       final decoded = jsonDecode(response.body);
       if (decoded['success'] == true && decoded['data'] != null) {
@@ -378,6 +380,15 @@ Future<void> _confirmCancellation({
         final cancellationCharge = data['cancellationCharge'] ?? 0;
         final message = data['message'] ?? 'Booking cancelled successfully';
         final cancelledBookingId = data['bookingId'] ?? bookingId;
+
+        // Call CAB Status API with cancel type
+        await _callCabStatusApi(
+          bookingId: cancelledBookingId,
+          type: 'cancel',
+          request: jsonEncode(bodyMap),
+          response: response.body,
+          refundAmount: refundedAmount,
+        );
 
         // Show updated bottom sheet
         await showModalBottomSheet(
@@ -485,19 +496,93 @@ Future<void> _confirmCancellation({
           },
         );
       } else {
+        // Call CAB Status API with failure type
+        // await _callCabStatusApi(
+        //   bookingId: bookingId,
+        //   type: 'failure',
+        //   request: jsonEncode(bodyMap),
+        //   response: response.body,
+        //   refundAmount: 0,
+        // );
         _showError('Cancellation failed. Please try again.');
       }
     } else {
+      // Call CAB Status API with failure type
+      // await _callCabStatusApi(
+      //   bookingId: bookingId,
+      //   type: 'failure',
+      //   request: jsonEncode(bodyMap),
+      //   response: response.body,
+      //   refundAmount: 0,
+      // );
       _showError('Cancellation failed: ${response.statusCode}');
     }
   } catch (e) {
     setState(() {
       _isConfirmingCancellation = false;
     });
+    
+    // Call CAB Status API with failure type for exception case
+    // try {
+    //   await _callCabStatusApi(
+    //     bookingId: bookingId,
+    //     type: 'failure',
+    //     request: jsonEncode({
+    //       "bookingId": bookingId,
+    //       "reason": reasonText,
+    //       "reasonId": reasonId
+    //     }),
+    //     response: 'Exception: $e',
+    //     refundAmount: 0,
+    //   );
+    // } catch (cabError) {
+    //   log('Failed to call CAB Status API: $cabError');
+    // }
+    
     _showError('Failed to cancel booking. Please check your connection and try again.');
   }
 }
 
+// Helper method to call CAB Status API
+Future<void> _callCabStatusApi({
+  required String bookingId,
+  required String type,
+  required String request,
+  required String response,
+  required double refundAmount,
+}) async {
+  try {
+    final cabStatusUri = Uri.parse('${baseUrl}cab-status');
+    final cabStatusBody = {
+      "booking_id": bookingId,
+      "type": type,
+      "request": request,
+      "response": response,
+      if (type == 'cancel') "refund_amount": refundAmount,
+    };
+
+    final cabStatusResponse = await http.post(
+      cabStatusUri,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(cabStatusBody),
+    ).timeout(const Duration(seconds: 10));
+log(cabStatusResponse.body);
+    if (cabStatusResponse.statusCode == 200) {
+      final cabStatusDecoded = jsonDecode(cabStatusResponse.body);
+      if (cabStatusDecoded['status'] == 'success') {
+        log('CAB Status updated successfully: $type');
+      } else {
+        log('CAB Status API returned error: ${cabStatusDecoded['message']}');
+      }
+    } else {
+      log('CAB Status API failed with status: ${cabStatusResponse.statusCode}');
+    }
+  } catch (e) {
+    log('Error calling CAB Status API: $e');
+  }
+}
 
   void _showError(String message) {
     if (!mounted) return;

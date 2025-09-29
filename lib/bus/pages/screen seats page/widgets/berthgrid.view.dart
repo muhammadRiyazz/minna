@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import '../../../domain/seatlayout/seatlayoutmodal.dart';
 import '../../../infrastructure/seats/seatcalculation.dart';
-import 'infolabel.dart';
 
 class BerthGridView extends StatefulWidget {
   const BerthGridView({

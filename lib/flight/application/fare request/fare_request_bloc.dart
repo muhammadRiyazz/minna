@@ -72,6 +72,7 @@ class FareRequestBloc extends Bloc<FareRequestEvent, FareRequestState> {
           error: null,
           journy: journey,
         );
+        
 // Call API
         FFlightResponse respo = await flightFareRequestApi(fareRequest);
 

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 
 class LoadingIcon extends StatelessWidget {
   const LoadingIcon({super.key});

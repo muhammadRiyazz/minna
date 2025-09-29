@@ -4,7 +4,6 @@ import 'dart:developer';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../red_bus/constants/urls.dart';
 
 Future<Response> getDpBdPoint({required String trpid}) async {
   log(trpid);

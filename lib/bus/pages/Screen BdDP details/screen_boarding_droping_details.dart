@@ -1,7 +1,5 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:minna/bus/pages/Screen%20available%20Trip/screen_available_triplist.dart';
 import 'package:minna/bus/pages/screen%20passengers%20input/screen_passengers_input.dart';
 
@@ -9,8 +7,6 @@ import 'package:minna/comman/const/const.dart';
 import 'package:minna/bus/domain/seatlayout/seatlayoutmodal.dart';
 import 'package:minna/bus/domain/trips%20list%20modal/trip_list_modal.dart';
 import 'package:minna/bus/domain/BlockTicket/block_ticket_request_modal.dart';
-import 'package:minna/bus/infrastructure/fareCalculation/fare_calculation.dart';
-import 'package:minna/bus/presendation/screen%20view%20ticket/screen_view_ticket.dart';
 
 class ScreenBdDpDetails extends StatefulWidget {
   const ScreenBdDpDetails({

@@ -53,6 +53,9 @@ dependencies:
   url_launcher: ^6.2.4
   google_maps_flutter: ^2.2.0
   carousel_slider: ^5.1.1
+  geocoding: ^2.1.4
+  geolocator: ^14.0.2
+
 
 dev_dependencies:
   flutter_test:

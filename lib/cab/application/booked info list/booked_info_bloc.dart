@@ -1,5 +1,6 @@
 // lib/cab/application/booked_info/booked_info_bloc.dart
 import 'dart:convert';
+import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:http/http.dart' as http;
@@ -38,7 +39,7 @@ Future<void> _onFetchList(
         if (event.toDate != null) 'to': event.toDate!,
       },
     );
-
+log(response.body.toString());
     if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body);
       final cabResponse = CabBookingResponse.fromJson(jsonResponse);

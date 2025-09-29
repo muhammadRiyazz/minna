@@ -16,7 +16,7 @@ Future<Response> bookingConfirmApi(BBBookingRequest fareRequest) async {
       'url': 'Api/webapi/Booking?type=json',
     };
 
-    final String encodedRequest = jsonEncode(requestBody);
+    // final String encodedRequest = jsonEncode(requestBody);
 
     /// 🔹 Log Booking Request
     await logApi(
@@ -29,7 +29,7 @@ Future<Response> bookingConfirmApi(BBBookingRequest fareRequest) async {
     log(
       'Request headers: ${{'Content-Type': 'application/x-www-form-urlencoded'}}',
     );
-    log('Request body: $encodedRequest');
+    log('Request body bookingConfirmApi------ $requestBody');
 
     final response = await http.post(
       uri,
@@ -38,7 +38,7 @@ Future<Response> bookingConfirmApi(BBBookingRequest fareRequest) async {
     );
 
     log('Response status: ${response.statusCode}');
-    log('Response body: ${response.body}');
+    log('Response body: bookingConfirmApi ----${response.body}');
 
     /// 🔹 Log Booking Response
     await logApi(

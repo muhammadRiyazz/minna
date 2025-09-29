@@ -162,7 +162,7 @@ class ConfirmBookingBloc extends Bloc<ConfirmBookingEvent, ConfirmBookingState> 
           Uri.parse('${baseUrl}cab-status'),
           body: {
             "booking_id": event.tableid.toString(),
-            "type": "cancel",
+            "type": "failure",
             "request": jsonEncode({"bookingId": event.bookingid}),
             "response": jsonEncode(jsonData),
           },
@@ -223,7 +223,16 @@ class ConfirmBookingBloc extends Bloc<ConfirmBookingEvent, ConfirmBookingState> 
         ));
       }
     }
-  } catch (e) {
+  } catch (e) { await http.post(
+          Uri.parse('${baseUrl}cab-status'),
+          body: {
+            "booking_id": event.tableid.toString(),
+            "type": "failure",
+            "request": jsonEncode({"bookingId": event.bookingid}),
+            "response":"",
+          },
+        );
+      
     log("💥 Outer try-catch Error: $e");
     emit(ConfirmBookingError(
       message: e.toString(),

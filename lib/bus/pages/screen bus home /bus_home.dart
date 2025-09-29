@@ -163,7 +163,6 @@ class _LocationTile extends StatelessWidget {
     required this.location,
     required this.onTap,
     this.placeholderText = 'Please select',
-    super.key,
   });
 
   @override
@@ -312,7 +311,7 @@ class _DateChipButton extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
-  const _DateChipButton(this.label, this.isSelected, this.onTap, {super.key});
+  const _DateChipButton(this.label, this.isSelected, this.onTap);
 
   @override
   Widget build(BuildContext context) {

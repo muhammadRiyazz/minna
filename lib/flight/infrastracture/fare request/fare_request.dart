@@ -16,7 +16,7 @@ Future<FFlightResponse> flightFareRequestApi(FareRequest fareRequest) async {
       'url': 'Api/webapi/GetFare?type=json',
     };
 
-    final String encodedRequest = jsonEncode(requestBody);
+    // final String encodedRequest = jsonEncode(requestBody);
 
     /// 🔹 Log Request
     await logApi(
@@ -25,7 +25,7 @@ Future<FFlightResponse> flightFareRequestApi(FareRequest fareRequest) async {
       response: jsonEncode(fareRequest.toJson()),
     );
 
-    log('Request body: $encodedRequest');
+    log('Request body flightFareRequestApi --------: $requestBody');
 
     final response = await http.post(
       uri,
@@ -34,7 +34,7 @@ Future<FFlightResponse> flightFareRequestApi(FareRequest fareRequest) async {
     );
 
     log('Response status: ${response.statusCode}');
-    log('Response body: ${response.body}');
+    log('Response body  flightFareRequestApi ---------: ${response.body}');
 
     /// 🔹 Log Response
     await logApi(

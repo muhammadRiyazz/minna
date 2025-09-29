@@ -3,10 +3,8 @@ import 'dart:convert';
 import 'package:dartz/dartz.dart';
 import 'package:http/http.dart';
 
-import '../constants/urls.dart';
 import '../domain/pdf_model/model_pdf.dart';
 import '../domain/pdf_model/model_pdf2.dart';
-import '../domain/ticket/ticket_model.dart';
 
 class TicketShowClass {
   Future<Either<String, ModelTickePerson2>> getDataTicketShowMany(

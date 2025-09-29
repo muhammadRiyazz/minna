@@ -19,7 +19,7 @@ class HotelDetailsApiService {
           'Content-Type': 'application/json',
         },
         body: json.encode({
-        'Hotelcodes': 1011651,
+        'Hotelcodes': 1013903,
           // 'Hotelcodes': hotelCode,
           'Language': 'EN'
         }),      

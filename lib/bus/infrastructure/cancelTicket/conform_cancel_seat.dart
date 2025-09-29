@@ -10,7 +10,8 @@ Future<http.Response?> cancelSeats({
   required String tin,
   required List<InventoryItem> seats,
 }) async {
-  try {
+
+ try {
     log('Starting seat cancellation request for TIN: $tin');
 
     // Prepare seat list
@@ -35,7 +36,7 @@ Future<http.Response?> cancelSeats({
     final Map<String, dynamic> requestBody = {
       "user_id": userId,
       "franch_id": "",
-      "path": "http://api.seatseller.travel/cancelticket", // ✅ use path, not url
+      "path": "http://api.seatseller.travel/cancelticket", 
       "method": "POST",
       "data": jsonEncode({
         "tin": tin,

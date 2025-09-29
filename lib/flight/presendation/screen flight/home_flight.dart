@@ -4,12 +4,10 @@ import 'package:minna/flight/application/trip%20request/trip_request_bloc.dart';
 
 import 'package:minna/flight/domain/triplist%20request/search_request.dart';
 import 'package:minna/flight/presendation/screen%20flight/widget/airport_bottom.dart';
-import 'package:minna/flight/presendation/screen%20flight/widget/loading.dart';
 import 'package:minna/flight/presendation/trip%20list/trip_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:shimmer/shimmer.dart';
 
 class FlightBookingTab extends StatelessWidget {
   const FlightBookingTab({super.key});

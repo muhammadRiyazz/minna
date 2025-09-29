@@ -340,6 +340,7 @@ class RePassenger {
   String? email;
   String? address;
   String? nationality;
+String? countryCode;
   dynamic passportNo;
   String? countryOfIssue;
   String? dateOfExpiry;
@@ -358,6 +359,7 @@ class RePassenger {
     this.lastName,
     this.dob,
     this.contact,
+    this.countryCode,
     this.email,
     this.address,
     this.nationality,
@@ -379,6 +381,7 @@ class RePassenger {
     firstName: json["FirstName"],
     lastName: json["LastName"],
     dob: json["DOB"],
+    countryCode: json["CountryCode"],
     contact: json["Contact"],
     email: json["Email"],
     address: json["Address"],
@@ -404,6 +407,7 @@ class RePassenger {
     "Contact": contact,
     "Email": email,
     "Address": address,
+    "CountryCode":countryCode,
     "Nationality": nationality,
     "PassportNo": passportNo,
     "CountryOfIssue": countryOfIssue,

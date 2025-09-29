@@ -15,7 +15,6 @@ import 'package:minna/comman/pages/screen%20bookings/screen_booking.dart';
 import 'package:minna/comman/pages/screen%20my%20account/my_account_page.dart';
 import 'package:minna/flight/presendation/screen%20flight/home_flight.dart';
 import 'package:minna/hotel%20booking/pages/holel%20home%20page/home_page_hotel.dart';
-import 'package:minna/hotel%20booking/pages/hotel%20details/hotel_details_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

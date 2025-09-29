@@ -6,8 +6,6 @@ import 'package:minna/bus/red_bus/domain/model_bus_seats/mod_test.dart'
 import 'package:dartz/dartz.dart';
 import 'package:http/http.dart';
 
-import '../constants/urls.dart';
-import '../domain/boarding_droping/bPdp.dart';
 
 // class DpBpApi {
 //   Future<Either<String, BoardingDroping>> getDataBoarding() async {

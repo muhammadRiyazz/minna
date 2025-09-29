@@ -29,7 +29,7 @@ class BusListFetchBloc extends Bloc<BusListFetchEvent, BusListFetchState> {
         final Response resp = await BusAvailability.getDataAvailabilityBus(
           dateOfJourney: DateFormat('yyyy-MM-dd').format(event.dateOfjurny),
           desti: event.destID.id,
-          source:"2541",
+          source: event.sourceID.id,
         );
 
         log('API Response: ${resp.statusCode} - ${resp.body}');

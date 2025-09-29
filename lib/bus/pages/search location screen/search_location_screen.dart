@@ -1,10 +1,8 @@
-import 'dart:developer';
 import 'package:minna/bus/application/change%20location/location_bloc.dart';
 import 'package:minna/bus/application/location%20fetch/bus_location_fetch_bloc.dart';
 import 'package:minna/bus/domain/location/location_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:minna/bus/presendation/widgets/error_widget.dart';
 import 'package:shimmer/shimmer.dart'; // Add this import for shimmer effect
 
 class LocationSearchPage extends StatefulWidget {

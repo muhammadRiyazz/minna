@@ -163,7 +163,7 @@ Widget buildMapSection(HotelDetail hotel) {
   final lat = latitude;
   final lng = longitude;
 
-  final CameraPosition _initialCameraPosition = CameraPosition(
+  final CameraPosition initialCameraPosition = CameraPosition(
     target: LatLng(lat, lng),
     zoom: 15,
   );
@@ -209,14 +209,14 @@ Widget buildMapSection(HotelDetail hotel) {
         onTap: () => showMapOptions(lat, lng, hotel.hotelName),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(8),
-          child: Container(
+          child: SizedBox(
             height: 150,
             width: double.infinity,
             child: GoogleMap(
               onMapCreated: (GoogleMapController controller) {
                 mapController = controller; // ✅ store controller
               },
-              initialCameraPosition: _initialCameraPosition,
+              initialCameraPosition: initialCameraPosition,
               markers: {hotelMarker},
               zoomControlsEnabled: false,
               scrollGesturesEnabled: false,

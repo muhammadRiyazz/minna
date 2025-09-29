@@ -1,14 +1,11 @@
 import 'dart:developer';
 
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:minna/bus/domain/updated%20fare%20respo/update_fare.dart';
-import 'dart:developer';
 import 'package:http/http.dart';
 import 'package:minna/comman/core/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../red_bus/constants/urls.dart';
 
 
 Future<UpdatedFareResponse?> getUpdatedFare({required String blockKey}) async {

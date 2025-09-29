@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 
-import '../constants/urls.dart';
 
 class TicketCancelApi {
   Future<void> getDataTicketCance({required tIn, required seatsCancel}) async {

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/pages/main%20home/home.dart';
-import '../../presendation/screen view ticket/screen_view_ticket.dart';
 
 class ScreenSuccessTicket extends StatefulWidget {
   final String tinid;

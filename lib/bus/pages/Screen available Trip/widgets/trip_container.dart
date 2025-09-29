@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:minna/bus/domain/BlockTicket/block_ticket_request_modal.dart';
 import 'package:minna/bus/domain/trips list modal/trip_list_modal.dart';

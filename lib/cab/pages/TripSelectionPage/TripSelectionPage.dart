@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -6,6 +7,17 @@ import 'package:intl/intl.dart';
 import 'package:minna/cab/application/fetch%20cab/fetch_cabs_bloc.dart';
 import 'package:minna/cab/pages/cabs_list/cabs_list_data.dart';
 import 'package:minna/comman/const/const.dart';
+import 'package:http/http.dart' as http;
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+
+// Enum to track which location field is being edited - moved to top level
+enum LocationFieldType {
+  source,
+  destination,
+  multiCitySource,
+  multiCityDestination,
+}
 
 class TripSelectionPage extends StatefulWidget {
   const TripSelectionPage({super.key});
@@ -22,6 +34,19 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
   final TextEditingController _sourceController = TextEditingController();
   final TextEditingController _destinationController = TextEditingController();
   
+  // For location search
+  final String _apiKey = 'AIzaSyALjWcxp0DAnTOkKNHbXCFKkjObKHvyMns';
+  List<dynamic> _searchResults = [];
+  final TextEditingController _searchController = TextEditingController();
+  bool _isSearching = false;
+  bool _isGettingCurrentLocation = false;
+  LocationFieldType? _currentLocationField;
+  
+  // Location data storage
+  Map<String, dynamic> _sourceLocationData = {};
+  Map<String, dynamic> _destinationLocationData = {};
+  List<Map<String, dynamic>> _multiCityLocationData = [];
+  
   // For multi-city trips
   List<Map<String, dynamic>> _multiCityRoutes = [
     {
@@ -29,6 +54,8 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
       'destination': TextEditingController(),
       'date': DateTime.now(),
       'time': TimeOfDay.now(),
+      'sourceData': {},
+      'destinationData': {},
     }
   ];
   
@@ -66,6 +93,27 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
     73: 'Sedan CNG',
     74: 'SUV CNG',
   };
+
+  @override
+  void initState() {
+    super.initState();
+    // Request location permission when the app starts
+    _requestLocationPermission();
+  }
+
+  Future<void> _requestLocationPermission() async {
+
+
+    try {
+       LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+    } catch (e) {
+      log(e.toString());
+    }
+   
+  }
 
   void _showVehicleSelectionSheet() {
     showModalBottomSheet(
@@ -201,6 +249,537 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
     );
   }
 
+ // Location Search Methods
+  void _showLocationSearchSheet(LocationFieldType fieldType, [int? multiCityIndex]) {
+    _currentLocationField = fieldType;
+    _searchController.clear();
+    _searchResults.clear();
+    _isSearching = false;
+    _isGettingCurrentLocation = false;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.9,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(25),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 10,
+                    spreadRadius: 0,
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  // Header
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(25),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 3,
+                          spreadRadius: 0,
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.arrow_back, color: Colors.grey[700]),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            _getLocationFieldTitle(fieldType, multiCityIndex),
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Current Location Button
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: GestureDetector(
+                      onTap: () => _getCurrentLocation(setModalState, fieldType, multiCityIndex),
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: primaryColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: primaryColor.withOpacity(0.3)),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.my_location,
+                              color: primaryColor,
+                              size: 24,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Use Current Location',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: primaryColor,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Get your current location automatically',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: primaryColor.withOpacity(0.7),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (_isGettingCurrentLocation)
+                              SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: primaryColor,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Divider
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Divider(
+                            color: Colors.grey[300],
+                            thickness: 1,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(
+                            'OR',
+                            style: TextStyle(
+                              color: Colors.grey[500],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Divider(
+                            color: Colors.grey[300],
+                            thickness: 1,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Search Bar
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        hintText: 'Search for a place...',
+                        prefixIcon: Icon(Icons.search, color: primaryColor),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: primaryColor, width: 2),
+                        ),
+                      ),
+                      onChanged: (query) {
+                        if (query.length > 2) {
+                          _searchPlaces(query, setModalState);
+                        } else {
+                          setModalState(() {
+                            _searchResults.clear();
+                            _isSearching = false;
+                          });
+                        }
+                      },
+                    ),
+                  ),
+
+                  // Search Results
+                  Expanded(
+                    child: _isSearching
+                        ? Center(
+                            child: CircularProgressIndicator(color: primaryColor),
+                          )
+                        : _searchResults.isEmpty
+                            ? Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.location_on_outlined,
+                                      size: 64,
+                                      color: Colors.grey[300],
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      _searchController.text.isEmpty
+                                          ? 'Search for places'
+                                          : 'No results found',
+                                      style: TextStyle(
+                                        color: Colors.grey[500],
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : ListView.builder(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                itemCount: _searchResults.length,
+                                itemBuilder: (context, index) {
+                                  final place = _searchResults[index];
+                                  return ListTile(
+                                    leading: Container(
+                                      width: 40,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        color: primaryColor.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Icon(
+                                        Icons.place,
+                                        color: primaryColor,
+                                        size: 20,
+                                      ),
+                                    ),
+                                    title: Text(
+                                      place['description'] ?? '',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.grey[800],
+                                      ),
+                                    ),
+                                    subtitle: place['structured_formatting'] != null
+                                        ? Text(
+                                            place['structured_formatting']['secondary_text'] ?? '',
+                                            style: TextStyle(
+                                              color: Colors.grey[600],
+                                              fontSize: 12,
+                                            ),
+                                          )
+                                        : null,
+                                    onTap: () {
+                                      _selectPlace(place, fieldType, multiCityIndex);
+                                      Navigator.pop(context);
+                                    },
+                                  );
+                                },
+                              ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _getCurrentLocation(StateSetter setModalState, LocationFieldType fieldType, int? multiCityIndex) async {
+    setModalState(() {
+      _isGettingCurrentLocation = true;
+    });
+
+    try {
+      // Check if location service is enabled
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Please enable location services'),
+            backgroundColor: Colors.red[400],
+          ),
+        );
+        setModalState(() {
+          _isGettingCurrentLocation = false;
+        });
+        return;
+      }
+
+      // Check permission
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Location permission is required'),
+            backgroundColor: Colors.red[400],
+          ),
+        );
+        setModalState(() {
+          _isGettingCurrentLocation = false;
+        });
+        return;
+      }
+
+      // Get current position
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      // Get address from coordinates
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+
+      if (placemarks.isNotEmpty) {
+        Placemark placemark = placemarks.first;
+        String address = _formatAddress(placemark);
+
+        final locationData = {
+          'address': address,
+          'latitude': position.latitude,
+          'longitude': position.longitude,
+        };
+
+        // Update the UI
+        if (mounted) {
+          setState(() {
+            switch (fieldType) {
+              case LocationFieldType.source:
+                _sourceController.text = locationData['address'] as String;
+                _sourceLocationData = locationData;
+                break;
+              case LocationFieldType.destination:
+                _destinationController.text = locationData['address'] as String;
+                _destinationLocationData = locationData;
+                break;
+              case LocationFieldType.multiCitySource:
+                _multiCityRoutes[multiCityIndex!]['source'].text = locationData['address'] as String;
+                _multiCityRoutes[multiCityIndex]['sourceData'] = locationData;
+                break;
+              case LocationFieldType.multiCityDestination:
+                _multiCityRoutes[multiCityIndex!]['destination'].text = locationData['address'] as String;
+                _multiCityRoutes[multiCityIndex]['destinationData'] = locationData;
+                break;
+            }
+          });
+        }
+
+        // Close the bottom sheet
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      log(e.toString());
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error getting location: $e'),
+          backgroundColor: Colors.red[400],
+        ),
+      );
+    } finally {
+      setModalState(() {
+        _isGettingCurrentLocation = false;
+      });
+    }
+  }
+
+  String _formatAddress(Placemark placemark) {
+    List<String> addressParts = [];
+    
+    if (placemark.street != null && placemark.street!.isNotEmpty) {
+      addressParts.add(placemark.street!);
+    }
+    if (placemark.subLocality != null && placemark.subLocality!.isNotEmpty) {
+      addressParts.add(placemark.subLocality!);
+    }
+    if (placemark.locality != null && placemark.locality!.isNotEmpty) {
+      addressParts.add(placemark.locality!);
+    }
+    if (placemark.administrativeArea != null && placemark.administrativeArea!.isNotEmpty) {
+      addressParts.add(placemark.administrativeArea!);
+    }
+    if (placemark.postalCode != null && placemark.postalCode!.isNotEmpty) {
+      addressParts.add(placemark.postalCode!);
+    }
+    if (placemark.country != null && placemark.country!.isNotEmpty) {
+      addressParts.add(placemark.country!);
+    }
+    
+    return addressParts.join(', ');
+  }
+
+  String _getLocationFieldTitle(LocationFieldType fieldType, int? multiCityIndex) {
+    switch (fieldType) {
+      case LocationFieldType.source:
+        return 'Pickup Location';
+      case LocationFieldType.destination:
+        return 'Drop Location';
+      case LocationFieldType.multiCitySource:
+        return 'Route ${multiCityIndex! + 1} - Pickup';
+      case LocationFieldType.multiCityDestination:
+        return 'Route ${multiCityIndex! + 1} - Drop';
+    }
+  }
+
+  // String _getLocationFieldTitle(LocationFieldType fieldType, int? multiCityIndex) {
+  //   switch (fieldType) {
+  //     case LocationFieldType.source:
+  //       return 'Pickup Location';
+  //     case LocationFieldType.destination:
+  //       return 'Drop Location';
+  //     case LocationFieldType.multiCitySource:
+  //       return 'Route ${multiCityIndex! + 1} - Pickup';
+  //     case LocationFieldType.multiCityDestination:
+  //       return 'Route ${multiCityIndex! + 1} - Drop';
+  //   }
+  // }
+
+  Future<void> _searchPlaces(String query, StateSetter setModalState) async {
+    setModalState(() {
+      _isSearching = true;
+    });
+
+    try {
+      final url = Uri.parse(
+        'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$query&key=$_apiKey&components=country:in'
+      );
+      
+      final response = await http.get(url);
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == 'OK') {
+          setModalState(() {
+            _searchResults = data['predictions'];
+            _isSearching = false;
+          });
+        } else {
+          setModalState(() {
+            _searchResults = [];
+            _isSearching = false;
+          });
+        }
+      } else {
+        setModalState(() {
+          _searchResults = [];
+          _isSearching = false;
+        });
+      }
+    } catch (e) {
+      setModalState(() {
+        _searchResults = [];
+        _isSearching = false;
+      });
+    }
+  }
+
+  Future<void> _selectPlace(dynamic place, LocationFieldType fieldType, int? multiCityIndex) async {
+    try {
+      // Get place details for coordinates
+      final placeId = place['place_id'];
+      final detailsUrl = Uri.parse(
+        'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$_apiKey&fields=name,formatted_address,geometry'
+      );
+      
+      final detailsResponse = await http.get(detailsUrl);
+      
+      if (detailsResponse.statusCode == 200) {
+        final detailsData = json.decode(detailsResponse.body);
+        
+        if (detailsData['status'] == 'OK') {
+          final result = detailsData['result'];
+          final locationData = {
+            'address': result['formatted_address'] ?? place['description'],
+            'latitude': result['geometry']['location']['lat'],
+            'longitude': result['geometry']['location']['lng'],
+          };
+
+          setState(() {
+            switch (fieldType) {
+              case LocationFieldType.source:
+                _sourceController.text = locationData['address'] as String;
+                _sourceLocationData = locationData;
+                break;
+              case LocationFieldType.destination:
+                _destinationController.text = locationData['address'] as String;
+                _destinationLocationData = locationData;
+                break;
+              case LocationFieldType.multiCitySource:
+                _multiCityRoutes[multiCityIndex!]['source'].text = locationData['address'] as String;
+                _multiCityRoutes[multiCityIndex]['sourceData'] = locationData;
+                break;
+              case LocationFieldType.multiCityDestination:
+                _multiCityRoutes[multiCityIndex!]['destination'].text = locationData['address'] as String;
+                _multiCityRoutes[multiCityIndex]['destinationData'] = locationData;
+                break;
+            }
+          });
+        }
+      }
+    } catch (e) {
+      // Fallback: use prediction data if details fail
+      final locationData = {
+        'address': place['description'] ?? '',
+        'latitude': 0.0, // Default coordinates
+        'longitude': 0.0,
+      };
+
+      setState(() {
+        switch (fieldType) {
+          case LocationFieldType.source:
+            _sourceController.text = locationData['address'] as String;
+            _sourceLocationData = locationData;
+            break;
+          case LocationFieldType.destination:
+            _destinationController.text = locationData['address'] as String;
+            _destinationLocationData = locationData;
+            break;
+          case LocationFieldType.multiCitySource:
+            _multiCityRoutes[multiCityIndex!]['source'].text = locationData['address'] as String;
+            _multiCityRoutes[multiCityIndex]['sourceData'] = locationData;
+            break;
+          case LocationFieldType.multiCityDestination:
+            _multiCityRoutes[multiCityIndex!]['destination'].text = locationData['address'] as String;
+            _multiCityRoutes[multiCityIndex]['destinationData'] = locationData;
+            break;
+        }
+      });
+    }
+  }
+
   Future<void> _selectDate(BuildContext context, {bool isReturnDate = false, int? multiCityIndex}) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -282,6 +861,8 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
         'destination': TextEditingController(),
         'date': DateTime.now(),
         'time': TimeOfDay.now(),
+        'sourceData': {},
+        'destinationData': {},
       });
     });
   }
@@ -320,21 +901,24 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
     if (_selectedTripType == 3) {
       // Multi-city
       for (var route in _multiCityRoutes) {
+        final sourceData = route['sourceData'] as Map<String, dynamic>;
+        final destinationData = route['destinationData'] as Map<String, dynamic>;
+        
         routes.add({
           "startDate": DateFormat('yyyy-MM-dd').format(route['date']),
           "startTime": "${route['time'].hour.toString().padLeft(2, '0')}:${route['time'].minute.toString().padLeft(2, '0')}:00",
           "source": {
             "address": route['source'].text,
             "coordinates": {
-               "latitude": 22.6531496,
-            "longitude": 88.4448719
+              "latitude": sourceData['latitude'] ?? 22.6531496,
+              "longitude": sourceData['longitude'] ?? 88.4448719,
             }
           },
           "destination": {
             "address": route['destination'].text,
             "coordinates": {
-             "latitude": 22.7008099,
-            "longitude": 88.3747597,
+              "latitude": destinationData['latitude'] ?? 22.7008099,
+              "longitude": destinationData['longitude'] ?? 88.3747597,
             }
           },
         });
@@ -349,15 +933,15 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
             "isAirport": 1,
             "address": _sourceController.text,
             "coordinates": {
-              "latitude": 22.6531496,
-            "longitude": 88.4448719
+              "latitude": _sourceLocationData['latitude'] ?? 22.6531496,
+              "longitude": _sourceLocationData['longitude'] ?? 88.4448719,
             }
           },
           "destination": {
             "address": _destinationController.text,
             "coordinates": {
-              "latitude": 22.7008099,
-            "longitude": 88.3747597,
+              "latitude": _destinationLocationData['latitude'] ?? 22.7008099,
+              "longitude": _destinationLocationData['longitude'] ?? 88.3747597,
             }
           },
         });
@@ -368,16 +952,16 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
           "source": {
             "address": _sourceController.text,
             "coordinates": {
-               "latitude": 22.6531496,
-            "longitude": 88.4448719
+              "latitude": _sourceLocationData['latitude'] ?? 22.6531496,
+              "longitude": _sourceLocationData['longitude'] ?? 88.4448719,
             }
           },
           "destination": {
             "isAirport": 1,
             "address": _destinationController.text,
             "coordinates": {
-             "latitude": 22.7008099,
-            "longitude": 88.3747597,
+              "latitude": _destinationLocationData['latitude'] ?? 22.7008099,
+              "longitude": _destinationLocationData['longitude'] ?? 88.3747597,
             }
           },
         });
@@ -390,15 +974,15 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
         "source": {
           "address": _sourceController.text,
           "coordinates": {
-             "latitude": 22.6531496,
-            "longitude": 88.4448719
+            "latitude": _sourceLocationData['latitude'] ?? 22.6531496,
+            "longitude": _sourceLocationData['longitude'] ?? 88.4448719,
           }
         },
         "destination": {
           "address": _sourceController.text, // Same as source for day rental
           "coordinates": {
-            "latitude": 22.7008099,
-            "longitude": 88.3747597,
+            "latitude": _sourceLocationData['latitude'] ?? 22.7008099,
+            "longitude": _sourceLocationData['longitude'] ?? 88.3747597,
           }
         },
       });
@@ -410,15 +994,15 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
         "source": {
           "address": _sourceController.text,
           "coordinates": {
-             "latitude": 22.6531496,
-            "longitude": 88.4448719
+            "latitude": _sourceLocationData['latitude'] ?? 22.6531496,
+            "longitude": _sourceLocationData['longitude'] ?? 88.4448719,
           }
         },
         "destination": {
           "address": _destinationController.text,
           "coordinates": {
-            "latitude": 27.176670,
-            "longitude": 78.008072,
+            "latitude": _destinationLocationData['latitude'] ?? 22.7008099,
+            "longitude": _destinationLocationData['longitude'] ?? 88.3747597,
           }
         },
       });
@@ -431,15 +1015,15 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
           "source": {
             "address": _destinationController.text,
             "coordinates": {
-              "latitude": 22.6531496,
-            "longitude": 88.4448719
+              "latitude": _destinationLocationData['latitude'] ?? 22.6531496,
+              "longitude": _destinationLocationData['longitude'] ?? 88.4448719,
             }
           },
           "destination": {
             "address": _sourceController.text,
             "coordinates": {
-               "latitude": 22.7008099,
-            "longitude": 88.3747597,
+              "latitude": _sourceLocationData['latitude'] ?? 22.7008099,
+              "longitude": _sourceLocationData['longitude'] ?? 88.3747597,
             }
           },
         });
@@ -520,16 +1104,15 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
     final requestJson = _buildRequestJson();
     log('Request JSON: $requestJson');
 
-
-context.read<FetchCabsBloc>().add(
-  FetchCabsEvent.fetchCabs(requestData: requestJson),
-);
+    context.read<FetchCabsBloc>().add(
+      FetchCabsEvent.fetchCabs(requestData: requestJson),
+    );
 
     // Navigate to booking summary with the JSON data
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CabsListPage( requestData: requestJson,),
+        builder: (context) => CabsListPage(requestData: requestJson),
       ),
     );
   }
@@ -554,9 +1137,6 @@ context.read<FetchCabsBloc>().add(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header with image
-            // Image.network(
-            //   'https://i.pinimg.com/736x/3b/60/82/3b608284ce4ab57d640de64831a8adba.jpg',
-            // ),
             SizedBox(height: 100),
             Align(
               alignment: Alignment.topRight,
@@ -611,13 +1191,14 @@ context.read<FetchCabsBloc>().add(
                                 'destination': TextEditingController(),
                                 'date': DateTime.now(),
                                 'time': TimeOfDay.now(),
+                                'sourceData': {},
+                                'destinationData': {},
                               }
                             ];
                           }
                         });
                       },
                       child: Container(
-                        // width: 110,
                         decoration: BoxDecoration(
                           color: _selectedTripType == entry.key
                               ? primaryColor
@@ -792,6 +1373,7 @@ context.read<FetchCabsBloc>().add(
                         : 'Pickup Location',
                     icon: Icons.local_taxi_outlined,
                     iconColor: primaryColor,
+                    onTap: () => _showLocationSearchSheet(LocationFieldType.source),
                   ),
                   const SizedBox(height: 16),
                   if (_selectedTripType != 10 && _selectedTripType != 11) // Not day rental
@@ -802,6 +1384,7 @@ context.read<FetchCabsBloc>().add(
                           : 'Drop Location',
                       icon: Icons.local_taxi_outlined,
                       iconColor: primaryColor,
+                      onTap: () => _showLocationSearchSheet(LocationFieldType.destination),
                     ),
                 ],
               ),
@@ -838,6 +1421,7 @@ context.read<FetchCabsBloc>().add(
                               label: 'Pickup Location',
                               icon: Icons.local_taxi_outlined,
                               iconColor: primaryColor,
+                              onTap: () => _showLocationSearchSheet(LocationFieldType.multiCitySource, i),
                             ),
                             const SizedBox(height: 16),
                             _buildLocationField(
@@ -845,6 +1429,7 @@ context.read<FetchCabsBloc>().add(
                               label: 'Drop Location',
                               icon: Icons.local_taxi_outlined,
                               iconColor: primaryColor,
+                              onTap: () => _showLocationSearchSheet(LocationFieldType.multiCityDestination, i),
                             ),
                             const SizedBox(height: 16),
                             Row(
@@ -977,8 +1562,7 @@ context.read<FetchCabsBloc>().add(
                   children: [
                     Icon(
                       Icons.directions_car,
-                      // ignore: unnecessary_null_comparison
-                      color: _selectedCabTypes != null
+                      color: _selectedCabTypes.isNotEmpty
                           ? primaryColor
                           : hintColor,
                       size: 30,
@@ -1082,9 +1666,12 @@ context.read<FetchCabsBloc>().add(
     required String label,
     required IconData icon,
     required Color iconColor,
+    required VoidCallback onTap,
   }) {
     return TextField(
       controller: controller,
+      readOnly: true,
+      onTap: onTap,
       decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(color: hintColor),
@@ -1107,6 +1694,7 @@ context.read<FetchCabsBloc>().add(
           vertical: 16,
           horizontal: 16,
         ),
+        suffixIcon: Icon(Icons.search, color: hintColor),
       ),
     );
   }

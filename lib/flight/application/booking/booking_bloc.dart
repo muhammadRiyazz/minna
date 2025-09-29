@@ -83,6 +83,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
           paxType: passengerData['passengerType'] ?? '',
           title: passengerData['title'] ?? '',
           firstName: passengerData['firstName']?? '',
+          countryCode: passengerData['CountryCode']??"0091",
           lastName: passengerData['lastName'] ?? '',
           dob: formatDateForApi(passengerData['dob']),
           contact: passengerData['contact'] ?? '',
@@ -180,7 +181,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
 
         final RepriceRequest rePrice = RepriceRequest(
           token: event.token,
-          userId: '',
+          userId: 'INCCJ029000000',
           tripMode: event.tripMode,
           journy: Journey(
             flightOptions: [],
@@ -269,7 +270,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
           ),
           errors: null,
           token: event.token,
-          userId: '',
+          userId: 'INCCJ029000000',
           tripMode: event.tripMode,
           passengers: passengers,
         );
@@ -344,7 +345,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
           ),
           errors: null,
           token: event.token,
-          userId: '',
+          userId: 'INCCJ029000000',
           tripMode: event.tripMode,
           passengers: passengers,
         );

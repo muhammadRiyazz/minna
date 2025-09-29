@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:minna/hotel%20booking/core/core.dart';
 import 'package:minna/hotel%20booking/domain/hotel%20list/hotel_list.dart' show Hotel, HotelResponse;
@@ -16,7 +17,7 @@ class HotelApiService {
           'Content-Type': 'application/json',
         },      body: jsonEncode({"CityCode": cityCode}),
     );
-
+log(response.body);
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       final hotelResponse = HotelResponse.fromJson(data);

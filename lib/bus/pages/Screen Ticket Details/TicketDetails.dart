@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:minna/bus/infrastructure/fareCalculation/fare_calculation.dart';
@@ -16,7 +15,6 @@ import '../../infrastructure/cancelTicket/cancel_Ticket_Details.dart';
 import '../../infrastructure/fetch ticket details/fetch_ticket_details.dart';
 import '../screen Cancel Info/screen_cancel_info.dart';
 import '../../presendation/widgets/error_widget.dart';
-import '../../presendation/widgets/loading_widget.dart';
 
 class TicketDetails extends StatefulWidget {
   final String tin;

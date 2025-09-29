@@ -1,9 +1,6 @@
-import 'dart:developer';
-import 'package:minna/bus/domain/BlockTicket/block_ticket_request_modal.dart';
 import 'package:http/http.dart';
 import 'package:minna/comman/core/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../red_bus/constants/urls.dart';
 
 Future<Response> getblockticket({required String data}) async {
   SharedPreferences preferences = await SharedPreferences.getInstance();

@@ -4,15 +4,12 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/http.dart' as http;
 
 import 'package:minna/bus/application/change%20location/location_bloc.dart';
 import 'package:minna/bus/domain/BlockTicket/block_respo.dart';
 import 'package:minna/bus/domain/BlockTicket/block_ticket_request_modal.dart';
 import 'package:minna/bus/domain/seatlayout/seatlayoutmodal.dart';
-import 'package:minna/bus/domain/updated%20fare%20respo/update_fare.dart';
 import 'package:minna/bus/infrastructure/get%20block%20key/block_ticket.dart';
-import 'package:minna/bus/infrastructure/get%20update%20fare/update%20fare%20api.dart';
 import 'package:minna/bus/pages/screen%20conform%20ticket/screen_conform_ticket.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/application/login/login_bloc.dart';
