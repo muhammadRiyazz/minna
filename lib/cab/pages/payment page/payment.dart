@@ -7,13 +7,13 @@ import 'package:minna/bus/pages/screen%20fail%20ticket/screen_fail_ticket.dart';
 import 'package:minna/cab/application/confirm%20booking/confirm_booking_bloc.dart';
 import 'package:minna/cab/application/hold%20cab/hold_cab_bloc.dart';
 import 'package:minna/cab/domain/hold%20data/hold_data.dart';
+import 'package:minna/cab/function/commission_data.dart';
 import 'package:minna/cab/pages/payment%20page/confirmed_page.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/core/api.dart';
 import 'package:minna/comman/functions/create_order_id.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:shimmer/shimmer.dart';
-
 
 class BookingConfirmationPage extends StatefulWidget {
   const BookingConfirmationPage({
@@ -28,43 +28,28 @@ class BookingConfirmationPage extends StatefulWidget {
   final String bookingId;
 
   @override
-  State<BookingConfirmationPage> createState() =>
-      _BookingConfirmationPageState();
+  State<BookingConfirmationPage> createState() => _BookingConfirmationPageState();
 }
 
 class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
   late Timer _timer;
-  int _remainingSeconds = 6 * 60; // 6 minutes in seconds
+  int _remainingSeconds = 6 * 60;
   bool _isTimerExpired = false;
   late Razorpay _razorpay;
   String? _orderId;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  late CommissionProvider commissionProvider;
+  double? _amountWithCommission;
+  bool _commissionLoading = true;
+  String _displayTime = '06:00';
 
   @override
   void initState() {
     super.initState();
-    _startTimer();
+    _startOptimizedTimer();
     _initRazorpay();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _preCalculateCommissions();
+    });
   }
 
   @override
@@ -72,6 +57,55 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
     _timer.cancel();
     _razorpay.clear();
     super.dispose();
+  }
+
+  void _startOptimizedTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_remainingSeconds > 0) {
+        _remainingSeconds--;
+        
+        final newDisplayTime = _formatTime(_remainingSeconds);
+        final shouldRebuild = _displayTime != newDisplayTime || _remainingSeconds <= 10;
+        
+        if (shouldRebuild) {
+          _displayTime = newDisplayTime;
+          if (mounted) {
+            setState(() {});
+          }
+        }
+      } else {
+        _isTimerExpired = true;
+        _timer.cancel();
+        if (mounted) {
+          _showTimeExpiredDialog();
+        }
+      }
+    });
+  }
+
+  Future<void> _preCalculateCommissions() async {
+    commissionProvider = context.read<CommissionProvider>();
+    try {
+      await commissionProvider.getCommission();
+
+      final state = context.read<HoldCabBloc>().state;
+      if (state is HoldCabSuccess) {
+        final fare = state.data.cabRate?.fare;
+        if (fare != null) {
+          final amount = double.parse(fare.totalAmount.toString());
+          final calculated = await commissionProvider.calculateAmountWithCommission(amount);
+          setState(() {
+            _amountWithCommission = calculated;
+            _commissionLoading = false;
+          });
+        }
+      }
+    } catch (e) {
+      log('Commission pre-calculation error: $e');
+      setState(() {
+        _commissionLoading = false;
+      });
+    }
   }
 
   void _initRazorpay() {
@@ -86,15 +120,14 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
     log("Payment orderId: ${response.orderId}");
     log("Payment signature: ${response.signature}");
 
+    double? amount;
+    final state = context.read<HoldCabBloc>().state;
 
-     double? amount ;
-final state = context.read<HoldCabBloc>().state;
+    if (state is HoldCabSuccess) {
+      final BookingData cabData = state.data;
+      amount = double.parse(cabData.cabRate!.fare.totalAmount.toString());
+    }
 
-if (state is HoldCabSuccess) {
-  final BookingData cabData = state.data;
-  amount=double.parse(cabData.cabRate!.fare.totalAmount.toString()) ;
-}
-    // Trigger the payment done event
     context.read<ConfirmBookingBloc>().add(
       ConfirmBookingEvent.paymentDone(
         orderId: response.orderId ?? _orderId ?? '',
@@ -103,12 +136,9 @@ if (state is HoldCabSuccess) {
         tableid: widget.tableID,
         table: "cab_data",
         bookingid: widget.bookingId,
-        amount: amount??0,
+        amount: amount ?? 0,
       ),
     );
-
-
-
 
     _timer.cancel();
   }
@@ -116,7 +146,6 @@ if (state is HoldCabSuccess) {
   void _handlePaymentError(PaymentFailureResponse response) async {
     log("Payment Failed: ${response.message}");
 
-    // Trigger the payment fail event
     context.read<ConfirmBookingBloc>().add(
       ConfirmBookingEvent.paymentFail(
         orderId: _orderId ?? '',
@@ -128,22 +157,6 @@ if (state is HoldCabSuccess) {
 
   void _handleExternalWallet(ExternalWalletResponse response) {
     log("External Wallet: ${response.walletName}");
-  }
-
-  void _startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_remainingSeconds > 0) {
-        setState(() {
-          _remainingSeconds--;
-        });
-      } else {
-        setState(() {
-          _isTimerExpired = true;
-        });
-        _timer.cancel();
-        _showTimeExpiredDialog();
-      }
-    });
   }
 
   String _formatTime(int seconds) {
@@ -242,71 +255,65 @@ if (state is HoldCabSuccess) {
     return shouldExit ?? false;
   }
 
- void _onBookNow(String amount) async {
-  // Start loading
-  context.read<ConfirmBookingBloc>().add(
-    ConfirmBookingEvent.startLoading(),
-  );
-
-  try {
-    final orderId = await createOrder(double.parse(amount));
-    if (orderId == null) {
-      log("orderId creating error");
-      // Stop loading on error
-      context.read<ConfirmBookingBloc>().add(
-        ConfirmBookingEvent.stopLoading(),
-      );
-      
-      // Show error message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to create order. Please try again."))
-      );
-      return;
-    }
-
-    setState(() {
-      _orderId = orderId;
-    });
-
-    final passenger = widget.requestData;
-    final name = passenger['name'] ?? "Passenger";
-    final phone = passenger['mobile'] ?? "0000000000";
-    final email = passenger['email'] ?? "email@example.com";
-
-    var options = {
-      'key': razorpaykey,
-      'amount': (double.parse(amount) * 100).toString(),
-      'name': name,
-      'order_id': orderId,
-      'description': 'Cab Booking Payment',
-      'prefill': {'contact': phone, 'email': email},
-      'theme': {'color': maincolor1!.value.toRadixString(16)},
-    };
+  void _onBookNow(String amount) async {
+    context.read<ConfirmBookingBloc>().add(
+      ConfirmBookingEvent.startLoading(),
+    );
 
     try {
-      _razorpay.open(options);
-      // Note: Don't stop loading here yet - wait for payment callback
+      final orderId = await createOrder(double.parse(amount));
+      if (orderId == null) {
+        log("orderId creating error");
+        context.read<ConfirmBookingBloc>().add(
+          ConfirmBookingEvent.stopLoading(),
+        );
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Failed to create order. Please try again."))
+        );
+        return;
+      }
+
+      setState(() {
+        _orderId = orderId;
+      });
+
+      final passenger = widget.requestData;
+      final name = passenger['name'] ?? "Passenger";
+      final phone = passenger['mobile'] ?? "0000000000";
+      final email = passenger['email'] ?? "email@example.com";
+
+      var options = {
+        'key': razorpaykey,
+        'amount': (double.parse(amount) * 100).toString(),
+        'name': name,
+        'order_id': orderId,
+        'description': 'Cab Booking Payment',
+        'prefill': {'contact': phone, 'email': email},
+        'theme': {'color': maincolor1!.value.toRadixString(16)},
+      };
+
+      try {
+        _razorpay.open(options);
+      } catch (e) {
+        log("Razorpay Error: $e");
+        context.read<ConfirmBookingBloc>().add(
+          ConfirmBookingEvent.stopLoading(),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Payment error: $e"))
+        );
+      }
     } catch (e) {
-      log("Razorpay Error: $e");
-      // Stop loading on error
+      log("Error in _onBookNow: $e");
       context.read<ConfirmBookingBloc>().add(
         ConfirmBookingEvent.stopLoading(),
       );
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Payment error: $e"))
+        SnackBar(content: Text("An error occurred: $e"))
       );
     }
-  } catch (e) {
-    log("Error in _onBookNow: $e");
-    // Stop loading on any other error
-    context.read<ConfirmBookingBloc>().add(
-      ConfirmBookingEvent.stopLoading(),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("An error occurred: $e"))
-    );
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -317,139 +324,67 @@ if (state is HoldCabSuccess) {
             state.whenOrNull(
               refundProcessing:
                   (orderId, transactionId, amount, tableid, bookingid) {
-                    // Show processing dialog
-                    // showDialog(
-                    //   context: context,
-                    //   barrierDismissible: false,
-                    //   builder: (context) => const AlertDialog(
-                    //     title: Text("Processing Refund"),
-                    //     content: Text(
-                    //       "Please wait while we process your refund.",
-                    //     ),
-                    //   ),
-                    // );
-                  },
-
-
-paymentSavedFailed:(message, orderId, transactionId, amount, tableid, shouldRefund, bookingid) {
-
-
-
-if (shouldRefund) {
-    context.read<ConfirmBookingBloc>().add(
-                        ConfirmBookingEvent.initiateRefund(
-                          orderId: orderId,
-                          transactionId: transactionId,
-                          amount: amount,
-                          tableid: tableid,
-                          bookingid: bookingid,
+                // Show processing dialog
+              },
+              paymentSavedFailed: (message, orderId, transactionId, amount, tableid, shouldRefund, bookingid) {
+                if (shouldRefund) {
+                  context.read<ConfirmBookingBloc>().add(
+                    ConfirmBookingEvent.initiateRefund(
+                      orderId: orderId,
+                      transactionId: transactionId,
+                      amount: amount,
+                      tableid: tableid,
+                      bookingid: bookingid,
+                    ),
+                  );
+                }
+              },
+              refundInitiated: (message, orderId, transactionId, amount, tableid, bookingid) {
+                log('Navigate to refund initiated page');
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ScreenRefundInitiated(),
+                  ),
+                );
+              },
+              refundFailed: (message, orderId, transactionId, amount, tableid, bookingid) {
+                log('Navigate to failed page with refund failure');
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ScreenFailTicket(),
+                  ),
+                );
+              },
+              error: (message, shouldRefund, orderId, transactionId, amount, tableid, bookingid) {
+                if (shouldRefund) {
+                  context.read<ConfirmBookingBloc>().add(
+                    ConfirmBookingEvent.initiateRefund(
+                      orderId: orderId,
+                      transactionId: transactionId,
+                      amount: amount,
+                      tableid: tableid,
+                      bookingid: bookingid,
+                    ),
+                  );
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text("Error"),
+                      content: Text(message),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text("OK"),
                         ),
-                      );
-
-}
-
-
-
-},
-
-              refundInitiated:
-                  (
-                    message,
-                    orderId,
-                    transactionId,
-                    amount,
-                    tableid,
-                    bookingid,
-                  ) {
-
-                    log('Navigate to refund initiated page');
-                    // Navigate to refund initiated page
-
-
-
-  // context.read<ConfirmBookingBloc>().add(
-  //                       ConfirmBookingEvent.initiateRefund(
-  //                         orderId: orderId,
-  //                         transactionId: transactionId,
-  //                         amount: amount,
-  //                         tableid: tableid,
-  //                         bookingid: bookingid,
-  //                       ),
-  //                     );
-
-
-
-
-                    
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ScreenRefundInitiated(
-                         
-                        ),
-                      ),
-                    );
-                  },
-              refundFailed:
-                  (
-                    message,
-                    orderId,
-                    transactionId,
-                    amount,
-                    tableid,
-                    bookingid,
-                  ) {
-                    // Navigate to failed page with refund failure
-                    log(' Navigate to failed page with refund failure');
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ScreenFailTicket(
-                       
-                        ),
-                      ),
-                    );
-                  },
-              error:
-                  (
-                    message,
-                    shouldRefund,
-                    orderId,
-                    transactionId,
-                    amount,
-                    tableid,
-                    bookingid,
-                  ) {
-                    if (shouldRefund) {
-                      // Initiate refund automatically
-                      context.read<ConfirmBookingBloc>().add(
-                        ConfirmBookingEvent.initiateRefund(
-                          orderId: orderId,
-                          transactionId: transactionId,
-                          amount: amount,
-                          tableid: tableid,
-                          bookingid: bookingid,
-                        ),
-                      );
-                    } else {
-                      // Show error dialog
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text("Error"),
-                          content: Text(message),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text("OK"),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                  },
+                      ],
+                    ),
+                  );
+                }
+              },
               success: (data) {
-                // Navigate to success page
                 log('Navigate to success page');
                 Navigator.pushReplacement(
                   context,
@@ -459,23 +394,7 @@ if (shouldRefund) {
                 );
               },
               paymentFailed: (message, orderId, tableid, bookingid) {
-                // Navigate to failed page
                 log("Navigate to failed page");
-                // Navigator.pushReplacement(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => FailedPage(
-                //       message: message,
-                //       onRetry: () {
-                //         // Retry payment logic
-                //         final holdState = context.read<HoldCabBloc>().state;
-                //         if (holdState is HoldCabSuccess) {
-                //           _onBookNow(holdState.data.cabRate!.fare.totalAmount.toString());
-                //         }
-                //       },
-                //     ),
-                //   ),
-                // );
               },
             );
           },
@@ -499,24 +418,22 @@ if (shouldRefund) {
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: _remainingSeconds < 60
-                        ? Colors.red
-                        : Colors.white.withOpacity(0.2),
+                    color: Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.timer, size: 16, color: Colors.white),
-                      SizedBox(width: 4),
+                      const Icon(Icons.timer, color: Colors.white),
+                      const SizedBox(width: 5),
                       Text(
-                        _formatTime(_remainingSeconds),
-                        style: TextStyle(
-                          fontSize: 14,
+                        _displayTime,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
+                          fontSize: 16,
                         ),
                       ),
                     ],
@@ -526,8 +443,8 @@ if (shouldRefund) {
             ),
             centerTitle: true,
             backgroundColor: maincolor1,
-            iconTheme: IconThemeData(color: Colors.white),
-            shape: RoundedRectangleBorder(
+            iconTheme: const IconThemeData(color: Colors.white),
+            shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
             ),
           ),
@@ -541,33 +458,31 @@ if (shouldRefund) {
               } else if (state is HoldCabError) {
                 return Center(
                   child: Padding(
-                    padding: EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(16),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.error_outline, size: 64, color: Colors.red),
-                        SizedBox(height: 16),
-                        Text(
+                        const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                        const SizedBox(height: 16),
+                        const Text(
                           "Error Occurred",
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
                           state.message,
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16),
+                          style: const TextStyle(fontSize: 16),
                         ),
-                        SizedBox(height: 24),
+                        const SizedBox(height: 24),
                         ElevatedButton(
                           onPressed: () {
-                            Navigator.of(
-                              context,
-                            ).popUntil((route) => route.isFirst);
+                            Navigator.of(context).popUntil((route) => route.isFirst);
                           },
-                          child: Text("Go to Home"),
+                          child: const Text("Go to Home"),
                         ),
                       ],
                     ),
@@ -588,14 +503,14 @@ if (shouldRefund) {
       children: [
         Expanded(
           child: SingleChildScrollView(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildTripInformation(bookingData),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 _buildCabDetails(bookingData),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 _buildFareBreakdown(bookingData),
               ],
             ),
@@ -607,24 +522,23 @@ if (shouldRefund) {
   }
 
   Widget _buildTripInformation(BookingData bookingData) {
-    log(bookingData.tripType.toString());
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 2)),
+          BoxShadow(color: Colors.black12, blurRadius: 8, offset: const Offset(0, 2)),
         ],
       ),
       child: Padding(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Icon(Icons.route, color: maincolor1, size: 22),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Text(
                   "Trip Information",
                   style: TextStyle(
@@ -635,27 +549,26 @@ if (shouldRefund) {
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-            // Display different UI based on trip type
-            if (bookingData.tripType == 1) // One Way
+            if (bookingData.tripType == 1)
               _buildOneWayTrip(bookingData),
 
-            if (bookingData.tripType == 2) // Round Trip
+            if (bookingData.tripType == 2)
               _buildRoundTrip(bookingData),
 
-            if (bookingData.tripType == 3) // Multi City
+            if (bookingData.tripType == 3)
               _buildMultiCityTrip(bookingData),
 
-            if (bookingData.tripType == 4) // Airport Transfer
+            if (bookingData.tripType == 4)
               _buildAirportTransfer(bookingData),
 
-            if (bookingData.tripType == 10) // Day Rental
+            if (bookingData.tripType == 10)
               _buildDayRental(bookingData),
 
-            Divider(height: 30, thickness: 1, color: Colors.grey[200]),
+            const Divider(height: 30, thickness: 1, color: Colors.grey),
+            const SizedBox(height: 16),
 
-            // Common trip details
             Wrap(
               spacing: 20,
               runSpacing: 15,
@@ -665,7 +578,6 @@ if (shouldRefund) {
                   "Date",
                   bookingData.startDate,
                 ),
-
                 _buildInfoChip(
                   Icons.access_time,
                   "Time",
@@ -681,7 +593,6 @@ if (shouldRefund) {
                   "Duration",
                   formatDuration(bookingData.estimatedDuration.toInt()),
                 ),
-
                 _buildInfoChip(
                   Icons.directions_car,
                   "Trip Type",
@@ -696,8 +607,8 @@ if (shouldRefund) {
   }
 
   String formatDuration(int minutes) {
-    final hours = minutes ~/ 60; // integer division
-    final mins = minutes % 60; // remainder
+    final hours = minutes ~/ 60;
+    final mins = minutes % 60;
     if (hours > 0 && mins > 0) {
       return "$hours hr $mins min";
     } else if (hours > 0) {
@@ -707,7 +618,6 @@ if (shouldRefund) {
     }
   }
 
-  // ✅ One Way Trip UI
   Widget _buildOneWayTrip(BookingData bookingData) {
     final route = bookingData.routes.first;
     return _buildHorizontalRouteCard(
@@ -716,7 +626,6 @@ if (shouldRefund) {
     );
   }
 
-  // ✅ Round Trip UI
   Widget _buildRoundTrip(BookingData bookingData) {
     final route = bookingData.routes.first;
     return Column(
@@ -727,7 +636,7 @@ if (shouldRefund) {
           route.destination.address,
           label: "Onward",
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         _buildHorizontalRouteCard(
           route.destination.address,
           route.source.address,
@@ -742,14 +651,14 @@ if (shouldRefund) {
       height: 110,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        shrinkWrap: true, // ✅ prevents unbounded height
+        shrinkWrap: true,
         itemCount: bookingData.routes.length,
         itemBuilder: (context, index) {
           final route = bookingData.routes[index];
           return Padding(
             padding: const EdgeInsets.only(right: 7),
             child: SizedBox(
-              width: 200, // ✅ give fixed width for each card
+              width: 200,
               child: _buildHorizontalRouteCard(
                 route.source.address,
                 route.destination.address,
@@ -762,7 +671,6 @@ if (shouldRefund) {
     );
   }
 
-  // ✅ Airport Transfer UI
   Widget _buildAirportTransfer(BookingData bookingData) {
     final route = bookingData.routes.first;
     return _buildHorizontalRouteCard(
@@ -772,7 +680,6 @@ if (shouldRefund) {
     );
   }
 
-  // ✅ Day Rental UI
   Widget _buildDayRental(BookingData bookingData) {
     final route = bookingData.routes.first;
     return _buildHorizontalRouteCard(
@@ -782,15 +689,14 @@ if (shouldRefund) {
     );
   }
 
-  /// 🔥 Reusable Horizontal Route Card
   Widget _buildHorizontalRouteCard(
     String source,
     String destination, {
     String? label,
   }) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 8),
-      padding: EdgeInsets.all(12),
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.grey[100],
         borderRadius: BorderRadius.circular(12),
@@ -804,7 +710,7 @@ if (shouldRefund) {
               Icon(Icons.location_on, size: 18, color: Colors.red),
             ],
           ),
-          SizedBox(width: 10),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -812,7 +718,7 @@ if (shouldRefund) {
                 if (label != null)
                   Text(
                     label,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 8,
                       fontWeight: FontWeight.w500,
                       color: Colors.blueGrey,
@@ -820,7 +726,7 @@ if (shouldRefund) {
                   ),
                 Text(
                   source,
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                   overflow: TextOverflow.ellipsis,
                 ),
                 Row(
@@ -832,7 +738,7 @@ if (shouldRefund) {
                 ),
                 Text(
                   destination,
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
@@ -845,7 +751,7 @@ if (shouldRefund) {
 
   Widget _buildInfoChip(IconData icon, String label, String value) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.grey[50],
         borderRadius: BorderRadius.circular(10),
@@ -855,7 +761,7 @@ if (shouldRefund) {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 16, color: maincolor1),
-          SizedBox(width: 6),
+          const SizedBox(width: 6),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -865,7 +771,7 @@ if (shouldRefund) {
               ),
               Text(
                 value,
-                style: TextStyle(
+                style:  TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: Colors.grey[800],
@@ -885,7 +791,7 @@ if (shouldRefund) {
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -897,7 +803,7 @@ if (shouldRefund) {
                 color: maincolor1,
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             if (cab != null) ...[
               Row(
                 children: [
@@ -922,19 +828,19 @@ if (shouldRefund) {
                             color: maincolor1,
                           ),
                   ),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           cab.type,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
                           cab.category,
                           style: TextStyle(color: Colors.grey[600]),
@@ -945,7 +851,7 @@ if (shouldRefund) {
                 ],
               ),
             ],
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             if (cab != null) ...[
               Wrap(
                 spacing: 8,
@@ -974,19 +880,16 @@ if (shouldRefund) {
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Fare Breakdown",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: maincolor1,
-              ),
-            ),
-            SizedBox(height: 16),
+            Text("Fare Breakdown",
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: maincolor1)),
+            const SizedBox(height: 16),
             if (fare != null) ...[
               _buildFareRow("Base Fare", "₹${fare.baseFare}"),
               if (fare.driverAllowance > 0)
@@ -1000,15 +903,23 @@ if (shouldRefund) {
                 _buildFareRow("Airport Fee", "₹${fare.airportFee}"),
               if (fare.additionalCharge > 0)
                 _buildFareRow(
-                  "Additional Charges",
-                  "₹${fare.additionalCharge}",
+                    "Additional Charges", "₹${fare.additionalCharge}"),
+              const Divider(height: 24),
+              if (_commissionLoading)
+                const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: CircularProgressIndicator())
+              else if (_amountWithCommission != null)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    _buildFareRow(
+                        "Service Charges & Other",
+                        "₹${(_amountWithCommission! - double.parse(fare.totalAmount.toString())).toStringAsFixed(0)}"),
+                    _buildFareRow("Total Amount",
+                        "₹${_amountWithCommission!.toStringAsFixed(0)}"),
+                  ],
                 ),
-              Divider(height: 24),
-              _buildFareRow(
-                "Total Amount",
-                "₹${fare.totalAmount}",
-                isTotal: true,
-              ),
             ],
           ],
         ),
@@ -1020,7 +931,7 @@ if (shouldRefund) {
     final fare = bookingData.cabRate?.fare;
 
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(top: BorderSide(color: Colors.grey.shade200)),
@@ -1028,7 +939,7 @@ if (shouldRefund) {
           BoxShadow(
             color: Colors.black12,
             blurRadius: 10,
-            offset: Offset(0, -2),
+            offset: const Offset(0, -2),
           ),
         ],
       ),
@@ -1037,21 +948,21 @@ if (shouldRefund) {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 "Amount to Pay:",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
               Text(
-                "₹${fare?.totalAmount ?? 0}",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: maincolor1,
-                ),
-              ),
+                        "₹${_amountWithCommission?.toStringAsFixed(0)}",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: maincolor1,
+                        ),
+                      ),
             ],
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           BlocBuilder<ConfirmBookingBloc, ConfirmBookingState>(
             builder: (context, state) {
               return SizedBox(
@@ -1062,7 +973,7 @@ if (shouldRefund) {
                       ? null
                       : () {
                           _onBookNow(
-                            bookingData.cabRate!.fare.totalAmount.toString(),
+                            _amountWithCommission!.toStringAsFixed(0).toString(),
                           );
                         },
                   style: ElevatedButton.styleFrom(
@@ -1073,7 +984,7 @@ if (shouldRefund) {
                     elevation: 2,
                   ),
                   child: state is ConfirmBookingLoading
-                      ? SizedBox(
+                      ? const SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
@@ -1087,7 +998,7 @@ if (shouldRefund) {
                           _isTimerExpired
                               ? "TIME EXPIRED"
                               : "PROCEED TO PAYMENT",
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -1104,7 +1015,7 @@ if (shouldRefund) {
 
   Widget _buildFareRow(String label, String amount, {bool isTotal = false}) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -1132,14 +1043,14 @@ if (shouldRefund) {
       label: Text(text),
       avatar: Icon(icon, size: 16),
       backgroundColor: Colors.blue.shade50,
-      labelStyle: TextStyle(fontSize: 12),
+      labelStyle: const TextStyle(fontSize: 12),
       visualDensity: VisualDensity.compact,
     );
   }
 
   Widget buildShimmerLoading() {
     return SingleChildScrollView(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Column(
         children: [
           Shimmer.fromColors(
@@ -1153,7 +1064,7 @@ if (shouldRefund) {
               ),
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Shimmer.fromColors(
             baseColor: Colors.grey[300]!,
             highlightColor: Colors.grey[100]!,
@@ -1165,7 +1076,7 @@ if (shouldRefund) {
               ),
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Shimmer.fromColors(
             baseColor: Colors.grey[300]!,
             highlightColor: Colors.grey[100]!,

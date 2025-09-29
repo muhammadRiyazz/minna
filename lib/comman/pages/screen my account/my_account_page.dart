@@ -50,10 +50,8 @@ class _MyAccountPageState extends State<MyAccountPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (!(state.isLoggedIn ?? false)) ...[
-                    // Show login section only if not logged in
                     _buildLoginSection(context),
                   ] else ...[
-                    // Show user profile if logged in
                     _buildUserProfileSection(state),
                   ],
                   // _buildSectionTitle('ACCOUNT'),

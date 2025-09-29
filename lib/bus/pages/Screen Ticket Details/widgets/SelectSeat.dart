@@ -1,15 +1,12 @@
 // import 'dart:developer';
-
 // import 'package:chips_choice_null_safety/chips_choice_null_safety.dart';
 // import 'package:flutter/material.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
 
-// import '../../../../../application/CancelSeatSelection/seat_select_bloc.dart';
-// import '../../../../../infrastructure/ticket cancel/ticket_cancel.dart';
+
 // import '../../../domain/Ticket details/ticket_details_more1.dart';
 // import '../../../domain/cancel succes modal/cancel_succes_modal.dart';
 // import '../../../infrastructure/cancelTicket/conform_cancel_seat.dart';
-// import '../../Screen cancel Succes/screen_cancel_succes.dart';
 
 // class SelectDeletionSeat extends StatefulWidget {
 //   const SelectDeletionSeat({Key? key, required this.items, required this.tin})

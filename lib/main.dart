@@ -11,6 +11,7 @@ import 'package:minna/cab/application/booked%20info%20list/booked_info_bloc.dart
 import 'package:minna/cab/application/confirm%20booking/confirm_booking_bloc.dart';
 import 'package:minna/cab/application/fetch%20cab/fetch_cabs_bloc.dart';
 import 'package:minna/cab/application/hold%20cab/hold_cab_bloc.dart';
+import 'package:minna/cab/function/commission_data.dart';
 import 'package:minna/comman/application/login/login_bloc.dart';
 import 'package:minna/comman/pages/screen%20splash/splash_page.dart';
 
@@ -25,6 +26,7 @@ import 'package:minna/flight/application/search%20data/search_data_bloc.dart';
 import 'package:minna/flight/application/trip%20request/trip_request_bloc.dart';
 import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/application/oparator/operators_bloc.dart';
 import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/application/proceed_recharge/recharge_proceed_bloc.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -120,8 +122,12 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
+    return MultiProvider(
       providers: [
+        // Provider for CommissionProvider
+        ChangeNotifierProvider(create: (_) => CommissionProvider()),
+        
+        // All your BlocProviders
         BlocProvider(create: (context) => NationalityBloc()),
         BlocProvider(create: (context) => SearchDataBloc()),
         BlocProvider(create: (context) => TripRequestBloc()),
@@ -131,29 +137,22 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(create: (context) => BusListFetchBloc()),
         BlocProvider(create: (context) => LoginBloc()),
         BlocProvider(create: (context) => OperatorsBloc()),
-        BlocProvider(create: (context) => BookingBloc()), // Add this line
+        BlocProvider(create: (context) => BookingBloc()),
         BlocProvider(create: (context) => RechargeProceedBloc()),
         BlocProvider(create: (context) => DthConfirmBloc()),
         BlocProvider(create: (context) => ProvidersBloc()),
         BlocProvider(create: (context) => FetchBillBloc()),
-
         BlocProvider(create: (context) => FetchCabsBloc()),
-
         BlocProvider(create: (context) => HoldCabBloc()),
         BlocProvider(create: (context) => ConfirmBookingBloc()),
         BlocProvider(create: (context) => BookedInfoBloc()),
-
-        
-
-        
       ],
-
       child: MaterialApp(
         scaffoldMessengerKey: _scaffoldMessengerKey,
         debugShowCheckedModeBanner: false,
         title: 'MINNA',
         theme: ThemeData(
-          fontFamily: 'Montserrat', // Apply Montserrat font globally
+          fontFamily: 'Montserrat',
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         ),
         home: GradientSplashScreen(),

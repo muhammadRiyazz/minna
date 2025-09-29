@@ -58,7 +58,7 @@ class _CabBookingListState extends State<CabBookingList> {
                       filteredBookings.isEmpty
                           ? _buildEmptyState()
                           : _buildBookingList(filteredBookings),
-                  error: (message) => _buildErrorState(message),
+                  error: (message) => _buildErrorState(),
                   orElse: () => _buildInitialState(),
                 ),
               ),
@@ -187,7 +187,9 @@ class _CabBookingListState extends State<CabBookingList> {
     
     return InkWell(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => BookingDetailsPage(bookingId: booking.bookingId,),));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => BookingDetailsPage(
+          tableID:booking.id,
+          bookingId: booking.bookingId,),));
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
@@ -389,36 +391,48 @@ class _CabBookingListState extends State<CabBookingList> {
       ),
     );
   }
-
-  Widget _buildErrorState(String message) {
-    return Center(
+  Widget _buildErrorState() {
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.error_outline,
-            size: 80,
-            color: Colors.red.withOpacity(0.5),
-          ),
+          const Icon(Icons.error_outline, size: 64, color: Colors.red),
           const SizedBox(height: 16),
           Text(
-            message,
-            style: const TextStyle(fontSize: 16, color: Colors.red),
+            'Failed to Load Data',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey.shade700,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'There was an issue fetching your reports.\n'
+            'Please check your connection and try again.',
             textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
           ),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () {
-              context.read<BookedInfoBloc>().add(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: maincolor1,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            ),
+            onPressed: (){  context.read<BookedInfoBloc>().add(
                     BookedInfoEvent.fetchList(),
-                  );
-            },
-            child: const Text('Retry'),
+                  );},
+            child: const Text('Retry', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
     );
   }
+ 
 
   Widget _buildInitialState() {
     return const Center(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:minna/cab/application/hold%20cab/hold_cab_bloc.dart';
 import 'package:minna/cab/domain/cab%20list%20model/cab_list_data.dart';
+import 'package:minna/cab/function/commission_data.dart';
 import 'package:minna/cab/pages/payment%20page/payment.dart';
 import 'package:minna/comman/application/login/login_bloc.dart';
 import 'package:minna/comman/const/const.dart';
@@ -40,11 +41,27 @@ class _BookingPageState extends State<BookingPage> {
   bool _kidsTravelling = false;
   bool _seniorCitizenTravelling = false;
   bool _womanTravelling = false;
+  late CommissionProvider commissionProvider;
+
 @override
   void initState() {
     context.read<LoginBloc>().add(const LoginEvent.loginInfo());
     super.initState();
+      commissionProvider = context.read<CommissionProvider>();
+
+ WidgetsBinding.instance.addPostFrameCallback((_) {
+    _preCalculateCommissions();
+  });  }
+
+  Future<void> _preCalculateCommissions() async {
+     commissionProvider = context.read<CommissionProvider>();
+    try {
+      await commissionProvider.getCommission();
+    } catch (e) {
+      log('Commission pre-calculation error: $e');
+    }
   }
+
   @override
   void dispose() {
     _primaryPhoneCodeController.dispose();
@@ -331,24 +348,38 @@ class _BookingPageState extends State<BookingPage> {
                         ),
     
                         // Fare
-                        Column(
+                       
+                    // Fare - UPDATED SECTION
+                    FutureBuilder<double>(
+                      future: commissionProvider.calculateAmountWithCommission(cab.fare.totalAmount??0),
+                      builder: (context, snapshot) {
+                        if (commissionProvider.isLoading || snapshot.connectionState == ConnectionState.waiting) {
+                          return SizedBox();
+                        }
+
+                        final amountWithCommission = snapshot.data ?? cab.fare.totalAmount??0;
+                        final hasCommission = amountWithCommission > cab.fare.totalAmount!;
+
+                        return Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
+                         
+                            // Final amount with commission
                             Text(
-                              "₹${cab.fare.totalAmount?.toStringAsFixed(0) ?? '0'}",
+                              "₹${amountWithCommission.toStringAsFixed(0)}",
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 color: maincolor1,
                               ),
                             ),
-                            const SizedBox(height: 6),
-                            Text(
-                              "Base: ₹${cab.fare.baseFare.toStringAsFixed(0)}",
-                              style: TextStyle(fontSize: 12, color: Colors.grey),
-                            ),
+                            
+                            const SizedBox(height: 4),
+                        
                           ],
-                        ),
+                        );
+                      },
+                    ),
                       ],
                     ),
     
@@ -743,7 +774,7 @@ class _BookingPageState extends State<BookingPage> {
       
             // Submit Button
          BlocConsumer<HoldCabBloc, HoldCabState>(
-  listener: (context, state) {
+   listener: (context, state) {
     if (state is HoldCabError) {
       // ScaffoldMessenger.of(context).showSnackBar(
       //   SnackBar(content: Text(state.message)),
@@ -764,7 +795,7 @@ class _BookingPageState extends State<BookingPage> {
       );
     }
   },
-  builder: (context, state) {
+   builder: (context, state) {
     final isLoading = state is HoldCabLoading;
 
     return SizedBox(

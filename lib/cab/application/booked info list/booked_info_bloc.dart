@@ -56,7 +56,7 @@ log(response.body.toString());
               case "ROUND TRIP":
                 prefix = "RT";
                 break;
-              case "AIRPORT":
+              case "AIRPORT TRANSFER":
                 prefix = "AP";
                 break;
               case "MULTI CITY":

@@ -10,6 +10,7 @@ import 'package:minna/comman/const/const.dart';
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:minna/comman/core/api.dart';
 
 // Enum to track which location field is being edited - moved to top level
 enum LocationFieldType {
@@ -35,7 +36,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
   final TextEditingController _destinationController = TextEditingController();
   
   // For location search
-  final String _apiKey = 'AIzaSyALjWcxp0DAnTOkKNHbXCFKkjObKHvyMns';
+  final String _apiKey = locationapiKey;
   List<dynamic> _searchResults = [];
   final TextEditingController _searchController = TextEditingController();
   bool _isSearching = false;

@@ -5,18 +5,45 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:minna/cab/application/fetch%20cab/fetch_cabs_bloc.dart';
 import 'package:minna/cab/application/fetch%20cab/fetch_cabs_state.dart';
 import 'package:minna/cab/domain/cab%20list%20model/cab_list_data.dart';
+import 'package:minna/cab/function/commission_data.dart';
 import 'package:minna/cab/pages/booking_hold/booking_hold_input.dart';
 import 'package:minna/comman/const/const.dart';
 
-class CabsListPage extends StatelessWidget {
+class CabsListPage extends StatefulWidget {
   final Map<String, dynamic> requestData;
 
   const CabsListPage({super.key, required this.requestData});
 
   @override
+  State<CabsListPage> createState() => _CabsListPageState();
+}
+
+class _CabsListPageState extends State<CabsListPage> {
+  // final Map<String, double> _commissionAmounts = {};
+late CommissionProvider commissionProvider;
+  @override
+@override
+void initState() {
+  super.initState();
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    _preCalculateCommissions();
+  });
+}
+
+  Future<void> _preCalculateCommissions() async {
+     commissionProvider = context.read<CommissionProvider>();
+    try {
+      await commissionProvider.getCommission();
+    } catch (e) {
+      log('Commission pre-calculation error: $e');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+
     return BlocProvider(
-      create: (context) => FetchCabsBloc()..add(FetchCabsEvent.fetchCabs(requestData: requestData)),
+      create: (context) => FetchCabsBloc()..add(FetchCabsEvent.fetchCabs(requestData: widget.requestData)),
       child: Scaffold(
         appBar: AppBar(
           titleTextStyle: TextStyle(color: Colors.white),
@@ -42,7 +69,7 @@ class CabsListPage extends StatelessWidget {
             } else if (state is FetchCabsError) {
               return _buildErrorState(state.message);
             } else if (state is FetchCabsSuccess) {
-              return _buildCabList(state.data);
+              return _buildCabList(state.data, commissionProvider);
             } else {
               return _buildInitialState();
             }
@@ -90,7 +117,8 @@ class CabsListPage extends StatelessWidget {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-(context) => FetchCabsBloc()..add(FetchCabsEvent.fetchCabs(requestData: requestData));              },
+                context.read<FetchCabsBloc>().add(FetchCabsEvent.fetchCabs(requestData: widget.requestData));
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: maincolor1,
                 shape: RoundedRectangleBorder(
@@ -109,7 +137,7 @@ class CabsListPage extends StatelessWidget {
     );
   }
 
-  Widget _buildCabList(CabResponse cabResponse) {
+  Widget _buildCabList(CabResponse cabResponse, CommissionProvider commissionProvider) {
     final cabRateList = cabResponse.data.cabRate;
     
     if (cabRateList.isEmpty) {
@@ -140,9 +168,9 @@ class CabsListPage extends StatelessWidget {
         final cabData = cabRateList[index];
         final cab = cabData.cab;
         final fare = cabData.fare;
-    
+        final originalAmount = fare.totalAmount ?? 0;
+
         return Card(
-    
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -180,7 +208,7 @@ class CabsListPage extends StatelessWidget {
                           : Icon(Icons.directions_car, size: 40, color: maincolor1),
                     ),
                     const SizedBox(width: 12),
-    
+
                     // Cab Info
                     Expanded(
                       child: Column(
@@ -225,31 +253,43 @@ class CabsListPage extends StatelessWidget {
                         ],
                       ),
                     ),
-    
-                    // Fare
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          "₹${fare.totalAmount?.toStringAsFixed(0) ?? '0'}",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: maincolor1,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          "Base: ₹${fare.baseFare.toStringAsFixed(0)}",
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
-                        ),
-                      ],
+
+                    // Fare - UPDATED SECTION
+                    FutureBuilder<double>(
+                      future: commissionProvider.calculateAmountWithCommission(originalAmount),
+                      builder: (context, snapshot) {
+                        if (commissionProvider.isLoading || snapshot.connectionState == ConnectionState.waiting) {
+                          return buildAmountShimmer();
+                        }
+
+                        final amountWithCommission = snapshot.data ?? originalAmount;
+                        final hasCommission = amountWithCommission > originalAmount;
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                         
+                            // Final amount with commission
+                            Text(
+                              "₹${amountWithCommission.toStringAsFixed(0)}",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: maincolor1,
+                              ),
+                            ),
+                            
+                            const SizedBox(height: 4),
+                        
+                          ],
+                        );
+                      },
                     ),
                   ],
                 ),
-    
+
                 const Divider(height: 20),
-    
+
                 // Extra Info Row
                 Row(
                   children: [
@@ -267,9 +307,9 @@ class CabsListPage extends StatelessWidget {
                     ),
                   ],
                 ),
-    
+
                 const SizedBox(height: 10),
-    
+
                 // Instructions
                 Wrap(
                   spacing: 6,
@@ -292,23 +332,24 @@ class CabsListPage extends StatelessWidget {
                     ),
                   ),
                 ),
-    
+
                 const SizedBox(height: 12),
-    
+
                 // Book Button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-
- 
-                //  context.read<FetchCabsBloc>().add(FetchCabsEvent.cabSelected(selectedCabData: cabData));
-Navigator.push(context, MaterialPageRoute(builder: (context) =>  BookingPage(
-          selectedCab: cabData,
-          requestData: requestData, // pass your trip request
-        ),));
-log(cabData.toJson().toString());
-       
+                      Navigator.push(
+                        context, 
+                        MaterialPageRoute(
+                          builder: (context) => BookingPage(
+                            selectedCab: cabData,
+                            requestData: widget.requestData,
+                          ),
+                        )
+                      );
+                      log(cabData.toJson().toString());
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: maincolor1,
@@ -335,10 +376,28 @@ log(cabData.toJson().toString());
     );
   }
 
+  // Small shimmer for amount loading
+  Widget buildAmountShimmer() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Container(
+          width: 70,
+          height: 20,
+          decoration: BoxDecoration(
+            color: Colors.grey[300],
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+       
+      ],
+    );
+  }
+
   Widget _buildShimmerLoading() {
     return ListView.builder(
       padding: const EdgeInsets.all(12),
-      itemCount: 4, // Show 4 shimmer items
+      itemCount: 4,
       itemBuilder: (context, index) {
         return Card(
           shape: RoundedRectangleBorder(
@@ -362,7 +421,7 @@ log(cabData.toJson().toString());
                         borderRadius: BorderRadius.circular(12),
                       ),
                       height: 80,
-                      width: 100,
+                      width: 90,
                     ),
                     const SizedBox(width: 12),
 
@@ -414,34 +473,12 @@ log(cabData.toJson().toString());
                       ),
                     ),
 
-                    // Fare Shimmer
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Container(
-                          width: 60,
-                          height: 20,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Container(
-                          width: 80,
-                          height: 14,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                      ],
-                    ),
+                    // Fare Shimmer (using the small shimmer)
+                    buildAmountShimmer(),
                   ],
                 ),
 
                 const SizedBox(height: 16),
-                // Divider Shimmer
                 Container(
                   width: double.infinity,
                   height: 1,
@@ -449,7 +486,6 @@ log(cabData.toJson().toString());
                 ),
                 const SizedBox(height: 16),
 
-                // Extra Info Row Shimmer
                 Row(
                   children: [
                     Container(
@@ -474,7 +510,6 @@ log(cabData.toJson().toString());
 
                 const SizedBox(height: 12),
 
-                // Instructions Shimmer
                 Wrap(
                   spacing: 6,
                   runSpacing: 6,
@@ -493,7 +528,6 @@ log(cabData.toJson().toString());
 
                 const SizedBox(height: 16),
 
-                // Book Button Shimmer
                 Container(
                   width: double.infinity,
                   height: 48,

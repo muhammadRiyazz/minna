@@ -7,13 +7,16 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:minna/cab/application/booked%20details/booked_details_bloc.dart';
 import 'package:minna/cab/domain/cab%20list%20model/cab_booked_details.dart';
+import 'package:minna/cab/function/commission_data.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/core/api.dart';
 
 class BookingDetailsPage extends StatefulWidget {
   final String bookingId;
+    final String tableID;
 
-  const BookingDetailsPage({super.key, required this.bookingId});
+
+  const BookingDetailsPage({super.key, required this.bookingId,required this.tableID});
 
   @override
   State<BookingDetailsPage> createState() => _BookingDetailsPageState();
@@ -25,6 +28,27 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
   final String _baseUrl = 'http://gozotech2.ddns.net:5192/api/cpapi/booking';
   final String _authorization =
       'Basic ZjA2MjljNTIxZjE2MjU0NTA2YmIyMDQzNWI4MTJmMmE=';
+        late CommissionProvider commissionProvider;
+
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+          commissionProvider = context.read<CommissionProvider>();
+
+ WidgetsBinding.instance.addPostFrameCallback((_) {
+    _preCalculateCommissions();
+  });  }
+
+
+  Future<void> _preCalculateCommissions() async {
+     commissionProvider = context.read<CommissionProvider>();
+    try {
+      await commissionProvider.getCommission();
+    } catch (e) {
+      log('Commission pre-calculation error: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -306,11 +330,12 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                                 onPressed: _isConfirmingCancellation
                                     ? null
                                     : () {
+                                      log("ElevatedButton --Confirm Cancellation---");
                                         // Confirm cancellation
                                         Navigator.of(context).pop(); // close sheet
                                         _confirmCancellation(
                                           bookingId: bookingId,
-                                          reasonText: additionalText.isNotEmpty ? additionalText : (selectedReason.text ?? ''),
+                                          reasonText: additionalText.isNotEmpty ? additionalText : (selectedReason.text),
                                           reasonId: selectedReasonId,
                                         );
                                       },
@@ -347,6 +372,10 @@ Future<void> _confirmCancellation({
   required String reasonText,
   required String reasonId,
 }) async {
+
+
+
+  log("_confirmCancellation ---- call --function");
   setState(() {
     _isConfirmingCancellation = true;
   });
@@ -373,21 +402,24 @@ Future<void> _confirmCancellation({
     });
 log(response.body.toString());
     if (response.statusCode == 200) {
+      log("response.statusCode == 200");
       final decoded = jsonDecode(response.body);
       if (decoded['success'] == true && decoded['data'] != null) {
+log("success   :   true");
+
         final data = decoded['data'];
         final refundedAmount = data['refundAmount'] ?? 0;
         final cancellationCharge = data['cancellationCharge'] ?? 0;
         final message = data['message'] ?? 'Booking cancelled successfully';
         final cancelledBookingId = data['bookingId'] ?? bookingId;
-
+log("call _callCabStatusApi");
         // Call CAB Status API with cancel type
         await _callCabStatusApi(
-          bookingId: cancelledBookingId,
+          bookingId:widget. tableID,
           type: 'cancel',
           request: jsonEncode(bodyMap),
           response: response.body,
-          refundAmount: refundedAmount,
+          refundAmount:   double.parse(refundedAmount.toString()) ,
         );
 
         // Show updated bottom sheet
@@ -496,54 +528,26 @@ log(response.body.toString());
           },
         );
       } else {
-        // Call CAB Status API with failure type
-        // await _callCabStatusApi(
-        //   bookingId: bookingId,
-        //   type: 'failure',
-        //   request: jsonEncode(bodyMap),
-        //   response: response.body,
-        //   refundAmount: 0,
-        // );
-        _showError('Cancellation failed. Please try again.');
+     
+        log('Cancellation failed. Please try again.');
       }
     } else {
-      // Call CAB Status API with failure type
-      // await _callCabStatusApi(
-      //   bookingId: bookingId,
-      //   type: 'failure',
-      //   request: jsonEncode(bodyMap),
-      //   response: response.body,
-      //   refundAmount: 0,
-      // );
-      _showError('Cancellation failed: ${response.statusCode}');
+     
+      log('Cancellation failed: ${response.statusCode}');
     }
   } catch (e) {
+    log(e.toString());
     setState(() {
       _isConfirmingCancellation = false;
     });
     
-    // Call CAB Status API with failure type for exception case
-    // try {
-    //   await _callCabStatusApi(
-    //     bookingId: bookingId,
-    //     type: 'failure',
-    //     request: jsonEncode({
-    //       "bookingId": bookingId,
-    //       "reason": reasonText,
-    //       "reasonId": reasonId
-    //     }),
-    //     response: 'Exception: $e',
-    //     refundAmount: 0,
-    //   );
-    // } catch (cabError) {
-    //   log('Failed to call CAB Status API: $cabError');
-    // }
+
     
-    _showError('Failed to cancel booking. Please check your connection and try again.');
+    log('Failed to cancel booking. Please check your connection and try again.');
   }
 }
 
-// Helper method to call CAB Status API
+
 Future<void> _callCabStatusApi({
   required String bookingId,
   required String type,
@@ -551,24 +555,29 @@ Future<void> _callCabStatusApi({
   required String response,
   required double refundAmount,
 }) async {
+  log("_callCabStatusApi----");
   try {
     final cabStatusUri = Uri.parse('${baseUrl}cab-status');
+
     final cabStatusBody = {
       "booking_id": bookingId,
       "type": type,
       "request": request,
       "response": response,
-      if (type == 'cancel') "refund_amount": refundAmount,
+      if (type == 'cancel') "refund_amount": refundAmount.toString(),
     };
 
     final cabStatusResponse = await http.post(
       cabStatusUri,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: jsonEncode(cabStatusBody),
-    ).timeout(const Duration(seconds: 10));
-log(cabStatusResponse.body);
+      body: cabStatusBody,
+    );
+
+    log(cabStatusBody.toString());
+    log(cabStatusResponse.body);
+
     if (cabStatusResponse.statusCode == 200) {
       final cabStatusDecoded = jsonDecode(cabStatusResponse.body);
       if (cabStatusDecoded['status'] == 'success') {
@@ -923,30 +932,50 @@ log(cabStatusResponse.body);
               _buildFareItem('Airport Fee', '₹${cabRate.fare.airportFee}'),
             if (cabRate.fare.additionalCharge > 0)
               _buildFareItem('Additional Charges', '₹${cabRate.fare.additionalCharge}'),
-            const SizedBox(height: 8),
+         
+            FutureBuilder<double>(
+                                future: commissionProvider.calculateAmountWithCommission(cabRate.fare.totalAmount),
+                                builder: (context, snapshot) {
+                                  if (commissionProvider.isLoading || snapshot.connectionState == ConnectionState.waiting) {
+                                    return SizedBox();
+                                  }
+            
+                                  final amountWithCommission = snapshot.data ??cabRate.fare.totalAmount;
+                                  final hasCommission = amountWithCommission > cabRate.fare.totalAmount;
+            
+                                  return Column(
+                                    children: [
+             _buildFareItem(
+                        "Service Charges & Other",
+                        "₹${(amountWithCommission - cabRate.fare.totalAmount).toStringAsFixed(0)}"),
+
+   const SizedBox(height: 8),
             Divider(color: Colors.grey.shade300),
             const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Total Amount',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: maincolor1,
-                  ),
-                ),
-                Text(
-                  '₹${cabRate.fare.totalAmount}',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: maincolor1,
-                  ),
-                ),
-              ],
-            ),
+
+                                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [ Text(
+                                                        'Total Amount',
+                                                        style: TextStyle(
+                                                          fontSize: 16,
+                                                          fontWeight: FontWeight.bold,
+                                                          color: maincolor1,
+                                                        ),
+                                                      ),
+                                          Text(
+                                            "₹${amountWithCommission.toStringAsFixed(0)}",
+                                            style: TextStyle(
+                                                              fontSize: 18,
+                                                              fontWeight: FontWeight.bold,
+                                                              color: maincolor1,
+                                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  );
+                                },
+                              ),
           ],
         ),
       ),

@@ -1,6 +1,8 @@
-import 'package:minna/cab/pages/booked%20list/booking_list.dart';
-import 'package:minna/comman/const/const.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:minna/cab/pages/booked%20list/booking_list.dart';
+import 'package:minna/comman/application/login/login_bloc.dart';
+import 'package:minna/comman/const/const.dart';
 import 'package:minna/bus/pages/bus%20report/screen_reports.dart';
 
 class ScreenBooking extends StatefulWidget {
@@ -12,6 +14,13 @@ class ScreenBooking extends StatefulWidget {
 
 class _ScreenBookingState extends State<ScreenBooking> {
   int _selectedTab = 0; // 0 = Bus, 1 = Flight, 2 = Cab, 3 = Hotel
+
+  @override
+  void initState() {
+    super.initState();
+    // Load login info from bloc
+    context.read<LoginBloc>().add(const LoginEvent.loginInfo());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,13 +42,21 @@ class _ScreenBookingState extends State<ScreenBooking> {
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
         ),
       ),
-      body: Column(
-        children: [
-          _buildBookingTypeSelector(),
-          Expanded(
-            child: _buildSelectedContent(),
-          ),
-        ],
+      body: BlocBuilder<LoginBloc, LoginState>(
+        builder: (context, state) {
+          final isLoggedIn = state.isLoggedIn ?? false;
+
+          if (!isLoggedIn) {
+            return _notLoggedInSection();
+          }
+
+          return Column(
+            children: [
+              _buildBookingTypeSelector(),
+              Expanded(child: _buildSelectedContent()),
+            ],
+          );
+        },
       ),
     );
   }
@@ -120,15 +137,6 @@ class _ScreenBookingState extends State<ScreenBooking> {
     );
   }
 
-  /// Cab Section
-  Widget _buildCabContent() {
-    return _emptySection(
-      icon: Icons.local_taxi,
-      title: "No cabs yet",
-      subtitle: "You haven’t booked any cab rides yet\nBook your first ride today",
-    );
-  }
-
   /// Hotel Section
   Widget _buildHotelContent() {
     return _emptySection(
@@ -155,6 +163,33 @@ class _ScreenBookingState extends State<ScreenBooking> {
             textAlign: TextAlign.center,
           ),
         ],
+      ),
+    );
+  }
+
+  /// Not Logged In Section
+  Widget _notLoggedInSection() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.lock_outline, size: 80, color: Colors.grey[400]),
+            const SizedBox(height: 16),
+            const Text(
+              "You are not logged in",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 5),
+            const Text(
+              "Please log in to view and manage your bookings.",
+              style: TextStyle(fontSize: 14, color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
+         
+          ],
+        ),
       ),
     );
   }
