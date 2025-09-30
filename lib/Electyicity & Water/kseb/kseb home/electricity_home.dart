@@ -233,9 +233,10 @@ class _ElectricityBillInputPageState extends State<ElectricityBillInputPage> {
                           /// Dispatch event to fetch bill
                           context.read<FetchBillBloc>().add(
                             FetchBillEvent.fetchElectricityBill(
+
                               providerID: providerId,
                               phoneNo: phone,
-                              cunsumerid: consumer,
+                              consumerId: consumer,
                             ),
                           );
 
@@ -243,7 +244,11 @@ class _ElectricityBillInputPageState extends State<ElectricityBillInputPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) =>  BillDetailsPage(provider: selectedProvider!.name,),
+                              builder: (_) =>  BillDetailsPage(
+                                phoneNo: phone,
+                                providerID: providerId,
+                                consumerId:consumer ,
+                                provider: selectedProvider!.name,),
                             ),
                           );
                         }

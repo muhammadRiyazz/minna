@@ -8,4 +8,14 @@ class FetchBillState with _$FetchBillState {
     required ElectricityBillModel bill,
   }) = _Success;
   const factory FetchBillState.error(String message) = _Error;
+  const factory FetchBillState.paymentProcessing() = _PaymentProcessing;
+  const factory FetchBillState.orderCreated({
+    required String orderId,
+    required String receiptId,
+  }) = _OrderCreated;
+  const factory FetchBillState.paymentSuccess(
+    String message,
+    String receiptId,
+  ) = _PaymentSuccess;
+  const factory FetchBillState.paymentError(String message) = _PaymentError;
 }

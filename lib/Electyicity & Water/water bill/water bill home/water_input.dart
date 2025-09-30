@@ -222,14 +222,14 @@ class _WaterBillInputPageState extends State<WaterBillInputPage> {
 
 
 
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => WaterBillDetailsPage(
-                                provider: selectedProvider!.name,
-                              ),
-                            ),
-                          );
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (_) => WaterBillDetailsPage(
+                          //       provider: selectedProvider!.name,
+                          //     ),
+                          //   ),
+                          // );
                         }
                       },
                       child: const Text(

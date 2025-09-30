@@ -663,6 +663,15 @@ final hasCoordinates = latitude != null && longitude != null;
                           ),
                         ],
                       ),
+                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            hotel.hotelCode,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
                       const SizedBox(height: 8),
                       LayoutBuilder(
                         builder: (context, constraints) {

@@ -103,10 +103,10 @@ class _TicketDetailsState extends State<TicketDetails> {
                 _buildFareCard(ticket, isCancelled),
                 
                 // Cancellation Details (if cancelled)
-                if (isCancelled) ...[
-                  const SizedBox(height: 20),
-                  _buildCancellationDetailsCard(),
-                ],
+                // if (isCancelled) ...[
+                //   const SizedBox(height: 20),
+                //   _buildCancellationDetailsCard(),
+                // ],
               ],
             ),
           ),

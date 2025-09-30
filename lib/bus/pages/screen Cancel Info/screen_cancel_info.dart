@@ -335,16 +335,14 @@ class _ScreenCancelInfoState extends State<ScreenCancelInfo> {
     cancelSuccesData = cancelSuccesModalFromJson(data.body);
 
     // Step 2: Call Refund API
-    final refundRes = await cancelRefund(
-      id: widget.blocid,
-      transactionId:  "pay_RJOzJKwWB7WFl3",
-      amount:cancelSuccesData!.refundAmount ,
-      table: "bus_blockrequest",
+    final refundRes = await cancelRefundupdate(
+     responsee: data.body
+     ,blockID: widget.blocid
     );
 
     final refundJson = jsonDecode(refundRes.body);
 
-    if (refundJson["statusCode"] == 200) {
+    if (refundJson["status"] == "success") {
       // ✅ Refund success
       if (!mounted) return;
       Navigator.pushReplacement(
@@ -405,21 +403,20 @@ void showAppSnackBar(BuildContext context, String message,
   );
 }
 
-Future<http.Response> cancelRefund({
-  required String id,
-  required String transactionId,
-  required String amount, // ensure in paise (e.g. 100 = ₹1)
-  required String table,
+Future<http.Response> cancelRefundupdate({
+  required String blockID,
+  required String responsee,
+ 
 }) async {
-  final url = Uri.parse("${baseUrl}payrefund");
+  log("cancelRefundupdate---");
+  final url = Uri.parse("${baseUrl}CancelTicket");
 
   final response = await http.post(
     url,
     body: {
-      "id": id,
-      "transaction_id": transactionId,
-      "amount": amount,
-      "table": table,
+      "blockID":blockID,
+      "response": responsee,
+     
     },
   );
 log(response.body);

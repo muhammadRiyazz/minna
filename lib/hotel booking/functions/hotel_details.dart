@@ -19,11 +19,11 @@ class HotelDetailsApiService {
           'Content-Type': 'application/json',
         },
         body: json.encode({
-        'Hotelcodes': 1013903,
+        'Hotelcodes': 1124503,
           // 'Hotelcodes': hotelCode,
           'Language': 'EN'
         }),      
-      ).timeout(const Duration(seconds: 30));
+      );
 
 
       log(json.encode({
@@ -31,7 +31,6 @@ class HotelDetailsApiService {
           'Language': 'EN'
         }).toString());
 
-        
 log(response.body);
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
