@@ -17,135 +17,84 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$FetchBillEvent {
+  String get providerID => throw _privateConstructorUsedError;
+  String get phoneNo => throw _privateConstructorUsedError;
+  String get consumerId => throw _privateConstructorUsedError;
+  String get providerName => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(
       String providerID,
       String phoneNo,
       String consumerId,
+      String providerName,
     )
     fetchElectricityBill,
     required TResult Function(
       String providerID,
       String phoneNo,
       String consumerId,
-    )
-    fetchWaterBill,
-    required TResult Function(
-      ElectricityBillModel bill,
-      String providerID,
-      String phoneNo,
-      String consumerId,
       String providerName,
     )
-    initiatePayment,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String providerID,
-      String phoneNo,
-      String consumerId,
-    )
-    processPaymentSuccess,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String errorMessage,
-    )
-    processPaymentFailure,
+    fetchWaterBill,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String providerID, String phoneNo, String consumerId)?
-    fetchElectricityBill,
-    TResult? Function(String providerID, String phoneNo, String consumerId)?
-    fetchWaterBill,
     TResult? Function(
-      ElectricityBillModel bill,
       String providerID,
       String phoneNo,
       String consumerId,
       String providerName,
     )?
-    initiatePayment,
+    fetchElectricityBill,
     TResult? Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
       String providerID,
       String phoneNo,
       String consumerId,
+      String providerName,
     )?
-    processPaymentSuccess,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String errorMessage,
-    )?
-    processPaymentFailure,
+    fetchWaterBill,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String providerID, String phoneNo, String consumerId)?
-    fetchElectricityBill,
-    TResult Function(String providerID, String phoneNo, String consumerId)?
-    fetchWaterBill,
     TResult Function(
-      ElectricityBillModel bill,
       String providerID,
       String phoneNo,
       String consumerId,
       String providerName,
     )?
-    initiatePayment,
+    fetchElectricityBill,
     TResult Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
       String providerID,
       String phoneNo,
       String consumerId,
+      String providerName,
     )?
-    processPaymentSuccess,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String errorMessage,
-    )?
-    processPaymentFailure,
+    fetchWaterBill,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(FetchElectricityBill value) fetchElectricityBill,
     required TResult Function(FetchWaterBill value) fetchWaterBill,
-    required TResult Function(InitiatePayment value) initiatePayment,
-    required TResult Function(ProcessPaymentSuccess value)
-    processPaymentSuccess,
-    required TResult Function(ProcessPaymentFailure value)
-    processPaymentFailure,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(FetchElectricityBill value)? fetchElectricityBill,
     TResult? Function(FetchWaterBill value)? fetchWaterBill,
-    TResult? Function(InitiatePayment value)? initiatePayment,
-    TResult? Function(ProcessPaymentSuccess value)? processPaymentSuccess,
-    TResult? Function(ProcessPaymentFailure value)? processPaymentFailure,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(FetchElectricityBill value)? fetchElectricityBill,
     TResult Function(FetchWaterBill value)? fetchWaterBill,
-    TResult Function(InitiatePayment value)? initiatePayment,
-    TResult Function(ProcessPaymentSuccess value)? processPaymentSuccess,
-    TResult Function(ProcessPaymentFailure value)? processPaymentFailure,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
+
+  /// Create a copy of FetchBillEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $FetchBillEventCopyWith<FetchBillEvent> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -154,6 +103,13 @@ abstract class $FetchBillEventCopyWith<$Res> {
     FetchBillEvent value,
     $Res Function(FetchBillEvent) then,
   ) = _$FetchBillEventCopyWithImpl<$Res, FetchBillEvent>;
+  @useResult
+  $Res call({
+    String providerID,
+    String phoneNo,
+    String consumerId,
+    String providerName,
+  });
 }
 
 /// @nodoc
@@ -168,16 +124,53 @@ class _$FetchBillEventCopyWithImpl<$Res, $Val extends FetchBillEvent>
 
   /// Create a copy of FetchBillEvent
   /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? providerID = null,
+    Object? phoneNo = null,
+    Object? consumerId = null,
+    Object? providerName = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            providerID: null == providerID
+                ? _value.providerID
+                : providerID // ignore: cast_nullable_to_non_nullable
+                      as String,
+            phoneNo: null == phoneNo
+                ? _value.phoneNo
+                : phoneNo // ignore: cast_nullable_to_non_nullable
+                      as String,
+            consumerId: null == consumerId
+                ? _value.consumerId
+                : consumerId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            providerName: null == providerName
+                ? _value.providerName
+                : providerName // ignore: cast_nullable_to_non_nullable
+                      as String,
+          )
+          as $Val,
+    );
+  }
 }
 
 /// @nodoc
-abstract class _$$FetchElectricityBillImplCopyWith<$Res> {
+abstract class _$$FetchElectricityBillImplCopyWith<$Res>
+    implements $FetchBillEventCopyWith<$Res> {
   factory _$$FetchElectricityBillImplCopyWith(
     _$FetchElectricityBillImpl value,
     $Res Function(_$FetchElectricityBillImpl) then,
   ) = __$$FetchElectricityBillImplCopyWithImpl<$Res>;
+  @override
   @useResult
-  $Res call({String providerID, String phoneNo, String consumerId});
+  $Res call({
+    String providerID,
+    String phoneNo,
+    String consumerId,
+    String providerName,
+  });
 }
 
 /// @nodoc
@@ -197,566 +190,10 @@ class __$$FetchElectricityBillImplCopyWithImpl<$Res>
     Object? providerID = null,
     Object? phoneNo = null,
     Object? consumerId = null,
-  }) {
-    return _then(
-      _$FetchElectricityBillImpl(
-        providerID: null == providerID
-            ? _value.providerID
-            : providerID // ignore: cast_nullable_to_non_nullable
-                  as String,
-        phoneNo: null == phoneNo
-            ? _value.phoneNo
-            : phoneNo // ignore: cast_nullable_to_non_nullable
-                  as String,
-        consumerId: null == consumerId
-            ? _value.consumerId
-            : consumerId // ignore: cast_nullable_to_non_nullable
-                  as String,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-
-class _$FetchElectricityBillImpl implements FetchElectricityBill {
-  const _$FetchElectricityBillImpl({
-    required this.providerID,
-    required this.phoneNo,
-    required this.consumerId,
-  });
-
-  @override
-  final String providerID;
-  @override
-  final String phoneNo;
-  @override
-  final String consumerId;
-
-  @override
-  String toString() {
-    return 'FetchBillEvent.fetchElectricityBill(providerID: $providerID, phoneNo: $phoneNo, consumerId: $consumerId)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$FetchElectricityBillImpl &&
-            (identical(other.providerID, providerID) ||
-                other.providerID == providerID) &&
-            (identical(other.phoneNo, phoneNo) || other.phoneNo == phoneNo) &&
-            (identical(other.consumerId, consumerId) ||
-                other.consumerId == consumerId));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, providerID, phoneNo, consumerId);
-
-  /// Create a copy of FetchBillEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$FetchElectricityBillImplCopyWith<_$FetchElectricityBillImpl>
-  get copyWith =>
-      __$$FetchElectricityBillImplCopyWithImpl<_$FetchElectricityBillImpl>(
-        this,
-        _$identity,
-      );
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(
-      String providerID,
-      String phoneNo,
-      String consumerId,
-    )
-    fetchElectricityBill,
-    required TResult Function(
-      String providerID,
-      String phoneNo,
-      String consumerId,
-    )
-    fetchWaterBill,
-    required TResult Function(
-      ElectricityBillModel bill,
-      String providerID,
-      String phoneNo,
-      String consumerId,
-      String providerName,
-    )
-    initiatePayment,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String providerID,
-      String phoneNo,
-      String consumerId,
-    )
-    processPaymentSuccess,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String errorMessage,
-    )
-    processPaymentFailure,
-  }) {
-    return fetchElectricityBill(providerID, phoneNo, consumerId);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String providerID, String phoneNo, String consumerId)?
-    fetchElectricityBill,
-    TResult? Function(String providerID, String phoneNo, String consumerId)?
-    fetchWaterBill,
-    TResult? Function(
-      ElectricityBillModel bill,
-      String providerID,
-      String phoneNo,
-      String consumerId,
-      String providerName,
-    )?
-    initiatePayment,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String providerID,
-      String phoneNo,
-      String consumerId,
-    )?
-    processPaymentSuccess,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String errorMessage,
-    )?
-    processPaymentFailure,
-  }) {
-    return fetchElectricityBill?.call(providerID, phoneNo, consumerId);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String providerID, String phoneNo, String consumerId)?
-    fetchElectricityBill,
-    TResult Function(String providerID, String phoneNo, String consumerId)?
-    fetchWaterBill,
-    TResult Function(
-      ElectricityBillModel bill,
-      String providerID,
-      String phoneNo,
-      String consumerId,
-      String providerName,
-    )?
-    initiatePayment,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String providerID,
-      String phoneNo,
-      String consumerId,
-    )?
-    processPaymentSuccess,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String errorMessage,
-    )?
-    processPaymentFailure,
-    required TResult orElse(),
-  }) {
-    if (fetchElectricityBill != null) {
-      return fetchElectricityBill(providerID, phoneNo, consumerId);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(FetchElectricityBill value) fetchElectricityBill,
-    required TResult Function(FetchWaterBill value) fetchWaterBill,
-    required TResult Function(InitiatePayment value) initiatePayment,
-    required TResult Function(ProcessPaymentSuccess value)
-    processPaymentSuccess,
-    required TResult Function(ProcessPaymentFailure value)
-    processPaymentFailure,
-  }) {
-    return fetchElectricityBill(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(FetchElectricityBill value)? fetchElectricityBill,
-    TResult? Function(FetchWaterBill value)? fetchWaterBill,
-    TResult? Function(InitiatePayment value)? initiatePayment,
-    TResult? Function(ProcessPaymentSuccess value)? processPaymentSuccess,
-    TResult? Function(ProcessPaymentFailure value)? processPaymentFailure,
-  }) {
-    return fetchElectricityBill?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(FetchElectricityBill value)? fetchElectricityBill,
-    TResult Function(FetchWaterBill value)? fetchWaterBill,
-    TResult Function(InitiatePayment value)? initiatePayment,
-    TResult Function(ProcessPaymentSuccess value)? processPaymentSuccess,
-    TResult Function(ProcessPaymentFailure value)? processPaymentFailure,
-    required TResult orElse(),
-  }) {
-    if (fetchElectricityBill != null) {
-      return fetchElectricityBill(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class FetchElectricityBill implements FetchBillEvent {
-  const factory FetchElectricityBill({
-    required final String providerID,
-    required final String phoneNo,
-    required final String consumerId,
-  }) = _$FetchElectricityBillImpl;
-
-  String get providerID;
-  String get phoneNo;
-  String get consumerId;
-
-  /// Create a copy of FetchBillEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$FetchElectricityBillImplCopyWith<_$FetchElectricityBillImpl>
-  get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$FetchWaterBillImplCopyWith<$Res> {
-  factory _$$FetchWaterBillImplCopyWith(
-    _$FetchWaterBillImpl value,
-    $Res Function(_$FetchWaterBillImpl) then,
-  ) = __$$FetchWaterBillImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({String providerID, String phoneNo, String consumerId});
-}
-
-/// @nodoc
-class __$$FetchWaterBillImplCopyWithImpl<$Res>
-    extends _$FetchBillEventCopyWithImpl<$Res, _$FetchWaterBillImpl>
-    implements _$$FetchWaterBillImplCopyWith<$Res> {
-  __$$FetchWaterBillImplCopyWithImpl(
-    _$FetchWaterBillImpl _value,
-    $Res Function(_$FetchWaterBillImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of FetchBillEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? providerID = null,
-    Object? phoneNo = null,
-    Object? consumerId = null,
-  }) {
-    return _then(
-      _$FetchWaterBillImpl(
-        providerID: null == providerID
-            ? _value.providerID
-            : providerID // ignore: cast_nullable_to_non_nullable
-                  as String,
-        phoneNo: null == phoneNo
-            ? _value.phoneNo
-            : phoneNo // ignore: cast_nullable_to_non_nullable
-                  as String,
-        consumerId: null == consumerId
-            ? _value.consumerId
-            : consumerId // ignore: cast_nullable_to_non_nullable
-                  as String,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-
-class _$FetchWaterBillImpl implements FetchWaterBill {
-  const _$FetchWaterBillImpl({
-    required this.providerID,
-    required this.phoneNo,
-    required this.consumerId,
-  });
-
-  @override
-  final String providerID;
-  @override
-  final String phoneNo;
-  @override
-  final String consumerId;
-
-  @override
-  String toString() {
-    return 'FetchBillEvent.fetchWaterBill(providerID: $providerID, phoneNo: $phoneNo, consumerId: $consumerId)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$FetchWaterBillImpl &&
-            (identical(other.providerID, providerID) ||
-                other.providerID == providerID) &&
-            (identical(other.phoneNo, phoneNo) || other.phoneNo == phoneNo) &&
-            (identical(other.consumerId, consumerId) ||
-                other.consumerId == consumerId));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, providerID, phoneNo, consumerId);
-
-  /// Create a copy of FetchBillEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$FetchWaterBillImplCopyWith<_$FetchWaterBillImpl> get copyWith =>
-      __$$FetchWaterBillImplCopyWithImpl<_$FetchWaterBillImpl>(
-        this,
-        _$identity,
-      );
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(
-      String providerID,
-      String phoneNo,
-      String consumerId,
-    )
-    fetchElectricityBill,
-    required TResult Function(
-      String providerID,
-      String phoneNo,
-      String consumerId,
-    )
-    fetchWaterBill,
-    required TResult Function(
-      ElectricityBillModel bill,
-      String providerID,
-      String phoneNo,
-      String consumerId,
-      String providerName,
-    )
-    initiatePayment,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String providerID,
-      String phoneNo,
-      String consumerId,
-    )
-    processPaymentSuccess,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String errorMessage,
-    )
-    processPaymentFailure,
-  }) {
-    return fetchWaterBill(providerID, phoneNo, consumerId);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String providerID, String phoneNo, String consumerId)?
-    fetchElectricityBill,
-    TResult? Function(String providerID, String phoneNo, String consumerId)?
-    fetchWaterBill,
-    TResult? Function(
-      ElectricityBillModel bill,
-      String providerID,
-      String phoneNo,
-      String consumerId,
-      String providerName,
-    )?
-    initiatePayment,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String providerID,
-      String phoneNo,
-      String consumerId,
-    )?
-    processPaymentSuccess,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String errorMessage,
-    )?
-    processPaymentFailure,
-  }) {
-    return fetchWaterBill?.call(providerID, phoneNo, consumerId);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String providerID, String phoneNo, String consumerId)?
-    fetchElectricityBill,
-    TResult Function(String providerID, String phoneNo, String consumerId)?
-    fetchWaterBill,
-    TResult Function(
-      ElectricityBillModel bill,
-      String providerID,
-      String phoneNo,
-      String consumerId,
-      String providerName,
-    )?
-    initiatePayment,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String providerID,
-      String phoneNo,
-      String consumerId,
-    )?
-    processPaymentSuccess,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String errorMessage,
-    )?
-    processPaymentFailure,
-    required TResult orElse(),
-  }) {
-    if (fetchWaterBill != null) {
-      return fetchWaterBill(providerID, phoneNo, consumerId);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(FetchElectricityBill value) fetchElectricityBill,
-    required TResult Function(FetchWaterBill value) fetchWaterBill,
-    required TResult Function(InitiatePayment value) initiatePayment,
-    required TResult Function(ProcessPaymentSuccess value)
-    processPaymentSuccess,
-    required TResult Function(ProcessPaymentFailure value)
-    processPaymentFailure,
-  }) {
-    return fetchWaterBill(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(FetchElectricityBill value)? fetchElectricityBill,
-    TResult? Function(FetchWaterBill value)? fetchWaterBill,
-    TResult? Function(InitiatePayment value)? initiatePayment,
-    TResult? Function(ProcessPaymentSuccess value)? processPaymentSuccess,
-    TResult? Function(ProcessPaymentFailure value)? processPaymentFailure,
-  }) {
-    return fetchWaterBill?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(FetchElectricityBill value)? fetchElectricityBill,
-    TResult Function(FetchWaterBill value)? fetchWaterBill,
-    TResult Function(InitiatePayment value)? initiatePayment,
-    TResult Function(ProcessPaymentSuccess value)? processPaymentSuccess,
-    TResult Function(ProcessPaymentFailure value)? processPaymentFailure,
-    required TResult orElse(),
-  }) {
-    if (fetchWaterBill != null) {
-      return fetchWaterBill(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class FetchWaterBill implements FetchBillEvent {
-  const factory FetchWaterBill({
-    required final String providerID,
-    required final String phoneNo,
-    required final String consumerId,
-  }) = _$FetchWaterBillImpl;
-
-  String get providerID;
-  String get phoneNo;
-  String get consumerId;
-
-  /// Create a copy of FetchBillEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$FetchWaterBillImplCopyWith<_$FetchWaterBillImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$InitiatePaymentImplCopyWith<$Res> {
-  factory _$$InitiatePaymentImplCopyWith(
-    _$InitiatePaymentImpl value,
-    $Res Function(_$InitiatePaymentImpl) then,
-  ) = __$$InitiatePaymentImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({
-    ElectricityBillModel bill,
-    String providerID,
-    String phoneNo,
-    String consumerId,
-    String providerName,
-  });
-}
-
-/// @nodoc
-class __$$InitiatePaymentImplCopyWithImpl<$Res>
-    extends _$FetchBillEventCopyWithImpl<$Res, _$InitiatePaymentImpl>
-    implements _$$InitiatePaymentImplCopyWith<$Res> {
-  __$$InitiatePaymentImplCopyWithImpl(
-    _$InitiatePaymentImpl _value,
-    $Res Function(_$InitiatePaymentImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of FetchBillEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? bill = null,
-    Object? providerID = null,
-    Object? phoneNo = null,
-    Object? consumerId = null,
     Object? providerName = null,
   }) {
     return _then(
-      _$InitiatePaymentImpl(
-        bill: null == bill
-            ? _value.bill
-            : bill // ignore: cast_nullable_to_non_nullable
-                  as ElectricityBillModel,
+      _$FetchElectricityBillImpl(
         providerID: null == providerID
             ? _value.providerID
             : providerID // ignore: cast_nullable_to_non_nullable
@@ -780,17 +217,14 @@ class __$$InitiatePaymentImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$InitiatePaymentImpl implements InitiatePayment {
-  const _$InitiatePaymentImpl({
-    required this.bill,
+class _$FetchElectricityBillImpl implements FetchElectricityBill {
+  const _$FetchElectricityBillImpl({
     required this.providerID,
     required this.phoneNo,
     required this.consumerId,
     required this.providerName,
   });
 
-  @override
-  final ElectricityBillModel bill;
   @override
   final String providerID;
   @override
@@ -802,15 +236,14 @@ class _$InitiatePaymentImpl implements InitiatePayment {
 
   @override
   String toString() {
-    return 'FetchBillEvent.initiatePayment(bill: $bill, providerID: $providerID, phoneNo: $phoneNo, consumerId: $consumerId, providerName: $providerName)';
+    return 'FetchBillEvent.fetchElectricityBill(providerID: $providerID, phoneNo: $phoneNo, consumerId: $consumerId, providerName: $providerName)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$InitiatePaymentImpl &&
-            (identical(other.bill, bill) || other.bill == bill) &&
+            other is _$FetchElectricityBillImpl &&
             (identical(other.providerID, providerID) ||
                 other.providerID == providerID) &&
             (identical(other.phoneNo, phoneNo) || other.phoneNo == phoneNo) &&
@@ -821,22 +254,17 @@ class _$InitiatePaymentImpl implements InitiatePayment {
   }
 
   @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    bill,
-    providerID,
-    phoneNo,
-    consumerId,
-    providerName,
-  );
+  int get hashCode =>
+      Object.hash(runtimeType, providerID, phoneNo, consumerId, providerName);
 
   /// Create a copy of FetchBillEvent
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$InitiatePaymentImplCopyWith<_$InitiatePaymentImpl> get copyWith =>
-      __$$InitiatePaymentImplCopyWithImpl<_$InitiatePaymentImpl>(
+  _$$FetchElectricityBillImplCopyWith<_$FetchElectricityBillImpl>
+  get copyWith =>
+      __$$FetchElectricityBillImplCopyWithImpl<_$FetchElectricityBillImpl>(
         this,
         _$identity,
       );
@@ -848,76 +276,39 @@ class _$InitiatePaymentImpl implements InitiatePayment {
       String providerID,
       String phoneNo,
       String consumerId,
+      String providerName,
     )
     fetchElectricityBill,
     required TResult Function(
       String providerID,
       String phoneNo,
       String consumerId,
-    )
-    fetchWaterBill,
-    required TResult Function(
-      ElectricityBillModel bill,
-      String providerID,
-      String phoneNo,
-      String consumerId,
       String providerName,
     )
-    initiatePayment,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String providerID,
-      String phoneNo,
-      String consumerId,
-    )
-    processPaymentSuccess,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String errorMessage,
-    )
-    processPaymentFailure,
+    fetchWaterBill,
   }) {
-    return initiatePayment(bill, providerID, phoneNo, consumerId, providerName);
+    return fetchElectricityBill(providerID, phoneNo, consumerId, providerName);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String providerID, String phoneNo, String consumerId)?
-    fetchElectricityBill,
-    TResult? Function(String providerID, String phoneNo, String consumerId)?
-    fetchWaterBill,
     TResult? Function(
-      ElectricityBillModel bill,
       String providerID,
       String phoneNo,
       String consumerId,
       String providerName,
     )?
-    initiatePayment,
+    fetchElectricityBill,
     TResult? Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
       String providerID,
       String phoneNo,
       String consumerId,
+      String providerName,
     )?
-    processPaymentSuccess,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String errorMessage,
-    )?
-    processPaymentFailure,
+    fetchWaterBill,
   }) {
-    return initiatePayment?.call(
-      bill,
+    return fetchElectricityBill?.call(
       providerID,
       phoneNo,
       consumerId,
@@ -928,39 +319,24 @@ class _$InitiatePaymentImpl implements InitiatePayment {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String providerID, String phoneNo, String consumerId)?
-    fetchElectricityBill,
-    TResult Function(String providerID, String phoneNo, String consumerId)?
-    fetchWaterBill,
     TResult Function(
-      ElectricityBillModel bill,
       String providerID,
       String phoneNo,
       String consumerId,
       String providerName,
     )?
-    initiatePayment,
+    fetchElectricityBill,
     TResult Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
       String providerID,
       String phoneNo,
       String consumerId,
+      String providerName,
     )?
-    processPaymentSuccess,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String errorMessage,
-    )?
-    processPaymentFailure,
+    fetchWaterBill,
     required TResult orElse(),
   }) {
-    if (initiatePayment != null) {
-      return initiatePayment(
-        bill,
+    if (fetchElectricityBill != null) {
+      return fetchElectricityBill(
         providerID,
         phoneNo,
         consumerId,
@@ -975,13 +351,8 @@ class _$InitiatePaymentImpl implements InitiatePayment {
   TResult map<TResult extends Object?>({
     required TResult Function(FetchElectricityBill value) fetchElectricityBill,
     required TResult Function(FetchWaterBill value) fetchWaterBill,
-    required TResult Function(InitiatePayment value) initiatePayment,
-    required TResult Function(ProcessPaymentSuccess value)
-    processPaymentSuccess,
-    required TResult Function(ProcessPaymentFailure value)
-    processPaymentFailure,
   }) {
-    return initiatePayment(this);
+    return fetchElectricityBill(this);
   }
 
   @override
@@ -989,11 +360,8 @@ class _$InitiatePaymentImpl implements InitiatePayment {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(FetchElectricityBill value)? fetchElectricityBill,
     TResult? Function(FetchWaterBill value)? fetchWaterBill,
-    TResult? Function(InitiatePayment value)? initiatePayment,
-    TResult? Function(ProcessPaymentSuccess value)? processPaymentSuccess,
-    TResult? Function(ProcessPaymentFailure value)? processPaymentFailure,
   }) {
-    return initiatePayment?.call(this);
+    return fetchElectricityBill?.call(this);
   }
 
   @override
@@ -1001,64 +369,64 @@ class _$InitiatePaymentImpl implements InitiatePayment {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(FetchElectricityBill value)? fetchElectricityBill,
     TResult Function(FetchWaterBill value)? fetchWaterBill,
-    TResult Function(InitiatePayment value)? initiatePayment,
-    TResult Function(ProcessPaymentSuccess value)? processPaymentSuccess,
-    TResult Function(ProcessPaymentFailure value)? processPaymentFailure,
     required TResult orElse(),
   }) {
-    if (initiatePayment != null) {
-      return initiatePayment(this);
+    if (fetchElectricityBill != null) {
+      return fetchElectricityBill(this);
     }
     return orElse();
   }
 }
 
-abstract class InitiatePayment implements FetchBillEvent {
-  const factory InitiatePayment({
-    required final ElectricityBillModel bill,
+abstract class FetchElectricityBill implements FetchBillEvent {
+  const factory FetchElectricityBill({
     required final String providerID,
     required final String phoneNo,
     required final String consumerId,
     required final String providerName,
-  }) = _$InitiatePaymentImpl;
+  }) = _$FetchElectricityBillImpl;
 
-  ElectricityBillModel get bill;
+  @override
   String get providerID;
+  @override
   String get phoneNo;
+  @override
   String get consumerId;
+  @override
   String get providerName;
 
   /// Create a copy of FetchBillEvent
   /// with the given fields replaced by the non-null parameter values.
+  @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$InitiatePaymentImplCopyWith<_$InitiatePaymentImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$FetchElectricityBillImplCopyWith<_$FetchElectricityBillImpl>
+  get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$ProcessPaymentSuccessImplCopyWith<$Res> {
-  factory _$$ProcessPaymentSuccessImplCopyWith(
-    _$ProcessPaymentSuccessImpl value,
-    $Res Function(_$ProcessPaymentSuccessImpl) then,
-  ) = __$$ProcessPaymentSuccessImplCopyWithImpl<$Res>;
+abstract class _$$FetchWaterBillImplCopyWith<$Res>
+    implements $FetchBillEventCopyWith<$Res> {
+  factory _$$FetchWaterBillImplCopyWith(
+    _$FetchWaterBillImpl value,
+    $Res Function(_$FetchWaterBillImpl) then,
+  ) = __$$FetchWaterBillImplCopyWithImpl<$Res>;
+  @override
   @useResult
   $Res call({
-    String orderId,
-    String transactionId,
-    String receiptId,
     String providerID,
     String phoneNo,
     String consumerId,
+    String providerName,
   });
 }
 
 /// @nodoc
-class __$$ProcessPaymentSuccessImplCopyWithImpl<$Res>
-    extends _$FetchBillEventCopyWithImpl<$Res, _$ProcessPaymentSuccessImpl>
-    implements _$$ProcessPaymentSuccessImplCopyWith<$Res> {
-  __$$ProcessPaymentSuccessImplCopyWithImpl(
-    _$ProcessPaymentSuccessImpl _value,
-    $Res Function(_$ProcessPaymentSuccessImpl) _then,
+class __$$FetchWaterBillImplCopyWithImpl<$Res>
+    extends _$FetchBillEventCopyWithImpl<$Res, _$FetchWaterBillImpl>
+    implements _$$FetchWaterBillImplCopyWith<$Res> {
+  __$$FetchWaterBillImplCopyWithImpl(
+    _$FetchWaterBillImpl _value,
+    $Res Function(_$FetchWaterBillImpl) _then,
   ) : super(_value, _then);
 
   /// Create a copy of FetchBillEvent
@@ -1066,27 +434,13 @@ class __$$ProcessPaymentSuccessImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? orderId = null,
-    Object? transactionId = null,
-    Object? receiptId = null,
     Object? providerID = null,
     Object? phoneNo = null,
     Object? consumerId = null,
+    Object? providerName = null,
   }) {
     return _then(
-      _$ProcessPaymentSuccessImpl(
-        orderId: null == orderId
-            ? _value.orderId
-            : orderId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        transactionId: null == transactionId
-            ? _value.transactionId
-            : transactionId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        receiptId: null == receiptId
-            ? _value.receiptId
-            : receiptId // ignore: cast_nullable_to_non_nullable
-                  as String,
+      _$FetchWaterBillImpl(
         providerID: null == providerID
             ? _value.providerID
             : providerID // ignore: cast_nullable_to_non_nullable
@@ -1099,6 +453,10 @@ class __$$ProcessPaymentSuccessImplCopyWithImpl<$Res>
             ? _value.consumerId
             : consumerId // ignore: cast_nullable_to_non_nullable
                   as String,
+        providerName: null == providerName
+            ? _value.providerName
+            : providerName // ignore: cast_nullable_to_non_nullable
+                  as String,
       ),
     );
   }
@@ -1106,386 +464,53 @@ class __$$ProcessPaymentSuccessImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$ProcessPaymentSuccessImpl implements ProcessPaymentSuccess {
-  const _$ProcessPaymentSuccessImpl({
-    required this.orderId,
-    required this.transactionId,
-    required this.receiptId,
+class _$FetchWaterBillImpl implements FetchWaterBill {
+  const _$FetchWaterBillImpl({
     required this.providerID,
     required this.phoneNo,
     required this.consumerId,
+    required this.providerName,
   });
 
-  @override
-  final String orderId;
-  @override
-  final String transactionId;
-  @override
-  final String receiptId;
   @override
   final String providerID;
   @override
   final String phoneNo;
   @override
   final String consumerId;
+  @override
+  final String providerName;
 
   @override
   String toString() {
-    return 'FetchBillEvent.processPaymentSuccess(orderId: $orderId, transactionId: $transactionId, receiptId: $receiptId, providerID: $providerID, phoneNo: $phoneNo, consumerId: $consumerId)';
+    return 'FetchBillEvent.fetchWaterBill(providerID: $providerID, phoneNo: $phoneNo, consumerId: $consumerId, providerName: $providerName)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ProcessPaymentSuccessImpl &&
-            (identical(other.orderId, orderId) || other.orderId == orderId) &&
-            (identical(other.transactionId, transactionId) ||
-                other.transactionId == transactionId) &&
-            (identical(other.receiptId, receiptId) ||
-                other.receiptId == receiptId) &&
+            other is _$FetchWaterBillImpl &&
             (identical(other.providerID, providerID) ||
                 other.providerID == providerID) &&
             (identical(other.phoneNo, phoneNo) || other.phoneNo == phoneNo) &&
             (identical(other.consumerId, consumerId) ||
-                other.consumerId == consumerId));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    orderId,
-    transactionId,
-    receiptId,
-    providerID,
-    phoneNo,
-    consumerId,
-  );
-
-  /// Create a copy of FetchBillEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$ProcessPaymentSuccessImplCopyWith<_$ProcessPaymentSuccessImpl>
-  get copyWith =>
-      __$$ProcessPaymentSuccessImplCopyWithImpl<_$ProcessPaymentSuccessImpl>(
-        this,
-        _$identity,
-      );
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(
-      String providerID,
-      String phoneNo,
-      String consumerId,
-    )
-    fetchElectricityBill,
-    required TResult Function(
-      String providerID,
-      String phoneNo,
-      String consumerId,
-    )
-    fetchWaterBill,
-    required TResult Function(
-      ElectricityBillModel bill,
-      String providerID,
-      String phoneNo,
-      String consumerId,
-      String providerName,
-    )
-    initiatePayment,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String providerID,
-      String phoneNo,
-      String consumerId,
-    )
-    processPaymentSuccess,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String errorMessage,
-    )
-    processPaymentFailure,
-  }) {
-    return processPaymentSuccess(
-      orderId,
-      transactionId,
-      receiptId,
-      providerID,
-      phoneNo,
-      consumerId,
-    );
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String providerID, String phoneNo, String consumerId)?
-    fetchElectricityBill,
-    TResult? Function(String providerID, String phoneNo, String consumerId)?
-    fetchWaterBill,
-    TResult? Function(
-      ElectricityBillModel bill,
-      String providerID,
-      String phoneNo,
-      String consumerId,
-      String providerName,
-    )?
-    initiatePayment,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String providerID,
-      String phoneNo,
-      String consumerId,
-    )?
-    processPaymentSuccess,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String errorMessage,
-    )?
-    processPaymentFailure,
-  }) {
-    return processPaymentSuccess?.call(
-      orderId,
-      transactionId,
-      receiptId,
-      providerID,
-      phoneNo,
-      consumerId,
-    );
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String providerID, String phoneNo, String consumerId)?
-    fetchElectricityBill,
-    TResult Function(String providerID, String phoneNo, String consumerId)?
-    fetchWaterBill,
-    TResult Function(
-      ElectricityBillModel bill,
-      String providerID,
-      String phoneNo,
-      String consumerId,
-      String providerName,
-    )?
-    initiatePayment,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String providerID,
-      String phoneNo,
-      String consumerId,
-    )?
-    processPaymentSuccess,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String errorMessage,
-    )?
-    processPaymentFailure,
-    required TResult orElse(),
-  }) {
-    if (processPaymentSuccess != null) {
-      return processPaymentSuccess(
-        orderId,
-        transactionId,
-        receiptId,
-        providerID,
-        phoneNo,
-        consumerId,
-      );
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(FetchElectricityBill value) fetchElectricityBill,
-    required TResult Function(FetchWaterBill value) fetchWaterBill,
-    required TResult Function(InitiatePayment value) initiatePayment,
-    required TResult Function(ProcessPaymentSuccess value)
-    processPaymentSuccess,
-    required TResult Function(ProcessPaymentFailure value)
-    processPaymentFailure,
-  }) {
-    return processPaymentSuccess(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(FetchElectricityBill value)? fetchElectricityBill,
-    TResult? Function(FetchWaterBill value)? fetchWaterBill,
-    TResult? Function(InitiatePayment value)? initiatePayment,
-    TResult? Function(ProcessPaymentSuccess value)? processPaymentSuccess,
-    TResult? Function(ProcessPaymentFailure value)? processPaymentFailure,
-  }) {
-    return processPaymentSuccess?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(FetchElectricityBill value)? fetchElectricityBill,
-    TResult Function(FetchWaterBill value)? fetchWaterBill,
-    TResult Function(InitiatePayment value)? initiatePayment,
-    TResult Function(ProcessPaymentSuccess value)? processPaymentSuccess,
-    TResult Function(ProcessPaymentFailure value)? processPaymentFailure,
-    required TResult orElse(),
-  }) {
-    if (processPaymentSuccess != null) {
-      return processPaymentSuccess(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class ProcessPaymentSuccess implements FetchBillEvent {
-  const factory ProcessPaymentSuccess({
-    required final String orderId,
-    required final String transactionId,
-    required final String receiptId,
-    required final String providerID,
-    required final String phoneNo,
-    required final String consumerId,
-  }) = _$ProcessPaymentSuccessImpl;
-
-  String get orderId;
-  String get transactionId;
-  String get receiptId;
-  String get providerID;
-  String get phoneNo;
-  String get consumerId;
-
-  /// Create a copy of FetchBillEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$ProcessPaymentSuccessImplCopyWith<_$ProcessPaymentSuccessImpl>
-  get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$ProcessPaymentFailureImplCopyWith<$Res> {
-  factory _$$ProcessPaymentFailureImplCopyWith(
-    _$ProcessPaymentFailureImpl value,
-    $Res Function(_$ProcessPaymentFailureImpl) then,
-  ) = __$$ProcessPaymentFailureImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({
-    String orderId,
-    String transactionId,
-    String receiptId,
-    String errorMessage,
-  });
-}
-
-/// @nodoc
-class __$$ProcessPaymentFailureImplCopyWithImpl<$Res>
-    extends _$FetchBillEventCopyWithImpl<$Res, _$ProcessPaymentFailureImpl>
-    implements _$$ProcessPaymentFailureImplCopyWith<$Res> {
-  __$$ProcessPaymentFailureImplCopyWithImpl(
-    _$ProcessPaymentFailureImpl _value,
-    $Res Function(_$ProcessPaymentFailureImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of FetchBillEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? orderId = null,
-    Object? transactionId = null,
-    Object? receiptId = null,
-    Object? errorMessage = null,
-  }) {
-    return _then(
-      _$ProcessPaymentFailureImpl(
-        orderId: null == orderId
-            ? _value.orderId
-            : orderId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        transactionId: null == transactionId
-            ? _value.transactionId
-            : transactionId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        receiptId: null == receiptId
-            ? _value.receiptId
-            : receiptId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        errorMessage: null == errorMessage
-            ? _value.errorMessage
-            : errorMessage // ignore: cast_nullable_to_non_nullable
-                  as String,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-
-class _$ProcessPaymentFailureImpl implements ProcessPaymentFailure {
-  const _$ProcessPaymentFailureImpl({
-    required this.orderId,
-    required this.transactionId,
-    required this.receiptId,
-    required this.errorMessage,
-  });
-
-  @override
-  final String orderId;
-  @override
-  final String transactionId;
-  @override
-  final String receiptId;
-  @override
-  final String errorMessage;
-
-  @override
-  String toString() {
-    return 'FetchBillEvent.processPaymentFailure(orderId: $orderId, transactionId: $transactionId, receiptId: $receiptId, errorMessage: $errorMessage)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$ProcessPaymentFailureImpl &&
-            (identical(other.orderId, orderId) || other.orderId == orderId) &&
-            (identical(other.transactionId, transactionId) ||
-                other.transactionId == transactionId) &&
-            (identical(other.receiptId, receiptId) ||
-                other.receiptId == receiptId) &&
-            (identical(other.errorMessage, errorMessage) ||
-                other.errorMessage == errorMessage));
+                other.consumerId == consumerId) &&
+            (identical(other.providerName, providerName) ||
+                other.providerName == providerName));
   }
 
   @override
   int get hashCode =>
-      Object.hash(runtimeType, orderId, transactionId, receiptId, errorMessage);
+      Object.hash(runtimeType, providerID, phoneNo, consumerId, providerName);
 
   /// Create a copy of FetchBillEvent
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$ProcessPaymentFailureImplCopyWith<_$ProcessPaymentFailureImpl>
-  get copyWith =>
-      __$$ProcessPaymentFailureImplCopyWithImpl<_$ProcessPaymentFailureImpl>(
+  _$$FetchWaterBillImplCopyWith<_$FetchWaterBillImpl> get copyWith =>
+      __$$FetchWaterBillImplCopyWithImpl<_$FetchWaterBillImpl>(
         this,
         _$identity,
       );
@@ -1497,127 +522,62 @@ class _$ProcessPaymentFailureImpl implements ProcessPaymentFailure {
       String providerID,
       String phoneNo,
       String consumerId,
+      String providerName,
     )
     fetchElectricityBill,
     required TResult Function(
       String providerID,
       String phoneNo,
       String consumerId,
-    )
-    fetchWaterBill,
-    required TResult Function(
-      ElectricityBillModel bill,
-      String providerID,
-      String phoneNo,
-      String consumerId,
       String providerName,
     )
-    initiatePayment,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String providerID,
-      String phoneNo,
-      String consumerId,
-    )
-    processPaymentSuccess,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String errorMessage,
-    )
-    processPaymentFailure,
+    fetchWaterBill,
   }) {
-    return processPaymentFailure(
-      orderId,
-      transactionId,
-      receiptId,
-      errorMessage,
-    );
+    return fetchWaterBill(providerID, phoneNo, consumerId, providerName);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String providerID, String phoneNo, String consumerId)?
-    fetchElectricityBill,
-    TResult? Function(String providerID, String phoneNo, String consumerId)?
-    fetchWaterBill,
     TResult? Function(
-      ElectricityBillModel bill,
       String providerID,
       String phoneNo,
       String consumerId,
       String providerName,
     )?
-    initiatePayment,
+    fetchElectricityBill,
     TResult? Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
       String providerID,
       String phoneNo,
       String consumerId,
+      String providerName,
     )?
-    processPaymentSuccess,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String errorMessage,
-    )?
-    processPaymentFailure,
+    fetchWaterBill,
   }) {
-    return processPaymentFailure?.call(
-      orderId,
-      transactionId,
-      receiptId,
-      errorMessage,
-    );
+    return fetchWaterBill?.call(providerID, phoneNo, consumerId, providerName);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String providerID, String phoneNo, String consumerId)?
-    fetchElectricityBill,
-    TResult Function(String providerID, String phoneNo, String consumerId)?
-    fetchWaterBill,
     TResult Function(
-      ElectricityBillModel bill,
       String providerID,
       String phoneNo,
       String consumerId,
       String providerName,
     )?
-    initiatePayment,
+    fetchElectricityBill,
     TResult Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
       String providerID,
       String phoneNo,
       String consumerId,
+      String providerName,
     )?
-    processPaymentSuccess,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      String receiptId,
-      String errorMessage,
-    )?
-    processPaymentFailure,
+    fetchWaterBill,
     required TResult orElse(),
   }) {
-    if (processPaymentFailure != null) {
-      return processPaymentFailure(
-        orderId,
-        transactionId,
-        receiptId,
-        errorMessage,
-      );
+    if (fetchWaterBill != null) {
+      return fetchWaterBill(providerID, phoneNo, consumerId, providerName);
     }
     return orElse();
   }
@@ -1627,13 +587,8 @@ class _$ProcessPaymentFailureImpl implements ProcessPaymentFailure {
   TResult map<TResult extends Object?>({
     required TResult Function(FetchElectricityBill value) fetchElectricityBill,
     required TResult Function(FetchWaterBill value) fetchWaterBill,
-    required TResult Function(InitiatePayment value) initiatePayment,
-    required TResult Function(ProcessPaymentSuccess value)
-    processPaymentSuccess,
-    required TResult Function(ProcessPaymentFailure value)
-    processPaymentFailure,
   }) {
-    return processPaymentFailure(this);
+    return fetchWaterBill(this);
   }
 
   @override
@@ -1641,11 +596,8 @@ class _$ProcessPaymentFailureImpl implements ProcessPaymentFailure {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(FetchElectricityBill value)? fetchElectricityBill,
     TResult? Function(FetchWaterBill value)? fetchWaterBill,
-    TResult? Function(InitiatePayment value)? initiatePayment,
-    TResult? Function(ProcessPaymentSuccess value)? processPaymentSuccess,
-    TResult? Function(ProcessPaymentFailure value)? processPaymentFailure,
   }) {
-    return processPaymentFailure?.call(this);
+    return fetchWaterBill?.call(this);
   }
 
   @override
@@ -1653,36 +605,38 @@ class _$ProcessPaymentFailureImpl implements ProcessPaymentFailure {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(FetchElectricityBill value)? fetchElectricityBill,
     TResult Function(FetchWaterBill value)? fetchWaterBill,
-    TResult Function(InitiatePayment value)? initiatePayment,
-    TResult Function(ProcessPaymentSuccess value)? processPaymentSuccess,
-    TResult Function(ProcessPaymentFailure value)? processPaymentFailure,
     required TResult orElse(),
   }) {
-    if (processPaymentFailure != null) {
-      return processPaymentFailure(this);
+    if (fetchWaterBill != null) {
+      return fetchWaterBill(this);
     }
     return orElse();
   }
 }
 
-abstract class ProcessPaymentFailure implements FetchBillEvent {
-  const factory ProcessPaymentFailure({
-    required final String orderId,
-    required final String transactionId,
-    required final String receiptId,
-    required final String errorMessage,
-  }) = _$ProcessPaymentFailureImpl;
+abstract class FetchWaterBill implements FetchBillEvent {
+  const factory FetchWaterBill({
+    required final String providerID,
+    required final String phoneNo,
+    required final String consumerId,
+    required final String providerName,
+  }) = _$FetchWaterBillImpl;
 
-  String get orderId;
-  String get transactionId;
-  String get receiptId;
-  String get errorMessage;
+  @override
+  String get providerID;
+  @override
+  String get phoneNo;
+  @override
+  String get consumerId;
+  @override
+  String get providerName;
 
   /// Create a copy of FetchBillEvent
   /// with the given fields replaced by the non-null parameter values.
+  @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$ProcessPaymentFailureImplCopyWith<_$ProcessPaymentFailureImpl>
-  get copyWith => throw _privateConstructorUsedError;
+  _$$FetchWaterBillImplCopyWith<_$FetchWaterBillImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -1691,34 +645,23 @@ mixin _$FetchBillState {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(ElectricityBillModel bill) success,
+    required TResult Function(ElectricityBillModel bill, String receiptId)
+    success,
     required TResult Function(String message) error,
-    required TResult Function() paymentProcessing,
-    required TResult Function(String orderId, String receiptId) orderCreated,
-    required TResult Function(String message, String receiptId) paymentSuccess,
-    required TResult Function(String message) paymentError,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(ElectricityBillModel bill)? success,
+    TResult? Function(ElectricityBillModel bill, String receiptId)? success,
     TResult? Function(String message)? error,
-    TResult? Function()? paymentProcessing,
-    TResult? Function(String orderId, String receiptId)? orderCreated,
-    TResult? Function(String message, String receiptId)? paymentSuccess,
-    TResult? Function(String message)? paymentError,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(ElectricityBillModel bill)? success,
+    TResult Function(ElectricityBillModel bill, String receiptId)? success,
     TResult Function(String message)? error,
-    TResult Function()? paymentProcessing,
-    TResult Function(String orderId, String receiptId)? orderCreated,
-    TResult Function(String message, String receiptId)? paymentSuccess,
-    TResult Function(String message)? paymentError,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -1727,10 +670,6 @@ mixin _$FetchBillState {
     required TResult Function(_Loading value) loading,
     required TResult Function(_Success value) success,
     required TResult Function(_Error value) error,
-    required TResult Function(_PaymentProcessing value) paymentProcessing,
-    required TResult Function(_OrderCreated value) orderCreated,
-    required TResult Function(_PaymentSuccess value) paymentSuccess,
-    required TResult Function(_PaymentError value) paymentError,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
@@ -1738,10 +677,6 @@ mixin _$FetchBillState {
     TResult? Function(_Loading value)? loading,
     TResult? Function(_Success value)? success,
     TResult? Function(_Error value)? error,
-    TResult? Function(_PaymentProcessing value)? paymentProcessing,
-    TResult? Function(_OrderCreated value)? orderCreated,
-    TResult? Function(_PaymentSuccess value)? paymentSuccess,
-    TResult? Function(_PaymentError value)? paymentError,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
@@ -1749,10 +684,6 @@ mixin _$FetchBillState {
     TResult Function(_Loading value)? loading,
     TResult Function(_Success value)? success,
     TResult Function(_Error value)? error,
-    TResult Function(_PaymentProcessing value)? paymentProcessing,
-    TResult Function(_OrderCreated value)? orderCreated,
-    TResult Function(_PaymentSuccess value)? paymentSuccess,
-    TResult Function(_PaymentError value)? paymentError,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
 }
@@ -1824,12 +755,9 @@ class _$InitialImpl implements _Initial {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(ElectricityBillModel bill) success,
+    required TResult Function(ElectricityBillModel bill, String receiptId)
+    success,
     required TResult Function(String message) error,
-    required TResult Function() paymentProcessing,
-    required TResult Function(String orderId, String receiptId) orderCreated,
-    required TResult Function(String message, String receiptId) paymentSuccess,
-    required TResult Function(String message) paymentError,
   }) {
     return initial();
   }
@@ -1839,12 +767,8 @@ class _$InitialImpl implements _Initial {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(ElectricityBillModel bill)? success,
+    TResult? Function(ElectricityBillModel bill, String receiptId)? success,
     TResult? Function(String message)? error,
-    TResult? Function()? paymentProcessing,
-    TResult? Function(String orderId, String receiptId)? orderCreated,
-    TResult? Function(String message, String receiptId)? paymentSuccess,
-    TResult? Function(String message)? paymentError,
   }) {
     return initial?.call();
   }
@@ -1854,12 +778,8 @@ class _$InitialImpl implements _Initial {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(ElectricityBillModel bill)? success,
+    TResult Function(ElectricityBillModel bill, String receiptId)? success,
     TResult Function(String message)? error,
-    TResult Function()? paymentProcessing,
-    TResult Function(String orderId, String receiptId)? orderCreated,
-    TResult Function(String message, String receiptId)? paymentSuccess,
-    TResult Function(String message)? paymentError,
     required TResult orElse(),
   }) {
     if (initial != null) {
@@ -1875,10 +795,6 @@ class _$InitialImpl implements _Initial {
     required TResult Function(_Loading value) loading,
     required TResult Function(_Success value) success,
     required TResult Function(_Error value) error,
-    required TResult Function(_PaymentProcessing value) paymentProcessing,
-    required TResult Function(_OrderCreated value) orderCreated,
-    required TResult Function(_PaymentSuccess value) paymentSuccess,
-    required TResult Function(_PaymentError value) paymentError,
   }) {
     return initial(this);
   }
@@ -1890,10 +806,6 @@ class _$InitialImpl implements _Initial {
     TResult? Function(_Loading value)? loading,
     TResult? Function(_Success value)? success,
     TResult? Function(_Error value)? error,
-    TResult? Function(_PaymentProcessing value)? paymentProcessing,
-    TResult? Function(_OrderCreated value)? orderCreated,
-    TResult? Function(_PaymentSuccess value)? paymentSuccess,
-    TResult? Function(_PaymentError value)? paymentError,
   }) {
     return initial?.call(this);
   }
@@ -1905,10 +817,6 @@ class _$InitialImpl implements _Initial {
     TResult Function(_Loading value)? loading,
     TResult Function(_Success value)? success,
     TResult Function(_Error value)? error,
-    TResult Function(_PaymentProcessing value)? paymentProcessing,
-    TResult Function(_OrderCreated value)? orderCreated,
-    TResult Function(_PaymentSuccess value)? paymentSuccess,
-    TResult Function(_PaymentError value)? paymentError,
     required TResult orElse(),
   }) {
     if (initial != null) {
@@ -1967,12 +875,9 @@ class _$LoadingImpl implements _Loading {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(ElectricityBillModel bill) success,
+    required TResult Function(ElectricityBillModel bill, String receiptId)
+    success,
     required TResult Function(String message) error,
-    required TResult Function() paymentProcessing,
-    required TResult Function(String orderId, String receiptId) orderCreated,
-    required TResult Function(String message, String receiptId) paymentSuccess,
-    required TResult Function(String message) paymentError,
   }) {
     return loading();
   }
@@ -1982,12 +887,8 @@ class _$LoadingImpl implements _Loading {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(ElectricityBillModel bill)? success,
+    TResult? Function(ElectricityBillModel bill, String receiptId)? success,
     TResult? Function(String message)? error,
-    TResult? Function()? paymentProcessing,
-    TResult? Function(String orderId, String receiptId)? orderCreated,
-    TResult? Function(String message, String receiptId)? paymentSuccess,
-    TResult? Function(String message)? paymentError,
   }) {
     return loading?.call();
   }
@@ -1997,12 +898,8 @@ class _$LoadingImpl implements _Loading {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(ElectricityBillModel bill)? success,
+    TResult Function(ElectricityBillModel bill, String receiptId)? success,
     TResult Function(String message)? error,
-    TResult Function()? paymentProcessing,
-    TResult Function(String orderId, String receiptId)? orderCreated,
-    TResult Function(String message, String receiptId)? paymentSuccess,
-    TResult Function(String message)? paymentError,
     required TResult orElse(),
   }) {
     if (loading != null) {
@@ -2018,10 +915,6 @@ class _$LoadingImpl implements _Loading {
     required TResult Function(_Loading value) loading,
     required TResult Function(_Success value) success,
     required TResult Function(_Error value) error,
-    required TResult Function(_PaymentProcessing value) paymentProcessing,
-    required TResult Function(_OrderCreated value) orderCreated,
-    required TResult Function(_PaymentSuccess value) paymentSuccess,
-    required TResult Function(_PaymentError value) paymentError,
   }) {
     return loading(this);
   }
@@ -2033,10 +926,6 @@ class _$LoadingImpl implements _Loading {
     TResult? Function(_Loading value)? loading,
     TResult? Function(_Success value)? success,
     TResult? Function(_Error value)? error,
-    TResult? Function(_PaymentProcessing value)? paymentProcessing,
-    TResult? Function(_OrderCreated value)? orderCreated,
-    TResult? Function(_PaymentSuccess value)? paymentSuccess,
-    TResult? Function(_PaymentError value)? paymentError,
   }) {
     return loading?.call(this);
   }
@@ -2048,10 +937,6 @@ class _$LoadingImpl implements _Loading {
     TResult Function(_Loading value)? loading,
     TResult Function(_Success value)? success,
     TResult Function(_Error value)? error,
-    TResult Function(_PaymentProcessing value)? paymentProcessing,
-    TResult Function(_OrderCreated value)? orderCreated,
-    TResult Function(_PaymentSuccess value)? paymentSuccess,
-    TResult Function(_PaymentError value)? paymentError,
     required TResult orElse(),
   }) {
     if (loading != null) {
@@ -2072,7 +957,7 @@ abstract class _$$SuccessImplCopyWith<$Res> {
     $Res Function(_$SuccessImpl) then,
   ) = __$$SuccessImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({ElectricityBillModel bill});
+  $Res call({ElectricityBillModel bill, String receiptId});
 }
 
 /// @nodoc
@@ -2088,13 +973,17 @@ class __$$SuccessImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? bill = null}) {
+  $Res call({Object? bill = null, Object? receiptId = null}) {
     return _then(
       _$SuccessImpl(
         bill: null == bill
             ? _value.bill
             : bill // ignore: cast_nullable_to_non_nullable
                   as ElectricityBillModel,
+        receiptId: null == receiptId
+            ? _value.receiptId
+            : receiptId // ignore: cast_nullable_to_non_nullable
+                  as String,
       ),
     );
   }
@@ -2103,14 +992,16 @@ class __$$SuccessImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$SuccessImpl implements _Success {
-  const _$SuccessImpl({required this.bill});
+  const _$SuccessImpl({required this.bill, required this.receiptId});
 
   @override
   final ElectricityBillModel bill;
+  @override
+  final String receiptId;
 
   @override
   String toString() {
-    return 'FetchBillState.success(bill: $bill)';
+    return 'FetchBillState.success(bill: $bill, receiptId: $receiptId)';
   }
 
   @override
@@ -2118,11 +1009,13 @@ class _$SuccessImpl implements _Success {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SuccessImpl &&
-            (identical(other.bill, bill) || other.bill == bill));
+            (identical(other.bill, bill) || other.bill == bill) &&
+            (identical(other.receiptId, receiptId) ||
+                other.receiptId == receiptId));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, bill);
+  int get hashCode => Object.hash(runtimeType, bill, receiptId);
 
   /// Create a copy of FetchBillState
   /// with the given fields replaced by the non-null parameter values.
@@ -2137,14 +1030,11 @@ class _$SuccessImpl implements _Success {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(ElectricityBillModel bill) success,
+    required TResult Function(ElectricityBillModel bill, String receiptId)
+    success,
     required TResult Function(String message) error,
-    required TResult Function() paymentProcessing,
-    required TResult Function(String orderId, String receiptId) orderCreated,
-    required TResult Function(String message, String receiptId) paymentSuccess,
-    required TResult Function(String message) paymentError,
   }) {
-    return success(bill);
+    return success(bill, receiptId);
   }
 
   @override
@@ -2152,14 +1042,10 @@ class _$SuccessImpl implements _Success {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(ElectricityBillModel bill)? success,
+    TResult? Function(ElectricityBillModel bill, String receiptId)? success,
     TResult? Function(String message)? error,
-    TResult? Function()? paymentProcessing,
-    TResult? Function(String orderId, String receiptId)? orderCreated,
-    TResult? Function(String message, String receiptId)? paymentSuccess,
-    TResult? Function(String message)? paymentError,
   }) {
-    return success?.call(bill);
+    return success?.call(bill, receiptId);
   }
 
   @override
@@ -2167,16 +1053,12 @@ class _$SuccessImpl implements _Success {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(ElectricityBillModel bill)? success,
+    TResult Function(ElectricityBillModel bill, String receiptId)? success,
     TResult Function(String message)? error,
-    TResult Function()? paymentProcessing,
-    TResult Function(String orderId, String receiptId)? orderCreated,
-    TResult Function(String message, String receiptId)? paymentSuccess,
-    TResult Function(String message)? paymentError,
     required TResult orElse(),
   }) {
     if (success != null) {
-      return success(bill);
+      return success(bill, receiptId);
     }
     return orElse();
   }
@@ -2188,10 +1070,6 @@ class _$SuccessImpl implements _Success {
     required TResult Function(_Loading value) loading,
     required TResult Function(_Success value) success,
     required TResult Function(_Error value) error,
-    required TResult Function(_PaymentProcessing value) paymentProcessing,
-    required TResult Function(_OrderCreated value) orderCreated,
-    required TResult Function(_PaymentSuccess value) paymentSuccess,
-    required TResult Function(_PaymentError value) paymentError,
   }) {
     return success(this);
   }
@@ -2203,10 +1081,6 @@ class _$SuccessImpl implements _Success {
     TResult? Function(_Loading value)? loading,
     TResult? Function(_Success value)? success,
     TResult? Function(_Error value)? error,
-    TResult? Function(_PaymentProcessing value)? paymentProcessing,
-    TResult? Function(_OrderCreated value)? orderCreated,
-    TResult? Function(_PaymentSuccess value)? paymentSuccess,
-    TResult? Function(_PaymentError value)? paymentError,
   }) {
     return success?.call(this);
   }
@@ -2218,10 +1092,6 @@ class _$SuccessImpl implements _Success {
     TResult Function(_Loading value)? loading,
     TResult Function(_Success value)? success,
     TResult Function(_Error value)? error,
-    TResult Function(_PaymentProcessing value)? paymentProcessing,
-    TResult Function(_OrderCreated value)? orderCreated,
-    TResult Function(_PaymentSuccess value)? paymentSuccess,
-    TResult Function(_PaymentError value)? paymentError,
     required TResult orElse(),
   }) {
     if (success != null) {
@@ -2232,10 +1102,13 @@ class _$SuccessImpl implements _Success {
 }
 
 abstract class _Success implements FetchBillState {
-  const factory _Success({required final ElectricityBillModel bill}) =
-      _$SuccessImpl;
+  const factory _Success({
+    required final ElectricityBillModel bill,
+    required final String receiptId,
+  }) = _$SuccessImpl;
 
   ElectricityBillModel get bill;
+  String get receiptId;
 
   /// Create a copy of FetchBillState
   /// with the given fields replaced by the non-null parameter values.
@@ -2316,12 +1189,9 @@ class _$ErrorImpl implements _Error {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(ElectricityBillModel bill) success,
+    required TResult Function(ElectricityBillModel bill, String receiptId)
+    success,
     required TResult Function(String message) error,
-    required TResult Function() paymentProcessing,
-    required TResult Function(String orderId, String receiptId) orderCreated,
-    required TResult Function(String message, String receiptId) paymentSuccess,
-    required TResult Function(String message) paymentError,
   }) {
     return error(message);
   }
@@ -2331,12 +1201,8 @@ class _$ErrorImpl implements _Error {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(ElectricityBillModel bill)? success,
+    TResult? Function(ElectricityBillModel bill, String receiptId)? success,
     TResult? Function(String message)? error,
-    TResult? Function()? paymentProcessing,
-    TResult? Function(String orderId, String receiptId)? orderCreated,
-    TResult? Function(String message, String receiptId)? paymentSuccess,
-    TResult? Function(String message)? paymentError,
   }) {
     return error?.call(message);
   }
@@ -2346,12 +1212,8 @@ class _$ErrorImpl implements _Error {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(ElectricityBillModel bill)? success,
+    TResult Function(ElectricityBillModel bill, String receiptId)? success,
     TResult Function(String message)? error,
-    TResult Function()? paymentProcessing,
-    TResult Function(String orderId, String receiptId)? orderCreated,
-    TResult Function(String message, String receiptId)? paymentSuccess,
-    TResult Function(String message)? paymentError,
     required TResult orElse(),
   }) {
     if (error != null) {
@@ -2367,10 +1229,6 @@ class _$ErrorImpl implements _Error {
     required TResult Function(_Loading value) loading,
     required TResult Function(_Success value) success,
     required TResult Function(_Error value) error,
-    required TResult Function(_PaymentProcessing value) paymentProcessing,
-    required TResult Function(_OrderCreated value) orderCreated,
-    required TResult Function(_PaymentSuccess value) paymentSuccess,
-    required TResult Function(_PaymentError value) paymentError,
   }) {
     return error(this);
   }
@@ -2382,10 +1240,6 @@ class _$ErrorImpl implements _Error {
     TResult? Function(_Loading value)? loading,
     TResult? Function(_Success value)? success,
     TResult? Function(_Error value)? error,
-    TResult? Function(_PaymentProcessing value)? paymentProcessing,
-    TResult? Function(_OrderCreated value)? orderCreated,
-    TResult? Function(_PaymentSuccess value)? paymentSuccess,
-    TResult? Function(_PaymentError value)? paymentError,
   }) {
     return error?.call(this);
   }
@@ -2397,10 +1251,6 @@ class _$ErrorImpl implements _Error {
     TResult Function(_Loading value)? loading,
     TResult Function(_Success value)? success,
     TResult Function(_Error value)? error,
-    TResult Function(_PaymentProcessing value)? paymentProcessing,
-    TResult Function(_OrderCreated value)? orderCreated,
-    TResult Function(_PaymentSuccess value)? paymentSuccess,
-    TResult Function(_PaymentError value)? paymentError,
     required TResult orElse(),
   }) {
     if (error != null) {
@@ -2419,707 +1269,5 @@ abstract class _Error implements FetchBillState {
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ErrorImplCopyWith<_$ErrorImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$PaymentProcessingImplCopyWith<$Res> {
-  factory _$$PaymentProcessingImplCopyWith(
-    _$PaymentProcessingImpl value,
-    $Res Function(_$PaymentProcessingImpl) then,
-  ) = __$$PaymentProcessingImplCopyWithImpl<$Res>;
-}
-
-/// @nodoc
-class __$$PaymentProcessingImplCopyWithImpl<$Res>
-    extends _$FetchBillStateCopyWithImpl<$Res, _$PaymentProcessingImpl>
-    implements _$$PaymentProcessingImplCopyWith<$Res> {
-  __$$PaymentProcessingImplCopyWithImpl(
-    _$PaymentProcessingImpl _value,
-    $Res Function(_$PaymentProcessingImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of FetchBillState
-  /// with the given fields replaced by the non-null parameter values.
-}
-
-/// @nodoc
-
-class _$PaymentProcessingImpl implements _PaymentProcessing {
-  const _$PaymentProcessingImpl();
-
-  @override
-  String toString() {
-    return 'FetchBillState.paymentProcessing()';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$PaymentProcessingImpl);
-  }
-
-  @override
-  int get hashCode => runtimeType.hashCode;
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function() loading,
-    required TResult Function(ElectricityBillModel bill) success,
-    required TResult Function(String message) error,
-    required TResult Function() paymentProcessing,
-    required TResult Function(String orderId, String receiptId) orderCreated,
-    required TResult Function(String message, String receiptId) paymentSuccess,
-    required TResult Function(String message) paymentError,
-  }) {
-    return paymentProcessing();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function()? loading,
-    TResult? Function(ElectricityBillModel bill)? success,
-    TResult? Function(String message)? error,
-    TResult? Function()? paymentProcessing,
-    TResult? Function(String orderId, String receiptId)? orderCreated,
-    TResult? Function(String message, String receiptId)? paymentSuccess,
-    TResult? Function(String message)? paymentError,
-  }) {
-    return paymentProcessing?.call();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function(ElectricityBillModel bill)? success,
-    TResult Function(String message)? error,
-    TResult Function()? paymentProcessing,
-    TResult Function(String orderId, String receiptId)? orderCreated,
-    TResult Function(String message, String receiptId)? paymentSuccess,
-    TResult Function(String message)? paymentError,
-    required TResult orElse(),
-  }) {
-    if (paymentProcessing != null) {
-      return paymentProcessing();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_Initial value) initial,
-    required TResult Function(_Loading value) loading,
-    required TResult Function(_Success value) success,
-    required TResult Function(_Error value) error,
-    required TResult Function(_PaymentProcessing value) paymentProcessing,
-    required TResult Function(_OrderCreated value) orderCreated,
-    required TResult Function(_PaymentSuccess value) paymentSuccess,
-    required TResult Function(_PaymentError value) paymentError,
-  }) {
-    return paymentProcessing(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_Initial value)? initial,
-    TResult? Function(_Loading value)? loading,
-    TResult? Function(_Success value)? success,
-    TResult? Function(_Error value)? error,
-    TResult? Function(_PaymentProcessing value)? paymentProcessing,
-    TResult? Function(_OrderCreated value)? orderCreated,
-    TResult? Function(_PaymentSuccess value)? paymentSuccess,
-    TResult? Function(_PaymentError value)? paymentError,
-  }) {
-    return paymentProcessing?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_Initial value)? initial,
-    TResult Function(_Loading value)? loading,
-    TResult Function(_Success value)? success,
-    TResult Function(_Error value)? error,
-    TResult Function(_PaymentProcessing value)? paymentProcessing,
-    TResult Function(_OrderCreated value)? orderCreated,
-    TResult Function(_PaymentSuccess value)? paymentSuccess,
-    TResult Function(_PaymentError value)? paymentError,
-    required TResult orElse(),
-  }) {
-    if (paymentProcessing != null) {
-      return paymentProcessing(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class _PaymentProcessing implements FetchBillState {
-  const factory _PaymentProcessing() = _$PaymentProcessingImpl;
-}
-
-/// @nodoc
-abstract class _$$OrderCreatedImplCopyWith<$Res> {
-  factory _$$OrderCreatedImplCopyWith(
-    _$OrderCreatedImpl value,
-    $Res Function(_$OrderCreatedImpl) then,
-  ) = __$$OrderCreatedImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({String orderId, String receiptId});
-}
-
-/// @nodoc
-class __$$OrderCreatedImplCopyWithImpl<$Res>
-    extends _$FetchBillStateCopyWithImpl<$Res, _$OrderCreatedImpl>
-    implements _$$OrderCreatedImplCopyWith<$Res> {
-  __$$OrderCreatedImplCopyWithImpl(
-    _$OrderCreatedImpl _value,
-    $Res Function(_$OrderCreatedImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of FetchBillState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? orderId = null, Object? receiptId = null}) {
-    return _then(
-      _$OrderCreatedImpl(
-        orderId: null == orderId
-            ? _value.orderId
-            : orderId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        receiptId: null == receiptId
-            ? _value.receiptId
-            : receiptId // ignore: cast_nullable_to_non_nullable
-                  as String,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-
-class _$OrderCreatedImpl implements _OrderCreated {
-  const _$OrderCreatedImpl({required this.orderId, required this.receiptId});
-
-  @override
-  final String orderId;
-  @override
-  final String receiptId;
-
-  @override
-  String toString() {
-    return 'FetchBillState.orderCreated(orderId: $orderId, receiptId: $receiptId)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$OrderCreatedImpl &&
-            (identical(other.orderId, orderId) || other.orderId == orderId) &&
-            (identical(other.receiptId, receiptId) ||
-                other.receiptId == receiptId));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, orderId, receiptId);
-
-  /// Create a copy of FetchBillState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$OrderCreatedImplCopyWith<_$OrderCreatedImpl> get copyWith =>
-      __$$OrderCreatedImplCopyWithImpl<_$OrderCreatedImpl>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function() loading,
-    required TResult Function(ElectricityBillModel bill) success,
-    required TResult Function(String message) error,
-    required TResult Function() paymentProcessing,
-    required TResult Function(String orderId, String receiptId) orderCreated,
-    required TResult Function(String message, String receiptId) paymentSuccess,
-    required TResult Function(String message) paymentError,
-  }) {
-    return orderCreated(orderId, receiptId);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function()? loading,
-    TResult? Function(ElectricityBillModel bill)? success,
-    TResult? Function(String message)? error,
-    TResult? Function()? paymentProcessing,
-    TResult? Function(String orderId, String receiptId)? orderCreated,
-    TResult? Function(String message, String receiptId)? paymentSuccess,
-    TResult? Function(String message)? paymentError,
-  }) {
-    return orderCreated?.call(orderId, receiptId);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function(ElectricityBillModel bill)? success,
-    TResult Function(String message)? error,
-    TResult Function()? paymentProcessing,
-    TResult Function(String orderId, String receiptId)? orderCreated,
-    TResult Function(String message, String receiptId)? paymentSuccess,
-    TResult Function(String message)? paymentError,
-    required TResult orElse(),
-  }) {
-    if (orderCreated != null) {
-      return orderCreated(orderId, receiptId);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_Initial value) initial,
-    required TResult Function(_Loading value) loading,
-    required TResult Function(_Success value) success,
-    required TResult Function(_Error value) error,
-    required TResult Function(_PaymentProcessing value) paymentProcessing,
-    required TResult Function(_OrderCreated value) orderCreated,
-    required TResult Function(_PaymentSuccess value) paymentSuccess,
-    required TResult Function(_PaymentError value) paymentError,
-  }) {
-    return orderCreated(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_Initial value)? initial,
-    TResult? Function(_Loading value)? loading,
-    TResult? Function(_Success value)? success,
-    TResult? Function(_Error value)? error,
-    TResult? Function(_PaymentProcessing value)? paymentProcessing,
-    TResult? Function(_OrderCreated value)? orderCreated,
-    TResult? Function(_PaymentSuccess value)? paymentSuccess,
-    TResult? Function(_PaymentError value)? paymentError,
-  }) {
-    return orderCreated?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_Initial value)? initial,
-    TResult Function(_Loading value)? loading,
-    TResult Function(_Success value)? success,
-    TResult Function(_Error value)? error,
-    TResult Function(_PaymentProcessing value)? paymentProcessing,
-    TResult Function(_OrderCreated value)? orderCreated,
-    TResult Function(_PaymentSuccess value)? paymentSuccess,
-    TResult Function(_PaymentError value)? paymentError,
-    required TResult orElse(),
-  }) {
-    if (orderCreated != null) {
-      return orderCreated(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class _OrderCreated implements FetchBillState {
-  const factory _OrderCreated({
-    required final String orderId,
-    required final String receiptId,
-  }) = _$OrderCreatedImpl;
-
-  String get orderId;
-  String get receiptId;
-
-  /// Create a copy of FetchBillState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$OrderCreatedImplCopyWith<_$OrderCreatedImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$PaymentSuccessImplCopyWith<$Res> {
-  factory _$$PaymentSuccessImplCopyWith(
-    _$PaymentSuccessImpl value,
-    $Res Function(_$PaymentSuccessImpl) then,
-  ) = __$$PaymentSuccessImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({String message, String receiptId});
-}
-
-/// @nodoc
-class __$$PaymentSuccessImplCopyWithImpl<$Res>
-    extends _$FetchBillStateCopyWithImpl<$Res, _$PaymentSuccessImpl>
-    implements _$$PaymentSuccessImplCopyWith<$Res> {
-  __$$PaymentSuccessImplCopyWithImpl(
-    _$PaymentSuccessImpl _value,
-    $Res Function(_$PaymentSuccessImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of FetchBillState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? message = null, Object? receiptId = null}) {
-    return _then(
-      _$PaymentSuccessImpl(
-        null == message
-            ? _value.message
-            : message // ignore: cast_nullable_to_non_nullable
-                  as String,
-        null == receiptId
-            ? _value.receiptId
-            : receiptId // ignore: cast_nullable_to_non_nullable
-                  as String,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-
-class _$PaymentSuccessImpl implements _PaymentSuccess {
-  const _$PaymentSuccessImpl(this.message, this.receiptId);
-
-  @override
-  final String message;
-  @override
-  final String receiptId;
-
-  @override
-  String toString() {
-    return 'FetchBillState.paymentSuccess(message: $message, receiptId: $receiptId)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$PaymentSuccessImpl &&
-            (identical(other.message, message) || other.message == message) &&
-            (identical(other.receiptId, receiptId) ||
-                other.receiptId == receiptId));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, message, receiptId);
-
-  /// Create a copy of FetchBillState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$PaymentSuccessImplCopyWith<_$PaymentSuccessImpl> get copyWith =>
-      __$$PaymentSuccessImplCopyWithImpl<_$PaymentSuccessImpl>(
-        this,
-        _$identity,
-      );
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function() loading,
-    required TResult Function(ElectricityBillModel bill) success,
-    required TResult Function(String message) error,
-    required TResult Function() paymentProcessing,
-    required TResult Function(String orderId, String receiptId) orderCreated,
-    required TResult Function(String message, String receiptId) paymentSuccess,
-    required TResult Function(String message) paymentError,
-  }) {
-    return paymentSuccess(message, receiptId);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function()? loading,
-    TResult? Function(ElectricityBillModel bill)? success,
-    TResult? Function(String message)? error,
-    TResult? Function()? paymentProcessing,
-    TResult? Function(String orderId, String receiptId)? orderCreated,
-    TResult? Function(String message, String receiptId)? paymentSuccess,
-    TResult? Function(String message)? paymentError,
-  }) {
-    return paymentSuccess?.call(message, receiptId);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function(ElectricityBillModel bill)? success,
-    TResult Function(String message)? error,
-    TResult Function()? paymentProcessing,
-    TResult Function(String orderId, String receiptId)? orderCreated,
-    TResult Function(String message, String receiptId)? paymentSuccess,
-    TResult Function(String message)? paymentError,
-    required TResult orElse(),
-  }) {
-    if (paymentSuccess != null) {
-      return paymentSuccess(message, receiptId);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_Initial value) initial,
-    required TResult Function(_Loading value) loading,
-    required TResult Function(_Success value) success,
-    required TResult Function(_Error value) error,
-    required TResult Function(_PaymentProcessing value) paymentProcessing,
-    required TResult Function(_OrderCreated value) orderCreated,
-    required TResult Function(_PaymentSuccess value) paymentSuccess,
-    required TResult Function(_PaymentError value) paymentError,
-  }) {
-    return paymentSuccess(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_Initial value)? initial,
-    TResult? Function(_Loading value)? loading,
-    TResult? Function(_Success value)? success,
-    TResult? Function(_Error value)? error,
-    TResult? Function(_PaymentProcessing value)? paymentProcessing,
-    TResult? Function(_OrderCreated value)? orderCreated,
-    TResult? Function(_PaymentSuccess value)? paymentSuccess,
-    TResult? Function(_PaymentError value)? paymentError,
-  }) {
-    return paymentSuccess?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_Initial value)? initial,
-    TResult Function(_Loading value)? loading,
-    TResult Function(_Success value)? success,
-    TResult Function(_Error value)? error,
-    TResult Function(_PaymentProcessing value)? paymentProcessing,
-    TResult Function(_OrderCreated value)? orderCreated,
-    TResult Function(_PaymentSuccess value)? paymentSuccess,
-    TResult Function(_PaymentError value)? paymentError,
-    required TResult orElse(),
-  }) {
-    if (paymentSuccess != null) {
-      return paymentSuccess(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class _PaymentSuccess implements FetchBillState {
-  const factory _PaymentSuccess(final String message, final String receiptId) =
-      _$PaymentSuccessImpl;
-
-  String get message;
-  String get receiptId;
-
-  /// Create a copy of FetchBillState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$PaymentSuccessImplCopyWith<_$PaymentSuccessImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$PaymentErrorImplCopyWith<$Res> {
-  factory _$$PaymentErrorImplCopyWith(
-    _$PaymentErrorImpl value,
-    $Res Function(_$PaymentErrorImpl) then,
-  ) = __$$PaymentErrorImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({String message});
-}
-
-/// @nodoc
-class __$$PaymentErrorImplCopyWithImpl<$Res>
-    extends _$FetchBillStateCopyWithImpl<$Res, _$PaymentErrorImpl>
-    implements _$$PaymentErrorImplCopyWith<$Res> {
-  __$$PaymentErrorImplCopyWithImpl(
-    _$PaymentErrorImpl _value,
-    $Res Function(_$PaymentErrorImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of FetchBillState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? message = null}) {
-    return _then(
-      _$PaymentErrorImpl(
-        null == message
-            ? _value.message
-            : message // ignore: cast_nullable_to_non_nullable
-                  as String,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-
-class _$PaymentErrorImpl implements _PaymentError {
-  const _$PaymentErrorImpl(this.message);
-
-  @override
-  final String message;
-
-  @override
-  String toString() {
-    return 'FetchBillState.paymentError(message: $message)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$PaymentErrorImpl &&
-            (identical(other.message, message) || other.message == message));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, message);
-
-  /// Create a copy of FetchBillState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$PaymentErrorImplCopyWith<_$PaymentErrorImpl> get copyWith =>
-      __$$PaymentErrorImplCopyWithImpl<_$PaymentErrorImpl>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function() loading,
-    required TResult Function(ElectricityBillModel bill) success,
-    required TResult Function(String message) error,
-    required TResult Function() paymentProcessing,
-    required TResult Function(String orderId, String receiptId) orderCreated,
-    required TResult Function(String message, String receiptId) paymentSuccess,
-    required TResult Function(String message) paymentError,
-  }) {
-    return paymentError(message);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function()? loading,
-    TResult? Function(ElectricityBillModel bill)? success,
-    TResult? Function(String message)? error,
-    TResult? Function()? paymentProcessing,
-    TResult? Function(String orderId, String receiptId)? orderCreated,
-    TResult? Function(String message, String receiptId)? paymentSuccess,
-    TResult? Function(String message)? paymentError,
-  }) {
-    return paymentError?.call(message);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function(ElectricityBillModel bill)? success,
-    TResult Function(String message)? error,
-    TResult Function()? paymentProcessing,
-    TResult Function(String orderId, String receiptId)? orderCreated,
-    TResult Function(String message, String receiptId)? paymentSuccess,
-    TResult Function(String message)? paymentError,
-    required TResult orElse(),
-  }) {
-    if (paymentError != null) {
-      return paymentError(message);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_Initial value) initial,
-    required TResult Function(_Loading value) loading,
-    required TResult Function(_Success value) success,
-    required TResult Function(_Error value) error,
-    required TResult Function(_PaymentProcessing value) paymentProcessing,
-    required TResult Function(_OrderCreated value) orderCreated,
-    required TResult Function(_PaymentSuccess value) paymentSuccess,
-    required TResult Function(_PaymentError value) paymentError,
-  }) {
-    return paymentError(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_Initial value)? initial,
-    TResult? Function(_Loading value)? loading,
-    TResult? Function(_Success value)? success,
-    TResult? Function(_Error value)? error,
-    TResult? Function(_PaymentProcessing value)? paymentProcessing,
-    TResult? Function(_OrderCreated value)? orderCreated,
-    TResult? Function(_PaymentSuccess value)? paymentSuccess,
-    TResult? Function(_PaymentError value)? paymentError,
-  }) {
-    return paymentError?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_Initial value)? initial,
-    TResult Function(_Loading value)? loading,
-    TResult Function(_Success value)? success,
-    TResult Function(_Error value)? error,
-    TResult Function(_PaymentProcessing value)? paymentProcessing,
-    TResult Function(_OrderCreated value)? orderCreated,
-    TResult Function(_PaymentSuccess value)? paymentSuccess,
-    TResult Function(_PaymentError value)? paymentError,
-    required TResult orElse(),
-  }) {
-    if (paymentError != null) {
-      return paymentError(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class _PaymentError implements FetchBillState {
-  const factory _PaymentError(final String message) = _$PaymentErrorImpl;
-
-  String get message;
-
-  /// Create a copy of FetchBillState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$PaymentErrorImplCopyWith<_$PaymentErrorImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

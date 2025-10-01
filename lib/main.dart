@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:minna/DTH%20&%20Mobile/DTH/application/dth%20proceed/dth_confirm_bloc.dart';
+import 'package:minna/Electyicity%20&%20Water/application/confirm%20bill/confirm_bill_bloc.dart';
 import 'package:minna/Electyicity%20&%20Water/application/fetch%20bill/fetch_bill_bloc.dart';
 import 'package:minna/Electyicity%20&%20Water/application/providers/providers_bloc.dart';
 import 'package:minna/bus/application/busListfetch/bus_list_fetch_bloc.dart';
@@ -146,6 +147,9 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(create: (context) => HoldCabBloc()),
         BlocProvider(create: (context) => ConfirmBookingBloc()),
         BlocProvider(create: (context) => BookedInfoBloc()),
+        BlocProvider(create: (context) => ConfirmBillBloc()),
+
+        
       ],
       child: MaterialApp(
         scaffoldMessengerKey: _scaffoldMessengerKey,

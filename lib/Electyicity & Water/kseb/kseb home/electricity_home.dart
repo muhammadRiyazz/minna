@@ -229,11 +229,11 @@ class _ElectricityBillInputPageState extends State<ElectricityBillInputPage> {
                           final providerId = selectedProvider?.id ?? '';
                           final phone = mobileNumberController.text.trim();
                           final consumer = customerIdController.text.trim();
-
+final providerName=selectedProvider?.name ?? '';
                           /// Dispatch event to fetch bill
                           context.read<FetchBillBloc>().add(
                             FetchBillEvent.fetchElectricityBill(
-
+providerName:providerName ,
                               providerID: providerId,
                               phoneNo: phone,
                               consumerId: consumer,

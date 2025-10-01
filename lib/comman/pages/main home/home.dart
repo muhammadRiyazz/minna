@@ -638,11 +638,10 @@ class _HomeContentPageState extends State<HomeContentPage> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 18),
+            padding: EdgeInsets.symmetric(horizontal: 25,vertical: 28),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 18),
                 // Minna Special tag
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
@@ -689,33 +688,32 @@ class _HomeContentPageState extends State<HomeContentPage> {
                   ),
                 ),
                 SizedBox(height: 10),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Color(0xFF1A2980),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
-                      ),
+                // Align(
+                //   alignment: Alignment.bottomRight,
+                //   child: ElevatedButton(
+                //     onPressed: () {},
+                //     style: ElevatedButton.styleFrom(
+                //       backgroundColor: Colors.white,
+                //       foregroundColor: Color(0xFF1A2980),
+                //       shape: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.circular(25),
+                //       ),
 
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 10,
-                      ),
-                      elevation: 2,
-                    ),
-                    child: Text(
-                      'Explore Now',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 12),
+                //       padding: EdgeInsets.symmetric(
+                //         horizontal: 24,
+                //         vertical: 10,
+                //       ),
+                //       elevation: 2,
+                //     ),
+                //     child: Text(
+                //       'Explore Now',
+                //       style: TextStyle(
+                //         fontWeight: FontWeight.bold,
+                //         fontSize: 12,
+                //       ),
+                //     ),
+                //   ),
+                // ),
 
                 // Action button
               ],

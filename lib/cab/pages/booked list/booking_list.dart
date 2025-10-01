@@ -5,6 +5,7 @@ import 'package:minna/cab/application/booked%20info%20list/booked_info_bloc.dart
 import 'package:minna/cab/domain/cab%20report/cab_booked_list.dart';
 import 'package:minna/cab/pages/booked%20cab%20details/booked_cab_details.dart';
 import 'package:minna/comman/const/const.dart';
+import 'package:minna/comman/pages/widget/loading.dart';
 
 class CabBookingList extends StatefulWidget {
 
@@ -40,9 +41,9 @@ class _CabBookingListState extends State<CabBookingList> {
         listener: (context, state) {
           state.maybeWhen(
             error: (message) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(message)),
-              );
+              // ScaffoldMessenger.of(context).showSnackBar(
+              //   SnackBar(content: Text(message)),
+              // );
             },
             orElse: () {},
           );
@@ -53,12 +54,12 @@ class _CabBookingListState extends State<CabBookingList> {
               _buildSearchAndFilter(context, state),
               Expanded(
                 child: state.maybeWhen(
-                  loading: () => _buildLoadingState(),
+                  loading: () => buildLoadingState(),
                   success: (allBookings, filteredBookings, searchQuery, selectedDate, statusFilter) =>
                       filteredBookings.isEmpty
                           ? _buildEmptyState()
                           : _buildBookingList(filteredBookings),
-                  error: (message) => _buildErrorState(),
+                  error: (message) => _buildEmptyState(),
                   orElse: () => _buildInitialState(),
                 ),
               ),
@@ -361,11 +362,7 @@ class _CabBookingListState extends State<CabBookingList> {
     );
   }
 
-  Widget _buildLoadingState() {
-    return const Center(
-      child: CircularProgressIndicator(),
-    );
-  }
+ 
 
   Widget _buildEmptyState() {
     return Center(

@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:minna/comman/const/const.dart';
+import 'package:minna/comman/pages/widget/loading.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:minna/bus/domain/report%20modal/report_Modal.dart';
 import 'package:minna/bus/infrastructure/fetch%20reports/fetch_reports.dart';
@@ -183,7 +184,7 @@ class _ScreenReportState extends State<ScreenReport> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.flight, size: 80, color: Colors.grey[400]),
+          Icon(Icons.directions_bus , size: 80, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
             'No Trips Found',
@@ -334,7 +335,7 @@ class _ScreenReportState extends State<ScreenReport> {
               color: maincolor1,
               onRefresh: _fetchReports,
               child: _isLoading && _reportData.isEmpty
-                  ? const Center(child: CircularProgressIndicator())
+                  ? buildLoadingState()
                   : _isError
                   ? _buildErrorState()
                   : _filteredReports.isEmpty
