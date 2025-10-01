@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:minna/comman/const/const.dart';
-import 'package:minna/hotel%20booking/domain/rooms/rooms.dart' show HotelRoomResult, Room;
+import 'package:minna/hotel%20booking/domain/hotel%20details%20/hotel_details.dart';
+import 'package:minna/hotel%20booking/domain/rooms/rooms.dart' show HotelRoomResult, Room, HotelSearchRequest;
 import 'package:minna/hotel%20booking/pages/PassengerInputPage/PassengerInputPage.dart';
 
 class RoomAvailabilityResultsPage extends StatelessWidget {
   final List<HotelRoomResult> hotelRoomResult;
+  final HotelSearchRequest hotelSearchRequest;
+  final HotelDetail hotel;
 
   const RoomAvailabilityResultsPage({
     super.key,
     required this.hotelRoomResult,
+    required this.hotelSearchRequest
+    ,required this.hotel
   });
 
   @override
@@ -248,7 +253,11 @@ class RoomAvailabilityResultsPage extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                 builder: (context) {
-                                  return PassengerInputPage();
+                                  return PassengerInputPage(
+
+hotel: hotel, hotelSearchRequest: hotelSearchRequest,room: room,
+
+                                  );
                                 },
                               ),
                             );
@@ -271,9 +280,9 @@ class RoomAvailabilityResultsPage extends StatelessWidget {
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.credit_card, size: 14),
+                              Icon(Icons.credit_card, size: 12),
                               SizedBox(width: 8),
-                              Text('Book Now', style: TextStyle(fontSize: 12)),
+                              Text('Book Now', style: TextStyle(fontSize: 10)),
                             ],
                           ),
                         ),
@@ -478,7 +487,7 @@ Container(
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => PassengerInputPage(),
+                    builder: (context) => PassengerInputPage(hotel: hotel,hotelSearchRequest: hotelSearchRequest,room: room,),
                   ),
                 );
               },

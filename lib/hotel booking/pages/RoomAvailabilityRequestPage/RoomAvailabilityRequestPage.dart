@@ -309,6 +309,8 @@ void _submitForm() async {
           context,
           MaterialPageRoute(
             builder: (_) => RoomAvailabilityResultsPage(
+hotel: widget.hotel,
+              hotelSearchRequest: request,
               hotelRoomResult: response.hotelResult,
             ),
           ),

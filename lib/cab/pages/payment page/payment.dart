@@ -412,7 +412,7 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
                     "Booking Confirmation",
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 18,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -426,14 +426,14 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.timer, color: Colors.white),
+                      const Icon(Icons.timer, color: Colors.white,size: 20,),
                       const SizedBox(width: 5),
                       Text(
                         _displayTime,
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                          fontSize: 14,
                         ),
                       ),
                     ],

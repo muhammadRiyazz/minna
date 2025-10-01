@@ -13,7 +13,7 @@ Future<Response> bookingConfirmApi(BBBookingRequest fareRequest) async {
     final Map<String, String> requestBody = {
       'datas': jsonEncode(fareRequest.toJson()),
       'isLive': liveOrStage.toString(),
-      'url': 'Api/webapi/Booking?type=json',
+      'url': 'Api/webapi/Bookin?type=json',
     };
 
     // final String encodedRequest = jsonEncode(requestBody);

@@ -80,12 +80,12 @@ class _MyAccountPageState extends State<MyAccountPage> {
                   //   'Saved Addresses',
                   //   () {},
                   // ),
-                  _buildSectionTitle('BOOKINGS'),
-                  _buildAccountOption(
-                    Icons.calendar_today,
-                    'My Bookings',
-                    () {},
-                  ),
+                  // _buildSectionTitle('BOOKINGS'),
+                  // _buildAccountOption(
+                  //   Icons.calendar_today,
+                  //   'My Bookings',
+                  //   () {},
+                  // ),
                   _buildSectionTitle('ABOUT'),
                   _buildAccountOption(Icons.email_outlined, 'About Us', () {
                     Navigator.push(
@@ -141,7 +141,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
 
   Widget _buildLoginSection(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 15),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

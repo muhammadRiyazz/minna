@@ -104,18 +104,18 @@ class _ScreenBookingState extends State<ScreenBooking> {
   /// Enhanced Tab Selector
   Widget _buildBookingTypeSelector() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      margin: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
       padding: EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
-        ],
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: Colors.black12,
+        //     blurRadius: 8,
+        //     offset: Offset(0, 2),
+        //   ),
+        // ],
       ),
       child: Row(
         children: List.generate(bookingTypes.length, (index) {
@@ -276,25 +276,25 @@ class _ScreenBookingState extends State<ScreenBooking> {
           ),
           if (buttonText != null && onButtonPressed != null) ...[
             const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: onButtonPressed,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: maincolor1,
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 2,
-              ),
-              child: Text(
-                buttonText,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
+            // ElevatedButton(
+            //   onPressed: onButtonPressed,
+            //   style: ElevatedButton.styleFrom(
+            //     backgroundColor: maincolor1,
+            //     foregroundColor: Colors.white,
+            //     padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+            //     shape: RoundedRectangleBorder(
+            //       borderRadius: BorderRadius.circular(12),
+            //     ),
+            //     elevation: 2,
+            //   ),
+            //   child: Text(
+            //     buttonText,
+            //     style: TextStyle(
+            //       fontSize: 14,
+            //       fontWeight: FontWeight.w500,
+            //     ),
+            //   ),
+            // ),
           ],
         ],
       ),

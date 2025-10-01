@@ -259,7 +259,7 @@ class _BookingPageState extends State<BookingPage> {
       ),
 
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.symmetric(horizontal: 12,vertical: 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -328,19 +328,19 @@ class _BookingPageState extends State<BookingPage> {
                                 children: [
                                   Icon(
                                     Icons.event_seat,
-                                    size: 18,
+                                    size: 15,
                                     color: maincolor1,
                                   ),
                                   SizedBox(width: 4),
-                                  Text("${cab.cab.seatingCapacity} seats"),
+                                  Text("${cab.cab.seatingCapacity} seats",style: TextStyle(fontSize: 13)),
                                   SizedBox(width: 12),
                                   Icon(
                                     Icons.work,
-                                    size: 18,
+                                    size: 15,
                                     color: Colors.orange,
                                   ),
                                   SizedBox(width: 4),
-                                  Text("${cab.cab.bagCapacity} bags"),
+                                  Text("${cab.cab.bagCapacity} bags",style: TextStyle(fontSize: 13)),
                                 ],
                               ),
                             ],
@@ -368,7 +368,7 @@ class _BookingPageState extends State<BookingPage> {
                             Text(
                               "₹${amountWithCommission.toStringAsFixed(0)}",
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 15,
                                 fontWeight: FontWeight.bold,
                                 color: maincolor1,
                               ),

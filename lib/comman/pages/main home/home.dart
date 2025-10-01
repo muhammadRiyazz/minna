@@ -128,6 +128,17 @@ class _HomeContentPageState extends State<HomeContentPage> {
         );
       },
     },
+    //    {
+    //   'label': 'Train',
+    //   'icon': Icons.train,
+    //   'color': Colors.red,
+    //   'onTap': (BuildContext context) {
+    //     Navigator.push(
+    //       context,
+    //       MaterialPageRoute(builder: (context) => ElectricityBillInputPage()),
+    //     );
+    //   },
+    // },
     {
       'label': 'Water',
       'icon': Icons.water_drop,
@@ -158,6 +169,29 @@ class _HomeContentPageState extends State<HomeContentPage> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => FlightBookingTab()),
+        );
+      },
+    },
+    {
+      'label': 'Hotel',
+      'icon': Icons.home_work_outlined,
+      'color': Colors.green,
+      'onTap': (BuildContext context) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => HotelBookingHome()),
+        );
+      },
+    },
+  
+    {
+      'label': 'Cabs',
+      'icon': Icons.car_crash_outlined,
+      'color': Colors.orange,
+      'onTap': (BuildContext context) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => TripSelectionPage()),
         );
       },
     },
@@ -340,67 +374,85 @@ class _HomeContentPageState extends State<HomeContentPage> {
             ),
           ),
           SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildTravelServiceButton(
-                FontAwesomeIcons.bus,
-                ' Bus ',
-                Colors.red[400]!,
-                () {
 
- BlocProvider.of<BusLocationFetchBloc>(context).add(const GetData());
-
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => BusHomeTab()),
-                  );
-                },
-              ),
-              _buildTravelServiceButton(
-                FontAwesomeIcons.plane,
-                'Flights',
-                Colors.blue[400]!,
-                () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => FlightBookingTab()),
-                  );
-                },
-              ),
-              _buildTravelServiceButton(
-                FontAwesomeIcons.hotel,
-                'Hotels',
-                Colors.green[400]!,
-                () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return HotelBookingHome();
-                      },
-                    ),
-                  );
-                  //  _showComingSoonBottomSheet(context, 'Hotels'),
-                },
-              ),
-              _buildTravelServiceButton(
-                FontAwesomeIcons.carSide,
-                'Cabs',
-                Colors.orange[400]!,
-                () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return TripSelectionPage();
-                      },
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
+          SizedBox(height: 90,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              
+              children: [
+            
+               
+                _buildTravelServiceButton(
+                  FontAwesomeIcons.bus,
+                  ' Bus ',
+                  Colors.red[400]!,
+                  () {
+            
+             BlocProvider.of<BusLocationFetchBloc>(context).add(const GetData());
+            
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => BusHomeTab()),
+                    );
+                  },
+                ),
+               
+                _buildTravelServiceButton(
+                  FontAwesomeIcons.hotel,
+                  'Hotels',
+                  Colors.green[400]!,
+                  () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return HotelBookingHome();
+                        },
+                      ),
+                    );
+                    //  _showComingSoonBottomSheet(context, 'Hotels'),
+                  },
+                ),
+                _buildTravelServiceButton(
+                  FontAwesomeIcons.carSide,
+                  'Cabs',
+                  Colors.orange[400]!,
+                  () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return TripSelectionPage();
+                        },
+                      ),
+                    );
+                  },
+                ),
+                      _buildTravelServiceButton(
+                  FontAwesomeIcons.train,
+                  'Train',
+                  Colors.red[400]!,
+                  () {
+                    _showComingSoonBottomSheet(context, "Train");
+                  
+                  },
+                ),
+                
+                 _buildTravelServiceButton(
+                  FontAwesomeIcons.plane,
+                  'Flights',
+                  Colors.blue[400]!,
+                  () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => FlightBookingTab()),
+                    );
+                  },
+                ),
+              
+            ],),
+          )
+        
         ],
       ),
     );
@@ -469,21 +521,24 @@ class _HomeContentPageState extends State<HomeContentPage> {
     Color color,
     VoidCallback onpress,
   ) {
-    return InkWell(
-      onTap: onpress,
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
+    return Padding(
+      padding: const EdgeInsets.only(right: 15),
+      child: InkWell(
+        onTap: onpress,
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: FaIcon(icon, color: color, size: 24),
             ),
-            child: FaIcon(icon, color: color, size: 24),
-          ),
-          SizedBox(height: 8),
-          Text(label, style: TextStyle(fontSize: 12)),
-        ],
+            SizedBox(height: 8),
+            Text(label, style: TextStyle(fontSize: 12)),
+          ],
+        ),
       ),
     );
   }

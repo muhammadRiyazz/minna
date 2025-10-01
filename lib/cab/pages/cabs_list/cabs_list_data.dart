@@ -235,19 +235,19 @@ void initState() {
                             children: [
                               Icon(
                                 Icons.event_seat,
-                                size: 18,
+                                size: 15,
                                 color: maincolor1,
                               ),
                               SizedBox(width: 4),
-                              Text("${cab.seatingCapacity} seats"),
+                              Text("${cab.seatingCapacity} seats",style: TextStyle(fontSize: 13),),
                               SizedBox(width: 12),
                               Icon(
                                 Icons.work,
-                                size: 18,
+                                size: 15,
                                 color: Colors.orange,
                               ),
                               SizedBox(width: 4),
-                              Text("${cab.bagCapacity} bags"),
+                              Text("${cab.bagCapacity} bags",style: TextStyle(fontSize: 13)),
                             ],
                           ),
                         ],
@@ -273,7 +273,7 @@ void initState() {
                             Text(
                               "₹${amountWithCommission.toStringAsFixed(0)}",
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 15,
                                 fontWeight: FontWeight.bold,
                                 color: maincolor1,
                               ),
@@ -459,14 +459,14 @@ void initState() {
                                 ),
                               ),
                               SizedBox(width: 20),
-                              Container(
-                                width: 60,
-                                height: 14,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[300],
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                              ),
+                              // Container(
+                              //   width: 60,
+                              //   height: 14,
+                              //   decoration: BoxDecoration(
+                              //     color: Colors.grey[300],
+                              //     borderRadius: BorderRadius.circular(4),
+                              //   ),
+                              // ),
                             ],
                           ),
                         ],

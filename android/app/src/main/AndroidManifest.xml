@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <!-- For Android 10+ background location (optional, only if needed) -->
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
@@ -32,7 +33,35 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
+            <!-- Razorpay intent filter for payment callback -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="yourapprazorpay" />
+            </intent-filter>
         </activity>
+
+        <!-- Razorpay Checkout Activity -->
+        <activity
+            android:name="com.razorpay.CheckoutActivity"
+            android:theme="@style/CheckoutTheme"
+            android:exported="true">
+            
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="yourapprazorpay" />
+            </intent-filter>
+        </activity>
+
+        <!-- Razorpay CheckoutTheme -->
+        <style name="CheckoutTheme" parent="android:Theme.Light">
+            <item name="android:windowIsTranslucent">true</item>
+            <item name="android:windowBackground">@android:color/transparent</item>
+        </style>
 
         <!-- Flutter plugin registration -->
         <meta-data
@@ -56,5 +85,10 @@
             <action android:name="android.intent.action.VIEW"/>
             <data android:scheme="geo"/>
         </intent>
+
+        <!-- Razorpay UPI apps query -->
+        <package android:name="org.telegram.messenger" />
+        <package android:name="com.whatsapp" />
+        <package android:name="com.razorpay" />
     </queries>
 </manifest>

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/application/report/report_transaction_bloc.dart';
+import 'package:minna/Electyicity%20&%20Water/application/bill%20report/bill_report_bloc.dart';
+import 'package:minna/Electyicity%20&%20Water/function/report_api.dart' show BillPaymentRepository;
+import 'package:minna/Electyicity%20&%20Water/report.dart';
 import 'package:minna/comman/application/login/login_bloc.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/pages/histoy/dth_mob.dart';
@@ -14,29 +17,40 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-  final List<Map<String, dynamic>> services = [
-    {
-      'name': 'Mobile', 
-      'icon': Icons.phone_android,
-      'page': const MobileReportPage(),
-    },
-    {
-      'name': 'DTH', 
-      'icon': Icons.live_tv,
-      'page': const DTHReportPage(),
-    },
-    {
-      'name': 'Electricity', 
-      'icon': Icons.bolt,
-      'page': Container(), // Add your electricity page later
-    },
-    {
-      'name': 'Water', 
-      'icon': Icons.water_drop,
-      'page': Container(), // Add your water page later
-    },
-  ];
+// Update your HistoryPage services list
 
+final List<Map<String, dynamic>> services = [
+  {
+    'name': 'Mobile', 
+    'icon': Icons.phone_android,
+    'page': const MobileReportPage(),
+  },
+  {
+    'name': 'DTH', 
+    'icon': Icons.live_tv,
+    'page': const DTHReportPage(),
+  },
+  {
+    'name': 'Electricity', 
+    'icon': Icons.bolt,
+    'page': const BillPaymentPage(
+        title: 'Electricity Bill Payments',
+        billerCategory: 'Electricity',
+      
+    ),
+  },
+  {
+    'name': 'Water', 
+    'icon': Icons.water_drop,
+    'page': BlocProvider(
+      create: (context) => BillPaymentBloc(BillPaymentRepository()),
+      child: const BillPaymentPage(
+        title: 'Water Bill Payments', 
+        billerCategory: 'Water',
+      ),
+    ),
+  },
+];
   int selectedIndex = 0;
 
   @override

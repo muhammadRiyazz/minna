@@ -47,7 +47,7 @@ log(response.body.toString());
       if (cabResponse.status == 'success') {
         // ✅ Update bookingId based on status & tripType
         final updatedBookings = cabResponse.bookings.map((booking) {
-          if (booking.status.toLowerCase() == "confirmed") {
+          // if (booking.status.toLowerCase() == "confirmed") {
             String prefix = "QT"; // default fallback
             switch (booking.tripType.toUpperCase()) {
               case "ONE WAY":
@@ -89,9 +89,9 @@ log(response.body.toString());
               status: booking.status,
               paidStatus: booking.paidStatus,
             );
-          } else {
-            return booking;
-          }
+          // } else {
+          //   return booking;
+          // }
         }).toList();
 
         emit(BookedInfoState.success(

@@ -91,16 +91,16 @@ class _ContactUsPageState extends State<ContactUsPage> {
                   children: [
                     ListTile(
                       leading: Icon(Icons.email, color: maincolor1),
-                      title: Text("support@example.com"),
+                      title: Text("mttrip2025@gmail.com"),
                     ),
                     ListTile(
                       leading: Icon(Icons.phone, color: maincolor1),
-                      title: Text("+91 98765 43210"),
+                      title: Text("+91 9656666556"),
                     ),
-                    ListTile(
-                      leading: Icon(Icons.location_on, color: maincolor1),
-                      title: Text("123, Your Street, Your City, India"),
-                    ),
+                    // ListTile(
+                    //   leading: Icon(Icons.location_on, color: maincolor1),
+                    //   title: Text("123, Your Street, Your City, India"),
+                    // ),
                   ],
                 ),
               ),

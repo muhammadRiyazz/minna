@@ -1330,7 +1330,7 @@ final hasCoordinates = latitude != null && longitude != null;
         ),
         title: Text(
           widget.hotelName,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white,fontSize: 15),
         ),
       ),
       body: _buildShimmerHotelDetails(),
@@ -1341,11 +1341,14 @@ final hasCoordinates = latitude != null && longitude != null;
     return Column(
       children: [
         // Shimmer Main Image
-        Container(
-          height: 240,
-          color: Colors.grey[300],
-          child: Center(
-            child: CircularProgressIndicator(color: maincolor1),
+        Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Container(
+            height: 240,
+            color: Colors.grey[300],
+            // child: Center(
+            //   child: CircularProgressIndicator(color: maincolor1),
+            // ),
           ),
         ),
         Padding(
@@ -1439,7 +1442,7 @@ final hasCoordinates = latitude != null && longitude != null;
         ),
         title: Text(
           widget.hotelName,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white,fontSize: 15),
         ),
       ),
       body: Center(
@@ -1497,7 +1500,7 @@ final hasCoordinates = latitude != null && longitude != null;
         ),
         title: Text(
           widget.hotelName,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white,fontSize: 15),
         ),
       ),
       body: Center(

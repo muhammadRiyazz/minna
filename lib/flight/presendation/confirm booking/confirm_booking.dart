@@ -276,72 +276,6 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
     );
   }
 
-  Widget _buildErrorUI(BookingState state) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          const SizedBox(height: 40),
-          const Icon(Icons.error_outline, color: Colors.red, size: 80),
-          const SizedBox(height: 20),
-          const Text(
-            'Booking Failed',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.red,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.red.shade50,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.red.shade100),
-            ),
-            child: Column(
-              children: [
-                const Icon(Icons.warning_amber, color: Colors.red),
-                const SizedBox(height: 8),
-                Text(
-                  state.bookingError ?? 'Unknown error occurred',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 16, color: Colors.red),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.blue.shade50,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.blue.shade100),
-            ),
-            child: const Column(
-              children: [
-                Icon(Icons.info_outline, color: Colors.blue),
-                SizedBox(height: 8),
-                Text(
-                  'If any amount was deducted, it will be refunded to your account within 7 working days.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 14, color: Colors.blue),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 30),
-          buildPaymentButton(context, 'Try Again', () {
-            context.read<BookingBloc>().add(const BookingEvent.resetBooking());
-          }),
-          const SizedBox(height: 20),
-        ],
-      ),
-    );
-  }
 
   Widget _buildPassengerExpansionSection(List<RePassenger> passengers) {
     return Container(
@@ -610,7 +544,377 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
       ),
     );
   }
-
+Widget _buildErrorUI(BookingState state) {
+  return SingleChildScrollView(
+    physics: const BouncingScrollPhysics(),
+    child: Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        children: [
+          // Animated Error Icon
+          Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.red.shade400,
+                  Colors.red.shade600,
+                ],
+              ),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.red.withOpacity(0.3),
+                  blurRadius: 15,
+                  spreadRadius: 3,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.close_rounded,
+              color: Colors.white,
+              size: 60,
+            ),
+          ),
+          
+          const SizedBox(height: 32),
+          
+          // Error Title with Animation
+          Text(
+            'Booking Failed',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.w800,
+              color: Colors.red.shade700,
+              letterSpacing: -0.5,
+            ),
+          ),
+          
+          const SizedBox(height: 8),
+          
+          Text(
+            'We encountered an issue with your booking',textAlign: TextAlign.center,
+            style: TextStyle(
+              
+              fontSize: 16,
+              color: Colors.grey.shade600,
+              fontWeight: FontWeight.w500,
+              
+            ),
+          ),
+          
+          
+          // Error Details Card
+          // Container(
+          //   width: double.infinity,
+          //   padding: const EdgeInsets.all(20),
+          //   decoration: BoxDecoration(
+          //     gradient: LinearGradient(
+          //       begin: Alignment.topLeft,
+          //       end: Alignment.bottomRight,
+          //       colors: [
+          //         Colors.red.shade50,
+          //         Colors.red.shade100.withOpacity(0.7),
+          //       ],
+          //     ),
+          //     borderRadius: BorderRadius.circular(20),
+          //     border: Border.all(
+          //       color: Colors.red.shade200,
+          //       width: 1.5,
+          //     ),
+          //     boxShadow: [
+          //       BoxShadow(
+          //         color: Colors.red.withOpacity(0.1),
+          //         blurRadius: 20,
+          //         spreadRadius: 2,
+          //         offset: const Offset(0, 8),
+          //       ),
+          //     ],
+          //   ),
+          //   child: Row(
+          //     crossAxisAlignment: CrossAxisAlignment.start,
+          //     children: [
+          //       Container(
+          //         padding: const EdgeInsets.all(10),
+          //         decoration: BoxDecoration(
+          //           color: Colors.red.shade100,
+          //           shape: BoxShape.circle,
+          //         ),
+          //         child: Icon(
+          //           Icons.warning_amber_rounded,
+          //           color: Colors.red.shade700,
+          //           size: 24,
+          //         ),
+          //       ),
+          //       const SizedBox(width: 16),
+          //       Expanded(
+          //         child: Column(
+          //           crossAxisAlignment: CrossAxisAlignment.start,
+          //           children: [
+          //             Text(
+          //               'Error Details',
+          //               style: TextStyle(
+          //                 fontSize: 16,
+          //                 fontWeight: FontWeight.w700,
+          //                 color: Colors.red.shade800,
+          //               ),
+          //             ),
+          //             const SizedBox(height: 8),
+          //             Text(
+          //               state.bookingError ?? 'An unexpected error occurred while processing your booking. Please try again.',
+          //               style: TextStyle(
+          //                 fontSize: 14,
+          //                 color: Colors.red.shade700,
+          //                 height: 1.4,
+          //               ),
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
+          
+          const SizedBox(height: 20),
+          
+          // Refund Information Card
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.blue.shade50,
+                  Colors.blue.shade100.withOpacity(0.7),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.blue.shade200,
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.blue.withOpacity(0.1),
+                  blurRadius: 20,
+                  spreadRadius: 2,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade100,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.security_rounded,
+                    color: Colors.blue.shade700,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Refund Protection',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.blue.shade800,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      RichText(
+                        text: TextSpan(
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.blue.shade700,
+                            height: 1.4,
+                          ),
+                          children: [
+                            const TextSpan(
+                              text: 'Your money is safe! ',
+                              style: TextStyle(fontWeight: FontWeight.w700),
+                            ),
+                            TextSpan(
+                              text: 'If any amount was deducted, it will be automatically refunded to your account within ',
+                            ),
+                            const TextSpan(
+                              text: '3-7 working days',
+                              style: TextStyle(fontWeight: FontWeight.w700),
+                            ),
+                            const TextSpan(text: '.'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // const SizedBox(height: 32),
+          
+          // // Quick Actions
+          // Text(
+          //   'Quick Actions',
+          //   style: TextStyle(
+          //     fontSize: 18,
+          //     fontWeight: FontWeight.w700,
+          //     color: Colors.grey.shade800,
+          //   ),
+          // ),
+          
+          // const SizedBox(height: 16),
+          
+          // Row(
+          //   children: [
+          //     Expanded(
+          //       child: Container(
+          //         height: 80,
+          //         padding: const EdgeInsets.all(16),
+          //         decoration: BoxDecoration(
+          //           color: Colors.grey.shade50,
+          //           borderRadius: BorderRadius.circular(16),
+          //           border: Border.all(color: Colors.grey.shade200),
+          //         ),
+          //         child: Column(
+          //           mainAxisAlignment: MainAxisAlignment.center,
+          //           children: [
+          //             Icon(
+          //               Icons.support_agent_rounded,
+          //               color: maincolor1,
+          //               size: 24,
+          //             ),
+          //             const SizedBox(height: 6),
+          //             Text(
+          //               'Support',
+          //               style: TextStyle(
+          //                 fontSize: 12,
+          //                 fontWeight: FontWeight.w600,
+          //                 color: Colors.grey.shade700,
+          //               ),
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ),
+          //     const SizedBox(width: 12),
+          //     Expanded(
+          //       child: Container(
+          //         height: 80,
+          //         padding: const EdgeInsets.all(16),
+          //         decoration: BoxDecoration(
+          //           color: Colors.grey.shade50,
+          //           borderRadius: BorderRadius.circular(16),
+          //           border: Border.all(color: Colors.grey.shade200),
+          //         ),
+          //         child: Column(
+          //           mainAxisAlignment: MainAxisAlignment.center,
+          //           children: [
+          //             Icon(
+          //               Icons.history_rounded,
+          //               color: maincolor1,
+          //               size: 24,
+          //             ),
+          //             const SizedBox(height: 6),
+          //             Text(
+          //               'History',
+          //               style: TextStyle(
+          //                 fontSize: 12,
+          //                 fontWeight: FontWeight.w600,
+          //                 color: Colors.grey.shade700,
+          //               ),
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ),
+          //     const SizedBox(width: 12),
+          //     Expanded(
+          //       child: Container(
+          //         height: 80,
+          //         padding: const EdgeInsets.all(16),
+          //         decoration: BoxDecoration(
+          //           color: Colors.grey.shade50,
+          //           borderRadius: BorderRadius.circular(16),
+          //           border: Border.all(color: Colors.grey.shade200),
+          //         ),
+          //         child: Column(
+          //           mainAxisAlignment: MainAxisAlignment.center,
+          //           children: [
+          //             Icon(
+          //               Icons.home_rounded,
+          //               color: maincolor1,
+          //               size: 24,
+          //             ),
+          //             const SizedBox(height: 6),
+          //             Text(
+          //               'Home',
+          //               style: TextStyle(
+          //                 fontSize: 12,
+          //                 fontWeight: FontWeight.w600,
+          //                 color: Colors.grey.shade700,
+          //               ),
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ),
+          //   ],
+          // ),
+          
+          const SizedBox(height: 40),
+          
+       
+          
+          
+          // Back Button
+          SizedBox(
+            width: double.infinity,
+            height: 56,
+            child: OutlinedButton(
+              onPressed: () {
+  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (_) => HomePage()),
+                    (route) => false,
+                  );              },
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.grey.shade700,
+                side: BorderSide(color: Colors.grey.shade300),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              child: const Text(
+                'Go Back',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
   Widget _fareRow(
     String label,
     String symbol,
@@ -748,35 +1052,18 @@ Future<dynamic> _showBottomSheetbooking({
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: (){  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (_) => HomePage()),
+                    (route) => false,
+                  );},
                       child: Text(
                         'Cancel',
                         style: TextStyle(color: maincolor1),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: maincolor1,
-                        minimumSize: const Size.fromHeight(50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      onPressed: () {
-                        context.read<BookingBloc>().add(
-                          const BookingEvent.resetBooking(),
-                        );
-                        Navigator.pop(context);
-                      },
-                      child: const Text(
-                        'Try Again',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
+                 
                 ],
               ),
             ] else ...[

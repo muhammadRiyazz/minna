@@ -68,11 +68,12 @@ class CabSuccessPage extends StatelessWidget {
                       topRight: Radius.circular(30),
                     ),
                   ),
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(15),
                   child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        SizedBox(height: 12,),
                         // Booking ID
                         _buildInfoCard(
                           icon: Icons.confirmation_number,
@@ -369,19 +370,19 @@ Widget _buildDateTimeCard(String dateString, String timeString) {
         child: Row(
           children: [
             // Cab image placeholder
-            Container(
-              width: 80,
-              height: 60,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(
-                Icons.directions_car,
-                size: 40,
-                color: Colors.grey.shade500,
-              ),
-            ),
+            // Container(
+            //   width: 50,
+            //   height: 30,
+            //   decoration: BoxDecoration(
+            //     color: Colors.grey.shade200,
+            //     borderRadius: BorderRadius.circular(8),
+            //   ),
+            //   child: Icon(
+            //     Icons.directions_car,
+            //     size: 40,
+            //     color: Colors.grey.shade500,
+            //   ),
+            // ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -390,7 +391,7 @@ Widget _buildDateTimeCard(String dateString, String timeString) {
                   Text(
                     cab.type,
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Colors.grey.shade800,
                     ),

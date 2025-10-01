@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:minna/comman/const/const.dart';
+import 'package:minna/hotel%20booking/domain/hotel%20details%20/hotel_details.dart';
+import 'package:minna/hotel%20booking/domain/rooms/rooms.dart';
+import 'package:minna/hotel%20booking/pages/booking%20confirm%20page/booking_confirm.dart';
 
 class PassengerInputPage extends StatefulWidget {
-  const PassengerInputPage({super.key});
+
+final Room room;
+  final HotelSearchRequest hotelSearchRequest;
+  final HotelDetail hotel;
+
+  const PassengerInputPage({super.key ,required this.room,required this.hotelSearchRequest,required this.hotel});
 
   @override
   _PassengerInputPageState createState() => _PassengerInputPageState();
@@ -15,7 +23,6 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
     {
       "Title": 'Mr.',
       "FirstName": '',
-      "MiddleName": '',
       "LastName": '',
       "Email": '',
       "Phone": '',
@@ -106,9 +113,9 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
 
   Widget _buildHeaderCard() {
     return Card(
-      elevation: 2,
+      elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: Colors.white,
+      color: const Color.fromARGB(255, 255, 255, 255),
       child: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
@@ -168,7 +175,7 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
     return Row(
       children: [
         Expanded(
-          flex: 3,
+          flex: 1,
           child: TextFormField(
             decoration: InputDecoration(
               labelText: 'First Name',
@@ -194,30 +201,10 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
             onChanged: (value) => passengers[index]['FirstName'] = value,
           ),
         ),
+        
         SizedBox(width: 10),
         Expanded(
-          flex: 2,
-          child: TextFormField(
-            decoration: InputDecoration(
-              labelText: 'Middle',
-              labelStyle: TextStyle(color: Colors.grey[700]),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              filled: true,
-              fillColor: Colors.grey[50],
-            ),
-            onChanged: (value) => passengers[index]['MiddleName'] = value,
-          ),
-        ),
-        SizedBox(width: 10),
-        Expanded(
-          flex: 3,
+          flex: 1,
           child: TextFormField(
             decoration: InputDecoration(
               labelText: 'Last Name',
@@ -545,35 +532,39 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
     );
   }
 
-  Widget _buildSubmitButton() {
-    return ElevatedButton(
-      onPressed: () {
-        if (_formKey.currentState!.validate()) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Passenger details saved successfully!'),
-              backgroundColor: Colors.green,
+Widget _buildSubmitButton() {
+  return ElevatedButton(
+    onPressed: () {
+      if (_formKey.currentState!.validate()) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BookingPreviewPage(
+              room: widget.room,
+              hotelSearchRequest: widget.hotelSearchRequest,
+              hotel: widget.hotel,
+              passengers: passengers,
             ),
-          );
-          print(passengers);
-        }
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: maincolor1,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        elevation: 2,
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 14),
-        child: Text(
-          'Confirm Booking',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
           ),
+        );
+      }
+    },
+    style: ElevatedButton.styleFrom(
+      backgroundColor: maincolor1,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      elevation: 2,
+    ),
+    child: Padding(
+      padding: EdgeInsets.symmetric(vertical: 14),
+      child: Text(
+        'Continue to Preview',
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
