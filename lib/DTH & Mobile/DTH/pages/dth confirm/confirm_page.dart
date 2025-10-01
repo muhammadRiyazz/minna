@@ -1,9 +1,17 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:minna/DTH%20&%20Mobile/DTH/application/dth%20proceed/dth_confirm_bloc.dart';
 import 'package:minna/comman/const/const.dart';
+import 'package:minna/comman/core/api.dart';
 import 'package:minna/comman/pages/log%20in/login_page.dart';
 import 'package:minna/comman/application/login/login_bloc.dart';
+import 'package:minna/comman/pages/main%20home/home.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:minna/comman/functions/create_order_id.dart';
+import 'package:http/http.dart' as http;
 
 class DTHAmountEntryPage extends StatefulWidget {
   final String phoneNo;
@@ -23,16 +31,84 @@ class DTHAmountEntryPage extends StatefulWidget {
 
 class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
   final TextEditingController _amountController = TextEditingController();
+  late Razorpay _razorpay;
+  String? _orderId;
+  bool _isPaymentInProgress = false;
+  String? _callbackId;
+  
+  // Track processed states to prevent duplicate handling
+  DthConfirmState? _lastProcessedState;
 
   @override
   void initState() {
     super.initState();
-    // Check login status when the page loads
     context.read<LoginBloc>().add(const LoginEvent.loginInfo());
+    _initRazorpay();
+  }
+
+  @override
+  void dispose() {
+    _razorpay.clear();
+    _amountController.dispose();
+    super.dispose();
+  }
+
+  void _initRazorpay() {
+    _razorpay = Razorpay();
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+  }
+
+  void _handlePaymentSuccess(PaymentSuccessResponse response) async {
+    log("Payment Success - paymentId: ${response.paymentId}");
+    log("Payment Success - orderId: ${response.orderId}");
+
+    setState(() {
+      _isPaymentInProgress = false;
+    });
+
+    context.read<DthConfirmBloc>().add(
+      DthConfirmEvent.proceedWithPayment(
+        phoneNo: widget.phoneNo,
+        operator: widget.operator,
+        amount: _amountController.text.trim(),
+        subcriberNo: widget.subcriberNo,
+        orderId: response.orderId ?? _orderId ?? '',
+        transactionId: response.paymentId ?? '',
+        paymentStatus: 1,
+        callbackId: _callbackId!,
+      ),
+    );
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) async {
+    log("Payment Failed: ${response.message}");
+
+    setState(() {
+      _isPaymentInProgress = false;
+    });
+
+    context.read<DthConfirmBloc>().add(
+      DthConfirmEvent.paymentFailed(
+        orderId: _orderId ?? '',
+        phoneNo: widget.phoneNo,
+        operator: widget.operator,
+        amount: _amountController.text.trim(),
+        subcriberNo: widget.subcriberNo,
+        callbackId: _callbackId ?? '',
+      ),
+    );
+
+    log("Payment Failed");
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    log("External Wallet: ${response.walletName}");
+    log("External wallet selected: ${response.walletName}");
   }
 
   Future<void> _onProceed() async {
-    // First check if amount is valid
     String amount = _amountController.text.trim();
     if (amount.isEmpty ||
         double.tryParse(amount) == null ||
@@ -41,119 +117,132 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
       return;
     }
 
-    // Check login status
     final isLoggedIn = context.read<LoginBloc>().state.isLoggedIn ?? false;
 
     if (!isLoggedIn) {
-      // Show login bottom sheet if not logged in
       await _showLoginBottomSheet();
-
-      // After login attempt, check status again
       final newLoginState = context.read<LoginBloc>().state;
       if (newLoginState.isLoggedIn != true) {
-        return; // User didn't login, don't proceed
+        return;
       }
     }
-    _onPayNowTap();
-    // If logged in, proceed with DTH recharge
-    // context.read<DthConfirmBloc>().add(
-    //   DthConfirmEvent.proceed(
-    //     phoneNo: widget.phoneNo,
-    //     operator: widget.operator,
-    //     amount: amount,
-    //     subcriberNo: widget.subcriberNo,
-    //   ),
-    // );
+
+    // Reset bloc state for new payment
+    context.read<DthConfirmBloc>().add(const DthConfirmEvent.resetStates());
+
+    // First make the callback to temporary storage
+    final callbackResult = await _makeCallbackToTemporaryStorage(amount);
+    if (callbackResult != null) {
+      _callbackId = callbackResult;
+      await _initiatePayment(amount);
+    } else {
+      log("Failed to initialize DTH recharge");
+    }
   }
 
-  void _onPayNowTap() {
-    showModalBottomSheet(
-      context: context,
-      isDismissible: false,
-      isScrollControlled: true,
-      builder: (ctx) {
-        String status = "loading"; // loading, success, failed
-        String message = "Waiting for payment status...";
+  Future<String?> _makeCallbackToTemporaryStorage(String amount) async {
+    log("_makeCallbackToTemporaryStorage ------------------");
+    setState(() {
+      _isPaymentInProgress = true;
+    });
 
-        return StatefulBuilder(
-          builder: (context, setStateBottomSheet) {
-            // Future.delayed(const Duration(milliseconds: 500), () {
-            //   _startRazorpayWithCallbacks(
-            //     amount,
-            //     name,
-            //     phone,
-            //     email,
-            //     onSuccess: (paymentId) {
-            //       setStateBottomSheet(() {
-            //         status = "success";
-            //         message = "Payment Successful\nID: $paymentId";
-            //       });
-            //       Future.delayed(const Duration(seconds: 2), () {
-            //         Navigator.pop(context);
-            //         // _submitBillPayment(paymentId);
-            //       });
-            //     },
-            //     onFailure: () {
-            //       setStateBottomSheet(() {
-            //         status = "failed";
-            //         message = "Payment Failed. Please try again.";
-            //       });
-            //       Future.delayed(const Duration(seconds: 2), () {
-            //         Navigator.pop(context);
-            //       });
-            //     },
-            //   );
-            // });
+    try {
+      final url = Uri.parse('${baseUrl}utility_store');
+      
+      final response = await http.post(
+        url,
+        body: {
+          'mob': widget.phoneNo,
+          'amount': amount,
+          'email_id': 'test@gmail.com',
+          'BillerCategory': 'DTH Recharge',
+        },
+      );
 
-            IconData icon;
-            Color iconColor;
+      log("Callback response status: ${response.statusCode}");
+      log("Callback response body: ${response.body}");
 
-            if (status == "success") {
-              icon = Icons.check_circle_outline;
-              iconColor = maincolor1!;
-            } else if (status == "failed") {
-              icon = Icons.cancel_outlined;
-              iconColor = Colors.red;
-            } else {
-              icon = Icons.hourglass_empty;
-              iconColor = maincolor1!;
-            }
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        
+        if (responseData['status'] == 'SUCCESS' && 
+            responseData['statusCode'] == 0 && 
+            responseData['data'] != null) {
+          
+          final callbackId = responseData['data'].toString();
+          log("Callback successful, received ID: $callbackId");
+          
+          setState(() {
+            _isPaymentInProgress = false;
+          });
+          
+          return callbackId;
+        } else {
+          log("Callback failed with status: ${responseData['status']}");
+          setState(() {
+            _isPaymentInProgress = false;
+          });
+          _showCustomSnackbar("Failed to initialize DTH recharge", isError: true);
+          return null;
+        }
+      } else {
+        log("Callback HTTP error: ${response.statusCode}");
+        setState(() {
+          _isPaymentInProgress = false;
+        });
+        _showCustomSnackbar("Network error occurred", isError: true);
+        return null;
+      }
+    } catch (e) {
+      log("Callback error: $e");
+      setState(() {
+        _isPaymentInProgress = false;
+      });
+      _showCustomSnackbar("Failed to initialize DTH recharge", isError: true);
+      return null;
+    }
+  }
 
-            return Container(
-              padding: const EdgeInsets.all(24),
-              height: 240,
-              width: double.infinity,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(icon, size: 60, color: iconColor),
-                  const SizedBox(height: 20),
-                  Text(
-                    message,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: status == 'failed' ? Colors.red : Colors.black87,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  SizedBox(height: 15),
-                  status == 'loading'
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: LinearProgressIndicator(
-                            color: maincolor1,
-                            minHeight: 2,
-                          ),
-                        )
-                      : SizedBox(),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
+  Future<void> _initiatePayment(String amount) async {
+    setState(() {
+      _isPaymentInProgress = true;
+    });
+
+    try {
+      final orderId = await createOrder(double.parse(amount));
+      if (orderId == null) {
+        setState(() {
+          _isPaymentInProgress = false;
+        });
+        _showCustomSnackbar("Failed to create order", isError: true);
+        return;
+      }
+
+      setState(() {
+        _orderId = orderId;
+      });
+
+      var options = {
+        'key': razorpaykey,
+        'amount': (double.parse(amount) * 100).toString(),
+        'name': 'DTH Recharge',
+        'order_id': orderId,
+        'description': 'DTH Recharge for ${widget.phoneNo}',
+        'prefill': {
+          'contact': widget.phoneNo,
+          'email': 'user@example.com'
+        },
+        'theme': {'color': maincolor1!.value.toRadixString(16)},
+      };
+
+      _razorpay.open(options);
+    } catch (e) {
+      log("Payment initiation error: $e");
+      setState(() {
+        _isPaymentInProgress = false;
+      });
+      _showCustomSnackbar("Payment error occurred", isError: true);
+    }
   }
 
   Future<void> _showLoginBottomSheet() async {
@@ -189,26 +278,693 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
     );
   }
 
+  void _handleRefundLogic(DthConfirmState state) {
+    // Only process if this is a new state
+    if (_lastProcessedState == state) return;
+    _lastProcessedState = state;
+
+    // Handle recharge failure - trigger refund only once
+    if (state.rechargeStatus == "FAILED" && 
+        state.shouldRefund == true && 
+        !state.hasRefundBeenAttempted &&
+        state.hasRechargeFailedHandled == true) {
+      
+      log("Triggering refund due to DTH recharge failure");
+      
+      context.read<DthConfirmBloc>().add(
+        DthConfirmEvent.initiateRefund(
+          orderId: state.orderId ?? '',
+          transactionId: state.transactionId ?? '',
+          amount: state.amount ?? '0',
+          phoneNo: widget.phoneNo,
+          callbackId: _callbackId ?? "",
+        ),
+      );
+    }
+
+    // Handle payment save failure - trigger refund only once
+    if (state.paymentSavedStatus == "PAYMENT_SAVED_FAILED" && 
+        state.shouldRefund == true && 
+        !state.hasRefundBeenAttempted &&
+        state.hasPaymentSaveFailedHandled == true) {
+      
+      log("Triggering refund due to payment save failure");
+      
+      context.read<DthConfirmBloc>().add(
+        DthConfirmEvent.initiateRefund(
+          orderId: state.orderId ?? '',
+          transactionId: state.transactionId ?? '',
+          amount: state.amount ?? '0',
+          phoneNo: widget.phoneNo,
+          callbackId: _callbackId ?? '',
+        ),
+      );
+    }
+  }
+
+  void _showSuccessBottomSheet({
+    required String amount,
+    required String phoneNo,
+    required String operator,
+  }) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      isDismissible: false,
+      enableDrag: false,
+      builder: (context) => WillPopScope(
+        onWillPop: () async => false,
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: Colors.green.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.check_circle,
+                    color: Colors.green,
+                    size: 50,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'DTH Recharge Successful!',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
+                ),
+                const SizedBox(height: 15),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[50],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    children: [
+                      _buildDetailRow('Amount', '₹$amount'),
+                      _buildDetailRow('Phone Number', phoneNo),
+                      _buildDetailRow('Subscriber ID', widget.subcriberNo),
+                      _buildDetailRow('Operator', operator),
+                      _buildDetailRow('Status', 'Successfully Recharged'),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'Your DTH recharge has been processed successfully.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                  ),
+                ),
+                const SizedBox(height: 25),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomePage()),
+                        (route) => false,
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Done',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showRefundInitiatedBottomSheet({
+    required String amount,
+    required String phoneNo,
+  }) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      isDismissible: false,
+      enableDrag: false,
+      builder: (context) => WillPopScope(
+        onWillPop: () async => false,
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.autorenew,
+                    color: Colors.orange,
+                    size: 50,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'Refund Initiated',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orange,
+                  ),
+                ),
+                const SizedBox(height: 15),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[50],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    children: [
+                      _buildDetailRow('Amount', '₹$amount'),
+                      _buildDetailRow('Phone Number', phoneNo),
+                      _buildDetailRow('Subscriber ID', widget.subcriberNo),
+                      _buildDetailRow('Status', 'Refund Initiated'),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'Sorry, your DTH recharge could not be processed. Refund has been initiated and amount will be credited to your account shortly.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                  ),
+                ),
+                const SizedBox(height: 25),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomePage()),
+                        (route) => false,
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Ok',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showRefundFailedBottomSheet({
+    required String amount,
+    required String phoneNo,
+  }) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      isDismissible: false,
+      enableDrag: false,
+      builder: (context) => WillPopScope(
+        onWillPop: () async => false,
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: Colors.red.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.error_outline,
+                    color: Colors.red,
+                    size: 50,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'Refund Failed',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                  ),
+                ),
+                const SizedBox(height: 15),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[50],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    children: [
+                      _buildDetailRow('Amount', '₹$amount'),
+                      _buildDetailRow('Phone Number', phoneNo),
+                      _buildDetailRow('Subscriber ID', widget.subcriberNo),
+                      _buildDetailRow('Status', 'Refund Failed'),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.red.withOpacity(0.2)),
+                  ),
+                  child: const Column(
+                    children: [
+                      Text(
+                        'Important:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Sorry, your DTH recharge failed and we were unable to process the refund automatically. If the amount was debited from your account, please contact our support team for assistance.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomePage()),
+                        (route) => false,
+                      );
+                    },
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      side: const BorderSide(color: Colors.red),
+                    ),
+                    child: const Text(
+                      'Close',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // void _showFailureBottomSheet({
+  //   required String amount,
+  //   required String phoneNo,
+  //   required String operator,
+  // }) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     isDismissible: false,
+  //     enableDrag: false,
+  //     builder: (context) => WillPopScope(
+  //       onWillPop: () async => false,
+  //       child: Container(
+  //         decoration: const BoxDecoration(
+  //           color: Colors.white,
+  //           borderRadius: BorderRadius.only(
+  //             topLeft: Radius.circular(20),
+  //             topRight: Radius.circular(20),
+  //           ),
+  //         ),
+  //         child: Padding(
+  //           padding: const EdgeInsets.all(20.0),
+  //           child: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             children: [
+  //               Container(
+  //                 width: 80,
+  //                 height: 80,
+  //                 decoration: BoxDecoration(
+  //                   color: Colors.red.withOpacity(0.1),
+  //                   shape: BoxShape.circle,
+  //                 ),
+  //                 child: const Icon(
+  //                   Icons.cancel_outlined,
+  //                   color: Colors.red,
+  //                   size: 50,
+  //                 ),
+  //               ),
+  //               const SizedBox(height: 20),
+  //               const Text(
+  //                 'DTH Recharge Failed',
+  //                 style: TextStyle(
+  //                   fontSize: 22,
+  //                   fontWeight: FontWeight.bold,
+  //                   color: Colors.red,
+  //                 ),
+  //               ),
+  //               const SizedBox(height: 15),
+  //               Container(
+  //                 padding: const EdgeInsets.all(16),
+  //                 decoration: BoxDecoration(
+  //                   color: Colors.grey[50],
+  //                   borderRadius: BorderRadius.circular(12),
+  //                 ),
+  //                 child: Column(
+  //                   children: [
+  //                     _buildDetailRow('Amount', '₹$amount'),
+  //                     _buildDetailRow('Phone Number', phoneNo),
+  //                     _buildDetailRow('Subscriber ID', widget.subcriberNo),
+  //                     _buildDetailRow('Operator', operator),
+  //                     _buildDetailRow('Status', 'Failed'),
+  //                   ],
+  //                 ),
+  //               ),
+  //               const SizedBox(height: 20),
+  //               const Text(
+  //                 'We encountered an issue while processing your DTH recharge. Please try again later.',
+  //                 textAlign: TextAlign.center,
+  //                 style: TextStyle(
+  //                   fontSize: 14,
+  //                   color: Colors.grey,
+  //                 ),
+  //               ),
+  //               const SizedBox(height: 25),
+  //               SizedBox(
+  //                 width: double.infinity,
+  //                 child: ElevatedButton(
+  //                   onPressed: () {
+  //                     Navigator.pop(context);
+  //                   },
+  //                   style: ElevatedButton.styleFrom(
+  //                     backgroundColor: Colors.red,
+  //                     padding: const EdgeInsets.symmetric(vertical: 15),
+  //                     shape: RoundedRectangleBorder(
+  //                       borderRadius: BorderRadius.circular(12),
+  //                     ),
+  //                   ),
+  //                   child: const Text(
+  //                     'Try Again',
+  //                     style: TextStyle(
+  //                       color: Colors.white,
+  //                       fontWeight: FontWeight.bold,
+  //                       fontSize: 16,
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
+void _showUserInputErrorBottomSheet({
+  required String amount,
+  required String phoneNo,
+  required String operator,
+  required String errorMessage,
+}) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    isDismissible: false,
+    enableDrag: false,
+    builder: (context) => WillPopScope(
+      onWillPop: () async => false,
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: Colors.orange.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.warning_amber_rounded,
+                  color: Colors.orange,
+                  size: 50,
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Invalid Input',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.orange,
+                ),
+              ),
+              const SizedBox(height: 15),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  children: [
+                    _buildDetailRow('Amount', '₹$amount'),
+                    _buildDetailRow('Phone Number', phoneNo),
+                    _buildDetailRow('Subscriber ID', widget.subcriberNo),
+                    _buildDetailRow('Operator', operator),
+                    _buildDetailRow('Error', errorMessage),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Please check your subscriber ID and try again. No amount was deducted.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 25),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Just close the bottom sheet
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'Try Again',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+  Widget _buildDetailRow(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 14,
+              color: Colors.grey,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 14,
+              color: Colors.black87,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocListener(
       listeners: [
-        BlocListener<DthConfirmBloc, DthConfirmState>(
-          listener: (context, state) {
-            if (!state.isLoading && state.dthrechargeStatus != null) {
-              if (state.dthrechargeStatus == "SUCCESS") {
-                _showCustomSnackbar("Recharge Successful ✅");
-              } else {
-                _showCustomSnackbar("Recharge Failed ❌", isError: true);
-              }
-            }
-          },
-        ),
-        BlocListener<LoginBloc, LoginState>(
-          listener: (context, state) {
-            // You can add login state changes handling here if needed
-          },
-        ),
+      BlocListener<DthConfirmBloc, DthConfirmState>(
+  listener: (context, state) {
+    if (!state.isLoading) {
+      _handleRefundLogic(state);
+      
+      // Show success bottom sheet
+      if (state.rechargeStatus == "SUCCESS") {
+        log("DTH Recharge Successful ✅");
+        _showSuccessBottomSheet(
+          amount: state.amount ?? '',
+          phoneNo: widget.phoneNo,
+          operator: widget.operator,
+        );
+      } 
+      // Show recharge failed - check if refund is needed
+      else if (state.rechargeStatus == "FAILED") {
+        if (state.shouldRefund == true) {
+          log("DTH Recharge Failed - Refund will be initiated ❌");
+          // Don't show anything here, wait for refund status
+        } else {
+          log("DTH Recharge Failed - User input error ❌");
+          _showUserInputErrorBottomSheet(
+            amount: state.amount ?? '',
+            phoneNo: widget.phoneNo,
+            operator: widget.operator,
+            errorMessage: state.errorMessage ?? 'Invalid input',
+          );
+        }
+      }
+
+      // Show refund initiated success
+      if (state.refundStatus == "REFUND_INITIATED") {
+        log("Refund initiated successfully");
+        _showRefundInitiatedBottomSheet(
+          amount: state.amount ?? '',
+          phoneNo: widget.phoneNo,
+        );
+      } 
+      // Show refund failed
+      else if (state.refundStatus == "REFUND_FAILED") {
+        log("Refund failed");
+        _showRefundFailedBottomSheet(
+          amount: state.amount ?? '',
+          phoneNo: widget.phoneNo,
+        );
+      }
+
+      // Show payment save failed
+      if (state.paymentSavedStatus == "PAYMENT_SAVED_FAILED") {
+        log("Failed to save payment");
+        // This will automatically trigger refund
+      }
+    }
+  },
+),
       ],
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -217,7 +973,7 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
           elevation: 0,
           iconTheme: const IconThemeData(color: Colors.white),
           title: const Text(
-            'Enter Amount',
+            'Enter DTH Recharge Amount',
             style: TextStyle(
               fontSize: 15,
               color: Colors.white,
@@ -233,7 +989,7 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
               Column(
                 children: [
                   const Text(
-                    "Recharge Amount",
+                    "DTH Recharge Amount",
                     style: TextStyle(
                       fontSize: 15,
                       color: Colors.black87,
@@ -291,26 +1047,31 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
                 padding: const EdgeInsets.all(16.0),
                 child: SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: context.watch<DthConfirmBloc>().state.isLoading
-                        ? null
-                        : _onProceed,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: context.watch<DthConfirmBloc>().state.isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text(
-                            'Proceed',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                  child: BlocBuilder<DthConfirmBloc, DthConfirmState>(
+                    builder: (context, state) {
+                      return ElevatedButton(
+                        onPressed: (state.isLoading || _isPaymentInProgress) ? null : _onProceed,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.deepPurple,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
+                        ),
+                        child: (state.isLoading || _isPaymentInProgress)
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 3,
+                              )
+                            : const Text(
+                                'Proceed',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                      );
+                    },
                   ),
                 ),
               ),

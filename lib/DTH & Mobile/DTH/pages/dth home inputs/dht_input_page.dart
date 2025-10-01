@@ -84,22 +84,28 @@ class _DTHInputPageState extends State<DTHInputPage> {
                         style: TextStyle(fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(height: 8),
-                      TextFormField(
-                        controller: consumerIdController,
-                        keyboardType: TextInputType.text,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your consumer ID';
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                          hintText: 'e.g., 1234567890',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                      ),
+                     TextFormField(
+  controller: consumerIdController,
+  keyboardType: TextInputType.number,
+  validator: (value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your subscriber ID';
+    } else if (!value.startsWith('0')) {
+      return 'Subscriber ID should start with 0';
+    } else if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+      return 'Subscriber ID should contain only numbers';
+    } else if (value.length < 10) {
+      return 'Subscriber ID should be at least 10 digits';
+    }
+    return null;
+  },
+  decoration: InputDecoration(
+    hintText: 'e.g., 01234567890',
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+  ),
+),
                       const SizedBox(height: 16),
                       const Text(
                         'Select Operator',
