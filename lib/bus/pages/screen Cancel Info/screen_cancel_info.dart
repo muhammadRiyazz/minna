@@ -93,7 +93,7 @@ class _ScreenCancelInfoState extends State<ScreenCancelInfo> {
           children: [
             Text(
               'Cancellation Status',
-              style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
+              style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -110,7 +110,7 @@ class _ScreenCancelInfoState extends State<ScreenCancelInfo> {
                     widget.cancelData.cancellable == 'true'
                         ? Icons.check_circle
                         : Icons.cancel,
-                    size: 16,
+                    size: 14,
                     color: widget.cancelData.cancellable == 'true'
                         ? Colors.green
                         : Colors.red,
@@ -121,7 +121,7 @@ class _ScreenCancelInfoState extends State<ScreenCancelInfo> {
                         ? 'CANCELLABLE'
                         : 'NOT CANCELLABLE',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 10,
                       fontWeight: FontWeight.w600,
                       color: widget.cancelData.cancellable == 'true'
                           ? Colors.green

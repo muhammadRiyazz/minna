@@ -29,18 +29,44 @@ class FetchBillBloc extends Bloc<FetchBillEvent, FetchBillState> {
     final url = Uri.parse('${baseUrl}fetch-kseb-bill');
 
     try {
-      final response = await http.post(
-        url,
-        body: {
-          'userId': userId,
-          'txtMobile': event.phoneNo,
-          'txtConsumer': event.consumerId,
-          'billerId': event.providerID,
-        },
-      );
-      log(response.body);
-      
-      final responseData = json.decode(response.body);
+      // final response = await http.post(
+      //   url,
+      //   body: {
+      //     'userId': userId,
+      //     'txtMobile': event.phoneNo,
+      //     'txtConsumer': event.consumerId,
+      //     'billerId': event.providerID,
+      //   },
+      // );
+      // log(response.body);
+       final testdata = '''
+      {
+        "status": "SUCCESS",
+        "statusCode": 0,
+        "statusDesc": "Bill successfully fetched.",
+        "data": {
+          "data": {
+            "responseCode": "000",
+            "inputParams": {
+              "input": {
+                "paramName": "Consumer Number",
+                "paramValue": "1157443002603"
+              }
+            },
+            "billerResponse": {
+              "billAmount": "170100",
+              "billDate": "2025-07-02",
+              "billNumber": "5744250700277",
+              "billPeriod": "NA",
+              "customerName": "RAKHIYANATH FRAKRUDEEN",
+              "dueDate": "2025-07-12"
+            }
+          },
+          "reqId": "26EXAAZDDGXX3WLAWITCTV609FT9WNPYALE"
+        }
+      }''';
+
+      final responseData = json.decode(testdata);
 
       if (responseData['status'] == 'SUCCESS') {
         final data = responseData['data']['data'];
@@ -195,12 +221,12 @@ class FetchBillBloc extends Bloc<FetchBillEvent, FetchBillState> {
       phoneNo = event.phoneNo;
       consumerId = event.consumerId;
       providerID = event.providerID;
-      providerName = 'Electricity';
+      providerName = event.providerName;
     } else if (event is FetchWaterBill) {
       phoneNo = event.phoneNo;
       consumerId = event.consumerId;
       providerID = event.providerID;
-      providerName = 'Water';
+      providerName = event.providerName;
     } else {
       return {
         'success': false,

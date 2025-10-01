@@ -1133,7 +1133,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1656,7 +1656,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(10),
         child: Column(children: children),
       ),
     );
@@ -1738,12 +1738,12 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
             Text(
               value,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 12,
                 color: textColor,
                 fontWeight: FontWeight.w500,
               ),
             ),
-            Icon(icon, color: primaryColor),
+            Icon(icon, color: primaryColor,size: 15,),
           ],
         ),
       ),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/application/report/report_transaction_bloc.dart';
 import 'package:minna/comman/application/login/login_bloc.dart';
 import 'package:minna/comman/const/const.dart';
+import 'package:minna/comman/pages/histoy/dth_mob.dart';
 import 'package:minna/comman/pages/log%20in/login_page.dart';
 
 class HistoryPage extends StatefulWidget {
@@ -13,10 +15,26 @@ class HistoryPage extends StatefulWidget {
 
 class _HistoryPageState extends State<HistoryPage> {
   final List<Map<String, dynamic>> services = [
-    {'name': 'Mobile', 'icon': Icons.phone_android},
-    {'name': 'DTH', 'icon': Icons.live_tv},
-    {'name': 'Electricity', 'icon': Icons.bolt},
-    {'name': 'Water', 'icon': Icons.water_drop},
+    {
+      'name': 'Mobile', 
+      'icon': Icons.phone_android,
+      'page': const MobileReportPage(),
+    },
+    {
+      'name': 'DTH', 
+      'icon': Icons.live_tv,
+      'page': const DTHReportPage(),
+    },
+    {
+      'name': 'Electricity', 
+      'icon': Icons.bolt,
+      'page': Container(), // Add your electricity page later
+    },
+    {
+      'name': 'Water', 
+      'icon': Icons.water_drop,
+      'page': Container(), // Add your water page later
+    },
   ];
 
   int selectedIndex = 0;
@@ -24,7 +42,6 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   void initState() {
     super.initState();
-    // Load login info from bloc
     context.read<LoginBloc>().add(const LoginEvent.loginInfo());
   }
 
@@ -33,7 +50,7 @@ class _HistoryPageState extends State<HistoryPage> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Transaction History',
           style: TextStyle(
             color: Colors.white,
@@ -44,12 +61,12 @@ class _HistoryPageState extends State<HistoryPage> {
         centerTitle: true,
         backgroundColor: maincolor1,
         elevation: 0,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh, color: Colors.white),
+            icon: const Icon(Icons.refresh, color: Colors.white),
             onPressed: () {
               setState(() {});
             },
@@ -66,12 +83,9 @@ class _HistoryPageState extends State<HistoryPage> {
 
           return Column(
             children: [
-              // Service Type Selector with enhanced design
               _buildServiceSelector(),
-              
-              // Transactions List
               Expanded(
-                child: _buildTransactionsList(),
+                child: services[selectedIndex]['page'],
               ),
             ],
           );
@@ -82,16 +96,16 @@ class _HistoryPageState extends State<HistoryPage> {
 
   Widget _buildServiceSelector() {
     return Container(
-      margin: EdgeInsets.all(16),
-      padding: EdgeInsets.all(8),
+      margin: const EdgeInsets.only(top: 10,right: 12,left: 12,bottom: 5),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black12,
+            color: const Color.fromARGB(31, 207, 206, 206),
             blurRadius: 8,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -108,8 +122,8 @@ class _HistoryPageState extends State<HistoryPage> {
                 });
               },
               child: Container(
-                margin: EdgeInsets.symmetric(horizontal: 4),
-                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                 decoration: BoxDecoration(
                   color: isSelected ? maincolor1 : Colors.transparent,
                   borderRadius: BorderRadius.circular(12),
@@ -123,7 +137,7 @@ class _HistoryPageState extends State<HistoryPage> {
                       color: isSelected ? Colors.white : maincolor1,
                       size: 20,
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
                       service['name'],
                       style: TextStyle(
@@ -143,121 +157,10 @@ class _HistoryPageState extends State<HistoryPage> {
     );
   }
 
-  Widget _buildTransactionsList() {
-    return Column(
-      children: [
-        Padding(
-          padding: EdgeInsets.fromLTRB(16, 20, 16, 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Recent Transactions',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey[800],
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: maincolor1!.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  'View All',
-                  style: TextStyle(
-                    color: maincolor1,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        Expanded(
-          child: _buildEmptyState(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildEmptyState() {
-    final service = services[selectedIndex];
-    
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                color: maincolor1!.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                service['icon'],
-                size: 50,
-                color: maincolor1,
-              ),
-            ),
-            SizedBox(height: 24),
-            Text(
-              'No ${service['name']} Transactions',
-              style: TextStyle(
-                fontSize: 20,
-                color: Colors.grey[700],
-                fontWeight: FontWeight.w600,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Your ${service['name'].toLowerCase()} transactions will appear here\nStart by making your first payment',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[500],
-                height: 1.4,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () {
-                // Navigate to payment page
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: maincolor1,
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 2,
-              ),
-              child: Text(
-                'Make Payment',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildNotLoggedInSection() {
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(24),
+        padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -274,8 +177,8 @@ class _HistoryPageState extends State<HistoryPage> {
                 color: maincolor1,
               ),
             ),
-            SizedBox(height: 24),
-            Text(
+            const SizedBox(height: 24),
+             Text(
               "Login to View History",
               style: TextStyle(
                 fontSize: 20,
@@ -283,8 +186,8 @@ class _HistoryPageState extends State<HistoryPage> {
                 color: Colors.grey[800],
               ),
             ),
-            SizedBox(height: 12),
-            Text(
+            const SizedBox(height: 12),
+             Text(
               "Please log in to view your transaction history\nand manage your data",
               style: TextStyle(
                 fontSize: 14,
@@ -293,7 +196,7 @@ class _HistoryPageState extends State<HistoryPage> {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 32),
+            const SizedBox(height: 32),
             ElevatedButton(
               onPressed: () {
                 showModalBottomSheet(
@@ -306,13 +209,13 @@ class _HistoryPageState extends State<HistoryPage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: maincolor1,
                 foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 elevation: 2,
               ),
-              child: Text(
+              child: const Text(
                 "Login Now",
                 style: TextStyle(
                   fontSize: 16,
@@ -320,9 +223,40 @@ class _HistoryPageState extends State<HistoryPage> {
                 ),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class MobileReportPage extends StatelessWidget {
+  const MobileReportPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => TransactionReportBloc(),
+      child: const BaseTransactionReportPage(
+        title: 'Mobile Recharge History',
+        billerType: 'Mobile Recharge',
+      ),
+    );
+  }
+}
+
+
+class DTHReportPage extends StatelessWidget {
+  const DTHReportPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => TransactionReportBloc(),
+      child: const BaseTransactionReportPage(
+        title: 'DTH Recharge History',
+        billerType: 'DTH Recharge',
       ),
     );
   }

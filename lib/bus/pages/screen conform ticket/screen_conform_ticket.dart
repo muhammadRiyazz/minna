@@ -364,9 +364,9 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
       // Success - cancel timer
       _timer?.cancel();
 
-      if (mounted) {
-        _showSuccessDialog();
-      }
+      // if (mounted) {
+      //   // _showSuccessDialog();
+      // }
 
     } catch (e) {
       log("Booking processing error: $e");
@@ -438,28 +438,28 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
     }
   }
 
-  void _showSuccessDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        title: const Row(
-          children: [
-            Icon(Icons.check_circle, color: Colors.green),
-            SizedBox(width: 8),
-            Text("Booking Successful!"),
-          ],
-        ),
-        content: const Text("Your bus tickets have been booked successfully."),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("OK"),
-          ),
-        ],
-      ),
-    );
-  }
+  // void _showSuccessDialog() {
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder: (context) => AlertDialog(
+  //       title: const Row(
+  //         children: [
+  //           Icon(Icons.check_circle, color: Colors.green),
+  //           SizedBox(width: 8),
+  //           Text("Booking Successful!"),
+  //         ],
+  //       ),
+  //       content: const Text("Your bus tickets have been booked successfully."),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Navigator.pop(context),
+  //           child: const Text("OK"),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   void _showErrorDialog(String message, {String? errorDetails}) {
     showDialog(

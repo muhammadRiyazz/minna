@@ -1,7 +1,9 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:minna/Electyicity%20&%20Water/application/fetch%20bill/fetch_bill_bloc.dart';
 import 'package:minna/Electyicity%20&%20Water/application/providers/providers_bloc.dart';
+import 'package:minna/Electyicity%20&%20Water/water%20bill/water%20bill%20info%20/bill%20confirm%20page.dart';
 import 'package:minna/comman/const/const.dart';
 
 class WaterBillInputPage extends StatefulWidget {
@@ -217,18 +219,31 @@ class _WaterBillInputPageState extends State<WaterBillInputPage> {
                       ),
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
+                          final providerId = selectedProvider?.id ?? '';
+                          final phone = mobileNumberController.text.trim();
+                          final consumer = customerIdController.text.trim();
+final providerName=selectedProvider?.name ?? '';
+                          /// Dispatch event to fetch bill
+                          context.read<FetchBillBloc>().add(
+                            FetchBillEvent.fetchWaterBill(
+providerName:providerName ,
+                              providerID: providerId,
+                              phoneNo: phone,
+                              consumerId: consumer,
+                            ),
+                          );
 
-
-
-
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (_) => WaterBillDetailsPage(
-                          //       provider: selectedProvider!.name,
-                          //     ),
-                          //   ),
-                          // );
+                          /// Navigate to Bill Details Page
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>  WaterBillDetailsPage(
+                                phoneNo: phone,
+                                providerID: providerId,
+                                consumerId:consumer ,
+                                provider: selectedProvider!.name,),
+                            ),
+                          );
                         }
                       },
                       child: const Text(
