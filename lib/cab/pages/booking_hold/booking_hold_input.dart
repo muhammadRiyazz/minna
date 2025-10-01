@@ -324,25 +324,25 @@ class _BookingPageState extends State<BookingPage> {
                                 ),
                               ),
                               const SizedBox(height: 6),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.event_seat,
-                                    size: 15,
-                                    color: maincolor1,
-                                  ),
-                                  SizedBox(width: 4),
-                                  Text("${cab.cab.seatingCapacity} seats",style: TextStyle(fontSize: 13)),
-                                  SizedBox(width: 12),
-                                  Icon(
-                                    Icons.work,
-                                    size: 15,
-                                    color: Colors.orange,
-                                  ),
-                                  SizedBox(width: 4),
-                                  Text("${cab.cab.bagCapacity} bags",style: TextStyle(fontSize: 13)),
-                                ],
-                              ),
+                              // Row(
+                              //   children: [
+                              //     Icon(
+                              //       Icons.event_seat,
+                              //       size: 15,
+                              //       color: maincolor1,
+                              //     ),
+                              //     SizedBox(width: 4),
+                              //     Text("${cab.cab.seatingCapacity} seats",style: TextStyle(fontSize: 13)),
+                              //     SizedBox(width: 12),
+                              //     Icon(
+                              //       Icons.work,
+                              //       size: 15,
+                              //       color: Colors.orange,
+                              //     ),
+                              //     SizedBox(width: 4),
+                              //     Text("${cab.cab.bagCapacity} bags",style: TextStyle(fontSize: 13)),
+                              //   ],
+                              // ),
                             ],
                           ),
                         ),
