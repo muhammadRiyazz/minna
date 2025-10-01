@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:minna/comman/core/api.dart';
-import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 

@@ -11,12 +11,20 @@ class RechargeProceedState with _$RechargeProceedState {
     String? transactionId,
     String? amount,
     bool? shouldRefund,
+    @Default(false) bool isRefundInProgress,
+    @Default(false) bool hasRefundBeenAttempted,
+    @Default(false) bool hasRechargeFailedHandled,
+    @Default(false) bool hasPaymentSaveFailedHandled,
   }) = _RechargeProceedState;
 
   factory RechargeProceedState.initial() {
     return const RechargeProceedState(
       isLoading: false,
       shouldRefund: false,
+      isRefundInProgress: false,
+      hasRefundBeenAttempted: false,
+      hasRechargeFailedHandled: false,
+      hasPaymentSaveFailedHandled: false,
     );
   }
 }

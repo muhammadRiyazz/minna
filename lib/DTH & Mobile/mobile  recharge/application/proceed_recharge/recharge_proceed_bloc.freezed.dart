@@ -17,12 +17,8 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$RechargeProceedEvent {
-  String get phoneNo => throw _privateConstructorUsedError;
-  String get amount => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String phoneNo, String operator, String amount)
-    proceed,
     required TResult Function(
       String phoneNo,
       String operator,
@@ -30,7 +26,7 @@ mixin _$RechargeProceedEvent {
       String orderId,
       String transactionId,
       int paymentStatus,
-      String? callbackId,
+      String callbackId,
     )
     proceedWithPayment,
     required TResult Function(
@@ -38,7 +34,7 @@ mixin _$RechargeProceedEvent {
       String phoneNo,
       String operator,
       String amount,
-      String? callbackId,
+      String callbackId,
     )
     paymentFailed,
     required TResult Function(
@@ -46,13 +42,14 @@ mixin _$RechargeProceedEvent {
       String transactionId,
       String amount,
       String phoneNo,
-      String? callbackId,
+      String callbackId,
     )
     initiateRefund,
+    required TResult Function() resetStates,
+    required TResult Function() markRefundAttempted,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String phoneNo, String operator, String amount)? proceed,
     TResult? Function(
       String phoneNo,
       String operator,
@@ -60,7 +57,7 @@ mixin _$RechargeProceedEvent {
       String orderId,
       String transactionId,
       int paymentStatus,
-      String? callbackId,
+      String callbackId,
     )?
     proceedWithPayment,
     TResult? Function(
@@ -68,7 +65,7 @@ mixin _$RechargeProceedEvent {
       String phoneNo,
       String operator,
       String amount,
-      String? callbackId,
+      String callbackId,
     )?
     paymentFailed,
     TResult? Function(
@@ -76,13 +73,14 @@ mixin _$RechargeProceedEvent {
       String transactionId,
       String amount,
       String phoneNo,
-      String? callbackId,
+      String callbackId,
     )?
     initiateRefund,
+    TResult? Function()? resetStates,
+    TResult? Function()? markRefundAttempted,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String phoneNo, String operator, String amount)? proceed,
     TResult Function(
       String phoneNo,
       String operator,
@@ -90,7 +88,7 @@ mixin _$RechargeProceedEvent {
       String orderId,
       String transactionId,
       int paymentStatus,
-      String? callbackId,
+      String callbackId,
     )?
     proceedWithPayment,
     TResult Function(
@@ -98,7 +96,7 @@ mixin _$RechargeProceedEvent {
       String phoneNo,
       String operator,
       String amount,
-      String? callbackId,
+      String callbackId,
     )?
     paymentFailed,
     TResult Function(
@@ -106,39 +104,38 @@ mixin _$RechargeProceedEvent {
       String transactionId,
       String amount,
       String phoneNo,
-      String? callbackId,
+      String callbackId,
     )?
     initiateRefund,
+    TResult Function()? resetStates,
+    TResult Function()? markRefundAttempted,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(Proceed value) proceed,
     required TResult Function(ProceedWithPayment value) proceedWithPayment,
     required TResult Function(PaymentFailed value) paymentFailed,
     required TResult Function(InitiateRefund value) initiateRefund,
+    required TResult Function(ResetStates value) resetStates,
+    required TResult Function(MarkRefundAttempted value) markRefundAttempted,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(Proceed value)? proceed,
     TResult? Function(ProceedWithPayment value)? proceedWithPayment,
     TResult? Function(PaymentFailed value)? paymentFailed,
     TResult? Function(InitiateRefund value)? initiateRefund,
+    TResult? Function(ResetStates value)? resetStates,
+    TResult? Function(MarkRefundAttempted value)? markRefundAttempted,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(Proceed value)? proceed,
     TResult Function(ProceedWithPayment value)? proceedWithPayment,
     TResult Function(PaymentFailed value)? paymentFailed,
     TResult Function(InitiateRefund value)? initiateRefund,
+    TResult Function(ResetStates value)? resetStates,
+    TResult Function(MarkRefundAttempted value)? markRefundAttempted,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
-
-  /// Create a copy of RechargeProceedEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $RechargeProceedEventCopyWith<RechargeProceedEvent> get copyWith =>
-      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -147,8 +144,6 @@ abstract class $RechargeProceedEventCopyWith<$Res> {
     RechargeProceedEvent value,
     $Res Function(RechargeProceedEvent) then,
   ) = _$RechargeProceedEventCopyWithImpl<$Res, RechargeProceedEvent>;
-  @useResult
-  $Res call({String phoneNo, String amount});
 }
 
 /// @nodoc
@@ -166,291 +161,14 @@ class _$RechargeProceedEventCopyWithImpl<
 
   /// Create a copy of RechargeProceedEvent
   /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? phoneNo = null, Object? amount = null}) {
-    return _then(
-      _value.copyWith(
-            phoneNo: null == phoneNo
-                ? _value.phoneNo
-                : phoneNo // ignore: cast_nullable_to_non_nullable
-                      as String,
-            amount: null == amount
-                ? _value.amount
-                : amount // ignore: cast_nullable_to_non_nullable
-                      as String,
-          )
-          as $Val,
-    );
-  }
 }
 
 /// @nodoc
-abstract class _$$ProceedImplCopyWith<$Res>
-    implements $RechargeProceedEventCopyWith<$Res> {
-  factory _$$ProceedImplCopyWith(
-    _$ProceedImpl value,
-    $Res Function(_$ProceedImpl) then,
-  ) = __$$ProceedImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String phoneNo, String operator, String amount});
-}
-
-/// @nodoc
-class __$$ProceedImplCopyWithImpl<$Res>
-    extends _$RechargeProceedEventCopyWithImpl<$Res, _$ProceedImpl>
-    implements _$$ProceedImplCopyWith<$Res> {
-  __$$ProceedImplCopyWithImpl(
-    _$ProceedImpl _value,
-    $Res Function(_$ProceedImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of RechargeProceedEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? phoneNo = null,
-    Object? operator = null,
-    Object? amount = null,
-  }) {
-    return _then(
-      _$ProceedImpl(
-        phoneNo: null == phoneNo
-            ? _value.phoneNo
-            : phoneNo // ignore: cast_nullable_to_non_nullable
-                  as String,
-        operator: null == operator
-            ? _value.operator
-            : operator // ignore: cast_nullable_to_non_nullable
-                  as String,
-        amount: null == amount
-            ? _value.amount
-            : amount // ignore: cast_nullable_to_non_nullable
-                  as String,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-
-class _$ProceedImpl implements Proceed {
-  const _$ProceedImpl({
-    required this.phoneNo,
-    required this.operator,
-    required this.amount,
-  });
-
-  @override
-  final String phoneNo;
-  @override
-  final String operator;
-  @override
-  final String amount;
-
-  @override
-  String toString() {
-    return 'RechargeProceedEvent.proceed(phoneNo: $phoneNo, operator: $operator, amount: $amount)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$ProceedImpl &&
-            (identical(other.phoneNo, phoneNo) || other.phoneNo == phoneNo) &&
-            (identical(other.operator, operator) ||
-                other.operator == operator) &&
-            (identical(other.amount, amount) || other.amount == amount));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, phoneNo, operator, amount);
-
-  /// Create a copy of RechargeProceedEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$ProceedImplCopyWith<_$ProceedImpl> get copyWith =>
-      __$$ProceedImplCopyWithImpl<_$ProceedImpl>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(String phoneNo, String operator, String amount)
-    proceed,
-    required TResult Function(
-      String phoneNo,
-      String operator,
-      String amount,
-      String orderId,
-      String transactionId,
-      int paymentStatus,
-      String? callbackId,
-    )
-    proceedWithPayment,
-    required TResult Function(
-      String orderId,
-      String phoneNo,
-      String operator,
-      String amount,
-      String? callbackId,
-    )
-    paymentFailed,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      String amount,
-      String phoneNo,
-      String? callbackId,
-    )
-    initiateRefund,
-  }) {
-    return proceed(phoneNo, operator, amount);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String phoneNo, String operator, String amount)? proceed,
-    TResult? Function(
-      String phoneNo,
-      String operator,
-      String amount,
-      String orderId,
-      String transactionId,
-      int paymentStatus,
-      String? callbackId,
-    )?
-    proceedWithPayment,
-    TResult? Function(
-      String orderId,
-      String phoneNo,
-      String operator,
-      String amount,
-      String? callbackId,
-    )?
-    paymentFailed,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      String amount,
-      String phoneNo,
-      String? callbackId,
-    )?
-    initiateRefund,
-  }) {
-    return proceed?.call(phoneNo, operator, amount);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String phoneNo, String operator, String amount)? proceed,
-    TResult Function(
-      String phoneNo,
-      String operator,
-      String amount,
-      String orderId,
-      String transactionId,
-      int paymentStatus,
-      String? callbackId,
-    )?
-    proceedWithPayment,
-    TResult Function(
-      String orderId,
-      String phoneNo,
-      String operator,
-      String amount,
-      String? callbackId,
-    )?
-    paymentFailed,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      String amount,
-      String phoneNo,
-      String? callbackId,
-    )?
-    initiateRefund,
-    required TResult orElse(),
-  }) {
-    if (proceed != null) {
-      return proceed(phoneNo, operator, amount);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(Proceed value) proceed,
-    required TResult Function(ProceedWithPayment value) proceedWithPayment,
-    required TResult Function(PaymentFailed value) paymentFailed,
-    required TResult Function(InitiateRefund value) initiateRefund,
-  }) {
-    return proceed(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(Proceed value)? proceed,
-    TResult? Function(ProceedWithPayment value)? proceedWithPayment,
-    TResult? Function(PaymentFailed value)? paymentFailed,
-    TResult? Function(InitiateRefund value)? initiateRefund,
-  }) {
-    return proceed?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(Proceed value)? proceed,
-    TResult Function(ProceedWithPayment value)? proceedWithPayment,
-    TResult Function(PaymentFailed value)? paymentFailed,
-    TResult Function(InitiateRefund value)? initiateRefund,
-    required TResult orElse(),
-  }) {
-    if (proceed != null) {
-      return proceed(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class Proceed implements RechargeProceedEvent {
-  const factory Proceed({
-    required final String phoneNo,
-    required final String operator,
-    required final String amount,
-  }) = _$ProceedImpl;
-
-  @override
-  String get phoneNo;
-  String get operator;
-  @override
-  String get amount;
-
-  /// Create a copy of RechargeProceedEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$ProceedImplCopyWith<_$ProceedImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$ProceedWithPaymentImplCopyWith<$Res>
-    implements $RechargeProceedEventCopyWith<$Res> {
+abstract class _$$ProceedWithPaymentImplCopyWith<$Res> {
   factory _$$ProceedWithPaymentImplCopyWith(
     _$ProceedWithPaymentImpl value,
     $Res Function(_$ProceedWithPaymentImpl) then,
   ) = __$$ProceedWithPaymentImplCopyWithImpl<$Res>;
-  @override
   @useResult
   $Res call({
     String phoneNo,
@@ -459,7 +177,7 @@ abstract class _$$ProceedWithPaymentImplCopyWith<$Res>
     String orderId,
     String transactionId,
     int paymentStatus,
-    String? callbackId,
+    String callbackId,
   });
 }
 
@@ -483,7 +201,7 @@ class __$$ProceedWithPaymentImplCopyWithImpl<$Res>
     Object? orderId = null,
     Object? transactionId = null,
     Object? paymentStatus = null,
-    Object? callbackId = freezed,
+    Object? callbackId = null,
   }) {
     return _then(
       _$ProceedWithPaymentImpl(
@@ -511,10 +229,10 @@ class __$$ProceedWithPaymentImplCopyWithImpl<$Res>
             ? _value.paymentStatus
             : paymentStatus // ignore: cast_nullable_to_non_nullable
                   as int,
-        callbackId: freezed == callbackId
+        callbackId: null == callbackId
             ? _value.callbackId
             : callbackId // ignore: cast_nullable_to_non_nullable
-                  as String?,
+                  as String,
       ),
     );
   }
@@ -530,7 +248,7 @@ class _$ProceedWithPaymentImpl implements ProceedWithPayment {
     required this.orderId,
     required this.transactionId,
     required this.paymentStatus,
-    this.callbackId,
+    required this.callbackId,
   });
 
   @override
@@ -546,7 +264,7 @@ class _$ProceedWithPaymentImpl implements ProceedWithPayment {
   @override
   final int paymentStatus;
   @override
-  final String? callbackId;
+  final String callbackId;
 
   @override
   String toString() {
@@ -597,8 +315,6 @@ class _$ProceedWithPaymentImpl implements ProceedWithPayment {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String phoneNo, String operator, String amount)
-    proceed,
     required TResult Function(
       String phoneNo,
       String operator,
@@ -606,7 +322,7 @@ class _$ProceedWithPaymentImpl implements ProceedWithPayment {
       String orderId,
       String transactionId,
       int paymentStatus,
-      String? callbackId,
+      String callbackId,
     )
     proceedWithPayment,
     required TResult Function(
@@ -614,7 +330,7 @@ class _$ProceedWithPaymentImpl implements ProceedWithPayment {
       String phoneNo,
       String operator,
       String amount,
-      String? callbackId,
+      String callbackId,
     )
     paymentFailed,
     required TResult Function(
@@ -622,9 +338,11 @@ class _$ProceedWithPaymentImpl implements ProceedWithPayment {
       String transactionId,
       String amount,
       String phoneNo,
-      String? callbackId,
+      String callbackId,
     )
     initiateRefund,
+    required TResult Function() resetStates,
+    required TResult Function() markRefundAttempted,
   }) {
     return proceedWithPayment(
       phoneNo,
@@ -640,7 +358,6 @@ class _$ProceedWithPaymentImpl implements ProceedWithPayment {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String phoneNo, String operator, String amount)? proceed,
     TResult? Function(
       String phoneNo,
       String operator,
@@ -648,7 +365,7 @@ class _$ProceedWithPaymentImpl implements ProceedWithPayment {
       String orderId,
       String transactionId,
       int paymentStatus,
-      String? callbackId,
+      String callbackId,
     )?
     proceedWithPayment,
     TResult? Function(
@@ -656,7 +373,7 @@ class _$ProceedWithPaymentImpl implements ProceedWithPayment {
       String phoneNo,
       String operator,
       String amount,
-      String? callbackId,
+      String callbackId,
     )?
     paymentFailed,
     TResult? Function(
@@ -664,9 +381,11 @@ class _$ProceedWithPaymentImpl implements ProceedWithPayment {
       String transactionId,
       String amount,
       String phoneNo,
-      String? callbackId,
+      String callbackId,
     )?
     initiateRefund,
+    TResult? Function()? resetStates,
+    TResult? Function()? markRefundAttempted,
   }) {
     return proceedWithPayment?.call(
       phoneNo,
@@ -682,7 +401,6 @@ class _$ProceedWithPaymentImpl implements ProceedWithPayment {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String phoneNo, String operator, String amount)? proceed,
     TResult Function(
       String phoneNo,
       String operator,
@@ -690,7 +408,7 @@ class _$ProceedWithPaymentImpl implements ProceedWithPayment {
       String orderId,
       String transactionId,
       int paymentStatus,
-      String? callbackId,
+      String callbackId,
     )?
     proceedWithPayment,
     TResult Function(
@@ -698,7 +416,7 @@ class _$ProceedWithPaymentImpl implements ProceedWithPayment {
       String phoneNo,
       String operator,
       String amount,
-      String? callbackId,
+      String callbackId,
     )?
     paymentFailed,
     TResult Function(
@@ -706,9 +424,11 @@ class _$ProceedWithPaymentImpl implements ProceedWithPayment {
       String transactionId,
       String amount,
       String phoneNo,
-      String? callbackId,
+      String callbackId,
     )?
     initiateRefund,
+    TResult Function()? resetStates,
+    TResult Function()? markRefundAttempted,
     required TResult orElse(),
   }) {
     if (proceedWithPayment != null) {
@@ -728,10 +448,11 @@ class _$ProceedWithPaymentImpl implements ProceedWithPayment {
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(Proceed value) proceed,
     required TResult Function(ProceedWithPayment value) proceedWithPayment,
     required TResult Function(PaymentFailed value) paymentFailed,
     required TResult Function(InitiateRefund value) initiateRefund,
+    required TResult Function(ResetStates value) resetStates,
+    required TResult Function(MarkRefundAttempted value) markRefundAttempted,
   }) {
     return proceedWithPayment(this);
   }
@@ -739,10 +460,11 @@ class _$ProceedWithPaymentImpl implements ProceedWithPayment {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(Proceed value)? proceed,
     TResult? Function(ProceedWithPayment value)? proceedWithPayment,
     TResult? Function(PaymentFailed value)? paymentFailed,
     TResult? Function(InitiateRefund value)? initiateRefund,
+    TResult? Function(ResetStates value)? resetStates,
+    TResult? Function(MarkRefundAttempted value)? markRefundAttempted,
   }) {
     return proceedWithPayment?.call(this);
   }
@@ -750,10 +472,11 @@ class _$ProceedWithPaymentImpl implements ProceedWithPayment {
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(Proceed value)? proceed,
     TResult Function(ProceedWithPayment value)? proceedWithPayment,
     TResult Function(PaymentFailed value)? paymentFailed,
     TResult Function(InitiateRefund value)? initiateRefund,
+    TResult Function(ResetStates value)? resetStates,
+    TResult Function(MarkRefundAttempted value)? markRefundAttempted,
     required TResult orElse(),
   }) {
     if (proceedWithPayment != null) {
@@ -771,42 +494,37 @@ abstract class ProceedWithPayment implements RechargeProceedEvent {
     required final String orderId,
     required final String transactionId,
     required final int paymentStatus,
-    final String? callbackId,
+    required final String callbackId,
   }) = _$ProceedWithPaymentImpl;
 
-  @override
   String get phoneNo;
   String get operator;
-  @override
   String get amount;
   String get orderId;
   String get transactionId;
   int get paymentStatus;
-  String? get callbackId;
+  String get callbackId;
 
   /// Create a copy of RechargeProceedEvent
   /// with the given fields replaced by the non-null parameter values.
-  @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ProceedWithPaymentImplCopyWith<_$ProceedWithPaymentImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$PaymentFailedImplCopyWith<$Res>
-    implements $RechargeProceedEventCopyWith<$Res> {
+abstract class _$$PaymentFailedImplCopyWith<$Res> {
   factory _$$PaymentFailedImplCopyWith(
     _$PaymentFailedImpl value,
     $Res Function(_$PaymentFailedImpl) then,
   ) = __$$PaymentFailedImplCopyWithImpl<$Res>;
-  @override
   @useResult
   $Res call({
     String orderId,
     String phoneNo,
     String operator,
     String amount,
-    String? callbackId,
+    String callbackId,
   });
 }
 
@@ -828,7 +546,7 @@ class __$$PaymentFailedImplCopyWithImpl<$Res>
     Object? phoneNo = null,
     Object? operator = null,
     Object? amount = null,
-    Object? callbackId = freezed,
+    Object? callbackId = null,
   }) {
     return _then(
       _$PaymentFailedImpl(
@@ -848,10 +566,10 @@ class __$$PaymentFailedImplCopyWithImpl<$Res>
             ? _value.amount
             : amount // ignore: cast_nullable_to_non_nullable
                   as String,
-        callbackId: freezed == callbackId
+        callbackId: null == callbackId
             ? _value.callbackId
             : callbackId // ignore: cast_nullable_to_non_nullable
-                  as String?,
+                  as String,
       ),
     );
   }
@@ -865,7 +583,7 @@ class _$PaymentFailedImpl implements PaymentFailed {
     required this.phoneNo,
     required this.operator,
     required this.amount,
-    this.callbackId,
+    required this.callbackId,
   });
 
   @override
@@ -877,7 +595,7 @@ class _$PaymentFailedImpl implements PaymentFailed {
   @override
   final String amount;
   @override
-  final String? callbackId;
+  final String callbackId;
 
   @override
   String toString() {
@@ -913,8 +631,6 @@ class _$PaymentFailedImpl implements PaymentFailed {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String phoneNo, String operator, String amount)
-    proceed,
     required TResult Function(
       String phoneNo,
       String operator,
@@ -922,7 +638,7 @@ class _$PaymentFailedImpl implements PaymentFailed {
       String orderId,
       String transactionId,
       int paymentStatus,
-      String? callbackId,
+      String callbackId,
     )
     proceedWithPayment,
     required TResult Function(
@@ -930,7 +646,7 @@ class _$PaymentFailedImpl implements PaymentFailed {
       String phoneNo,
       String operator,
       String amount,
-      String? callbackId,
+      String callbackId,
     )
     paymentFailed,
     required TResult Function(
@@ -938,9 +654,11 @@ class _$PaymentFailedImpl implements PaymentFailed {
       String transactionId,
       String amount,
       String phoneNo,
-      String? callbackId,
+      String callbackId,
     )
     initiateRefund,
+    required TResult Function() resetStates,
+    required TResult Function() markRefundAttempted,
   }) {
     return paymentFailed(orderId, phoneNo, operator, amount, callbackId);
   }
@@ -948,7 +666,6 @@ class _$PaymentFailedImpl implements PaymentFailed {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String phoneNo, String operator, String amount)? proceed,
     TResult? Function(
       String phoneNo,
       String operator,
@@ -956,7 +673,7 @@ class _$PaymentFailedImpl implements PaymentFailed {
       String orderId,
       String transactionId,
       int paymentStatus,
-      String? callbackId,
+      String callbackId,
     )?
     proceedWithPayment,
     TResult? Function(
@@ -964,7 +681,7 @@ class _$PaymentFailedImpl implements PaymentFailed {
       String phoneNo,
       String operator,
       String amount,
-      String? callbackId,
+      String callbackId,
     )?
     paymentFailed,
     TResult? Function(
@@ -972,9 +689,11 @@ class _$PaymentFailedImpl implements PaymentFailed {
       String transactionId,
       String amount,
       String phoneNo,
-      String? callbackId,
+      String callbackId,
     )?
     initiateRefund,
+    TResult? Function()? resetStates,
+    TResult? Function()? markRefundAttempted,
   }) {
     return paymentFailed?.call(orderId, phoneNo, operator, amount, callbackId);
   }
@@ -982,7 +701,6 @@ class _$PaymentFailedImpl implements PaymentFailed {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String phoneNo, String operator, String amount)? proceed,
     TResult Function(
       String phoneNo,
       String operator,
@@ -990,7 +708,7 @@ class _$PaymentFailedImpl implements PaymentFailed {
       String orderId,
       String transactionId,
       int paymentStatus,
-      String? callbackId,
+      String callbackId,
     )?
     proceedWithPayment,
     TResult Function(
@@ -998,7 +716,7 @@ class _$PaymentFailedImpl implements PaymentFailed {
       String phoneNo,
       String operator,
       String amount,
-      String? callbackId,
+      String callbackId,
     )?
     paymentFailed,
     TResult Function(
@@ -1006,9 +724,11 @@ class _$PaymentFailedImpl implements PaymentFailed {
       String transactionId,
       String amount,
       String phoneNo,
-      String? callbackId,
+      String callbackId,
     )?
     initiateRefund,
+    TResult Function()? resetStates,
+    TResult Function()? markRefundAttempted,
     required TResult orElse(),
   }) {
     if (paymentFailed != null) {
@@ -1020,10 +740,11 @@ class _$PaymentFailedImpl implements PaymentFailed {
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(Proceed value) proceed,
     required TResult Function(ProceedWithPayment value) proceedWithPayment,
     required TResult Function(PaymentFailed value) paymentFailed,
     required TResult Function(InitiateRefund value) initiateRefund,
+    required TResult Function(ResetStates value) resetStates,
+    required TResult Function(MarkRefundAttempted value) markRefundAttempted,
   }) {
     return paymentFailed(this);
   }
@@ -1031,10 +752,11 @@ class _$PaymentFailedImpl implements PaymentFailed {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(Proceed value)? proceed,
     TResult? Function(ProceedWithPayment value)? proceedWithPayment,
     TResult? Function(PaymentFailed value)? paymentFailed,
     TResult? Function(InitiateRefund value)? initiateRefund,
+    TResult? Function(ResetStates value)? resetStates,
+    TResult? Function(MarkRefundAttempted value)? markRefundAttempted,
   }) {
     return paymentFailed?.call(this);
   }
@@ -1042,10 +764,11 @@ class _$PaymentFailedImpl implements PaymentFailed {
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(Proceed value)? proceed,
     TResult Function(ProceedWithPayment value)? proceedWithPayment,
     TResult Function(PaymentFailed value)? paymentFailed,
     TResult Function(InitiateRefund value)? initiateRefund,
+    TResult Function(ResetStates value)? resetStates,
+    TResult Function(MarkRefundAttempted value)? markRefundAttempted,
     required TResult orElse(),
   }) {
     if (paymentFailed != null) {
@@ -1061,40 +784,35 @@ abstract class PaymentFailed implements RechargeProceedEvent {
     required final String phoneNo,
     required final String operator,
     required final String amount,
-    final String? callbackId,
+    required final String callbackId,
   }) = _$PaymentFailedImpl;
 
   String get orderId;
-  @override
   String get phoneNo;
   String get operator;
-  @override
   String get amount;
-  String? get callbackId;
+  String get callbackId;
 
   /// Create a copy of RechargeProceedEvent
   /// with the given fields replaced by the non-null parameter values.
-  @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$PaymentFailedImplCopyWith<_$PaymentFailedImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$InitiateRefundImplCopyWith<$Res>
-    implements $RechargeProceedEventCopyWith<$Res> {
+abstract class _$$InitiateRefundImplCopyWith<$Res> {
   factory _$$InitiateRefundImplCopyWith(
     _$InitiateRefundImpl value,
     $Res Function(_$InitiateRefundImpl) then,
   ) = __$$InitiateRefundImplCopyWithImpl<$Res>;
-  @override
   @useResult
   $Res call({
     String orderId,
     String transactionId,
     String amount,
     String phoneNo,
-    String? callbackId,
+    String callbackId,
   });
 }
 
@@ -1116,7 +834,7 @@ class __$$InitiateRefundImplCopyWithImpl<$Res>
     Object? transactionId = null,
     Object? amount = null,
     Object? phoneNo = null,
-    Object? callbackId = freezed,
+    Object? callbackId = null,
   }) {
     return _then(
       _$InitiateRefundImpl(
@@ -1136,10 +854,10 @@ class __$$InitiateRefundImplCopyWithImpl<$Res>
             ? _value.phoneNo
             : phoneNo // ignore: cast_nullable_to_non_nullable
                   as String,
-        callbackId: freezed == callbackId
+        callbackId: null == callbackId
             ? _value.callbackId
             : callbackId // ignore: cast_nullable_to_non_nullable
-                  as String?,
+                  as String,
       ),
     );
   }
@@ -1153,7 +871,7 @@ class _$InitiateRefundImpl implements InitiateRefund {
     required this.transactionId,
     required this.amount,
     required this.phoneNo,
-    this.callbackId,
+    required this.callbackId,
   });
 
   @override
@@ -1165,7 +883,7 @@ class _$InitiateRefundImpl implements InitiateRefund {
   @override
   final String phoneNo;
   @override
-  final String? callbackId;
+  final String callbackId;
 
   @override
   String toString() {
@@ -1210,8 +928,6 @@ class _$InitiateRefundImpl implements InitiateRefund {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String phoneNo, String operator, String amount)
-    proceed,
     required TResult Function(
       String phoneNo,
       String operator,
@@ -1219,7 +935,7 @@ class _$InitiateRefundImpl implements InitiateRefund {
       String orderId,
       String transactionId,
       int paymentStatus,
-      String? callbackId,
+      String callbackId,
     )
     proceedWithPayment,
     required TResult Function(
@@ -1227,7 +943,7 @@ class _$InitiateRefundImpl implements InitiateRefund {
       String phoneNo,
       String operator,
       String amount,
-      String? callbackId,
+      String callbackId,
     )
     paymentFailed,
     required TResult Function(
@@ -1235,9 +951,11 @@ class _$InitiateRefundImpl implements InitiateRefund {
       String transactionId,
       String amount,
       String phoneNo,
-      String? callbackId,
+      String callbackId,
     )
     initiateRefund,
+    required TResult Function() resetStates,
+    required TResult Function() markRefundAttempted,
   }) {
     return initiateRefund(orderId, transactionId, amount, phoneNo, callbackId);
   }
@@ -1245,7 +963,6 @@ class _$InitiateRefundImpl implements InitiateRefund {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String phoneNo, String operator, String amount)? proceed,
     TResult? Function(
       String phoneNo,
       String operator,
@@ -1253,7 +970,7 @@ class _$InitiateRefundImpl implements InitiateRefund {
       String orderId,
       String transactionId,
       int paymentStatus,
-      String? callbackId,
+      String callbackId,
     )?
     proceedWithPayment,
     TResult? Function(
@@ -1261,7 +978,7 @@ class _$InitiateRefundImpl implements InitiateRefund {
       String phoneNo,
       String operator,
       String amount,
-      String? callbackId,
+      String callbackId,
     )?
     paymentFailed,
     TResult? Function(
@@ -1269,9 +986,11 @@ class _$InitiateRefundImpl implements InitiateRefund {
       String transactionId,
       String amount,
       String phoneNo,
-      String? callbackId,
+      String callbackId,
     )?
     initiateRefund,
+    TResult? Function()? resetStates,
+    TResult? Function()? markRefundAttempted,
   }) {
     return initiateRefund?.call(
       orderId,
@@ -1285,7 +1004,6 @@ class _$InitiateRefundImpl implements InitiateRefund {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String phoneNo, String operator, String amount)? proceed,
     TResult Function(
       String phoneNo,
       String operator,
@@ -1293,7 +1011,7 @@ class _$InitiateRefundImpl implements InitiateRefund {
       String orderId,
       String transactionId,
       int paymentStatus,
-      String? callbackId,
+      String callbackId,
     )?
     proceedWithPayment,
     TResult Function(
@@ -1301,7 +1019,7 @@ class _$InitiateRefundImpl implements InitiateRefund {
       String phoneNo,
       String operator,
       String amount,
-      String? callbackId,
+      String callbackId,
     )?
     paymentFailed,
     TResult Function(
@@ -1309,9 +1027,11 @@ class _$InitiateRefundImpl implements InitiateRefund {
       String transactionId,
       String amount,
       String phoneNo,
-      String? callbackId,
+      String callbackId,
     )?
     initiateRefund,
+    TResult Function()? resetStates,
+    TResult Function()? markRefundAttempted,
     required TResult orElse(),
   }) {
     if (initiateRefund != null) {
@@ -1329,10 +1049,11 @@ class _$InitiateRefundImpl implements InitiateRefund {
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(Proceed value) proceed,
     required TResult Function(ProceedWithPayment value) proceedWithPayment,
     required TResult Function(PaymentFailed value) paymentFailed,
     required TResult Function(InitiateRefund value) initiateRefund,
+    required TResult Function(ResetStates value) resetStates,
+    required TResult Function(MarkRefundAttempted value) markRefundAttempted,
   }) {
     return initiateRefund(this);
   }
@@ -1340,10 +1061,11 @@ class _$InitiateRefundImpl implements InitiateRefund {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(Proceed value)? proceed,
     TResult? Function(ProceedWithPayment value)? proceedWithPayment,
     TResult? Function(PaymentFailed value)? paymentFailed,
     TResult? Function(InitiateRefund value)? initiateRefund,
+    TResult? Function(ResetStates value)? resetStates,
+    TResult? Function(MarkRefundAttempted value)? markRefundAttempted,
   }) {
     return initiateRefund?.call(this);
   }
@@ -1351,10 +1073,11 @@ class _$InitiateRefundImpl implements InitiateRefund {
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(Proceed value)? proceed,
     TResult Function(ProceedWithPayment value)? proceedWithPayment,
     TResult Function(PaymentFailed value)? paymentFailed,
     TResult Function(InitiateRefund value)? initiateRefund,
+    TResult Function(ResetStates value)? resetStates,
+    TResult Function(MarkRefundAttempted value)? markRefundAttempted,
     required TResult orElse(),
   }) {
     if (initiateRefund != null) {
@@ -1370,23 +1093,409 @@ abstract class InitiateRefund implements RechargeProceedEvent {
     required final String transactionId,
     required final String amount,
     required final String phoneNo,
-    final String? callbackId,
+    required final String callbackId,
   }) = _$InitiateRefundImpl;
 
   String get orderId;
   String get transactionId;
-  @override
   String get amount;
-  @override
   String get phoneNo;
-  String? get callbackId;
+  String get callbackId;
 
   /// Create a copy of RechargeProceedEvent
   /// with the given fields replaced by the non-null parameter values.
-  @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$InitiateRefundImplCopyWith<_$InitiateRefundImpl> get copyWith =>
       throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$ResetStatesImplCopyWith<$Res> {
+  factory _$$ResetStatesImplCopyWith(
+    _$ResetStatesImpl value,
+    $Res Function(_$ResetStatesImpl) then,
+  ) = __$$ResetStatesImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$ResetStatesImplCopyWithImpl<$Res>
+    extends _$RechargeProceedEventCopyWithImpl<$Res, _$ResetStatesImpl>
+    implements _$$ResetStatesImplCopyWith<$Res> {
+  __$$ResetStatesImplCopyWithImpl(
+    _$ResetStatesImpl _value,
+    $Res Function(_$ResetStatesImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of RechargeProceedEvent
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$ResetStatesImpl implements ResetStates {
+  const _$ResetStatesImpl();
+
+  @override
+  String toString() {
+    return 'RechargeProceedEvent.resetStates()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$ResetStatesImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(
+      String phoneNo,
+      String operator,
+      String amount,
+      String orderId,
+      String transactionId,
+      int paymentStatus,
+      String callbackId,
+    )
+    proceedWithPayment,
+    required TResult Function(
+      String orderId,
+      String phoneNo,
+      String operator,
+      String amount,
+      String callbackId,
+    )
+    paymentFailed,
+    required TResult Function(
+      String orderId,
+      String transactionId,
+      String amount,
+      String phoneNo,
+      String callbackId,
+    )
+    initiateRefund,
+    required TResult Function() resetStates,
+    required TResult Function() markRefundAttempted,
+  }) {
+    return resetStates();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(
+      String phoneNo,
+      String operator,
+      String amount,
+      String orderId,
+      String transactionId,
+      int paymentStatus,
+      String callbackId,
+    )?
+    proceedWithPayment,
+    TResult? Function(
+      String orderId,
+      String phoneNo,
+      String operator,
+      String amount,
+      String callbackId,
+    )?
+    paymentFailed,
+    TResult? Function(
+      String orderId,
+      String transactionId,
+      String amount,
+      String phoneNo,
+      String callbackId,
+    )?
+    initiateRefund,
+    TResult? Function()? resetStates,
+    TResult? Function()? markRefundAttempted,
+  }) {
+    return resetStates?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(
+      String phoneNo,
+      String operator,
+      String amount,
+      String orderId,
+      String transactionId,
+      int paymentStatus,
+      String callbackId,
+    )?
+    proceedWithPayment,
+    TResult Function(
+      String orderId,
+      String phoneNo,
+      String operator,
+      String amount,
+      String callbackId,
+    )?
+    paymentFailed,
+    TResult Function(
+      String orderId,
+      String transactionId,
+      String amount,
+      String phoneNo,
+      String callbackId,
+    )?
+    initiateRefund,
+    TResult Function()? resetStates,
+    TResult Function()? markRefundAttempted,
+    required TResult orElse(),
+  }) {
+    if (resetStates != null) {
+      return resetStates();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(ProceedWithPayment value) proceedWithPayment,
+    required TResult Function(PaymentFailed value) paymentFailed,
+    required TResult Function(InitiateRefund value) initiateRefund,
+    required TResult Function(ResetStates value) resetStates,
+    required TResult Function(MarkRefundAttempted value) markRefundAttempted,
+  }) {
+    return resetStates(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(ProceedWithPayment value)? proceedWithPayment,
+    TResult? Function(PaymentFailed value)? paymentFailed,
+    TResult? Function(InitiateRefund value)? initiateRefund,
+    TResult? Function(ResetStates value)? resetStates,
+    TResult? Function(MarkRefundAttempted value)? markRefundAttempted,
+  }) {
+    return resetStates?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(ProceedWithPayment value)? proceedWithPayment,
+    TResult Function(PaymentFailed value)? paymentFailed,
+    TResult Function(InitiateRefund value)? initiateRefund,
+    TResult Function(ResetStates value)? resetStates,
+    TResult Function(MarkRefundAttempted value)? markRefundAttempted,
+    required TResult orElse(),
+  }) {
+    if (resetStates != null) {
+      return resetStates(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class ResetStates implements RechargeProceedEvent {
+  const factory ResetStates() = _$ResetStatesImpl;
+}
+
+/// @nodoc
+abstract class _$$MarkRefundAttemptedImplCopyWith<$Res> {
+  factory _$$MarkRefundAttemptedImplCopyWith(
+    _$MarkRefundAttemptedImpl value,
+    $Res Function(_$MarkRefundAttemptedImpl) then,
+  ) = __$$MarkRefundAttemptedImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$MarkRefundAttemptedImplCopyWithImpl<$Res>
+    extends _$RechargeProceedEventCopyWithImpl<$Res, _$MarkRefundAttemptedImpl>
+    implements _$$MarkRefundAttemptedImplCopyWith<$Res> {
+  __$$MarkRefundAttemptedImplCopyWithImpl(
+    _$MarkRefundAttemptedImpl _value,
+    $Res Function(_$MarkRefundAttemptedImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of RechargeProceedEvent
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$MarkRefundAttemptedImpl implements MarkRefundAttempted {
+  const _$MarkRefundAttemptedImpl();
+
+  @override
+  String toString() {
+    return 'RechargeProceedEvent.markRefundAttempted()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$MarkRefundAttemptedImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(
+      String phoneNo,
+      String operator,
+      String amount,
+      String orderId,
+      String transactionId,
+      int paymentStatus,
+      String callbackId,
+    )
+    proceedWithPayment,
+    required TResult Function(
+      String orderId,
+      String phoneNo,
+      String operator,
+      String amount,
+      String callbackId,
+    )
+    paymentFailed,
+    required TResult Function(
+      String orderId,
+      String transactionId,
+      String amount,
+      String phoneNo,
+      String callbackId,
+    )
+    initiateRefund,
+    required TResult Function() resetStates,
+    required TResult Function() markRefundAttempted,
+  }) {
+    return markRefundAttempted();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(
+      String phoneNo,
+      String operator,
+      String amount,
+      String orderId,
+      String transactionId,
+      int paymentStatus,
+      String callbackId,
+    )?
+    proceedWithPayment,
+    TResult? Function(
+      String orderId,
+      String phoneNo,
+      String operator,
+      String amount,
+      String callbackId,
+    )?
+    paymentFailed,
+    TResult? Function(
+      String orderId,
+      String transactionId,
+      String amount,
+      String phoneNo,
+      String callbackId,
+    )?
+    initiateRefund,
+    TResult? Function()? resetStates,
+    TResult? Function()? markRefundAttempted,
+  }) {
+    return markRefundAttempted?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(
+      String phoneNo,
+      String operator,
+      String amount,
+      String orderId,
+      String transactionId,
+      int paymentStatus,
+      String callbackId,
+    )?
+    proceedWithPayment,
+    TResult Function(
+      String orderId,
+      String phoneNo,
+      String operator,
+      String amount,
+      String callbackId,
+    )?
+    paymentFailed,
+    TResult Function(
+      String orderId,
+      String transactionId,
+      String amount,
+      String phoneNo,
+      String callbackId,
+    )?
+    initiateRefund,
+    TResult Function()? resetStates,
+    TResult Function()? markRefundAttempted,
+    required TResult orElse(),
+  }) {
+    if (markRefundAttempted != null) {
+      return markRefundAttempted();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(ProceedWithPayment value) proceedWithPayment,
+    required TResult Function(PaymentFailed value) paymentFailed,
+    required TResult Function(InitiateRefund value) initiateRefund,
+    required TResult Function(ResetStates value) resetStates,
+    required TResult Function(MarkRefundAttempted value) markRefundAttempted,
+  }) {
+    return markRefundAttempted(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(ProceedWithPayment value)? proceedWithPayment,
+    TResult? Function(PaymentFailed value)? paymentFailed,
+    TResult? Function(InitiateRefund value)? initiateRefund,
+    TResult? Function(ResetStates value)? resetStates,
+    TResult? Function(MarkRefundAttempted value)? markRefundAttempted,
+  }) {
+    return markRefundAttempted?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(ProceedWithPayment value)? proceedWithPayment,
+    TResult Function(PaymentFailed value)? paymentFailed,
+    TResult Function(InitiateRefund value)? initiateRefund,
+    TResult Function(ResetStates value)? resetStates,
+    TResult Function(MarkRefundAttempted value)? markRefundAttempted,
+    required TResult orElse(),
+  }) {
+    if (markRefundAttempted != null) {
+      return markRefundAttempted(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class MarkRefundAttempted implements RechargeProceedEvent {
+  const factory MarkRefundAttempted() = _$MarkRefundAttemptedImpl;
 }
 
 /// @nodoc
@@ -1399,6 +1508,10 @@ mixin _$RechargeProceedState {
   String? get transactionId => throw _privateConstructorUsedError;
   String? get amount => throw _privateConstructorUsedError;
   bool? get shouldRefund => throw _privateConstructorUsedError;
+  bool get isRefundInProgress => throw _privateConstructorUsedError;
+  bool get hasRefundBeenAttempted => throw _privateConstructorUsedError;
+  bool get hasRechargeFailedHandled => throw _privateConstructorUsedError;
+  bool get hasPaymentSaveFailedHandled => throw _privateConstructorUsedError;
 
   /// Create a copy of RechargeProceedState
   /// with the given fields replaced by the non-null parameter values.
@@ -1423,6 +1536,10 @@ abstract class $RechargeProceedStateCopyWith<$Res> {
     String? transactionId,
     String? amount,
     bool? shouldRefund,
+    bool isRefundInProgress,
+    bool hasRefundBeenAttempted,
+    bool hasRechargeFailedHandled,
+    bool hasPaymentSaveFailedHandled,
   });
 }
 
@@ -1452,6 +1569,10 @@ class _$RechargeProceedStateCopyWithImpl<
     Object? transactionId = freezed,
     Object? amount = freezed,
     Object? shouldRefund = freezed,
+    Object? isRefundInProgress = null,
+    Object? hasRefundBeenAttempted = null,
+    Object? hasRechargeFailedHandled = null,
+    Object? hasPaymentSaveFailedHandled = null,
   }) {
     return _then(
       _value.copyWith(
@@ -1487,6 +1608,22 @@ class _$RechargeProceedStateCopyWithImpl<
                 ? _value.shouldRefund
                 : shouldRefund // ignore: cast_nullable_to_non_nullable
                       as bool?,
+            isRefundInProgress: null == isRefundInProgress
+                ? _value.isRefundInProgress
+                : isRefundInProgress // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            hasRefundBeenAttempted: null == hasRefundBeenAttempted
+                ? _value.hasRefundBeenAttempted
+                : hasRefundBeenAttempted // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            hasRechargeFailedHandled: null == hasRechargeFailedHandled
+                ? _value.hasRechargeFailedHandled
+                : hasRechargeFailedHandled // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            hasPaymentSaveFailedHandled: null == hasPaymentSaveFailedHandled
+                ? _value.hasPaymentSaveFailedHandled
+                : hasPaymentSaveFailedHandled // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -1511,6 +1648,10 @@ abstract class _$$RechargeProceedStateImplCopyWith<$Res>
     String? transactionId,
     String? amount,
     bool? shouldRefund,
+    bool isRefundInProgress,
+    bool hasRefundBeenAttempted,
+    bool hasRechargeFailedHandled,
+    bool hasPaymentSaveFailedHandled,
   });
 }
 
@@ -1536,6 +1677,10 @@ class __$$RechargeProceedStateImplCopyWithImpl<$Res>
     Object? transactionId = freezed,
     Object? amount = freezed,
     Object? shouldRefund = freezed,
+    Object? isRefundInProgress = null,
+    Object? hasRefundBeenAttempted = null,
+    Object? hasRechargeFailedHandled = null,
+    Object? hasPaymentSaveFailedHandled = null,
   }) {
     return _then(
       _$RechargeProceedStateImpl(
@@ -1571,6 +1716,22 @@ class __$$RechargeProceedStateImplCopyWithImpl<$Res>
             ? _value.shouldRefund
             : shouldRefund // ignore: cast_nullable_to_non_nullable
                   as bool?,
+        isRefundInProgress: null == isRefundInProgress
+            ? _value.isRefundInProgress
+            : isRefundInProgress // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        hasRefundBeenAttempted: null == hasRefundBeenAttempted
+            ? _value.hasRefundBeenAttempted
+            : hasRefundBeenAttempted // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        hasRechargeFailedHandled: null == hasRechargeFailedHandled
+            ? _value.hasRechargeFailedHandled
+            : hasRechargeFailedHandled // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        hasPaymentSaveFailedHandled: null == hasPaymentSaveFailedHandled
+            ? _value.hasPaymentSaveFailedHandled
+            : hasPaymentSaveFailedHandled // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -1588,6 +1749,10 @@ class _$RechargeProceedStateImpl implements _RechargeProceedState {
     this.transactionId,
     this.amount,
     this.shouldRefund,
+    this.isRefundInProgress = false,
+    this.hasRefundBeenAttempted = false,
+    this.hasRechargeFailedHandled = false,
+    this.hasPaymentSaveFailedHandled = false,
   });
 
   @override
@@ -1606,10 +1771,22 @@ class _$RechargeProceedStateImpl implements _RechargeProceedState {
   final String? amount;
   @override
   final bool? shouldRefund;
+  @override
+  @JsonKey()
+  final bool isRefundInProgress;
+  @override
+  @JsonKey()
+  final bool hasRefundBeenAttempted;
+  @override
+  @JsonKey()
+  final bool hasRechargeFailedHandled;
+  @override
+  @JsonKey()
+  final bool hasPaymentSaveFailedHandled;
 
   @override
   String toString() {
-    return 'RechargeProceedState(isLoading: $isLoading, rechargeStatus: $rechargeStatus, refundStatus: $refundStatus, paymentSavedStatus: $paymentSavedStatus, orderId: $orderId, transactionId: $transactionId, amount: $amount, shouldRefund: $shouldRefund)';
+    return 'RechargeProceedState(isLoading: $isLoading, rechargeStatus: $rechargeStatus, refundStatus: $refundStatus, paymentSavedStatus: $paymentSavedStatus, orderId: $orderId, transactionId: $transactionId, amount: $amount, shouldRefund: $shouldRefund, isRefundInProgress: $isRefundInProgress, hasRefundBeenAttempted: $hasRefundBeenAttempted, hasRechargeFailedHandled: $hasRechargeFailedHandled, hasPaymentSaveFailedHandled: $hasPaymentSaveFailedHandled)';
   }
 
   @override
@@ -1630,7 +1807,22 @@ class _$RechargeProceedStateImpl implements _RechargeProceedState {
                 other.transactionId == transactionId) &&
             (identical(other.amount, amount) || other.amount == amount) &&
             (identical(other.shouldRefund, shouldRefund) ||
-                other.shouldRefund == shouldRefund));
+                other.shouldRefund == shouldRefund) &&
+            (identical(other.isRefundInProgress, isRefundInProgress) ||
+                other.isRefundInProgress == isRefundInProgress) &&
+            (identical(other.hasRefundBeenAttempted, hasRefundBeenAttempted) ||
+                other.hasRefundBeenAttempted == hasRefundBeenAttempted) &&
+            (identical(
+                  other.hasRechargeFailedHandled,
+                  hasRechargeFailedHandled,
+                ) ||
+                other.hasRechargeFailedHandled == hasRechargeFailedHandled) &&
+            (identical(
+                  other.hasPaymentSaveFailedHandled,
+                  hasPaymentSaveFailedHandled,
+                ) ||
+                other.hasPaymentSaveFailedHandled ==
+                    hasPaymentSaveFailedHandled));
   }
 
   @override
@@ -1644,6 +1836,10 @@ class _$RechargeProceedStateImpl implements _RechargeProceedState {
     transactionId,
     amount,
     shouldRefund,
+    isRefundInProgress,
+    hasRefundBeenAttempted,
+    hasRechargeFailedHandled,
+    hasPaymentSaveFailedHandled,
   );
 
   /// Create a copy of RechargeProceedState
@@ -1669,6 +1865,10 @@ abstract class _RechargeProceedState implements RechargeProceedState {
     final String? transactionId,
     final String? amount,
     final bool? shouldRefund,
+    final bool isRefundInProgress,
+    final bool hasRefundBeenAttempted,
+    final bool hasRechargeFailedHandled,
+    final bool hasPaymentSaveFailedHandled,
   }) = _$RechargeProceedStateImpl;
 
   @override
@@ -1687,6 +1887,14 @@ abstract class _RechargeProceedState implements RechargeProceedState {
   String? get amount;
   @override
   bool? get shouldRefund;
+  @override
+  bool get isRefundInProgress;
+  @override
+  bool get hasRefundBeenAttempted;
+  @override
+  bool get hasRechargeFailedHandled;
+  @override
+  bool get hasPaymentSaveFailedHandled;
 
   /// Create a copy of RechargeProceedState
   /// with the given fields replaced by the non-null parameter values.

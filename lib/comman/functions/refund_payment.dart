@@ -22,7 +22,7 @@ Future<Map<String, dynamic>> refundPayment({
         'amount':  (amount* 100).toString(),
         'table': table
       },
-    ).timeout(const Duration(seconds: 30));
+    );
     
     log('Refund API response: ${response.statusCode}, ${response.body}');
           final jsonResponse = jsonDecode(response.body);

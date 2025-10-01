@@ -46,7 +46,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
   // Location data storage
   Map<String, dynamic> _sourceLocationData = {};
   Map<String, dynamic> _destinationLocationData = {};
-  List<Map<String, dynamic>> _multiCityLocationData = [];
+  final List<Map<String, dynamic>> _multiCityLocationData = [];
   
   // For multi-city trips
   List<Map<String, dynamic>> _multiCityRoutes = [

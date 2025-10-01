@@ -6,6 +6,7 @@ import 'package:minna/comman/core/api.dart';
 
 Future<String?> createOrder(double amount) async {
     try {
+      log("createOrder---");
       final response = await http.post(
         Uri.parse("${baseUrl}createOrder"),
         body: {
