@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer';
-
 import 'package:minna/DTH%20&%20Mobile/DTH/application/dth%20proceed/dth_confirm_bloc.dart';
 import 'package:minna/Electyicity%20&%20Water/application/bill%20report/bill_report_bloc.dart';
 import 'package:minna/Electyicity%20&%20Water/application/confirm%20bill/confirm_bill_bloc.dart';
@@ -17,7 +16,6 @@ import 'package:minna/cab/application/hold%20cab/hold_cab_bloc.dart';
 import 'package:minna/cab/function/commission_data.dart';
 import 'package:minna/comman/application/login/login_bloc.dart';
 import 'package:minna/comman/pages/screen%20splash/splash_page.dart';
-
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

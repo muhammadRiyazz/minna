@@ -81,6 +81,10 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+
+
+
+
 class HomeContentPage extends StatefulWidget {
   const HomeContentPage({super.key});
 
@@ -92,79 +96,70 @@ class _HomeContentPageState extends State<HomeContentPage> {
   final TextEditingController _searchController = TextEditingController();
   String _searchText = '';
 
-  final List<Map<String, dynamic>> _allServices = [
+  // Color Theme - Consistent throughout
+  final Color _primaryColor = Colors.black;
+  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
+  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
+  final Color _backgroundColor = Color(0xFFF8F9FA);
+  final Color _cardColor = Colors.white;
+  final Color _textPrimary = Colors.black;
+  final Color _textSecondary = Color(0xFF666666);
+  final Color _textLight = Color(0xFF999999);
+
+  // Travel Offers Data with working image URLs
+  final List<Map<String, dynamic>> _travelOffers = [
     {
-      'label': 'Mobile',
-      'icon': Icons.phone_android,
-      'color': Colors.blue,
-      'onTap': (BuildContext context) {
-        context.read<OperatorsBloc>().add(const OperatorsEvent.getop());
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => MobileRechargeInputPage()),
-        );
-      },
+      'title': 'Summer Getaway',
+      'subtitle': 'Up to 40% OFF',
+      'image': 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
     },
     {
-      'label': 'DTH',
-      'icon': Icons.tv,
-      'color': Colors.orange,
-      'onTap': (BuildContext context) {
-        context.read<OperatorsBloc>().add(const OperatorsEvent.getDTHop());
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => DTHInputPage()),
-        );
-      },
+      'title': 'Mountain Trek',
+      'subtitle': 'Adventure Packages',
+      'image': 'https://res.cloudinary.com/enchanting/q_70,f_auto,w_1600,h_1001,c_fit/exodus-web/2021/12/trekking-poles-himalaya-1.jpg',
     },
     {
-      'label': 'Electricity',
-      'icon': Icons.lightbulb_outline,
-      'color': Colors.green,
-      'onTap': (BuildContext context) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => ElectricityBillInputPage()),
-        );
-      },
+      'title': 'Beach Paradise',
+      'subtitle': 'All Inclusive',
+      'image': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
     },
-    //    {
-    //   'label': 'Train',
-    //   'icon': Icons.train,
-    //   'color': Colors.red,
-    //   'onTap': (BuildContext context) {
-    //     Navigator.push(
-    //       context,
-    //       MaterialPageRoute(builder: (context) => ElectricityBillInputPage()),
-    //     );
-    //   },
-    // },
+  ];
+
+  // Popular Destinations with working image URLs
+  final List<Map<String, dynamic>> _popularDestinations = [
     {
-      'label': 'Water',
-      'icon': Icons.water_drop,
-      'color': Colors.teal,
-      'onTap': (BuildContext context) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => WaterBillInputPage()),
-        );
-      },
+      'name': 'Bali',
+      'country': 'Indonesia',
+      'image': 'https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+      'price': '\$899',
+    },
+     {
+      'name': 'New York',
+      'country': 'USA',
+      'image': 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+      'price': '\$1,199',
     },
     {
-      'label': 'Bus ',
-      'icon': Icons.directions_bus,
-      'color': Colors.red,
-      'onTap': (BuildContext context) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => BusHomeTab()),
-        );
-      },
+      'name': 'Paris',
+      'country': 'France',
+      'image': 'https://media.istockphoto.com/id/1345426734/photo/eiffel-tower-paris-river-seine-sunset-twilight-france.jpg?s=612x612&w=0&k=20&c=I5rAH5d_-Yyag8F0CKzk9vzMr_1rgkAASGTE11YMh9A=',
+      'price': '\$1,299',
     },
+    {
+      'name': 'Tokyo',
+      'country': 'Japan',
+      'image': 'https://i.natgeofe.com/n/eb9f0faa-75bc-47e2-8b14-253031b74125/bigtripjapantokyocrossing.jpg',
+      'price': '\$1,599',
+    },
+   
+  ];
+
+  // Travel Services Data with theme colors
+  List<Map<String, dynamic>> get _travelServices => [
     {
       'label': 'Flights',
-      'icon': Icons.flight,
-      'color': Colors.blueAccent,
+      'icon': FontAwesomeIcons.plane,
+      'color': Color(0xFFD4AF37), // Gold
       'onTap': (BuildContext context) {
         Navigator.push(
           context,
@@ -173,9 +168,9 @@ class _HomeContentPageState extends State<HomeContentPage> {
       },
     },
     {
-      'label': 'Hotel',
-      'icon': Icons.home_work_outlined,
-      'color': Colors.green,
+      'label': 'Hotels',
+      'icon': FontAwesomeIcons.hotel,
+      'color': Color(0xFFD4AF37), // Gold
       'onTap': (BuildContext context) {
         Navigator.push(
           context,
@@ -183,11 +178,21 @@ class _HomeContentPageState extends State<HomeContentPage> {
         );
       },
     },
-  
+    {
+      'label': 'Bus',
+      'icon': FontAwesomeIcons.bus,
+      'color': Color(0xFFD4AF37), // Gold
+      'onTap': (BuildContext context) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => BusHomeTab()),
+        );
+      },
+    },
     {
       'label': 'Cabs',
-      'icon': Icons.car_crash_outlined,
-      'color': Colors.orange,
+      'icon': FontAwesomeIcons.carSide,
+      'color': Color(0xFFD4AF37), // Gold
       'onTap': (BuildContext context) {
         Navigator.push(
           context,
@@ -195,100 +200,386 @@ class _HomeContentPageState extends State<HomeContentPage> {
         );
       },
     },
+    {
+      'label': 'Visa',
+      'icon': FontAwesomeIcons.passport,
+      'color': Color(0xFFD4AF37), // Gold
+      'onTap': (BuildContext context) {
+        _showComingSoonBottomSheet(context, "Visa Services");
+      },
+    },
+    {
+      'label': 'Airport Cabs',
+      'icon': FontAwesomeIcons.taxi,
+      'color': Color(0xFFD4AF37), // Gold
+      'onTap': (BuildContext context) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => TripSelectionPage()),
+        );
+      },
+    },
+    {
+      'label': 'Train',
+      'icon': FontAwesomeIcons.train,
+      'color': Color(0xFFD4AF37), // Gold
+      'onTap': (BuildContext context) {
+        _showComingSoonBottomSheet(context, "Train");
+      },
+    },
+    {
+      'label': 'Cruise',
+      'icon': FontAwesomeIcons.ship,
+      'color': Color(0xFFD4AF37), // Gold
+      'onTap': (BuildContext context) {
+        _showComingSoonBottomSheet(context, "Cruise");
+      },
+    },
+  ];
+
+  // Quick Services Data with theme colors
+  List<Map<String, dynamic>> get _quickServices => [
+    {
+      'icon': Icons.phone_android,
+      'label': 'Mobile',
+      'color': Color(0xFFD4AF37), // Gold
+      'onTap': () {
+        context.read<OperatorsBloc>().add(const OperatorsEvent.getop());
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MobileRechargeInputPage()),
+        );
+      },
+    },
+    {
+      'icon': Icons.tv,
+      'label': 'DTH',
+      'color': Color(0xFFD4AF37), // Gold
+      'onTap': () {
+        context.read<OperatorsBloc>().add(const OperatorsEvent.getDTHop());
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => DTHInputPage()),
+        );
+      },
+    },
+    {
+      'icon': Icons.lightbulb_outline,
+      'label': 'Electricity',
+      'color': Color(0xFFD4AF37), // Gold
+      'onTap': () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ElectricityBillInputPage()),
+        );
+      },
+    },
+    {
+      'icon': Icons.water_drop,
+      'label': 'Water',
+      'color': Color(0xFFD4AF37), // Gold
+      'onTap': () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => WaterBillInputPage()),
+        );
+      },
+    },
   ];
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> filteredServices = _searchText.isEmpty
-        ? []
-        : _allServices
-              .where(
-                (service) => service['label'].toLowerCase().contains(
-                  _searchText.toLowerCase(),
-                ),
-              )
-              .toList();
+    final Size screenSize = MediaQuery.of(context).size;
+    final bool isSmallScreen = screenSize.width < 360;
+    final bool isTablet = screenSize.width > 600;
+    
+    // Responsive sizing
+    final double iconSize = isSmallScreen ? 18 : isTablet ? 28 : 24;
+    final double titleFontSize = isSmallScreen ? 16 : isTablet ? 24 : 20;
+    final double headingFontSize = isSmallScreen ? 14 : isTablet ? 20 : 18;
+    final double bodyFontSize = isSmallScreen ? 12 : isTablet ? 16 : 12;
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: maincolor1,
-        elevation: 0,
-        title: Text(
-          'Minna Travels',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            fontSize: 20,
+      backgroundColor: _backgroundColor,
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [
+            _buildAppBar(isSmallScreen, isTablet, titleFontSize),
+          ];
+        },
+        body: SingleChildScrollView(
+          physics: ClampingScrollPhysics(),
+          child: Column(
+            children: [
+              // Search Section
+              // _buildSearchSection(isSmallScreen, isTablet, bodyFontSize),
+              
+              // Popular Destinations - MOVED TO TOP
+              _buildPopularDestinations(isSmallScreen, isTablet, headingFontSize, bodyFontSize),
+              
+              // Travel Offers Banner
+              
+              // Travel Services Grid
+              _buildTravelServicesSection(context, isSmallScreen, isTablet, iconSize, headingFontSize, bodyFontSize),
+                            _buildOffersBanner(isSmallScreen, isTablet, bodyFontSize),
+
+              // Quick Services
+              _buildQuickServicesSection(context, isSmallScreen, isTablet, iconSize, headingFontSize, bodyFontSize),
+              
+              // Promo Banner
+              _buildPromoBanner(isSmallScreen, isTablet, bodyFontSize),
+              
+              SizedBox(height: isSmallScreen ? 20 : isTablet ? 40 : 30),
+            ],
           ),
-        ),
-      ),
-      backgroundColor: Colors.grey[50],
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildHeader(),
-            if (filteredServices.isNotEmpty)
-              _buildSearchResults(filteredServices),
-            _buildTravelServices(context),
-            _buildPromoBanner(),
-            _buildQuickActions(context),
-            SizedBox(height: 20),
-          ],
         ),
       ),
     );
   }
 
-  Widget _buildHeader() {
-    return Container(
-      padding: EdgeInsets.fromLTRB(16, 10, 16, 25),
-      decoration: BoxDecoration(
-        color: maincolor1,
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(20),
-          bottomRight: Radius.circular(20),
+SliverAppBar _buildAppBar(bool isSmallScreen, bool isTablet, double titleFontSize) {
+  return SliverAppBar(
+    backgroundColor: Colors.white,
+    expandedHeight: isTablet ? 140 : isSmallScreen ? 100 : 200,
+    floating: false,
+    pinned: true,
+    elevation: 2,
+    shadowColor: Colors.black.withOpacity(0.1),
+    surfaceTintColor: Colors.white,
+    flexibleSpace: FlexibleSpaceBar(
+      background: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: isSmallScreen ? 16 : 24,
+              vertical: isSmallScreen ? 8 : 16,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Main header row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Logo and App Name
+                    Row(
+                      children: [
+                        // App Logo Container
+                        Container(
+                          width: isSmallScreen ? 40 : isTablet ? 50 : 44,
+                          height: isSmallScreen ? 40 : isTablet ? 50 : 44,
+                          decoration: BoxDecoration(
+                            color: _primaryColor,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 8,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(6.0),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.asset(
+                                'asset/mtlogo.jpg',
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: _secondaryColor,
+                                    child: Icon(
+                                      Icons.airplanemode_active,
+                                      color: _primaryColor,
+                                      size: isSmallScreen ? 20 : 24,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: isSmallScreen ? 12 : 16),
+                        // App Name and Tagline
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'MT TRIP',
+                              style: TextStyle(
+                                color: _primaryColor,
+                                fontSize: isSmallScreen ? 20 : isTablet ? 28 : 24,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1.2,
+                                height: 1.0,
+                              ),
+                            ),
+                            SizedBox(height: 2),
+                            Text(
+                              'Travel • Explore • Experience',
+                              style: TextStyle(
+                                color: _textSecondary,
+                                fontSize: isSmallScreen ? 10 : isTablet ? 13 : 11,
+                                fontWeight: FontWeight.w500,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+
+                    // Notification Icon
+                    Container(
+                      padding: EdgeInsets.all(isSmallScreen ? 8 : 12),
+                      decoration: BoxDecoration(
+                        color: _secondaryColor.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: _secondaryColor.withOpacity(0.2),
+                          width: 1,
+                        ),
+                      ),
+                      child: Stack(
+                        children: [
+                          Icon(
+                            Icons.notifications_outlined,
+                            color: _primaryColor,
+                            size: isSmallScreen ? 20 : 24,
+                          ),
+                          Positioned(
+                            right: 0,
+                            top: 0,
+                            child: Container(
+                              width: isSmallScreen ? 10 : 12,
+                              height: isSmallScreen ? 10 : 12,
+                              decoration: BoxDecoration(
+                                color: Colors.red[500],
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 2,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Search Bar Section
+                SizedBox(height: isSmallScreen ? 12 : 20),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[50],
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Colors.grey[200]!,
+                      width: 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.03),
+                        blurRadius: 6,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (value) {
+                      setState(() {
+                        _searchText = value;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'Search for buses, flights, hotels...',
+                      hintStyle: TextStyle(
+                        color: Colors.grey[500],
+                        fontSize: isSmallScreen ? 14 : 16,
+                      ),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: _primaryColor,
+                        size: isSmallScreen ? 20 : 22,
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: isSmallScreen ? 14 : 16,
+                        horizontal: 16,
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Quick Stats Row (Optional)
+             
+              ],
+            ),
+          ),
         ),
       ),
+    ),
+  );
+}
+
+// Helper method for stat items
+Widget _buildStatItem(String value, String label, bool isSmallScreen) {
+  return Column(
+    children: [
+      Text(
+        value,
+        style: TextStyle(
+          color: _primaryColor,
+          fontSize: isSmallScreen ? 12 : 14,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      SizedBox(height: 2),
+      Text(
+        label,
+        style: TextStyle(
+          color: _textSecondary,
+          fontSize: isSmallScreen ? 10 : 12,
+        ),
+      ),
+    ],
+  );
+}
+  Widget _buildSearchSection(bool isSmallScreen, bool isTablet, double bodyFontSize) {
+    return Container(
+      padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
+      color: _cardColor,
+      margin: EdgeInsets.only(top: 0),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Welcome Back!',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.9),
-                      fontSize: 14,
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    'Explore our services!',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          SizedBox(height: 10),
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 15,
                   offset: Offset(0, 4),
                 ),
               ],
+              border: Border.all(color: Colors.grey.withOpacity(0.1)),
             ),
             child: TextField(
               controller: _searchController,
@@ -298,12 +589,226 @@ class _HomeContentPageState extends State<HomeContentPage> {
                 });
               },
               decoration: InputDecoration(
-                hintText: 'Search for services...',
-                hintStyle: TextStyle(color: Colors.grey[500]),
-                prefixIcon: Icon(Icons.search, color: Colors.grey[500]),
+                hintText: 'Search destinations, flights, hotels...',
+                hintStyle: TextStyle(color: _textLight, fontSize: bodyFontSize),
+                prefixIcon: Icon(Icons.search, color: _primaryColor),
                 border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(vertical: 14),
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: isSmallScreen ? 16 : 20,
+                  horizontal: 20,
+                ),
+                suffixIcon: _searchText.isNotEmpty
+                    ? IconButton(
+                        icon: Icon(Icons.clear, color: _textLight),
+                        onPressed: () {
+                          setState(() {
+                            _searchText = '';
+                            _searchController.clear();
+                          });
+                        },
+                      )
+                    : null,
               ),
+            ),
+          ),
+          if (_searchText.isNotEmpty) _buildSearchResults(isSmallScreen, isTablet, bodyFontSize),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchResults(bool isSmallScreen, bool isTablet, double bodyFontSize) {
+    final filteredServices = _travelServices.where((service) => 
+      service['label'].toLowerCase().contains(_searchText.toLowerCase())
+    ).toList();
+
+    if (filteredServices.isEmpty) return SizedBox();
+
+    return Container(
+      margin: EdgeInsets.only(top: 16),
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Search Results',
+            style: TextStyle(
+              fontSize: bodyFontSize,
+              fontWeight: FontWeight.w600,
+              color: _textPrimary,
+            ),
+          ),
+          SizedBox(height: 12),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: filteredServices.map((service) {
+              return _buildSearchResultItem(service, isSmallScreen, bodyFontSize);
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchResultItem(Map<String, dynamic> service, bool isSmallScreen, double bodyFontSize) {
+    return GestureDetector(
+      onTap: () => service['onTap'](context),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: _backgroundColor,
+          borderRadius: BorderRadius.circular(25),
+          border: Border.all(color: _secondaryColor.withOpacity(0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FaIcon(service['icon'], color: service['color'], size: isSmallScreen ? 14 : 16),
+            SizedBox(width: 8),
+            Text(
+              service['label'],
+              style: TextStyle(
+                fontSize: bodyFontSize,
+                fontWeight: FontWeight.w500,
+                color: _textPrimary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPopularDestinations(bool isSmallScreen, bool isTablet, double headingFontSize, double bodyFontSize) {
+    return Container(
+      padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.trending_up, color: _primaryColor, size: headingFontSize),
+              SizedBox(width: 8),
+              Text(
+                'Popular Destinations',
+                style: TextStyle(
+                  fontSize: headingFontSize,
+                  fontWeight: FontWeight.bold,
+                  color: _textPrimary,
+                ),
+              ),
+              Spacer(),
+              GestureDetector(
+                onTap: () {
+                  // Handle see all action
+                },
+                child: Text(
+                  'See All',
+                  style: TextStyle(
+                    fontSize: bodyFontSize,
+                    color: _secondaryColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 16),
+          SizedBox(
+            height: isSmallScreen ? 130 : isTablet ? 150 : 130,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: _popularDestinations.length,
+              itemBuilder: (context, index) {
+                final destination = _popularDestinations[index];
+                return Container(
+                  width: isSmallScreen ? 170 : isTablet ? 210 : 190,
+                  margin: EdgeInsets.only(right: 16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    image: DecorationImage(
+                      image: NetworkImage(destination['image']),
+                      fit: BoxFit.cover,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 8,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Stack(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
+                          gradient: LinearGradient(
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                            colors: [
+                              Colors.black.withOpacity(0.7),
+                              Colors.transparent,
+                            ],
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        left: 12,
+                        bottom: 12,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              destination['name'],
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: isSmallScreen ? 14 : 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              destination['country'],
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.8),
+                                fontSize: bodyFontSize,
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: _secondaryColor,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                'From ${destination['price']}',
+                                style: TextStyle(
+                                  color: _primaryColor,
+                                  fontSize: isSmallScreen ? 10 : 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
         ],
@@ -311,47 +816,137 @@ class _HomeContentPageState extends State<HomeContentPage> {
     );
   }
 
-  Widget _buildSearchResults(List<Map<String, dynamic>> results) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+  Widget _buildOffersBanner(bool isSmallScreen, bool isTablet, double bodyFontSize) {
+    return Container(
+      height: isSmallScreen ? 140 : isTablet ? 200 : 160,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: EdgeInsets.symmetric(horizontal: isSmallScreen ? 16 : 24, vertical: 16),
+        itemCount: _travelOffers.length,
+        itemBuilder: (context, index) {
+          final offer = _travelOffers[index];
+          return Container(
+            width: isSmallScreen ? 280 : isTablet ? 350 : 320,
+            margin: EdgeInsets.only(right: 16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              image: DecorationImage(
+                image: NetworkImage(offer['image']),
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(
+                  Colors.black.withOpacity(0.3),
+                  BlendMode.darken,
+                ),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 10,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Stack(
+              children: [
+                Positioned(
+                  left: 20,
+                  bottom: 20,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: _secondaryColor,
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Text(
+                          'SPECIAL OFFER',
+                          style: TextStyle(
+                            color: _primaryColor,
+                            fontSize: isSmallScreen ? 10 : 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        offer['title'],
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: isSmallScreen ? 18 : 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        offer['subtitle'],
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.9),
+                          fontSize: bodyFontSize,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildTravelServicesSection(BuildContext context, bool isSmallScreen, bool isTablet, double iconSize, double headingFontSize, double bodyFontSize) {
+    final crossAxisCount = isTablet ? 4 : isSmallScreen ? 4 : 4;
+    
+    return Container(
+      padding: EdgeInsets.all(isSmallScreen ? 16 : 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 12),
-          Text(
-            'Search Results',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Row(
+            children: [
+              Icon(Icons.travel_explore, color: _primaryColor, size: headingFontSize),
+              SizedBox(width: 8),
+              Text(
+                'Travel Services',
+                style: TextStyle(
+                  fontSize: headingFontSize,
+                  fontWeight: FontWeight.bold,
+                  color: _textPrimary,
+                ),
+              ),
+              Spacer(),
+              GestureDetector(
+                onTap: () {
+                  // Handle view all action
+                },
+                child: Text(
+                  'View All',
+                  style: TextStyle(
+                    fontSize: bodyFontSize,
+                    color: _secondaryColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
           ),
-          SizedBox(height: 15),
+          // SizedBox(height: 10),
           GridView.builder(
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 4,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 0.8,
+              crossAxisCount: crossAxisCount,
+              crossAxisSpacing: isSmallScreen ? 12 : 16,
+              mainAxisSpacing: isSmallScreen ? 12 : 16,
+              childAspectRatio:isSmallScreen? 0.7:0.7,
             ),
-            itemCount: results.length,
+            itemCount: _travelServices.length,
             itemBuilder: (context, index) {
-              final item = results[index];
-              return GestureDetector(
-                onTap: () => item['onTap'](context),
-                child: Column(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                        color: item['color'].withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(item['icon'], color: item['color'], size: 28),
-                    ),
-                    SizedBox(height: 8),
-                    Text(item['label'], style: TextStyle(fontSize: 12)),
-                  ],
-                ),
-              );
+              final service = _travelServices[index];
+              return _buildServiceCard(service, isSmallScreen, isTablet, iconSize, bodyFontSize);
             },
           ),
         ],
@@ -359,100 +954,244 @@ class _HomeContentPageState extends State<HomeContentPage> {
     );
   }
 
-  Widget _buildTravelServices(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+  Widget _buildServiceCard(Map<String, dynamic> service, bool isSmallScreen, bool isTablet, double iconSize, double bodyFontSize) {
+    return GestureDetector(
+      onTap: () => service['onTap'](context),
+      child: Container(
+        decoration: BoxDecoration(
+          color: _cardColor,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            // BoxShadow(
+            //   color: Colors.black.withOpacity(0.05),
+            //   blurRadius: 8,
+            //   offset: Offset(0, 2),
+            // ),
+          ],
+          // border: Border.all(color: service['color'].withOpacity(0.1)),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: EdgeInsets.all(isSmallScreen ? 12 : isTablet ? 16 : 14),
+              decoration: BoxDecoration(
+                color: service['color'].withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: FaIcon(
+                service['icon'],
+                color: service['color'],
+                size: isSmallScreen ? iconSize - 2 : iconSize,
+              ),
+            ),
+            SizedBox(height: isSmallScreen ? 6 : 8),
+            Text(
+              service['label'],
+              style: TextStyle(
+                fontSize: bodyFontSize,
+                fontWeight: FontWeight.w600,
+                
+                color: _textPrimary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuickServicesSection(BuildContext context, bool isSmallScreen, bool isTablet, double iconSize, double headingFontSize, double bodyFontSize) {
+    return Container(
+      padding: EdgeInsets.all(isSmallScreen ? 16 : 24),
+      color: _cardColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Travel Services',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey[800],
-            ),
+          Row(
+            children: [
+              Icon(Icons.bolt, color: _primaryColor, size: headingFontSize),
+              SizedBox(width: 8),
+              Text(
+                'Quick Services',
+                style: TextStyle(
+                  fontSize: headingFontSize,
+                  fontWeight: FontWeight.bold,
+                  color: _textPrimary,
+                ),
+              ),
+            ],
           ),
           SizedBox(height: 16),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: isTablet ? 4 : isSmallScreen ? 4 : 4,
+              crossAxisSpacing: isSmallScreen ? 12 : 16,
+              mainAxisSpacing: isSmallScreen ? 12 : 16,
+              childAspectRatio: 0.8,
+            ),
+            itemCount: _quickServices.length,
+            itemBuilder: (context, index) {
+              final service = _quickServices[index];
+              return _buildQuickServiceCard(service, isSmallScreen, isTablet, iconSize, bodyFontSize);
+            },
+          ),
+        ],
+      ),
+    );
+  }
 
-          SizedBox(height: 90,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              
-              children: [
-            
-               
-                _buildTravelServiceButton(
-                  FontAwesomeIcons.bus,
-                  ' Bus ',
-                  Colors.red[400]!,
-                  () {
-            
-             BlocProvider.of<BusLocationFetchBloc>(context).add(const GetData());
-            
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => BusHomeTab()),
-                    );
-                  },
-                ),
-               
-                _buildTravelServiceButton(
-                  FontAwesomeIcons.hotel,
-                  'Hotels',
-                  Colors.green[400]!,
-                  () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return HotelBookingHome();
-                        },
+  Widget _buildQuickServiceCard(Map<String, dynamic> service, bool isSmallScreen, bool isTablet, double iconSize, double bodyFontSize) {
+    return GestureDetector(
+      onTap: service['onTap'],
+      child: Container(
+        decoration: BoxDecoration(
+          color: _backgroundColor,
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Colors.grey.withOpacity(0.1)),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: EdgeInsets.all(isSmallScreen ? 10 : isTablet ? 14 : 12),
+              decoration: BoxDecoration(
+                color: service['color'].withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                service['icon'],
+                color: service['color'],
+                size: isSmallScreen ? iconSize - 2 : iconSize,
+              ),
+            ),
+            SizedBox(height: isSmallScreen ? 6 : 8),
+            Text(
+              service['label'],
+              style: TextStyle(
+                fontSize: bodyFontSize,
+                fontWeight: FontWeight.w600,
+                color: _textPrimary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPromoBanner(bool isSmallScreen, bool isTablet, double bodyFontSize) {
+    return Container(
+      margin: EdgeInsets.all(isSmallScreen ? 16 : 24),
+      padding: EdgeInsets.all(isSmallScreen ? 20 : 30),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [_primaryColor, Color(0xFF2D2D2D)],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 20,
+            offset: Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            right: -20,
+            bottom: -20,
+            child: Opacity(
+              opacity: 0.1,
+              child: Icon(
+                Icons.airplanemode_active,
+                size: isSmallScreen ? 100 : isTablet ? 150 : 120,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: _secondaryColor.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: _secondaryColor.withOpacity(0.4)),
                       ),
-                    );
-                    //  _showComingSoonBottomSheet(context, 'Hotels'),
-                  },
-                ),
-                _buildTravelServiceButton(
-                  FontAwesomeIcons.carSide,
-                  'Cabs',
-                  Colors.orange[400]!,
-                  () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return TripSelectionPage();
-                        },
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.star, size: 14, color: _secondaryColor),
+                          SizedBox(width: 6),
+                          Text(
+                            'Premium Member',
+                            style: TextStyle(
+                              color: _secondaryColor,
+                              fontSize: isSmallScreen ? 10 : 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
-                    );
-                  },
+                    ),
+                    SizedBox(height: 12),
+                    Text(
+                      'Travel The World\nWith Confidence',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: isSmallScreen ? 18 : isTablet ? 26 : 22,
+                        fontWeight: FontWeight.bold,
+                        height: 1.3,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Exclusive deals on flights, hotels and packages\nfor our premium members',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.9),
+                        fontSize: bodyFontSize,
+                        height: 1.4,
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Container(
+                      width: 130,
+                      height: 40,
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _secondaryColor,
+                          foregroundColor: _primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          elevation: 2,
+                        ),
+                        child: Text(
+                          'Explore',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: bodyFontSize,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                      _buildTravelServiceButton(
-                  FontAwesomeIcons.train,
-                  'Train',
-                  Colors.red[400]!,
-                  () {
-                    _showComingSoonBottomSheet(context, "Train");
-                  
-                  },
-                ),
-                
-                 _buildTravelServiceButton(
-                  FontAwesomeIcons.plane,
-                  'Flights',
-                  Colors.blue[400]!,
-                  () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => FlightBookingTab()),
-                    );
-                  },
-                ),
-              
-            ],),
-          )
-        
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -467,16 +1206,13 @@ class _HomeContentPageState extends State<HomeContentPage> {
       builder: (context) {
         return Container(
           padding: EdgeInsets.all(25),
-          // height: 300,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
-                service == 'Hotels'
-                    ? FontAwesomeIcons.hotel
-                    : FontAwesomeIcons.train,
+                Icons.construction,
                 size: 60,
-                color: service == 'Hotels' ? Colors.green : Colors.orange,
+                color: _secondaryColor,
               ),
               SizedBox(height: 20),
               Text(
@@ -484,298 +1220,36 @@ class _HomeContentPageState extends State<HomeContentPage> {
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: Colors.grey[800],
+                  color: _textPrimary,
                 ),
               ),
               SizedBox(height: 15),
               Text(
-                'We are working hard to bring you the best $service booking experience.',
+                'We\'re working hard to bring you the best $service booking experience. Stay tuned!',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                style: TextStyle(fontSize: 16, color: _textSecondary),
               ),
               SizedBox(height: 25),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: maincolor1,
+                  backgroundColor: _primaryColor,
+                  foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(15),
                   ),
                   padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                 ),
                 child: Text(
                   'Got It!',
-                  style: TextStyle(fontSize: 16, color: Colors.white),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ),
+              SizedBox(height: 10),
             ],
           ),
         );
       },
-    );
-  }
-
-  Widget _buildTravelServiceButton(
-    IconData icon,
-    String label,
-    Color color,
-    VoidCallback onpress,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 15),
-      child: InkWell(
-        onTap: onpress,
-        child: Column(
-          children: [
-            Container(
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: FaIcon(icon, color: color, size: 24),
-            ),
-            SizedBox(height: 8),
-            Text(label, style: TextStyle(fontSize: 12)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildQuickActions(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Quick Recharge',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildQuickActionButton(
-                Icons.phone_android,
-                'Mobile',
-                Colors.blue,
-                () {
-                  context.read<OperatorsBloc>().add(
-                    const OperatorsEvent.getop(),
-                  );
-
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MobileRechargeInputPage(),
-                    ),
-                  );
-                },
-              ),
-              _buildQuickActionButton(Icons.tv, 'DTH', Colors.orange, () {
-                context.read<OperatorsBloc>().add(
-                  const OperatorsEvent.getDTHop(),
-                );
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => DTHInputPage()),
-                );
-              }),
-              _buildQuickActionButton(
-                Icons.lightbulb_outline,
-                'Electricity',
-                Colors.green,
-                () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ElectricityBillInputPage(),
-                    ),
-                  );
-                },
-              ),
-              _buildQuickActionButton(
-                Icons.water_drop,
-                'Water',
-                Colors.teal,
-                () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => WaterBillInputPage(),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildQuickActionButton(
-    IconData icon,
-    String label,
-    Color color,
-    VoidCallback onpress,
-  ) {
-    return GestureDetector(
-      onTap: onpress,
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: color, size: 28),
-          ),
-          SizedBox(height: 8),
-          Text(label, style: TextStyle(fontSize: 12)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPromoBanner() {
-    return Container(
-      width: double.infinity,
-      // height: 240,
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF1A2980),
-            // Color(0xFF26D0CE),
-            maincolor1!,
-          ], // Ocean blue gradient
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.blue.withOpacity(0.2),
-            blurRadius: 12,
-            offset: Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          // Decorative travel icons
-          Positioned(
-            right: 15,
-            top: 15,
-            child: Opacity(
-              opacity: 0.1,
-              child: Icon(
-                FontAwesomeIcons.globeAsia,
-                size: 100,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          Positioned(
-            left: 10,
-            bottom: -15,
-            child: Opacity(
-              opacity: 0.1,
-              child: Icon(
-                FontAwesomeIcons.planeDeparture,
-                size: 110,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 25,vertical: 28),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Minna Special tag
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.white.withOpacity(0.3)),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.rocket_launch, size: 16, color: Colors.white),
-                      SizedBox(width: 6),
-                      Text(
-                        'Minna Special',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 10),
-                // Main promotion text
-                Text(
-                  'Travel Smarter\nWith Minna',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    height: 1.3,
-                  ),
-                ),
-                SizedBox(height: 8),
-                // Value proposition
-                Text(
-                  'Book buses, flights, and more\nwith exclusive Minna benefits',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.95),
-                    fontSize: 12,
-                    height: 1.4,
-                  ),
-                ),
-                SizedBox(height: 10),
-                // Align(
-                //   alignment: Alignment.bottomRight,
-                //   child: ElevatedButton(
-                //     onPressed: () {},
-                //     style: ElevatedButton.styleFrom(
-                //       backgroundColor: Colors.white,
-                //       foregroundColor: Color(0xFF1A2980),
-                //       shape: RoundedRectangleBorder(
-                //         borderRadius: BorderRadius.circular(25),
-                //       ),
-
-                //       padding: EdgeInsets.symmetric(
-                //         horizontal: 24,
-                //         vertical: 10,
-                //       ),
-                //       elevation: 2,
-                //     ),
-                //     child: Text(
-                //       'Explore Now',
-                //       style: TextStyle(
-                //         fontWeight: FontWeight.bold,
-                //         fontSize: 12,
-                //       ),
-                //     ),
-                //   ),
-                // ),
-
-                // Action button
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

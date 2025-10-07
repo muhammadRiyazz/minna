@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/pages/main%20home/home.dart';
 
 class GradientSplashScreen extends StatelessWidget {
@@ -8,8 +7,6 @@ class GradientSplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Trigger location fetch
-
     // Navigate after 3 seconds
     Future.delayed(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
@@ -18,42 +15,24 @@ class GradientSplashScreen extends StatelessWidget {
       );
     });
 
-    return Scaffold(
-      backgroundColor: Colors.white, // White background
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // App logo
-            // Image.asset(
-            //   'assets/images/logo.png', // 👉 replace with your logo path
-            //   height: 100,
-            //   width: 100,
-            // ),
+    // Get device size
+    final size = MediaQuery.of(context).size;
 
-            // App name
-            Text(
-              'MINNA',
-              style: TextStyle(
-                height: 0,
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: maincolor1,
-                letterSpacing: 1.5,
-              ),
+    return Scaffold(backgroundColor: Colors.black,
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        // Optional: nice gradient background
+       
+        child: Center(
+          child: SizedBox(
+            width: size.width * 0.4, // 60% of screen width
+            height: size.width * 0.4, // Keep square
+            child: Image.asset(
+              'asset/mtlogo.jpg',
+              fit: BoxFit.contain, // Keep aspect ratio
             ),
-
-            // Tagline
-            const Text(
-              'Tours and Travels',
-              style: TextStyle(
-                height: 0,
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                color: Colors.grey,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
