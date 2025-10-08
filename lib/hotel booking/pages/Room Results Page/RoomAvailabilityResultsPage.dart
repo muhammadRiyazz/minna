@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:minna/comman/const/const.dart';
+import 'package:minna/hotel%20booking/domain/authentication/authendication.dart';
 import 'package:minna/hotel%20booking/domain/hotel%20details%20/hotel_details.dart';
-import 'package:minna/hotel%20booking/domain/rooms/rooms.dart' show HotelRoomResult, Room, HotelSearchRequest;
+import 'package:minna/hotel%20booking/domain/rooms/rooms.dart'
+    show HotelRoomResult, Room, HotelSearchRequest;
+import 'package:minna/hotel%20booking/functions/auth.dart';
+import 'package:minna/hotel%20booking/functions/preBook.dart';
 import 'package:minna/hotel%20booking/pages/PassengerInputPage/PassengerInputPage.dart';
 
-class RoomAvailabilityResultsPage extends StatelessWidget {
+class RoomAvailabilityResultsPage extends StatefulWidget {
   final List<HotelRoomResult> hotelRoomResult;
   final HotelSearchRequest hotelSearchRequest;
   final HotelDetail hotel;
@@ -13,280 +17,542 @@ class RoomAvailabilityResultsPage extends StatelessWidget {
   const RoomAvailabilityResultsPage({
     super.key,
     required this.hotelRoomResult,
-    required this.hotelSearchRequest
-    ,required this.hotel
+    required this.hotelSearchRequest,
+    required this.hotel,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Available Rooms'),
-        centerTitle: true,
-        backgroundColor: maincolor1,
-        foregroundColor: Colors.white,
-        elevation: 0,
+  State<RoomAvailabilityResultsPage> createState() => _RoomAvailabilityResultsPageState();
+}
+
+class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPage> {
+  // Theme colors
+  final Color _primaryColor = Colors.black;
+  final Color _secondaryColor = const Color(0xFFD4AF37);
+  final Color _backgroundColor = const Color(0xFFF8F9FA);
+  final Color _cardColor = Colors.white;
+  final Color _textPrimary = Colors.black;
+  final Color _textSecondary = const Color(0xFF666666);
+  final Color _textLight = const Color(0xFF999999);
+
+  final AuthApiService _apiService = AuthApiService();
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  // Helper method to get number of rooms in a room combination
+  int _getNumberOfRoomsInCombination(Room room) {
+    return room.name.length;
+  }
+
+  // Show loading dialog
+  void _showLoadingDialog(String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
+            Text(message),
+          ],
+        ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.only(bottom: 16),
-              itemCount: hotelRoomResult.length,
-              itemBuilder: (context, index) {
-                final hotelResult = hotelRoomResult[index];
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ...hotelResult.rooms.map((room) => _buildRoomCard(context, room, hotelResult.currency)),
-                  ],
-                );
-              },
-            ),
+    );
+  }
+
+  // Hide loading dialog
+  void _hideLoadingDialog() {
+    Navigator.of(context, rootNavigator: true).pop();
+  }
+
+  // Show error dialog
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildRoomCard(
-    BuildContext context,
-    Room room,
-    String currency,
-  ) {
-    final currencyFormat = NumberFormat.currency(
-      symbol: '₹ ',
-      decimalDigits: 2,
+  // Show success dialog
+  void _showSuccessDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Success'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
     );
+  }
+
+  // Main booking flow
+  Future<void> _handleBooking(Room room) async {
+    try {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+
+      // _showLoadingDialog('Authenticating...');
+
+      // Step 1: Authenticate
+      final authResult = await _apiService.authenticate(
+       
+      );
+
+      if (!authResult.isSuccess) {
+        _hideLoadingDialog();
+        _showErrorDialog(authResult.error!);
+        return;
+      }
+
+      // _showLoadingDialog('Checking wallet balance...');
+
+      // Step 2: Check wallet balance
+      final hasSufficientBalance = await _apiService.checkSufficientBalance(room.totalFare);
+      
+      if (!hasSufficientBalance) {
+        // _hideLoadingDialog();
+        // _showErrorDialog('Insufficient wallet balance for this booking');
+        return;
+      }
+
+      // _showLoadingDialog('Pre-booking room...');
+
+      // Step 3: Pre-book room
+      final preBookResult = await _apiService.preBookRoom(
+        bookingCode: room.bookingCode,
+      );
+
+      _hideLoadingDialog();
+
+      if (preBookResult.isSuccess) {
+        // Success - navigate to passenger input page
+        _navigateToPassengerInput(room, preBookResult.data!);
+      } else {
+        _showErrorDialog(preBookResult.error!);
+      }
+    } catch (e) {
+      _hideLoadingDialog();
+      _showErrorDialog('An unexpected error occurred: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _navigateToPassengerInput(Room room, PreBookResponse preBookResponse) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PassengerInputPage(
+          hotel: widget.hotel,
+          hotelSearchRequest: widget.hotelSearchRequest,
+          room: room,
+          // preBookResponse: preBookResponse,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: _backgroundColor,
+      body: CustomScrollView(
+        slivers: [
+          // App Bar
+          SliverAppBar(
+            backgroundColor: _primaryColor,
+            expandedHeight: 160,
+            floating: false,
+            pinned: true,
+            elevation: 4,
+            shadowColor: Colors.black.withOpacity(0.3),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+              onPressed: _isLoading ? null : () => Navigator.pop(context),
+            ),
+            title: const Text(
+              'Available Rooms',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+            ),
+            centerTitle: true,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [_primaryColor, Colors.black87],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 16, left: 20, right: 20),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.hotel.hotelName,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        '${widget.hotelSearchRequest.paxRooms.length} Room${widget.hotelSearchRequest.paxRooms.length > 1 ? 's' : ''}',
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // Error Message
+          if (_errorMessage != null)
+            SliverToBoxAdapter(
+              child: Container(
+                margin: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.red[50],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.red[200]!),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.error_outline, color: Colors.red[700]),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        _errorMessage!,
+                        style: TextStyle(color: Colors.red[700]),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+          // Room List
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final hotelResult = widget.hotelRoomResult[index];
+                return Column(
+                  children: hotelResult.rooms
+                      .map((room) =>
+                          _buildRoomCard(context, room, hotelResult.currency))
+                      .toList(),
+                );
+              },
+              childCount: widget.hotelRoomResult.length,
+            ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 30)),
+        ],
+      ),
+    );
+  }
+
+  // --- ROOM CARD ---
+  Widget _buildRoomCard(BuildContext context, Room room, String currency) {
+    final currencyFormat = NumberFormat.currency(symbol: '₹ ', decimalDigits: 0);
     final isRefundable = room.isRefundable;
     final totalFare = room.totalFare;
-    final roomName = room.name.isNotEmpty ? room.name[0] : 'Room';
+    final numberOfRooms = _getNumberOfRoomsInCombination(room);
+    
+    final roomNames = room.name;
+    final primaryRoomName = roomNames.isNotEmpty ? roomNames[0] : 'Standard Room';
 
-    return Card(
-      margin: const EdgeInsets.fromLTRB(10, 8, 10, 8),
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Room Type and Image
+            // Room Header
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Container(
-                   color: Colors.white,
-                    width: 100,
-                    height: 80,
-                  child: Icon(Icons.king_bed,color: maincolor1,size: 35,),
-                  ),
+                Stack(
+                  children: [
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: _secondaryColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Icon(
+                        numberOfRooms > 1 ? Icons.king_bed_outlined : Icons.king_bed_rounded,
+                        color: _secondaryColor,
+                        size: 34,
+                      ),
+                    ),
+                    if (numberOfRooms > 1)
+                      Positioned(
+                        right: -2,
+                        top: -2,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: _secondaryColor,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            '$numberOfRooms',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        roomName,
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.bold),
+                        numberOfRooms > 1 
+                            ? '$numberOfRooms Rooms Package' 
+                            : primaryRoomName,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: _textPrimary,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.king_bed,
-                            color: Colors.grey[600],
-                            size: 16,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            roomName.contains('King') ? 'King Bed' : 'Queen Beds',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                          // const SizedBox(width: 12),
-                          // Icon(
-                          //   Icons.smoke_free,
-                          //   color: Colors.grey[600],
-                          //   size: 16,
-                          // ),
-                          // const SizedBox(width: 4),
-                          // Text(
-                          //   'Non-smoking',
-                          //   style: Theme.of(context).textTheme.bodySmall,
-                          // ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 6),
                       Text(
-                        'Meal Type: ${room.mealType}',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.grey[600],
-                            ),
+                        primaryRoomName,
+                        style: TextStyle(
+                          color: _textSecondary,
+                          fontSize: 13,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 14),
 
-            // Room Features
-            if (room.roomPromotion.isNotEmpty) ...[
+            // Promotions
+            if (room.roomPromotion.isNotEmpty)
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: room.roomPromotion.map((promo) {
-                  return Chip(
-                    label: Text(promo),
-                    backgroundColor: Colors.teal.withOpacity(0.1),
-                    labelStyle: TextStyle(color: maincolor1, fontSize: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4),
+                children: room.roomPromotion.take(3).map((promo) {
+                  return Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: _secondaryColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    side: BorderSide.none,
-                    visualDensity: VisualDensity.compact,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.local_offer_rounded, color: _secondaryColor, size: 14),
+                        const SizedBox(width: 6),
+                        Text(
+                          promo,
+                          style: TextStyle(
+                            color: _secondaryColor,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
                   );
                 }).toList(),
               ),
-              const SizedBox(height: 12),
-            ],
+            if (room.roomPromotion.isNotEmpty) const SizedBox(height: 14),
 
             // Price Section
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: Colors.grey[50],
-                borderRadius: BorderRadius.circular(8),
+                color: _backgroundColor,
+                borderRadius: BorderRadius.circular(14),
               ),
               child: Column(
                 children: [
+                  // Price Row
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Total for stay',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        currencyFormat.format(totalFare),
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            numberOfRooms > 1 ? 'Total for all rooms' : 'Total for stay',
+                            style: TextStyle(color: _textSecondary, fontSize: 13),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            currencyFormat.format(totalFare),
+                            style: TextStyle(
+                              fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              color: maincolor1,
+                              color: _primaryColor,
                             ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  // Text(
-                  //   'Includes taxes & fees',
-                  //   style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.green),
-                  // ),
-                  const SizedBox(height: 16),
-
-                  // Cancellation Policy
-                  Row(
-                    children: [
-                      Icon(
-                        isRefundable
-                            ? Icons.cancel_outlined
-                            : Icons.do_not_disturb_on,
-                        color: isRefundable ? Colors.green : Colors.red,
-                        size: 16,
-                      ),
-                      const SizedBox(width: 8),
-                      Flexible(
-                        child: Text(
-                          isRefundable
-                              ? 'Free cancellation available'
-                              : 'Non-refundable',
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                color: isRefundable ? Colors.green : Colors.red,
+                          ),
+                          if (numberOfRooms > 1)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Text(
+                                '${numberOfRooms} rooms × ${currencyFormat.format(totalFare / numberOfRooms)}',
+                                style: TextStyle(
+                                  color: _textLight,
+                                  fontSize: 12,
+                                ),
                               ),
+                            ),
+                        ],
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: isRefundable
+                              ? Colors.green.withOpacity(0.1)
+                              : Colors.red.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              isRefundable
+                                  ? Icons.check_circle_rounded
+                                  : Icons.cancel_rounded,
+                              color: isRefundable ? Colors.green : Colors.redAccent,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 5),
+                            Text(
+                              isRefundable ? 'Refundable' : 'Non-refundable',
+                              style: TextStyle(
+                                  color: isRefundable ? Colors.green : Colors.redAccent,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 14),
 
-                  // View Details Button
+                  // Buttons
                   Row(
                     children: [
                       Expanded(
-                        flex: 2,
                         child: OutlinedButton(
-                          onPressed: () {
-                            _showRoomDetails(context, room, currency);
-                          },
+                          onPressed: _isLoading ? null : () => _showRoomDetails(context, room, currency),
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: maincolor1,
-                            side: BorderSide(color: maincolor1!, width: 1.5),
+                            foregroundColor: _primaryColor,
+                            side: BorderSide(color: _primaryColor.withOpacity(0.3)),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            elevation: 0,
-                            textStyle: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 15,
-                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
                           ),
-                          child: const Text(
-                            'View Details',
-                            style: TextStyle(fontSize: 12),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.info_outline_rounded, size: 16),
+                              SizedBox(width: 8),
+                              Text('Details', style: TextStyle(fontWeight: FontWeight.w600)),
+                            ],
                           ),
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        flex: 1,
                         child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return PassengerInputPage(
-
-hotel: hotel, hotelSearchRequest: hotelSearchRequest,room: room,
-
-                                  );
-                                },
-                              ),
-                            );
-                          },
+                          onPressed: _isLoading ? null : () => _handleBooking(room),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: maincolor1,
+                            backgroundColor: _primaryColor,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
                             elevation: 2,
-                            // ignore: deprecated_member_use
-                            shadowColor: maincolor1!.withOpacity(0.3),
-                            textStyle: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
-                            ),
                           ),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.credit_card, size: 12),
-                              SizedBox(width: 8),
-                              Text('Book Now', style: TextStyle(fontSize: 10)),
-                            ],
-                          ),
+                          child: _isLoading
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  ),
+                                )
+                              : Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      numberOfRooms > 1 ? Icons.room_service_rounded : Icons.credit_card_rounded, 
+                                      size: 16
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      numberOfRooms > 1 ? 'Book ${numberOfRooms} Rooms' : 'Book Now',
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w600, fontSize: 14),
+                                    ),
+                                  ],
+                                ),
                         ),
-                       ),
+                      ),
                     ],
                   ),
                 ],
@@ -298,227 +564,336 @@ hotel: hotel, hotelSearchRequest: hotelSearchRequest,room: room,
     );
   }
 
+  // Keep your existing helper methods (_showRoomDetails, _buildRoomDetailsSheet, 
+  // _buildDetailSection, _buildFeatureChip, _buildPriceRow) exactly as they were...
+  // [Include all the existing helper methods from your previous code here]
+  
   void _showRoomDetails(BuildContext context, Room room, String currency) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) {
-        return _buildRoomDetailsSheet(context, room, currency);
-      },
+      backgroundColor: Colors.transparent,
+      builder: (context) => _buildRoomDetailsSheet(context, room, currency),
     );
   }
-Widget _buildRoomDetailsSheet(
-  BuildContext context,
-  Room room,
-  String currency,
-) {
-  final currencyFormat = NumberFormat.currency(symbol: '₹ ', decimalDigits: 2);
-  final isRefundable = room.isRefundable;
-  final roomName = room.name.isNotEmpty ? room.name[0] : 'Room';
 
-  return Container(
-    padding: const EdgeInsets.all(16),
-    decoration: const BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-    ),
-    child: SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Drag Handle
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 16),
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
+  Widget _buildRoomDetailsSheet(BuildContext context, Room room, String currency) {
+    final currencyFormat = NumberFormat.currency(symbol: '₹ ', decimalDigits: 0);
+    final isRefundable = room.isRefundable;
+    final numberOfRooms = _getNumberOfRoomsInCombination(room);
+    final roomNames = room.name;
+    final primaryRoomName = roomNames.isNotEmpty ? roomNames[0] : 'Standard Room';
+
+    return Container(
+      margin: const EdgeInsets.only(top: 60),
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(26),
+          topRight: Radius.circular(26),
+        ),
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Handle
+            Center(
+              child: Container(
+                width: 48,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 22),
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
             ),
-          ),
-
-          // Room Name
-          Text(
-            roomName,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-          ),
-          const SizedBox(height: 16),
-
-          // Room Features
-          const Text(
-            'Room Features',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              _buildFeatureChip(Icons.king_bed, 'King Bed'),
-              _buildFeatureChip(Icons.smoke_free, 'Non-smoking'),
-              _buildFeatureChip(Icons.wifi, 'Free WiFi'),
-              _buildFeatureChip(Icons.ac_unit, 'Air Conditioning'),
-              _buildFeatureChip(Icons.tv, 'Flat-screen TV'),
-              if (room.inclusion.isNotEmpty)
-                ...room.inclusion
-                    .split(',')
-                    .map((e) => _buildFeatureChip(Icons.check, e.trim())),
-            ],
-          ),
-          const SizedBox(height: 16),
-
-          // Cancellation Policy
-          const Text(
-            'Cancellation Policy',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: isRefundable ? Colors.green[50] : Colors.red[50],
-              borderRadius: BorderRadius.circular(8),
+            
+            // Title based on number of rooms
+            Text(
+              numberOfRooms > 1 ? '$numberOfRooms Rooms Package' : primaryRoomName,
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: _textPrimary,
+              ),
             ),
-            child: Row(
-              children: [
-                Icon(
-                  isRefundable ? Icons.check_circle : Icons.cancel,
-                  color: isRefundable ? Colors.green : Colors.red,
+            const SizedBox(height: 8),
+            Text(
+              numberOfRooms > 1 ? 'Complete room package details' : 'Room Details & Pricing',
+              style: TextStyle(color: _textSecondary, fontSize: 16),
+            ),
+            const SizedBox(height: 22),
+
+            // Room List (for multiple rooms)
+            if (numberOfRooms > 1)
+              _buildDetailSection(
+                'Rooms in this Package',
+                Icons.room_service_rounded,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (int i = 0; i < roomNames.length; i++)
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: _backgroundColor,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: 32,
+                              height: 32,
+                              decoration: BoxDecoration(
+                                color: _secondaryColor.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(Icons.king_bed_rounded, 
+                                  color: _secondaryColor, size: 16),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Room ${i + 1}',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: _textPrimary,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    roomNames[i],
+                                    style: TextStyle(
+                                      color: _textSecondary,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    isRefundable
-                        ? 'Free cancellation available'
-                        : 'Non-refundable. No changes or cancellations allowed.',
-                    style: TextStyle(
+              ),
+
+            // Room Features
+            _buildDetailSection(
+              numberOfRooms > 1 ? 'Package Features' : 'Room Features',
+              Icons.king_bed_rounded,
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  _buildFeatureChip(Icons.king_bed_rounded, 'Comfortable Bed'),
+                  _buildFeatureChip(Icons.wifi_rounded, 'Free WiFi'),
+                  _buildFeatureChip(Icons.ac_unit_rounded, 'AC Room'),
+                  _buildFeatureChip(Icons.tv_rounded, 'Flat-screen TV'),
+                  if (room.inclusion.isNotEmpty)
+                    ...room.inclusion
+                        .split(',')
+                        .take(3)
+                        .map((e) => _buildFeatureChip(
+                            Icons.check_circle_rounded, e.trim())),
+                ],
+              ),
+            ),
+
+            // Cancellation Policy
+            _buildDetailSection(
+              'Cancellation Policy',
+              Icons.assignment_return_rounded,
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: isRefundable
+                      ? Colors.green.withOpacity(0.1)
+                      : Colors.red.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      isRefundable
+                          ? Icons.check_circle_rounded
+                          : Icons.cancel_rounded,
                       color: isRefundable ? Colors.green : Colors.red,
                     ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-
-         
-       // Price Breakdown Section
-const Text(
-  'Price Breakdown',
-  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-),
-const SizedBox(height: 8),
-
-Container(
-  padding: const EdgeInsets.all(12),
-  decoration: BoxDecoration(
-    color: Colors.grey[100],
-    borderRadius: BorderRadius.circular(8),
-  ),
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      // Sum of Day Rates
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const Text('Room rate'),
-          Text(
-            currencyFormat.format(
-              room.dayRates.fold(
-                0.0,
-                (sum, days) => sum +
-                    days.fold(
-                      0.0,
-                      (s, d) => s + (d['BasePrice'] ?? 0.0),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        isRefundable
+                            ? 'Free cancellation before 24 hours of check-in'
+                            : 'Non-refundable room booking.',
+                        style: TextStyle(
+                          color: isRefundable ? Colors.green : Colors.redAccent,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
-              ),
-            ),
-          ),
-        ],
-      ),
-      const SizedBox(height: 4),
-
-      // Taxes
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const Text('Taxes & fees'),
-          Text(currencyFormat.format(room.totalTax)),
-        ],
-      ),
-      const Divider(height: 20, thickness: 1),
-
-      // Total
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const Text(
-            'Total',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          Text(
-            currencyFormat.format(room.totalFare),
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: maincolor1,
-            ),
-          ),
-        ],
-      ),
-    ],
-  ),
-),
-
-
-          const SizedBox(height: 24),
-
-          // Book Now Button
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PassengerInputPage(hotel: hotel,hotelSearchRequest: hotelSearchRequest,room: room,),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: maincolor1,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  ],
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 16),
               ),
-              child: const Text('Book Now'),
             ),
-          ),
-          const SizedBox(height: 16),
-        ],
-      ),
-    ),
-  );
-}
 
+            // Price Breakdown
+            _buildDetailSection(
+              'Price Breakdown',
+              Icons.attach_money_rounded,
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: _backgroundColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  children: [
+                    if (numberOfRooms > 1) ...[
+                      for (int i = 0; i < numberOfRooms; i++)
+                        _buildPriceRow('Room ${i + 1}', (room.totalFare - room.totalTax) / numberOfRooms),
+                      const SizedBox(height: 8),
+                      _buildPriceRow('Taxes & fees', room.totalTax),
+                      const Divider(height: 20),
+                      _buildPriceRow('Total for $numberOfRooms rooms', room.totalFare, isTotal: true),
+                    ] else ...[
+                      _buildPriceRow('Room rate', room.totalFare - room.totalTax),
+                      const SizedBox(height: 8),
+                      _buildPriceRow('Taxes & fees', room.totalTax),
+                      const Divider(height: 20),
+                      _buildPriceRow('Total', room.totalFare, isTotal: true),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 28),
+
+            // Book Now Button
+            SizedBox(
+              width: double.infinity,
+              height: 54,
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : () {
+                  Navigator.pop(context);
+                  _handleBooking(room);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _primaryColor,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            numberOfRooms > 1 ? Icons.room_service_rounded : Icons.credit_card_rounded, 
+                            size: 18
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            numberOfRooms > 1 ? 'Book $numberOfRooms Rooms' : 'Book This Room',
+                            style: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+              ),
+            ),
+            const SizedBox(height: 18),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailSection(String title, IconData icon, Widget content) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: _secondaryColor.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: _secondaryColor, size: 18),
+            ),
+            const SizedBox(width: 10),
+            Text(title,
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: _textPrimary)),
+          ],
+        ),
+        const SizedBox(height: 10),
+        content,
+        const SizedBox(height: 24),
+      ],
+    );
+  }
 
   Widget _buildFeatureChip(IconData icon, String label) {
-    return Chip(
-      label: Text(label),
-      avatar: Icon(icon, size: 16),
-      backgroundColor: Colors.grey[100],
-      labelStyle: const TextStyle(fontSize: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      side: BorderSide.none,
-      visualDensity: VisualDensity.compact,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: _secondaryColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: _secondaryColor, size: 14),
+          const SizedBox(width: 6),
+          Text(label,
+              style: TextStyle(
+                  color: _secondaryColor,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPriceRow(String label, double amount, {bool isTotal = false}) {
+    final currencyFormat = NumberFormat.currency(symbol: '₹ ', decimalDigits: 0);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label,
+            style: TextStyle(
+                color: _textSecondary,
+                fontWeight: isTotal ? FontWeight.bold : FontWeight.normal)),
+        Text(
+          currencyFormat.format(amount),
+          style: TextStyle(
+              color: isTotal ? _primaryColor : _textPrimary,
+              fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+              fontSize: isTotal ? 16 : 14),
+        ),
+      ],
     );
   }
 }

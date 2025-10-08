@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/hotel%20booking/domain/hotel%20details%20/hotel_details.dart';
@@ -30,6 +29,17 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
   final int _maxDescriptionLines = 6;
   late GoogleMapController mapController;
   final Set<Marker> markers = {};
+
+  // Color Theme - Consistent throughout
+  final Color _primaryColor = Colors.black;
+  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
+  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
+  final Color _backgroundColor = Color(0xFFF8F9FA);
+  final Color _cardColor = Colors.white;
+  final Color _textPrimary = Colors.black;
+  final Color _textSecondary = Color(0xFF666666);
+  final Color _textLight = Color(0xFF999999);
+
   @override
   void initState() {
     super.initState();
@@ -48,13 +58,13 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
       _isDescriptionExpanded = !_isDescriptionExpanded;
     });
   }
+
   Future<void> launchGoogleMaps(double lat, double lng, String hotelName) async {
     final url = 'https://www.google.com/maps/search/?api=1&query=$lat,$lng&query_place_id=$hotelName';
     
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url));
     } else {
-      // Fallback: Open in browser
       final fallbackUrl = 'https://maps.google.com/?q=$lat,$lng';
       if (await canLaunchUrl(Uri.parse(fallbackUrl))) {
         await launchUrl(Uri.parse(fallbackUrl));
@@ -87,41 +97,95 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
   void showMapOptions(double lat, double lng, String hotelName) {
     showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.transparent,
       builder: (context) {
         return Container(
-          padding: const EdgeInsets.all(16),
+          margin: EdgeInsets.only(top: 100),
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: _cardColor,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(28),
+              topRight: Radius.circular(28),
+            ),
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              Center(
+                child: Container(
+                  width: 48,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              SizedBox(height: 24),
               Text(
                 'Open Location',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: maincolor1,
+                  color: _primaryColor,
                 ),
               ),
-              const SizedBox(height: 16),
-              ListTile(
-                leading: Icon(Icons.map, color: maincolor1),
-                title: Text('Google Maps'),
-                onTap: () {
-                  Navigator.pop(context);
-                  launchGoogleMaps(lat, lng, hotelName);
-                },
+              SizedBox(height: 20),
+              Container(
+                decoration: BoxDecoration(
+                  color: _backgroundColor,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: _secondaryColor.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(Icons.map_rounded, color: _secondaryColor),
+                      ),
+                      title: Text('Google Maps', style: TextStyle(fontWeight: FontWeight.w600)),
+                      onTap: () {
+                        Navigator.pop(context);
+                        launchGoogleMaps(lat, lng, hotelName);
+                      },
+                    ),
+                    Divider(height: 1),
+                    ListTile(
+                      leading: Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: _secondaryColor.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(Icons.map_outlined, color: _secondaryColor),
+                      ),
+                      title: Text('Apple Maps', style: TextStyle(fontWeight: FontWeight.w600)),
+                      onTap: () {
+                        Navigator.pop(context);
+                        launchAppleMaps(lat, lng, hotelName);
+                      },
+                    ),
+                  ],
+                ),
               ),
-              ListTile(
-                leading: Icon(Icons.map_outlined, color: maincolor1),
-                title: Text('Apple Maps'),
-                onTap: () {
-                  Navigator.pop(context);
-                  launchAppleMaps(lat, lng, hotelName);
-                },
-              ),
-              const SizedBox(height: 8),
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text('Cancel', style: TextStyle(color: Colors.grey)),
+              SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: _textSecondary,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    side: BorderSide(color: Colors.grey.shade300),
+                    padding: EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  child: Text('Cancel'),
+                ),
               ),
             ],
           ),
@@ -129,347 +193,149 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
       },
     );
   }
-// GoogleMapController? _mapController;
 
-Widget buildMapSection(HotelDetail hotel) {
-  final parts = (hotel.map).split('|');
+  Widget buildMapSection(HotelDetail hotel) {
+    final parts = hotel.map.split('|');
+    final latitude = parts.isNotEmpty ? double.tryParse(parts[0]) : null;
+    final longitude = parts.length > 1 ? double.tryParse(parts[1]) : null;
+    final hasCoordinates = latitude != null && longitude != null;
 
-  // Parse safely
-  final latitude = parts.isNotEmpty ? double.tryParse(parts[0]) : null;
-  final longitude = parts.length > 1 ? double.tryParse(parts[1]) : null;
+    if (!hasCoordinates) {
+      return _buildLocationCard(hotel, null, null);
+    }
 
-  final hasCoordinates = latitude != null && longitude != null;
-  if (!hasCoordinates) {
-    // Fallback to static map
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text("Location", style: TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: _buildImageWithShimmer(
-            'https://maps.googleapis.com/maps/api/staticmap?center=${Uri.encodeComponent(hotel.address)}&zoom=15&size=600x300&maptype=roadmap&markers=color:red%7C${Uri.encodeComponent(hotel.address)}&key=YOUR_API_KEY',
-            height: 150,
-            width: double.infinity,
-            fit: BoxFit.cover,
-          ),
-        ),
-        const SizedBox(height: 16),
-      ],
-    );
+    return _buildLocationCard(hotel, latitude, longitude);
   }
 
-  final lat = latitude;
-  final lng = longitude;
-
-  final CameraPosition initialCameraPosition = CameraPosition(
-    target: LatLng(lat, lng),
-    zoom: 15,
-  );
-
-  final Marker hotelMarker = Marker(
-    markerId: MarkerId(hotel.hotelName),
-    position: LatLng(lat, lng),
-    infoWindow: InfoWindow(
-      title: hotel.hotelName,
-      snippet: hotel.address,
-    ),
-    icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-  );
-
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text("Location", style: TextStyle(fontWeight: FontWeight.bold)),
-          GestureDetector(
-            onTap: () => showMapOptions(lat, lng, hotel.hotelName),
-            child: Row(
-              children: [
-                Text(
-                  "Open in Maps",
-                  style: TextStyle(
-                    color: maincolor1,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Icon(Icons.open_in_new, size: 16, color: maincolor1),
-              ],
-            ),
-          ),
-        ],
-      ),
-      const SizedBox(height: 8),
-      GestureDetector(
-        onTap: () => showMapOptions(lat, lng, hotel.hotelName),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: SizedBox(
-            height: 150,
-            width: double.infinity,
-            child: GoogleMap(
-              onMapCreated: (GoogleMapController controller) {
-                mapController = controller; // ✅ store controller
-              },
-              initialCameraPosition: initialCameraPosition,
-              markers: {hotelMarker},
-              zoomControlsEnabled: false,
-              scrollGesturesEnabled: false,
-              zoomGesturesEnabled: false,
-              tiltGesturesEnabled: false,
-              rotateGesturesEnabled: false,
-              myLocationButtonEnabled: false,
-              mapToolbarEnabled: false,
-            ),
-          ),
-        ),
-      ),
-      const SizedBox(height: 8),
-      Text(
-        hotel.address,
-        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-        textAlign: TextAlign.center,
-      ),
-      const SizedBox(height: 16),
-    ],
-  );
-}
-
-  // Alternative simplified version without Google Maps package
-  Widget buildMapSectionSimple(HotelDetail hotel) {
-   final parts = (hotel.map).split('|');
-
-// Parse safely
-final latitude = parts.isNotEmpty ? double.tryParse(parts[0]) : null;
-final longitude = parts.length > 1 ? double.tryParse(parts[1]) : null;
-
-// ✅ Check if hotel has valid coordinates
-final hasCoordinates = latitude != null && longitude != null;
-    if (!hasCoordinates) {
-      return Column(
+  Widget _buildLocationCard(HotelDetail hotel, double? lat, double? lng) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 16),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "Location",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            height: 150,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: Colors.grey[200],
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.location_on, size: 40, color: maincolor1),
-                const SizedBox(height: 8),
-                Text(hotel.address, textAlign: TextAlign.center),
-                const SizedBox(height: 8),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    final query = Uri.encodeComponent('${hotel.hotelName} ${hotel.address}');
-                    _launchMaps(query);
-                  },
-                  icon: Icon(Icons.map, size: 16),
-                  label: Text('Open in Maps'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: maincolor1,
-                    foregroundColor: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-        ],
-      );
-    }
-
-    double? lat =latitude ;
-    double? lng =longitude ;
-
-    return Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-    // Header Section
-    Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            "Location",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 15,
-              color: Colors.grey[800],
-            ),
-          ),
-          GestureDetector(
-            onTap: () => showMapOptions(lat, lng, hotel.hotelName),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: maincolor1!.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: maincolor1!.withOpacity(0.3)),
-              ),
-              child: Row(
-                children: [
-                  Text(
-                    "Open in Maps",
-                    style: TextStyle(
-                      color: maincolor1,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  Icon(Icons.open_in_new, size: 16, color: maincolor1),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    ),
-    
-    const SizedBox(height: 12),
-    
-    // Location Card
-    GestureDetector(
-      onTap: () => showMapOptions(lat, lng, hotel.hotelName),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          // boxShadow: [
-          //   BoxShadow(
-          //     color: Colors.black.withOpacity(0.1),
-          //     blurRadius: 8,
-          //     offset: const Offset(0, 2),
-          //   ),
-          // ],
-          // border: Border.all(color: Colors.grey[200]!),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Icon Container
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [maincolor1!, maincolor1!.withOpacity(0.8)],
+              Text(
+                "Location",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: _textPrimary,
+                ),
+              ),
+              if (lat != null && lng != null)
+                GestureDetector(
+                  onTap: () => showMapOptions(lat, lng, hotel.hotelName),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: _secondaryColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: _secondaryColor.withOpacity(0.3)),
+                    ),
+                    child: Row(
+                      children: [
+                        Text(
+                          "Open Maps",
+                          style: TextStyle(
+                            color: _secondaryColor,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(width: 6),
+                        Icon(Icons.open_in_new_rounded, size: 14, color: _secondaryColor),
+                      ],
+                    ),
                   ),
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    // BoxShadow(
-                    //   color: maincolor1!.withOpacity(0.3),
-                    //   blurRadius: 6,
-                    //   offset: const Offset(0, 2),
-                    // ),
-                  ],
                 ),
-                child: Icon(
-                  Icons.location_on_outlined,
-                  color: Colors.white,
-                  size: 24,
-                ),
-              ),
-              
-              const SizedBox(width: 16),
-              
-              // Address Text
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      hotel.address,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 13,
-                        color: Colors.grey[800],
-                        height: 1.4,
-                      ),
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "Tap to view on map",
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              
-              const SizedBox(width: 8),
-              
-              // Chevron Icon
-              Icon(
-                Icons.chevron_right,
-                color: Colors.grey[400],
-                size: 20,
-              ),
             ],
           ),
-        ),
-      ),
-    ),
-    
-    const SizedBox(height: 20),
-  ],
-);
-  }
-
-  Future<void> _launchMaps(String query) async {
-    final googleMapsUrl = 'https://www.google.com/maps/search/?api=1&query=$query';
-    final appleMapsUrl = 'https://maps.apple.com/?q=$query';
-
-    try {
-      if (await canLaunchUrl(Uri.parse(googleMapsUrl))) {
-        await launchUrl(Uri.parse(googleMapsUrl));
-      } else if (await canLaunchUrl(Uri.parse(appleMapsUrl))) {
-        await launchUrl(Uri.parse(appleMapsUrl));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Could not launch maps application'),
-            backgroundColor: Colors.red,
+          SizedBox(height: 12),
+          GestureDetector(
+            onTap: lat != null && lng != null ? () => showMapOptions(lat, lng, hotel.hotelName) : null,
+            child: Container(
+              decoration: BoxDecoration(
+                color: _cardColor,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [_secondaryColor, _accentColor],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Icon(
+                        Icons.location_on_rounded,
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            hotel.address,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              color: _textPrimary,
+                              height: 1.4,
+                            ),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          SizedBox(height: 6),
+                          Text(
+                            lat != null && lng != null ? "Tap to view on map" : "Location details",
+                            style: TextStyle(
+                              color: _textLight,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      color: _textLight,
+                      size: 24,
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error launching maps: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: _backgroundColor,
       body: FutureBuilder<HotelDetailsResponse>(
         future: _hotelDetailsFuture,
         builder: (context, snapshot) {
@@ -495,448 +361,275 @@ final hasCoordinates = latitude != null && longitude != null;
     final mainImage = _selectedMainImage ?? (hotel.images.isNotEmpty ? hotel.images.first : 
         'https://images.unsplash.com/photo-1600585154340-be6161a56a0c');
 
-    // const mapImage = 'https://www.4x3.net/sites/default/files/field/image/googlemaps_b_4x3_blogpost_banner_1000x556.gif';
-
-    // Parse attractions from the API response
     final attractions = hotel.attractions;
 
     return Column(
       children: [
         Expanded(
-          child: ListView(
-            children: [
-              // Hotel Image Header
-              Stack(
-                children: [
-                  _buildImageWithShimmer(
-                    mainImage,
-                    width: double.infinity,
-                    height: 240,
-                    fit: BoxFit.cover,
-                  ),
-                  Positioned(
-                    top: 16,
-                    left: 16,
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: CircleAvatar(
-                        backgroundColor: Colors.white.withOpacity(0.9),
-                        child: Icon(Icons.arrow_back, color: Colors.black),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              // Hotel Info
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      hotel.hotelName,
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Icon(Icons.location_on, size: 16, color: maincolor1),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(hotel.address),
+          child: CustomScrollView(
+            slivers: [
+              // Image Header
+           SliverAppBar(
+  leading: IconButton(
+    icon: Icon(Icons.arrow_back_rounded, color: Colors.white),
+    onPressed: () => Navigator.pop(context),
+  ),
+  backgroundColor: _primaryColor,
+  expandedHeight: 260,
+  floating: false,
+  pinned: true,
+  title: Text(
+    widget.hotelName,
+    style: TextStyle(
+      color: Colors.white,
+      fontSize: 16,
+      fontWeight: FontWeight.w600,
+    ),
+  ),
+  centerTitle: true,
+  flexibleSpace: FlexibleSpaceBar(
+    collapseMode: CollapseMode.pin, // This keeps the title bar pinned
+    background: Stack(
+      children: [
+        _buildImageWithShimmer(
+          mainImage,
+          width: double.infinity,
+          height: 280,
+          fit: BoxFit.cover,
+        ),
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+             end : Alignment.bottomCenter,
+             begin : Alignment.topCenter,
+              colors: [
+                Colors.black.withOpacity(0.6),
+                Colors.transparent,
+                Colors.transparent,
+              ],
+            ),
+          ),
+        ),
+      ],
+    ),
+  ),
+),
+              // Hotel Content
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15,vertical: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Hotel Header Info
+                      Container(
+                        padding: EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: _cardColor,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 10,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Icon(Icons.star, color: Colors.amber, size: 20),
-                        const SizedBox(width: 4),
-                        Text(
-                          hotel.hotelRating.toString(),
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          " Star Hotel",
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Gallery Photos
-                    if (galleryImages.length > 1) ...[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Gallery Photos",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            "${_selectedImageIndex + 1}/${galleryImages.length}",
-                            style: TextStyle(color: maincolor1, fontSize: 12),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      SizedBox(
-                        height: 80,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: galleryImages.length,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () => _updateMainImage(galleryImages[index], index),
-                              child: Container(
-                                margin: const EdgeInsets.only(right: 8),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(
-                                    color: _selectedImageIndex == index 
-                                        ? maincolor1!
-                                        : Colors.transparent,
-                                    width: 2,
-                                  ),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(2.0),
-                                  child: Container(
-                                    width: 80,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(6),
-                                      child: _buildImageWithShimmer(
-                                        galleryImages[index],
-                                        width: 80,
-                                        height: 80,
-                                        fit: BoxFit.cover,
-                                      ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              hotel.hotelName,
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: _textPrimary,
+                                height: 1.2,
+                              ),
+                            ),
+                            SizedBox(height: 12),
+                            Row(
+                              children: [
+                                Icon(Icons.location_on_rounded, size: 18, color: _secondaryColor),
+                                SizedBox(width: 6),
+                                Expanded(
+                                  child: Text(
+                                    hotel.address,
+                                    style: TextStyle(
+                                      color: _textSecondary,
+                                      fontSize: 14,
                                     ),
                                   ),
                                 ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-
-                    // Check-in/Check-out
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _infoCard(
-                            'Check-in',
-                            Icons.login,
-                            hotel.checkInTime,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _infoCard(
-                            'Check-out',
-                            Icons.logout,
-                            hotel.checkOutTime,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Description with See More/See Less functionality
-                    if (hotel.description.isNotEmpty) ...[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Description",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            hotel.hotelCode,
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      LayoutBuilder(
-                        builder: (context, constraints) {
-                          final cleanedDescription = _cleanDescription(hotel.description);
-                          final textSpan = TextSpan(
-                            text: cleanedDescription,
-                            style: TextStyle(color: Colors.grey[700], height: 1.4),
-                          );
-                          
-                          final textPainter = TextPainter(
-                            text: textSpan,
-                            maxLines: _maxDescriptionLines,
-                            textDirection: TextDirection.ltr,
-                          );
-                          
-                          textPainter.layout(maxWidth: constraints.maxWidth);
-                          
-                          final isTextLong = textPainter.didExceedMaxLines;
-                          
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              AnimatedCrossFade(
-                                duration: const Duration(milliseconds: 300),
-                                crossFadeState: _isDescriptionExpanded 
-                                    ? CrossFadeState.showSecond 
-                                    : CrossFadeState.showFirst,
-                                firstChild: Text(
-                                  cleanedDescription,
-                                  style: TextStyle(
-                                    color: Colors.grey[700],
-                                    height: 1.4,
+                              ],
+                            ),
+                            SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: _secondaryColor.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
-                                  maxLines: _maxDescriptionLines,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                secondChild: Text(
-                                  cleanedDescription,
-                                  style: TextStyle(
-                                    color: Colors.grey[700],
-                                    height: 1.4,
-                                  ),
-                                ),
-                              ),
-                              if (isTextLong) ...[
-                                const SizedBox(height: 8),
-                                GestureDetector(
-                                  onTap: _toggleDescriptionExpansion,
                                   child: Row(
-                                    mainAxisSize: MainAxisSize.min,
                                     children: [
+                                      Icon(Icons.star_rounded, color: _secondaryColor, size: 16),
+                                      SizedBox(width: 6),
                                       Text(
-                                        _isDescriptionExpanded ? "See Less" : "See More",
+                                        "${hotel.hotelRating} Star Hotel",
                                         style: TextStyle(
-                                          color: maincolor1,
+                                          color: _secondaryColor,
                                           fontWeight: FontWeight.w600,
-                                          fontSize: 14,
+                                          fontSize: 13,
                                         ),
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Icon(
-                                        _isDescriptionExpanded 
-                                            ? Icons.keyboard_arrow_up 
-                                            : Icons.keyboard_arrow_down,
-                                        color: maincolor1,
-                                        size: 18,
                                       ),
                                     ],
                                   ),
                                 ),
                               ],
-                            ],
-                          );
-                        },
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 16),
-                    ],
+                      SizedBox(height: 24),
 
-                    // Facilities
-                    if (hotel.hotelFacilities.isNotEmpty) ...[
-                      Text(
-                        "Facilities",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 12,
-                        children: hotel.hotelFacilities.take(8).map((facility) {
-                          return Chip(
-                            label: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  _getFacilityIcon(facility),
-                                  color: maincolor1,
-                                  size: 16,
+                      // Image Gallery
+                      if (galleryImages.length > 1) ...[
+                        _buildSectionHeader("Gallery Photos", "${_selectedImageIndex + 1}/${galleryImages.length}"),
+                        SizedBox(height: 12),
+                        SizedBox(
+                          height: 90,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: galleryImages.length,
+                            itemBuilder: (context, index) {
+                              return GestureDetector(
+                                onTap: () => _updateMainImage(galleryImages[index], index),
+                                child: Container(
+                                  margin: EdgeInsets.only(right: 12),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: _selectedImageIndex == index 
+                                          ? _secondaryColor
+                                          : Colors.transparent,
+                                      width: 3,
+                                    ),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(13),
+                                    child: _buildImageWithShimmer(
+                                      galleryImages[index],
+                                      width: 90,
+                                      height: 90,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
                                 ),
-                                const SizedBox(width: 5),
-                                Text(
-                                  facility,
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                              ],
-                            ),
-                            backgroundColor: maincolor1!.withOpacity(0.1),
-                            labelStyle: TextStyle(color: maincolor1),
-                            side: BorderSide.none,
-                          );
-                        }).toList(),
-                      ),
-                      if (hotel.hotelFacilities.length > 8) ...[
-                        const SizedBox(height: 8),
-                        GestureDetector(
-                          onTap: () {
-                            _showAllFacilitiesBottomSheet(hotel.hotelFacilities);
-                          },
-                          child: Text(
-                            "+ ${hotel.hotelFacilities.length - 8} more facilities",
-                            style: TextStyle(
-                              color: maincolor1,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                            ),
+                              );
+                            },
                           ),
                         ),
+                        SizedBox(height: 24),
                       ],
-                      const SizedBox(height: 16),
-                    ],
 
-                    // Nearby Attractions
-                    if (attractions.isNotEmpty) ...[
+                      // Check-in/Check-out
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            "Nearby Attractions",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          if (attractions.length > 3)
-                            GestureDetector(
-                              onTap: () {
-                                _showAllAttractionsBottomSheet(attractions);
-                              },
-                              child: Text(
-                                "View All",
-                                style: TextStyle(
-                                  color: maincolor1,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
+                          Expanded(child: _buildInfoCard('Check-in', Icons.login_rounded, hotel.checkInTime)),
+                          SizedBox(width: 12),
+                          Expanded(child: _buildInfoCard('Check-out', Icons.logout_rounded, hotel.checkOutTime)),
                         ],
                       ),
-                      const SizedBox(height: 8),
-                      GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                          childAspectRatio: 3.8,
-                        ),
-                        itemCount: attractions.length > 6 ? 6 : attractions.length,
-                        itemBuilder: (context, index) {
-                          return _buildAttractionCard(attractions[index]);
-                        },
-                      ),
-                      if (attractions.length > 6) ...[
-                        const SizedBox(height: 8),
-                        GestureDetector(
-                          onTap: () {
-                            _showAllAttractionsBottomSheet(attractions);
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: maincolor1!.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: maincolor1!.withOpacity(0.3),
-                                width: 1,
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                "+ ${attractions.length - 6} more attractions",
-                                style: TextStyle(
-                                  color: maincolor1,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                      SizedBox(height: 24),
+
+                      // Description
+                      if (hotel.description.isNotEmpty) ...[
+                        _buildSectionHeader("Description"),
+                        SizedBox(height: 12),
+                        _buildDescriptionSection(hotel.description),
+                        SizedBox(height: 24),
                       ],
-                      const SizedBox(height: 16),
+
+                      // Facilities
+                      if (hotel.hotelFacilities.isNotEmpty) ...[
+                        _buildSectionHeader("Facilities"),
+                        SizedBox(height: 12),
+                        _buildFacilitiesSection(hotel.hotelFacilities),
+                        SizedBox(height: 24),
+                      ],
+
+                      // Nearby Attractions
+                      if (attractions.isNotEmpty) ...[
+                        _buildSectionHeader("Nearby Attractions"),
+                        SizedBox(height: 12),
+                        _buildAttractionsSection(attractions),
+                        SizedBox(height: 24),
+                      ],
+
+                      // Contact Information
+                      _buildSectionHeader("Contact Information"),
+                      SizedBox(height: 12),
+                      _buildContactSection(hotel),
+                      SizedBox(height: 24),
+
+                      // Location
+                      buildMapSection(hotel),
                     ],
-
-                    // Contact Information
-                    Text(
-                      "Contact Information",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    _contactInfo(Icons.phone, hotel.phoneNumber),
-                    _contactInfo(Icons.fax, hotel.faxNumber),
-                    _contactInfo(Icons.location_on_rounded, '${hotel.cityName}, ${hotel.countryName}'),
-                    const SizedBox(height: 16),
-                    buildMapSectionSimple(hotel),
-
-                    // // Map
-                    // Text(
-                    //   "Location",
-                    //   style: TextStyle(fontWeight: FontWeight.bold),
-                    // ),
-                    // const SizedBox(height: 8),
-                    // ClipRRect(
-                    //   borderRadius: BorderRadius.circular(8),
-                    //   child: _buildImageWithShimmer(
-                    //     mapImage,
-                    //     height: 150,
-                    //     width: double.infinity,
-                    //     fit: BoxFit.cover,
-                    //   ),
-                    // ),
-                    // const SizedBox(height: 16),
-                  ],
+                  ),
                 ),
               ),
             ],
           ),
         ),
-        // Book Now Button
-        Padding(
-          padding: const EdgeInsets.all(16.0),
+
+        // Check Availability Button
+        Container(
+          padding: EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: _cardColor,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                offset: Offset(0, -2),
+              ),
+            ],
+          ),
           child: SizedBox(
             width: double.infinity,
+            height: 56,
             child: ElevatedButton(
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => RoomAvailabilityRequestPage(
-                     hotel:hotel
-                    ),
+                    builder: (_) => RoomAvailabilityRequestPage(hotel: hotel),
                   ),
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: maincolor1,
+                backgroundColor: _primaryColor,
+                foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                elevation: 2,
               ),
-              child: const Text(
-                "Check Room Availability",
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.search_rounded, size: 20),
+                  SizedBox(width: 12),
+                  Text(
+                    "Check Room Availability",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -945,44 +638,330 @@ final hasCoordinates = latitude != null && longitude != null;
     );
   }
 
-  Widget _buildAttractionCard(String attraction) {
+  Widget _buildSectionHeader(String title, [String? subtitle]) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: _textPrimary,
+          ),
+        ),
+        if (subtitle != null)
+          Text(
+            subtitle,
+            style: TextStyle(
+              color: _secondaryColor,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildInfoCard(String title, IconData icon, String value) {
     return Container(
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
-            blurRadius: 2,
-            offset: const Offset(0, 1),
+            blurRadius: 8,
+            offset: Offset(0, 2),
           ),
         ],
       ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: _secondaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: _secondaryColor, size: 18),
+              ),
+              SizedBox(width: 8),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: _textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 8),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: _textPrimary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDescriptionSection(String description) {
+    final cleanedDescription = _cleanDescription(description);
+    
+    return Container(
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AnimatedCrossFade(
+            duration: Duration(milliseconds: 300),
+            crossFadeState: _isDescriptionExpanded 
+                ? CrossFadeState.showSecond 
+                : CrossFadeState.showFirst,
+            firstChild: Text(
+              cleanedDescription,
+              style: TextStyle(
+                color: _textSecondary,
+                height: 1.6,
+                fontSize: 14,
+              ),
+              maxLines: _maxDescriptionLines,
+              overflow: TextOverflow.ellipsis,
+            ),
+            secondChild: Text(
+              cleanedDescription,
+              style: TextStyle(
+                color: _textSecondary,
+                height: 1.6,
+                fontSize: 14,
+              ),
+            ),
+          ),
+          SizedBox(height: 12),
+          GestureDetector(
+            onTap: _toggleDescriptionExpansion,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: _secondaryColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    _isDescriptionExpanded ? "Show Less" : "Show More",
+                    style: TextStyle(
+                      color: _secondaryColor,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
+                  ),
+                  SizedBox(width: 6),
+                  Icon(
+                    _isDescriptionExpanded 
+                        ? Icons.keyboard_arrow_up_rounded 
+                        : Icons.keyboard_arrow_down_rounded,
+                    color: _secondaryColor,
+                    size: 18,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFacilitiesSection(List<String> facilities) {
+    return Container(
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: facilities.take(8).map((facility) {
+              return Container(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: _secondaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      _getFacilityIcon(facility),
+                      color: _secondaryColor,
+                      size: 16,
+                    ),
+                    SizedBox(width: 6),
+                    Text(
+                      facility,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: _textPrimary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          ),
+          if (facilities.length > 8) ...[
+            SizedBox(height: 12),
+            GestureDetector(
+              onTap: () => _showAllFacilitiesBottomSheet(facilities),
+              child: Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: _primaryColor.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: _primaryColor.withOpacity(0.2)),
+                ),
+                child: Center(
+                  child: Text(
+                    "+ ${facilities.length - 8} more facilities",
+                    style: TextStyle(
+                      color: _primaryColor,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAttractionsSection(List<String> attractions) {
+    return Container(
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          GridView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 4,
+            ),
+            itemCount: attractions.length > 6 ? 6 : attractions.length,
+            itemBuilder: (context, index) {
+              return _buildAttractionCard(attractions[index]);
+            },
+          ),
+          if (attractions.length > 6) ...[
+            SizedBox(height: 12),
+            GestureDetector(
+              onTap: () => _showAllAttractionsBottomSheet(attractions),
+              child: Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: _primaryColor.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: _primaryColor.withOpacity(0.2)),
+                ),
+                child: Center(
+                  child: Text(
+                    "+ ${attractions.length - 6} more attractions",
+                    style: TextStyle(
+                      color: _primaryColor,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAttractionCard(String attraction) {
+    return Container(
+      decoration: BoxDecoration(
+        color: _backgroundColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         child: Row(
           children: [
             Container(
-              width: 25,
-              height: 25,
+              width: 28,
+              height: 28,
               decoration: BoxDecoration(
-                color: maincolor1,
+                color: _secondaryColor,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
-                Icons.location_on_outlined,
+                Icons.place_rounded,
                 color: Colors.white,
-                size: 15,
+                size: 16,
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(
               child: Text(
                 attraction,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
-                  color: Colors.grey[800],
+                  color: _textPrimary,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -994,6 +973,70 @@ final hasCoordinates = latitude != null && longitude != null;
     );
   }
 
+  Widget _buildContactSection(HotelDetail hotel) {
+    return Container(
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          if (hotel.phoneNumber.isNotEmpty)
+            _buildContactItem(Icons.phone_rounded, hotel.phoneNumber),
+          if (hotel.faxNumber.isNotEmpty)
+            _buildContactItem(Icons.fax_rounded, hotel.faxNumber),
+          _buildContactItem(Icons.location_city_rounded, '${hotel.cityName}, ${hotel.countryName}'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContactItem(IconData icon, String text) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: _secondaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, size: 20, color: _secondaryColor),
+          ),
+          SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 14,
+                color: _textPrimary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // [Rest of the helper methods remain the same as your original code]
+  // _buildImageWithShimmer, _cleanDescription, _showAllFacilitiesBottomSheet,
+  // _showAllAttractionsBottomSheet, _getFacilityIcon, _buildLoadingState,
+  // _buildShimmerHotelDetails, _buildErrorState, _buildEmptyState
+
+  // [Include all the remaining helper methods from your original code here]
+  // They will work the same way but with the updated theme colors
+
   Widget _buildImageWithShimmer(String imageUrl, {
     double? width,
     double? height,
@@ -1001,21 +1044,18 @@ final hasCoordinates = latitude != null && longitude != null;
   }) {
     return Stack(
       children: [
-        // Shimmer background
         Container(
           width: width,
           height: height,
           color: Colors.grey[300],
           child: Center(
             child: Icon(
-              Icons.hotel,
+              Icons.hotel_rounded,
               size: 40,
               color: Colors.grey[400],
             ),
           ),
         ),
-        
-        // Actual image
         Image.network(
           imageUrl,
           width: width,
@@ -1038,8 +1078,8 @@ final hasCoordinates = latitude != null && longitude != null;
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.error_outline, color: Colors.grey[500], size: 40),
-                    const SizedBox(height: 8),
+                    Icon(Icons.error_outline_rounded, color: Colors.grey[500], size: 40),
+                    SizedBox(height: 8),
                     Text(
                       'Failed to load image',
                       style: TextStyle(color: Colors.grey[600], fontSize: 12),
@@ -1054,51 +1094,9 @@ final hasCoordinates = latitude != null && longitude != null;
     );
   }
 
-  Widget _infoCard(String title, IconData icon, String value) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey.withOpacity(0.2), width: 1),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon, color: maincolor1, size: 16),
-                const SizedBox(width: 6),
-                Text(title, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Text(value, style: TextStyle(fontWeight: FontWeight.bold)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _contactInfo(IconData icon, String text) {
-    if (text.isEmpty) return const SizedBox();
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Icon(icon, size: 16, color: maincolor1),
-          const SizedBox(width: 8),
-          Expanded(child: Text(text, style: TextStyle(fontSize: 14))),
-        ],
-      ),
-    );
-  }
-
   String _cleanDescription(String description) {
-    // Remove HTML tags and clean up the description
     return description
-        .replaceAll(RegExp(r'<[^>]*>'), '') // Remove HTML tags
+        .replaceAll(RegExp(r'<[^>]*>'), '')
         .replaceAll('HeadLine :', '')
         .replaceAll('Location :', '')
         .replaceAll('Rooms :', '')
@@ -1111,7 +1109,6 @@ final hasCoordinates = latitude != null && longitude != null;
         .trim();
   }
 
-  // Bottom Sheet for All Facilities
   void _showAllFacilitiesBottomSheet(List<String> facilities) {
     showModalBottomSheet(
       context: context,
@@ -1119,22 +1116,24 @@ final hasCoordinates = latitude != null && longitude != null;
       backgroundColor: Colors.transparent,
       builder: (context) {
         return Container(
-          margin: const EdgeInsets.only(top: 100),
+          margin: EdgeInsets.only(top: 100),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
+            color: _cardColor,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(28),
+              topRight: Radius.circular(28),
+            ),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Header
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: maincolor1,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
+                  color: _primaryColor,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(28),
+                    topRight: Radius.circular(28),
                   ),
                 ),
                 child: Row(
@@ -1142,55 +1141,46 @@ final hasCoordinates = latitude != null && longitude != null;
                   children: [
                     Text(
                       "All Facilities (${facilities.length})",
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
-                        fontSize: 18,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: const Icon(Icons.close, color: Colors.white),
+                      onPressed: () => Navigator.pop(context),
+                      icon: Icon(Icons.close_rounded, color: Colors.white),
                     ),
                   ],
                 ),
               ),
-              
-              // Facilities List
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(24),
                   child: Wrap(
                     spacing: 12,
                     runSpacing: 12,
                     children: facilities.map((facility) {
-                      return Chip(
-                        label: Row(
+                      return Container(
+                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: _secondaryColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              _getFacilityIcon(facility),
-                              color: maincolor1,
-                              size: 16,
-                            ),
-                            const SizedBox(width: 6),
-                            Flexible(
-                              child: Text(
-                                facility,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: maincolor1,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
+                            Icon(_getFacilityIcon(facility), color: _secondaryColor, size: 16),
+                            SizedBox(width: 8),
+                            Text(
+                              facility,
+                              style: TextStyle(
+                                color: _textPrimary,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ],
                         ),
-                        backgroundColor: maincolor1!.withOpacity(0.1),
-                        side: BorderSide.none,
                       );
                     }).toList(),
                   ),
@@ -1203,7 +1193,6 @@ final hasCoordinates = latitude != null && longitude != null;
     );
   }
 
-  // Bottom Sheet for All Attractions
   void _showAllAttractionsBottomSheet(List<String> attractions) {
     showModalBottomSheet(
       context: context,
@@ -1211,22 +1200,24 @@ final hasCoordinates = latitude != null && longitude != null;
       backgroundColor: Colors.transparent,
       builder: (context) {
         return Container(
-          margin: const EdgeInsets.only(top: 100),
+          margin: EdgeInsets.only(top: 100),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
+            color: _cardColor,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(28),
+              topRight: Radius.circular(28),
+            ),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Header
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: maincolor1,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
+                  color: _primaryColor,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(28),
+                    topRight: Radius.circular(28),
                   ),
                 ),
                 child: Row(
@@ -1234,30 +1225,26 @@ final hasCoordinates = latitude != null && longitude != null;
                   children: [
                     Text(
                       "Nearby Attractions (${attractions.length})",
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
-                        fontSize: 18,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: const Icon(Icons.close, color: Colors.white),
+                      onPressed: () => Navigator.pop(context),
+                      icon: Icon(Icons.close_rounded, color: Colors.white),
                     ),
                   ],
                 ),
               ),
-              
-              // Attractions List
               Expanded(
                 child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(24),
                   itemCount: attractions.length,
                   itemBuilder: (context, index) {
                     return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
+                      margin: EdgeInsets.only(bottom: 12),
                       child: _buildAttractionCard(attractions[index]),
                     );
                   },
@@ -1270,67 +1257,66 @@ final hasCoordinates = latitude != null && longitude != null;
     );
   }
 
-  // Helper method to get appropriate icons for facilities
   IconData _getFacilityIcon(String facility) {
     final facilityLower = facility.toLowerCase();
     
     if (facilityLower.contains('wifi') || facilityLower.contains('internet')) {
-      return Icons.wifi;
+      return Icons.wifi_rounded;
     } else if (facilityLower.contains('pool') || facilityLower.contains('swim')) {
-      return Icons.pool;
+      return Icons.pool_rounded;
     } else if (facilityLower.contains('parking') || facilityLower.contains('car')) {
-      return Icons.local_parking;
+      return Icons.local_parking_rounded;
     } else if (facilityLower.contains('restaurant') || facilityLower.contains('dining')) {
-      return Icons.restaurant;
+      return Icons.restaurant_rounded;
     } else if (facilityLower.contains('gym') || facilityLower.contains('fitness')) {
-      return Icons.fitness_center;
+      return Icons.fitness_center_rounded;
     } else if (facilityLower.contains('spa') || facilityLower.contains('massage')) {
-      return Icons.spa;
+      return Icons.spa_rounded;
     } else if (facilityLower.contains('bar') || facilityLower.contains('lounge')) {
-      return Icons.local_bar;
+      return Icons.local_bar_rounded;
     } else if (facilityLower.contains('room service') || facilityLower.contains('service')) {
-      return Icons.room_service;
+      return Icons.room_service_rounded;
     } else if (facilityLower.contains('business') || facilityLower.contains('meeting')) {
-      return Icons.business_center;
+      return Icons.business_center_rounded;
     } else if (facilityLower.contains('air conditioning') || facilityLower.contains('ac')) {
-      return Icons.ac_unit;
+      return Icons.ac_unit_rounded;
     } else if (facilityLower.contains('elevator') || facilityLower.contains('lift')) {
-      return Icons.elevator;
+      return Icons.elevator_rounded;
     } else if (facilityLower.contains('laundry') || facilityLower.contains('cleaning')) {
-      return Icons.local_laundry_service;
+      return Icons.local_laundry_service_rounded;
     } else if (facilityLower.contains('tv') || facilityLower.contains('television')) {
-      return Icons.tv;
+      return Icons.tv_rounded;
     } else if (facilityLower.contains('safe') || facilityLower.contains('security')) {
-      return Icons.security;
+      return Icons.security_rounded;
     } else if (facilityLower.contains('breakfast')) {
-      return Icons.free_breakfast;
+      return Icons.free_breakfast_rounded;
     } else if (facilityLower.contains('pet') || facilityLower.contains('animal')) {
-      return Icons.pets;
+      return Icons.pets_rounded;
     } else if (facilityLower.contains('wheelchair') || facilityLower.contains('accessible')) {
-      return Icons.accessible;
+      return Icons.accessible_rounded;
     } else if (facilityLower.contains('concierge')) {
-      return Icons.help_outline;
+      return Icons.help_outline_rounded;
     } else if (facilityLower.contains('library')) {
-      return Icons.menu_book;
+      return Icons.menu_book_rounded;
     } else if (facilityLower.contains('garden') || facilityLower.contains('terrace')) {
-      return Icons.nature;
+      return Icons.nature_rounded;
     } else {
-      return Icons.check_circle_outline;
+      return Icons.check_circle_outline_rounded;
     }
   }
 
-  // Loading State
   Widget _buildLoadingState() {
     return Scaffold(
+      backgroundColor: _backgroundColor,
       appBar: AppBar(
-        backgroundColor: maincolor1,
+        backgroundColor: _primaryColor,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back_rounded, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           widget.hotelName,
-          style: const TextStyle(color: Colors.white,fontSize: 15),
+          style: TextStyle(color: Colors.white, fontSize: 16),
         ),
       ),
       body: _buildShimmerHotelDetails(),
@@ -1338,204 +1324,225 @@ final hasCoordinates = latitude != null && longitude != null;
   }
 
   Widget _buildShimmerHotelDetails() {
-    return Column(
-      children: [
-        // Shimmer Main Image
-        Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Container(
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(24),
+      child: Column(
+        children: [
+          Container(
             height: 240,
-            color: Colors.grey[300],
-            // child: Center(
-            //   child: CircularProgressIndicator(color: maincolor1),
-            // ),
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(20),
+            ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          SizedBox(height: 24),
+          Container(
+            height: 120,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+          SizedBox(height: 24),
+          Row(
             children: [
-              // Shimmer Title
-              Container(
-                width: double.infinity,
-                height: 28,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-              const SizedBox(height: 16),
-              
-              // Shimmer Location & Rating
-              Container(
-                width: 200,
-                height: 16,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-              const SizedBox(height: 16),
-              
-              // Shimmer Gallery
-              Container(
-                width: double.infinity,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              const SizedBox(height: 16),
-              
-              // Shimmer Check-in/Check-out
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
+              Expanded(
+                child: Container(
+                  height: 100,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Container(
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-              const SizedBox(height: 16),
-              
-              // Shimmer Description
-              Container(
-                width: double.infinity,
-                height: 100,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(8),
+              SizedBox(width: 12),
+              Expanded(
+                child: Container(
+                  height: 100,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
               ),
             ],
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
-  // Error State
   Widget _buildErrorState(String error) {
     return Scaffold(
+      backgroundColor: _backgroundColor,
       appBar: AppBar(
-        backgroundColor: maincolor1,
+        backgroundColor: _primaryColor,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back_rounded, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           widget.hotelName,
-          style: const TextStyle(color: Colors.white,fontSize: 15),
+          style: TextStyle(color: Colors.white, fontSize: 16),
         ),
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.error_outline,
-                size: 64,
-                color: Colors.red[300],
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Failed to Load Hotel Details',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+          padding: EdgeInsets.all(24),
+          child: Container(
+            padding: EdgeInsets.all(32),
+            decoration: BoxDecoration(
+              color: _cardColor,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: Offset(0, 4),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                error,
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey[600]),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _hotelDetailsFuture = _apiService.fetchHotelDetails(widget.hotelCode);
-                  });
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: maincolor1,
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: Colors.red.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.error_outline_rounded,
+                    size: 40,
+                    color: Colors.red,
+                  ),
                 ),
-                child: const Text('Try Again'),
-              ),
-            ],
+                SizedBox(height: 16),
+                Text(
+                  'Failed to Load Hotel Details',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: _textPrimary,
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  error,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: _textSecondary),
+                ),
+                SizedBox(height: 20),
+                Container(
+                  width: 140,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _hotelDetailsFuture = _apiService.fetchHotelDetails(widget.hotelCode);
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _primaryColor,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.refresh_rounded, size: 18),
+                        SizedBox(width: 8),
+                        Text('Try Again'),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  // Empty State
   Widget _buildEmptyState() {
     return Scaffold(
+      backgroundColor: _backgroundColor,
       appBar: AppBar(
-        backgroundColor: maincolor1,
+        backgroundColor: _primaryColor,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back_rounded, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           widget.hotelName,
-          style: const TextStyle(color: Colors.white,fontSize: 15),
+          style: TextStyle(color: Colors.white, fontSize: 16),
         ),
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.hotel_outlined,
-                size: 64,
-                color: Colors.grey[300],
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'No Hotel Details Found',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+          padding: EdgeInsets.all(24),
+          child: Container(
+            padding: EdgeInsets.all(32),
+            decoration: BoxDecoration(
+              color: _cardColor,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: Offset(0, 4),
                 ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Sorry, we couldn\'t find details for this hotel.',
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: maincolor1,
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    color: _secondaryColor.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.hotel_rounded,
+                    size: 50,
+                    color: _secondaryColor,
+                  ),
                 ),
-                child: const Text('Go Back',style: TextStyle(color: Colors.white),),
-              ),
-            ],
+                SizedBox(height: 16),
+                Text(
+                  'No Hotel Details Found',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: _textPrimary,
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Sorry, we couldn\'t find details for this hotel.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: _textSecondary),
+                ),
+                SizedBox(height: 20),
+                Container(
+                  width: 120,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _primaryColor,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    child: Text('Go Back'),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

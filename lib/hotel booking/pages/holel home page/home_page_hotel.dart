@@ -1,4 +1,4 @@
-
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -28,6 +28,16 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
   bool isLoadingCities = false;
 
   final ApiService apiService = ApiService();
+
+  // Color Theme - Consistent throughout
+  final Color _primaryColor = Colors.black;
+  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
+  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
+  final Color _backgroundColor = Color(0xFFF8F9FA);
+  final Color _cardColor = Colors.white;
+  final Color _textPrimary = Colors.black;
+  final Color _textSecondary = Color(0xFF666666);
+  final Color _textLight = Color(0xFF999999);
 
   @override
   void initState() {
@@ -87,6 +97,8 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
             await fetchCities(country);
           }
         },
+        primaryColor: _primaryColor,
+        secondaryColor: _secondaryColor,
       ),
     );
   }
@@ -106,6 +118,8 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
           setState(() => selectedCity = city);
           Navigator.pop(context);
         },
+        primaryColor: _primaryColor,
+        secondaryColor: _secondaryColor,
       ),
     );
   }
@@ -113,85 +127,134 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.white),
-        title: const Text(
-          'Hotel Booking',
-          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
-        ),
-        centerTitle: true,
-        backgroundColor: maincolor1,
-        elevation: 0,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
-        ),
-      ),
-      body: Center(
-        child: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Color(0xFFF8FAFF),
-                Color(0xFFEFF4FF),
-              ],
-            ),
-          ),
-          child: SingleChildScrollView(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 40, 24, 24),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Header Section
-                    _buildHeaderSection(),
-                    const SizedBox(height: 30),
-                    
-                    // Search Cards Section
-                    _buildSearchCardsSection(),
-                    const SizedBox(height: 32),
-                    
-                    // Search Button
-                    _buildSearchButton(),
-                  ],
+      backgroundColor: _backgroundColor,
+      body: CustomScrollView(
+        slivers: [
+          // App Bar
+          SliverAppBar(
+            backgroundColor: _primaryColor,
+            expandedHeight: 140,
+            floating: false,
+            pinned: true,
+            elevation: 4,
+            shadowColor: Colors.black.withOpacity(0.3),
+            surfaceTintColor: Colors.white,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(
+                'Hotel Booking',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              centerTitle: true,
+              background: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [_primaryColor, Color(0xFF2D2D2D)],
+                  ),
                 ),
               ),
             ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(
+                bottom: Radius.circular(20),
+              ),
+            ),
           ),
-        ),
+
+          // Main Content
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header Section
+                  _buildHeaderSection(),
+                  const SizedBox(height: 32),
+                  
+                  // Search Cards Section
+                  _buildSearchCardsSection(),
+                  const SizedBox(height: 32),
+                  
+                  // Search Button
+                  _buildSearchButton(),
+                  
+                  // Features Section
+                  _buildFeaturesSection(),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildHeaderSection() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          "Find Your Perfect Stay",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey[900],
-            height: 1.2,
-          ),
+    return Container(
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [_primaryColor, Color(0xFF2D2D2D)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        const SizedBox(height: 8),
-        Text(
-          "Discover luxury hotels at the best prices",          textAlign: TextAlign.center,
-
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.grey[600],
-            fontWeight: FontWeight.w500,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: _primaryColor.withOpacity(0.3),
+            blurRadius: 15,
+            offset: Offset(0, 6),
           ),
-        ),
-      ],
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: _secondaryColor.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.hotel_rounded,
+              color: _secondaryColor,
+              size: 28,
+            ),
+          ),
+          SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Find Your Perfect Stay",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    height: 1.2,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  "Discover luxury hotels at the best prices",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white.withOpacity(0.8),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -199,11 +262,11 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: _cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.blue.withOpacity(0.1),
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
@@ -248,24 +311,31 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: isDisabled ? Colors.grey[50] : Colors.white,
+          color: isDisabled ? Colors.grey[50] : _cardColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isDisabled ? Colors.grey[200]! : Colors.blue.withOpacity(0.2),
+            color: isDisabled ? Colors.grey[200]! : _secondaryColor.withOpacity(0.2),
             width: 2,
           ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 8,
+              offset: Offset(0, 2),
+            ),
+          ],
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: isDisabled ? Colors.grey[200] : maincolor1!.withOpacity(0.1),
+                color: isDisabled ? Colors.grey[200] : _secondaryColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 icon,
-                color: isDisabled ? Colors.grey : maincolor1,
+                color: isDisabled ? Colors.grey : _secondaryColor,
                 size: 24,
               ),
             ),
@@ -278,7 +348,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
                     title,
                     style: TextStyle(
                       fontSize: 14,
-                      color: isDisabled ? Colors.grey : Colors.grey[600],
+                      color: isDisabled ? Colors.grey : _textSecondary,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -291,16 +361,23 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: isDisabled ? Colors.grey[400] : Colors.grey[900],
+                        color: isDisabled ? Colors.grey[400] : _textPrimary,
                       ),
                     ),
                 ],
               ),
             ),
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              color: isDisabled ? Colors.grey[300] : Colors.grey[500],
-              size: 16,
+            Container(
+              padding: EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: isDisabled ? Colors.grey[100] : _backgroundColor,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: isDisabled ? Colors.grey[300] : _textLight,
+                size: 16,
+              ),
             ),
           ],
         ),
@@ -322,8 +399,9 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
   Widget _buildSearchButton() {
     final isEnabled = selectedCountry != null && selectedCity != null && !isLoadingCities;
     
-    return SizedBox(
+    return Container(
       width: double.infinity,
+      height: 56,
       child: ElevatedButton(
         onPressed: isEnabled
             ? () {
@@ -340,14 +418,13 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
               }
             : null,
         style: ElevatedButton.styleFrom(
-          backgroundColor: maincolor1,
+          backgroundColor: isEnabled ? _primaryColor : Colors.grey[400],
           foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 18),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
           elevation: 2,
-          shadowColor: maincolor1!.withOpacity(0.3),
+          shadowColor: isEnabled ? _primaryColor.withOpacity(0.3) : Colors.transparent,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -356,8 +433,8 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
               Icons.search_rounded,
               size: 20,
             ),
-            const SizedBox(width: 8),
-            const Text(
+            const SizedBox(width: 12),
+            Text(
               "Search Hotels",
               style: TextStyle(
                 fontSize: 16,
@@ -369,6 +446,100 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
       ),
     );
   }
+
+  Widget _buildFeaturesSection() {
+    final features = [
+      {
+        'icon': Icons.star_rounded,
+        'title': 'Best Prices',
+        'subtitle': 'Guaranteed lowest rates'
+      },
+      {
+        'icon': Icons.verified_user_rounded,
+        'title': 'Verified Stays',
+        'subtitle': 'Quality assured hotels'
+      },
+      {
+        'icon': Icons.support_agent_rounded,
+        'title': '24/7 Support',
+        'subtitle': 'Always here to help'
+      },
+    ];
+
+    return Container(
+      margin: EdgeInsets.only(top: 32),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Why Book With Us",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: _textPrimary,
+            ),
+          ),
+          SizedBox(height: 16),
+          Row(
+            children: features.map((feature) {
+              return Expanded(
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 4),
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: _cardColor,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.03),
+                        blurRadius: 8,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: _secondaryColor.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          feature['icon'] as IconData,
+                          color: _secondaryColor,
+                          size: 20,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        feature['title'] as String,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: _textPrimary,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        feature['subtitle'] as String,
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: _textSecondary,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 // ====== Country Bottom Sheet ======
@@ -376,12 +547,16 @@ class CountryBottomSheet extends StatefulWidget {
   final bool isLoading;
   final String? selectedCountry;
   final Function(String) onCountrySelected;
+  final Color primaryColor;
+  final Color secondaryColor;
 
   const CountryBottomSheet({
     super.key,
     required this.isLoading,
     required this.selectedCountry,
     required this.onCountrySelected,
+    required this.primaryColor,
+    required this.secondaryColor,
   });
 
   @override
@@ -444,12 +619,12 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
           const SizedBox(height: 24),
           
           // Title
-          const Text(
+          Text(
             "Select Country",
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: widget.primaryColor,
             ),
           ),
           const SizedBox(height: 20),
@@ -459,7 +634,7 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
             controller: _searchController,
             decoration: InputDecoration(
               hintText: "Search countries...",
-              prefixIcon: const Icon(Icons.search_rounded, color: Colors.grey),
+              prefixIcon: Icon(Icons.search_rounded, color: Colors.grey),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
@@ -483,31 +658,38 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
                           final country = filteredCountries[index];
                           final isSelected = country == widget.selectedCountry;
                           
-                          return ListTile(
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                            leading: Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: isSelected ? maincolor1!.withOpacity(0.1) : Colors.grey[50],
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Icon(
-                                Icons.flag_rounded,
-                                color: isSelected ? maincolor1 : Colors.grey,
-                              ),
+                          return Container(
+                            margin: EdgeInsets.symmetric(vertical: 4),
+                            decoration: BoxDecoration(
+                              color: isSelected ? widget.secondaryColor.withOpacity(0.1) : Colors.transparent,
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            title: Text(
-                              country,
-                              style: TextStyle(
-                                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                                color: isSelected ? maincolor1 : Colors.grey[800],
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              leading: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: isSelected ? widget.secondaryColor.withOpacity(0.2) : Colors.grey[50],
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Icon(
+                                  Icons.flag_rounded,
+                                  color: isSelected ? widget.secondaryColor : Colors.grey,
+                                ),
                               ),
+                              title: Text(
+                                country,
+                                style: TextStyle(
+                                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                                  color: isSelected ? widget.primaryColor : Colors.grey[800],
+                                ),
+                              ),
+                              trailing: isSelected
+                                  ? Icon(Icons.check_circle_rounded, color: widget.secondaryColor)
+                                  : null,
+                              onTap: () => widget.onCountrySelected(country),
                             ),
-                            trailing: isSelected
-                                ? Icon(Icons.check_circle_rounded, color: maincolor1)
-                                : null,
-                            onTap: () => widget.onCountrySelected(country),
                           );
                         },
                       ),
@@ -597,6 +779,8 @@ class CityBottomSheet extends StatefulWidget {
   final String? selectedCity;
   final List<HotelCityHotel> cities;
   final Function(String) onCitySelected;
+  final Color primaryColor;
+  final Color secondaryColor;
 
   const CityBottomSheet({
     super.key,
@@ -604,6 +788,8 @@ class CityBottomSheet extends StatefulWidget {
     required this.selectedCity,
     required this.cities,
     required this.onCitySelected,
+    required this.primaryColor,
+    required this.secondaryColor,
   });
 
   @override
@@ -666,12 +852,12 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
           const SizedBox(height: 24),
           
           // Title
-          const Text(
+          Text(
             "Select City",
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: widget.primaryColor,
             ),
           ),
           const SizedBox(height: 20),
@@ -681,7 +867,7 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
             controller: _searchController,
             decoration: InputDecoration(
               hintText: "Search cities...",
-              prefixIcon: const Icon(Icons.search_rounded, color: Colors.grey),
+              prefixIcon: Icon(Icons.search_rounded, color: Colors.grey),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
@@ -705,31 +891,38 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
                           final city = filteredCities[index];
                           final isSelected = city == widget.selectedCity;
                           
-                          return ListTile(
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                            leading: Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: isSelected ? maincolor1!.withOpacity(0.1) : Colors.grey[50],
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Icon(
-                                Icons.location_city_rounded,
-                                color: isSelected ? maincolor1 : Colors.grey,
-                              ),
+                          return Container(
+                            margin: EdgeInsets.symmetric(vertical: 4),
+                            decoration: BoxDecoration(
+                              color: isSelected ? widget.secondaryColor.withOpacity(0.1) : Colors.transparent,
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            title: Text(
-                              city,
-                              style: TextStyle(
-                                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                                color: isSelected ? maincolor1 : Colors.grey[800],
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              leading: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: isSelected ? widget.secondaryColor.withOpacity(0.2) : Colors.grey[50],
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Icon(
+                                  Icons.location_city_rounded,
+                                  color: isSelected ? widget.secondaryColor : Colors.grey,
+                                ),
                               ),
+                              title: Text(
+                                city,
+                                style: TextStyle(
+                                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                                  color: isSelected ? widget.primaryColor : Colors.grey[800],
+                                ),
+                              ),
+                              trailing: isSelected
+                                  ? Icon(Icons.check_circle_rounded, color: widget.secondaryColor)
+                                  : null,
+                              onTap: () => widget.onCitySelected(city),
                             ),
-                            trailing: isSelected
-                                ? Icon(Icons.check_circle_rounded, color: maincolor1)
-                                : null,
-                            onTap: () => widget.onCitySelected(city),
                           );
                         },
                       ),

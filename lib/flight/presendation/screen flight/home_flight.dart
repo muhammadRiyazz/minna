@@ -1,7 +1,6 @@
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/flight/application/search%20data/search_data_bloc.dart';
 import 'package:minna/flight/application/trip%20request/trip_request_bloc.dart';
-
 import 'package:minna/flight/domain/triplist%20request/search_request.dart';
 import 'package:minna/flight/presendation/screen%20flight/widget/airport_bottom.dart';
 import 'package:minna/flight/presendation/trip%20list/trip_list.dart';
@@ -10,1087 +9,1002 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 class FlightBookingTab extends StatelessWidget {
-  const FlightBookingTab({super.key});
+   FlightBookingTab({super.key});
+
+  // Color Theme - Consistent with hotel booking
+  final Color _primaryColor = Colors.black;
+  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
+  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
+  final Color _backgroundColor = Color(0xFFF8F9FA);
+  final Color _cardColor = Colors.white;
+  final Color _textPrimary = Colors.black;
+  final Color _textSecondary = Color(0xFF666666);
+  final Color _textLight = Color(0xFF999999);
+  final Color _errorColor = Color(0xFFE53935);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
-        title: Text(
-          'Flight Booking',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: maincolor1,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
-        ),
-      ),
+      backgroundColor: _backgroundColor,
       body: BlocBuilder<SearchDataBloc, SearchDataState>(
         builder: (context, state) {
-          return SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                SizedBox(
-                  // color: Colors.amberAccent,
-                  height: 170,
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Image.asset(
-                      'asset/flight/Airport.png',
-                      fit: BoxFit.fill,
-                    ),
-                  ),
-                ),
-                // SizedBox(height: 20),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: Text(
-                    'Flight Tickets   ',
-                    style: const TextStyle(
-                      fontSize: 19,
-                      color: Colors.black,
+          return CustomScrollView(
+            slivers: [
+              // App Bar
+              SliverAppBar(
+                backgroundColor: _primaryColor,
+                expandedHeight: 140,
+                floating: false,
+                pinned: true,
+                elevation: 4,
+                shadowColor: Colors.black.withOpacity(0.3),
+                surfaceTintColor: Colors.white,
+                flexibleSpace: FlexibleSpaceBar(
+                  title: Text(
+                    'Flight Booking',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
+                  centerTitle: true,
+                  background: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [_primaryColor, Color(0xFF2D2D2D)],
+                      ),
+                    ),
+                  ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                // shape: RoundedRectangleBorder(
+                //   borderRadius: BorderRadius.vertical(
+                //     bottom: Radius.circular(20),
+                //   ),
+                // ),
+              ),
+
+              // Main Content
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 17,horizontal: 16),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Book domestic and international flights',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      const SizedBox(height: 25),
-                      // Trip Type Selector
-                      Row(
-                        children: [
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () => context.read<SearchDataBloc>().add(
-                                const SearchDataEvent.oneWayOrRound(
-                                  oneWayOrRound: 'oneWay',
-                                ),
-                              ),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 12,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: state.oneWay
-                                      ? maincolor1!
-                                      : Colors.grey.shade200,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    'One Way',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: state.oneWay
-                                          ? Colors.white
-                                          : Colors.black87,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () => context.read<SearchDataBloc>().add(
-                                const SearchDataEvent.oneWayOrRound(
-                                  oneWayOrRound: 'roundTrip',
-                                ),
-                              ),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 12,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: !state.oneWay
-                                      ? maincolor1!
-                                      : Colors.grey.shade200,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    'Round Trip',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: !state.oneWay
-                                          ? Colors.white
-                                          : Colors.black87,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 15),
-                      // Location Selector
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black26),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Column(
-                          children: [
-                            // From Location
-                            InkWell(
-                              onTap: () =>
-                                  showAirportBottomSheet(context, isFrom: true),
-                              child: ListTile(
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 4,
-                                ),
-                                title: Text(
-                                  'From',
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                                subtitle: Text(
-                                  state.from?.name ?? 'Select Departure City',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.black,
+                      // Header Section
+                      _buildHeaderSection(),
+                      const SizedBox(height: 32),
 
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                leading: Icon(
-                                  Icons.flight_takeoff,
-                                  color: maincolor1!,
-                                  size: 30,
-                                ),
-                              ),
-                            ),
-                            const Divider(height: 0),
-                            InkWell(
-                              onTap: () => showAirportBottomSheet(
-                                context,
-                                isFrom: false,
-                              ),
-                              child: ListTile(
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 4,
-                                ),
-                                title: Text(
-                                  'To',
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                                subtitle: Text(
-                                  state.to?.name ?? 'Select Arrival City',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.black,
+                      // Search Cards Section
+                      _buildSearchCardsSection(context, state),
+                      const SizedBox(height: 32),
 
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                leading: Icon(
-                                  Icons.flight_land,
-                                  color: maincolor1!,
-                                  size: 30,
-                                ),
-                              ),
-                            ),
-                            const Divider(height: 0),
-                            // Date Selectors
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  // Departure Date
-                                  Expanded(
-                                    child: InkWell(
-                                      onTap: () async {
-                                        final pickedDate = await showDatePicker(
-                                          context: context,
-                                          initialDate: DateTime.now(),
-                                          firstDate: DateTime.now(),
-                                          lastDate: DateTime(2101),
-                                          builder: (context, child) => Theme(
-                                            data: Theme.of(context).copyWith(
-                                              colorScheme: ColorScheme.light(
-                                                primary: maincolor1!,
-                                                onPrimary: Colors.white,
-                                                onSurface: maincolor1!,
-                                              ),
-                                            ),
-                                            child: child!,
-                                          ),
-                                        );
-                                        if (pickedDate != null) {
-                                          context.read<SearchDataBloc>().add(
-                                            SearchDataEvent.departureDateChange(
-                                              departureDate: pickedDate,
-                                            ),
-                                          );
-
-                                          // If return date exists and is before new departure date, update it
-                                          final currentState = context
-                                              .read<SearchDataBloc>()
-                                              .state;
-                                          if (!currentState.oneWay &&
-                                              currentState.returnDate != null &&
-                                              currentState.returnDate!.isBefore(
-                                                pickedDate,
-                                              )) {
-                                            context.read<SearchDataBloc>().add(
-                                              SearchDataEvent.returnDateChange(
-                                                returnDate: pickedDate,
-                                              ),
-                                            );
-                                          }
-                                        }
-                                      },
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.calendar_month_outlined,
-                                            color: maincolor1!,
-                                            size: 32,
-                                          ),
-                                          const SizedBox(width: 5),
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              const SizedBox(height: 2),
-                                              const Text(
-                                                "Departure Date",
-                                                style: TextStyle(
-                                                  fontSize: 8,
-                                                  fontWeight: FontWeight.w400,
-                                                ),
-                                              ),
-                                              Text(
-                                                DateFormat(
-                                                  'dd MMM yyyy',
-                                                ).format(state.departureDate),
-                                                style: const TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Colors.black87,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  if (!state.oneWay) const SizedBox(width: 10),
-                                  if (!state.oneWay)
-                                    Expanded(
-                                      child: InkWell(
-                                        onTap: () async {
-                                          final currentState = context
-                                              .read<SearchDataBloc>()
-                                              .state;
-                                          final pickedDate = await showDatePicker(
-                                            context: context,
-                                            initialDate:
-                                                currentState.returnDate ??
-                                                currentState.departureDate,
-                                            firstDate: currentState
-                                                .departureDate, // Allow same date as departure
-                                            lastDate: DateTime(2101),
-                                            builder: (context, child) => Theme(
-                                              data: Theme.of(context).copyWith(
-                                                colorScheme: ColorScheme.light(
-                                                  primary: maincolor1!,
-                                                  onPrimary: Colors.white,
-                                                  onSurface: maincolor1!,
-                                                ),
-                                              ),
-                                              child: child!,
-                                            ),
-                                          );
-                                          if (pickedDate != null) {
-                                            context.read<SearchDataBloc>().add(
-                                              SearchDataEvent.returnDateChange(
-                                                returnDate: pickedDate,
-                                              ),
-                                            );
-                                          }
-                                        },
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.calendar_month_outlined,
-                                              color: maincolor1!,
-                                              size: 32,
-                                            ),
-                                            const SizedBox(width: 5),
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                const SizedBox(height: 2),
-                                                const Text(
-                                                  "Return Date",
-                                                  style: TextStyle(
-                                                    fontSize: 8,
-                                                    fontWeight: FontWeight.w400,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  state.returnDate != null
-                                                      ? DateFormat(
-                                                          'dd MMM yyyy',
-                                                        ).format(
-                                                          state.returnDate!,
-                                                        )
-                                                      : "Select date",
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.w500,
-                                                    color:
-                                                        state.returnDate != null
-                                                        ? Colors.black87
-                                                        : Colors.grey,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                            const Divider(height: 0),
-                            // Travel Info Section
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              child: Row(
-                                children: [
-                                  // Travellers
-                                  InkWell(
-                                    onTap: () {
-                                      showModalBottomSheet(
-                                        context: context,
-                                        isScrollControlled: true,
-                                        builder: (context) {
-                                          return BlocProvider.value(
-                                            value: context
-                                                .read<SearchDataBloc>(),
-                                            child: BlocBuilder<SearchDataBloc, SearchDataState>(
-                                              builder: (context, state) {
-                                                return Container(
-                                                  padding: const EdgeInsets.all(
-                                                    20,
-                                                  ),
-                                                  height:
-                                                      MediaQuery.of(
-                                                        context,
-                                                      ).size.height *
-                                                      0.5,
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      const Text(
-                                                        "Travellers",
-                                                        style: TextStyle(
-                                                          fontSize: 18,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                      ),
-                                                      const SizedBox(
-                                                        height: 20,
-                                                      ),
-                                                      _buildPassengerType(
-                                                        context,
-                                                        "Adults",
-                                                        "12+ years",
-                                                        state
-                                                            .travellers['adults']!,
-                                                        (
-                                                          value,
-                                                        ) => context.read<SearchDataBloc>().add(
-                                                          SearchDataEvent.passengers(
-                                                            travellers: {
-                                                              'adults': value,
-                                                              'children': state
-                                                                  .travellers['children']!,
-                                                              'infants': state
-                                                                  .travellers['infants']!,
-                                                            },
-                                                          ),
-                                                        ),
-                                                        min: 1,
-                                                      ),
-                                                      const SizedBox(
-                                                        height: 15,
-                                                      ),
-                                                      _buildPassengerType(
-                                                        context,
-                                                        "Children",
-                                                        "2-12 years",
-                                                        state
-                                                            .travellers['children']!,
-                                                        (value) => context
-                                                            .read<
-                                                              SearchDataBloc
-                                                            >()
-                                                            .add(
-                                                              SearchDataEvent.passengers(
-                                                                travellers: {
-                                                                  'adults': state
-                                                                      .travellers['adults']!,
-                                                                  'children':
-                                                                      value,
-                                                                  'infants': state
-                                                                      .travellers['infants']!,
-                                                                },
-                                                              ),
-                                                            ),
-                                                      ),
-                                                      const SizedBox(
-                                                        height: 15,
-                                                      ),
-                                                      _buildPassengerType(
-                                                        context,
-                                                        "Infants",
-                                                        "0-2 years",
-                                                        state
-                                                            .travellers['infants']!,
-                                                        (
-                                                          value,
-                                                        ) => context.read<SearchDataBloc>().add(
-                                                          SearchDataEvent.passengers(
-                                                            travellers: {
-                                                              'adults': state
-                                                                  .travellers['adults']!,
-                                                              'children': state
-                                                                  .travellers['children']!,
-                                                              'infants': value,
-                                                            },
-                                                          ),
-                                                        ),
-                                                        max: state
-                                                            .travellers['adults'],
-                                                      ),
-                                                      const Spacer(),
-                                                      Row(
-                                                        children: [
-                                                          Expanded(
-                                                            child: TextButton(
-                                                              onPressed: () =>
-                                                                  Navigator.pop(
-                                                                    context,
-                                                                  ),
-                                                              style: TextButton.styleFrom(
-                                                                padding:
-                                                                    const EdgeInsets.symmetric(
-                                                                      vertical:
-                                                                          15,
-                                                                    ),
-                                                                shape: RoundedRectangleBorder(
-                                                                  borderRadius:
-                                                                      BorderRadius.circular(
-                                                                        8,
-                                                                      ),
-                                                                  side: BorderSide(
-                                                                    color:
-                                                                        maincolor1!,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              child: Text(
-                                                                "Cancel",
-                                                                style: TextStyle(
-                                                                  color:
-                                                                      maincolor1!,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          const SizedBox(
-                                                            width: 15,
-                                                          ),
-                                                          Expanded(
-                                                            child: TextButton(
-                                                              onPressed: () {
-                                                                Navigator.pop(
-                                                                  context,
-                                                                );
-                                                              },
-                                                              style: TextButton.styleFrom(
-                                                                backgroundColor:
-                                                                    maincolor1!,
-                                                                padding:
-                                                                    const EdgeInsets.symmetric(
-                                                                      vertical:
-                                                                          15,
-                                                                    ),
-                                                                shape: RoundedRectangleBorder(
-                                                                  borderRadius:
-                                                                      BorderRadius.circular(
-                                                                        8,
-                                                                      ),
-                                                                ),
-                                                              ),
-                                                              child: const Text(
-                                                                "Done",
-                                                                style: TextStyle(
-                                                                  color: Colors
-                                                                      .white,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(8),
-                                        border: Border.all(
-                                          color: Colors.black26,
-                                        ),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 5,
-                                          horizontal: 15,
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            const Text(
-                                              "Travellers",
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.w400,
-                                                color: Colors.black38,
-                                              ),
-                                            ),
-                                            Text(
-                                              "${state.travellers['adults']! + state.travellers['children']! + state.travellers['infants']!} Travellers",
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w500,
-                                                color: Colors.black87,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  // Class Selector
-                                  InkWell(
-                                    onTap: () {
-                                      showModalBottomSheet(
-                                        context: context,
-                                        builder: (context) {
-                                          return BlocProvider.value(
-                                            value: context
-                                                .read<SearchDataBloc>(),
-                                            child: BlocBuilder<SearchDataBloc, SearchDataState>(
-                                              builder: (context, state) {
-                                                return Container(
-                                                  padding: const EdgeInsets.all(
-                                                    20,
-                                                  ),
-                                                  child: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      const Text(
-                                                        "Select Class",
-                                                        style: TextStyle(
-                                                          fontSize: 18,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                      ),
-                                                      const SizedBox(
-                                                        height: 20,
-                                                      ),
-                                                      InkWell(
-                                                        onTap: () => context
-                                                            .read<
-                                                              SearchDataBloc
-                                                            >()
-                                                            .add(
-                                                              const SearchDataEvent.classChange(
-                                                                seatClass:
-                                                                    'Economy',
-                                                              ),
-                                                            ),
-                                                        child: Container(
-                                                          padding:
-                                                              const EdgeInsets.all(
-                                                                12,
-                                                              ),
-                                                          decoration: BoxDecoration(
-                                                            color:
-                                                                state.seatClass ==
-                                                                    'Economy'
-                                                                ? maincolor1!
-                                                                      .withOpacity(
-                                                                        0.1,
-                                                                      )
-                                                                : Colors
-                                                                      .transparent,
-                                                            border: Border.all(
-                                                              color:
-                                                                  state.seatClass ==
-                                                                      'Economy'
-                                                                  ? maincolor1!
-                                                                  : Colors
-                                                                        .grey
-                                                                        .shade300,
-                                                            ),
-                                                            borderRadius:
-                                                                BorderRadius.circular(
-                                                                  8,
-                                                                ),
-                                                          ),
-                                                          child: Row(
-                                                            children: [
-                                                              Container(
-                                                                width: 20,
-                                                                height: 20,
-                                                                decoration: BoxDecoration(
-                                                                  shape: BoxShape
-                                                                      .circle,
-                                                                  border: Border.all(
-                                                                    color:
-                                                                        state.seatClass ==
-                                                                            'Economy'
-                                                                        ? maincolor1!
-                                                                        : Colors
-                                                                              .grey,
-                                                                    width:
-                                                                        state.seatClass ==
-                                                                            'Economy'
-                                                                        ? 6
-                                                                        : 2,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              const SizedBox(
-                                                                width: 15,
-                                                              ),
-                                                              Column(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
-                                                                children: [
-                                                                  Text(
-                                                                    "Economy",
-                                                                    style: TextStyle(
-                                                                      fontSize:
-                                                                          16,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w500,
-                                                                      color:
-                                                                          state.seatClass ==
-                                                                              'Economy'
-                                                                          ? maincolor1!
-                                                                          : Colors.black87,
-                                                                    ),
-                                                                  ),
-                                                                  const Text(
-                                                                    "Standard seating with essential services",
-                                                                    style: TextStyle(
-                                                                      fontSize:
-                                                                          12,
-                                                                      color: Colors
-                                                                          .grey,
-                                                                    ),
-                                                                    maxLines:
-                                                                        2, // Allow text to wrap
-                                                                    overflow:
-                                                                        TextOverflow
-                                                                            .ellipsis,
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      const SizedBox(
-                                                        height: 15,
-                                                      ),
-                                                      InkWell(
-                                                        onTap: () => context
-                                                            .read<
-                                                              SearchDataBloc
-                                                            >()
-                                                            .add(
-                                                              const SearchDataEvent.classChange(
-                                                                seatClass:
-                                                                    'Business',
-                                                              ),
-                                                            ),
-                                                        child: Container(
-                                                          padding:
-                                                              const EdgeInsets.all(
-                                                                12,
-                                                              ),
-                                                          decoration: BoxDecoration(
-                                                            color:
-                                                                state.seatClass ==
-                                                                    'Business'
-                                                                ? maincolor1!
-                                                                      .withOpacity(
-                                                                        0.1,
-                                                                      )
-                                                                : Colors
-                                                                      .transparent,
-                                                            border: Border.all(
-                                                              color:
-                                                                  state.seatClass ==
-                                                                      'Business'
-                                                                  ? maincolor1!
-                                                                  : Colors
-                                                                        .grey
-                                                                        .shade300,
-                                                            ),
-                                                            borderRadius:
-                                                                BorderRadius.circular(
-                                                                  8,
-                                                                ),
-                                                          ),
-                                                          child: Row(
-                                                            children: [
-                                                              Container(
-                                                                width: 20,
-                                                                height: 20,
-                                                                decoration: BoxDecoration(
-                                                                  shape: BoxShape
-                                                                      .circle,
-                                                                  border: Border.all(
-                                                                    color:
-                                                                        state.seatClass ==
-                                                                            'Business'
-                                                                        ? maincolor1!
-                                                                        : Colors
-                                                                              .grey,
-                                                                    width:
-                                                                        state.seatClass ==
-                                                                            'Business'
-                                                                        ? 6
-                                                                        : 2,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              const SizedBox(
-                                                                width: 15,
-                                                              ),
-                                                              Column(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
-                                                                children: [
-                                                                  Text(
-                                                                    "Business",
-                                                                    style: TextStyle(
-                                                                      fontSize:
-                                                                          16,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w500,
-                                                                      color:
-                                                                          state.seatClass ==
-                                                                              'Business'
-                                                                          ? maincolor1!
-                                                                          : Colors.black87,
-                                                                    ),
-                                                                  ),
-                                                                  const Text(
-                                                                    "Premium seating with enhanced services",
-                                                                    style: TextStyle(
-                                                                      fontSize:
-                                                                          12,
-                                                                      color: Colors
-                                                                          .grey,
-                                                                    ),
-                                                                    maxLines:
-                                                                        2, // Allow text to wrap
-                                                                    overflow:
-                                                                        TextOverflow
-                                                                            .ellipsis,
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      const SizedBox(
-                                                        height: 25,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(8),
-                                        border: Border.all(
-                                          color: Colors.black26,
-                                        ),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 5,
-                                          horizontal: 15,
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            const Text(
-                                              "Class",
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.w400,
-                                                color: Colors.black38,
-                                              ),
-                                            ),
-                                            Text(
-                                              state.seatClass,
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w500,
-                                                color: Colors.black87,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 15),
                       // Search Button
-                      SizedBox(
-                        height: 50,
-                        width: double.infinity,
-                        child: TextButton(
-                          onPressed: () {
-                            // Validation checks
-                            if (state.from == null || state.to == null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  behavior: SnackBarBehavior.floating,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  margin: EdgeInsets.all(10),
-                                  backgroundColor: Colors.redAccent,
-                                  content: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.error_outline,
-                                        color: Colors.white,
-                                      ),
-                                      SizedBox(width: 10),
-                                      Expanded(
-                                        child: Text(
-                                          'Please select both origin and destination',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  duration: Duration(seconds: 3),
-                                  action: SnackBarAction(
-                                    label: 'OK',
-                                    textColor: Colors.white,
-                                    onPressed: () {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).hideCurrentSnackBar();
-                                    },
-                                  ),
-                                ),
-                              );
-                              return;
-                            }
-
-                            if (!state.oneWay && state.returnDate == null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  behavior: SnackBarBehavior.floating,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  margin: EdgeInsets.all(10),
-                                  backgroundColor: Colors.redAccent,
-                                  content: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.calendar_today,
-                                        color: Colors.white,
-                                      ),
-                                      SizedBox(width: 10),
-                                      Expanded(
-                                        child: Text(
-                                          'Please select return date for round trip',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  duration: Duration(seconds: 4),
-                                  action: SnackBarAction(
-                                    label: 'OK',
-                                    textColor: Colors.white,
-                                    onPressed: () {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).hideCurrentSnackBar();
-                                    },
-                                  ),
-                                ),
-                              );
-                              return;
-                            }
-
-                            // Proceed with flight search if validation passes
-                            context.read<TripRequestBloc>().add(
-                              GetTripList(
-                                flightRequestData: FlightSearchRequest(
-                                  origin: state.from!.code,
-                                  destination: state.to!.code,
-                                  onwardDate: state.departureDate,
-                                  returnDate:
-                                      state.returnDate ?? state.departureDate,
-                                  adult: state.travellers['adults']!,
-                                  child: state.travellers['children']!,
-                                  infant: state.travellers['infants']!,
-                                  tripMode: state.oneWay ? 'O' : 'R',
-                                  travelType:
-                                      state.from!.countryCode ==
-                                          state.to!.countryCode
-                                      ? 'D'
-                                      : 'I',
-                                  userId: 'userId',
-                                  password: 'password',
-                                  destinationNation: state.to!.countryCode,
-                                  originNation: state.from!.countryCode,
-                                  classes: state.seatClass,
-                                ),
-                              ),
-                            );
-
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => FlightSearchPage(),
-                              ),
-                            );
-                          },
-                          style: TextButton.styleFrom(
-                            backgroundColor: maincolor1!,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.flight_takeoff_rounded,
-                                color: Colors.white,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'SEARCH FLIGHTS',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
+                      _buildSearchButton(context, state),
                     ],
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildHeaderSection() {
+    return Container(
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [_primaryColor, Color(0xFF2D2D2D)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: _primaryColor.withOpacity(0.3),
+            blurRadius: 15,
+            offset: Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: _secondaryColor.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.flight_takeoff_rounded,
+              color: _secondaryColor,
+              size: 28,
+            ),
+          ),
+          SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Find Your Perfect Flight",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    height: 1.2,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  "Discover the best flights at amazing prices",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white.withOpacity(0.8),
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
             ),
-          );
-        },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchCardsSection(BuildContext context, SearchDataState state) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Trip Type Selector
+          _buildTripTypeSelector(context, state),
+          const SizedBox(height: 24),
+
+          // Location Cards
+          _buildLocationCards(context, state),
+          const SizedBox(height: 20),
+
+          // Date Selectors
+          _buildDateSelectors(context, state),
+          const SizedBox(height: 20),
+
+          // Travel Info
+          _buildTravelInfo(context, state),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTripTypeSelector(BuildContext context, SearchDataState state) {
+    return Container(
+      padding: EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: _backgroundColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _secondaryColor.withOpacity(0.2)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: GestureDetector(
+              onTap: () => context.read<SearchDataBloc>().add(
+                const SearchDataEvent.oneWayOrRound(
+                  oneWayOrRound: 'oneWay',
+                ),
+              ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                decoration: BoxDecoration(
+                  color: state.oneWay ? _secondaryColor : Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Center(
+                  child: Text(
+                    'One Way',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: state.oneWay ? Colors.white : _textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: GestureDetector(
+              onTap: () => context.read<SearchDataBloc>().add(
+                const SearchDataEvent.oneWayOrRound(
+                  oneWayOrRound: 'roundTrip',
+                ),
+              ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                decoration: BoxDecoration(
+                  color: !state.oneWay ? _secondaryColor : Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Center(
+                  child: Text(
+                    'Round Trip',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: !state.oneWay ? Colors.white : _textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLocationCards(BuildContext context, SearchDataState state) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade200),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          // From Location
+          _buildLocationCard(
+            context: context,
+            title: "From",
+            subtitle: state.from?.name ?? "Select Departure City",
+            icon: Icons.flight_takeoff_rounded,
+            isFrom: true,
+          ),
+          Container(
+            height: 1,
+            color: Colors.grey.shade100,
+          ),
+          // To Location
+          _buildLocationCard(
+            context: context,
+            title: "To",
+            subtitle: state.to?.name ?? "Select Arrival City",
+            icon: Icons.flight_land_rounded,
+            isFrom: false,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLocationCard({
+    required BuildContext context,
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required bool isFrom,
+  }) {
+    return GestureDetector(
+      onTap: () => showAirportBottomSheet(context, isFrom: isFrom),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: _cardColor,
+          borderRadius: BorderRadius.only(
+            topLeft: isFrom ? Radius.circular(16) : Radius.zero,
+            topRight: isFrom ? Radius.circular(16) : Radius.zero,
+            bottomLeft: !isFrom ? Radius.circular(16) : Radius.zero,
+            bottomRight: !isFrom ? Radius.circular(16) : Radius.zero,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: _secondaryColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                icon,
+                color: _secondaryColor,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: _textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: _textPrimary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios_rounded,
+              color: _textLight,
+              size: 16,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDateSelectors(BuildContext context, SearchDataState state) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade200),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Departure Date
+          Expanded(
+            child: _buildDateSelector(
+              context: context,
+              title: "Departure Date",
+              date: state.departureDate,
+              isDeparture: true,
+              state: state,
+            ),
+          ),
+          if (!state.oneWay) const SizedBox(width: 16),
+          if (!state.oneWay)
+            Expanded(
+              child: _buildDateSelector(
+                context: context,
+                title: "Return Date",
+                date: state.returnDate,
+                isDeparture: false,
+                state: state,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDateSelector({
+    required BuildContext context,
+    required String title,
+    required DateTime? date,
+    required bool isDeparture,
+    required SearchDataState state,
+  }) {
+    return GestureDetector(
+      onTap: () async {
+        final currentState = context.read<SearchDataBloc>().state;
+        final pickedDate = await showDatePicker(
+          context: context,
+          initialDate: isDeparture
+              ? currentState.departureDate
+              : currentState.returnDate ?? currentState.departureDate,
+          firstDate: isDeparture ? DateTime.now() : currentState.departureDate,
+          lastDate: DateTime(2101),
+          builder: (context, child) => Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: ColorScheme.light(
+                primary: _secondaryColor,
+                onPrimary: Colors.white,
+                onSurface: _primaryColor,
+              ),
+            ),
+            child: child!,
+          ),
+        );
+
+        if (pickedDate != null) {
+          if (isDeparture) {
+            context.read<SearchDataBloc>().add(
+              SearchDataEvent.departureDateChange(departureDate: pickedDate),
+            );
+
+            // If return date exists and is before new departure date, update it
+            if (!currentState.oneWay &&
+                currentState.returnDate != null &&
+                currentState.returnDate!.isBefore(pickedDate)) {
+              context.read<SearchDataBloc>().add(
+                SearchDataEvent.returnDateChange(returnDate: pickedDate),
+              );
+            }
+          } else {
+            context.read<SearchDataBloc>().add(
+              SearchDataEvent.returnDateChange(returnDate: pickedDate),
+            );
+          }
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: _backgroundColor,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade200),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: _secondaryColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                Icons.calendar_month_rounded,
+                color: _secondaryColor,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: _textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    date != null
+                        ? DateFormat('dd MMM yyyy').format(date)
+                        : "Select date",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: date != null ? _textPrimary : _textLight,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTravelInfo(BuildContext context, SearchDataState state) {
+    return Row(
+      children: [
+        // Travellers
+        Expanded(
+          child: _buildTravelInfoCard(
+            title: "Travellers",
+            value:
+                "${state.travellers['adults']! + state.travellers['children']! + state.travellers['infants']!} Travellers",
+            icon: Icons.people_rounded,
+            onTap: () => _showTravellersBottomSheet(context, state),
+          ),
+        ),
+        const SizedBox(width: 12),
+        // Class
+        Expanded(
+          child: _buildTravelInfoCard(
+            title: "Class",
+            value: state.seatClass,
+            icon: Icons.airline_seat_recline_normal_rounded,
+            onTap: () => _showClassBottomSheet(context, state),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTravelInfoCard({
+    required String title,
+    required String value,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: _cardColor,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade200),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: _secondaryColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                icon,
+                color: _secondaryColor,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: _textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: _textPrimary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.arrow_drop_down_rounded,
+              color: _textLight,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchButton(BuildContext context, SearchDataState state) {
+    final isEnabled = state.from != null && state.to != null && 
+        (!state.oneWay ? state.returnDate != null : true);
+
+    return Container(
+      width: double.infinity,
+      height: 56,
+      child: ElevatedButton(
+        onPressed: isEnabled
+            ? () {
+                // Validation checks
+                if (state.from == null || state.to == null) {
+                  _showErrorSnackBar(
+                    context,
+                    'Please select both origin and destination',
+                    Icons.error_outline_rounded,
+                  );
+                  return;
+                }
+
+                if (!state.oneWay && state.returnDate == null) {
+                  _showErrorSnackBar(
+                    context,
+                    'Please select return date for round trip',
+                    Icons.calendar_today_rounded,
+                  );
+                  return;
+                }
+
+                // Proceed with flight search if validation passes
+                context.read<TripRequestBloc>().add(
+                  GetTripList(
+                    flightRequestData: FlightSearchRequest(
+                      origin: state.from!.code,
+                      destination: state.to!.code,
+                      onwardDate: state.departureDate,
+                      returnDate: state.returnDate ?? state.departureDate,
+                      adult: state.travellers['adults']!,
+                      child: state.travellers['children']!,
+                      infant: state.travellers['infants']!,
+                      tripMode: state.oneWay ? 'O' : 'R',
+                      travelType: state.from!.countryCode == state.to!.countryCode
+                          ? 'D'
+                          : 'I',
+                      userId: 'userId',
+                      password: 'password',
+                      destinationNation: state.to!.countryCode,
+                      originNation: state.from!.countryCode,
+                      classes: state.seatClass,
+                    ),
+                  ),
+                );
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FlightSearchPage(),
+                  ),
+                );
+              }
+            : null,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isEnabled ? _primaryColor : Colors.grey[400],
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          elevation: 2,
+          shadowColor: isEnabled ? _primaryColor.withOpacity(0.3) : Colors.transparent,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.search_rounded,
+              size: 20,
+            ),
+            const SizedBox(width: 12),
+            Text(
+              "Search Flights",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showErrorSnackBar(BuildContext context, String message, IconData icon) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        margin: EdgeInsets.all(16),
+        backgroundColor: _errorColor,
+        content: Row(
+          children: [
+            Icon(icon, color: Colors.white, size: 20),
+            SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
+        duration: Duration(seconds: 3),
+        action: SnackBarAction(
+          label: 'OK',
+          textColor: Colors.white,
+          onPressed: () {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          },
+        ),
+      ),
+    );
+  }
+
+  void _showTravellersBottomSheet(BuildContext context, SearchDataState state) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          margin: EdgeInsets.only(top: 60),
+          padding: EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(28),
+              topRight: Radius.circular(28),
+            ),
+          ),
+          child: BlocProvider.value(
+            value: context.read<SearchDataBloc>(),
+            child: BlocBuilder<SearchDataBloc, SearchDataState>(
+              builder: (context, state) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Drag handle
+                    Center(
+                      child: Container(
+                        width: 48,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 24),
+                    
+                    // Title
+                    Text(
+                      "Travellers",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: _primaryColor,
+                      ),
+                    ),
+                    SizedBox(height: 24),
+                    
+                    // Passenger Types
+                    _buildPassengerType(
+                      context,
+                      "Adults",
+                      "12+ years",
+                      state.travellers['adults']!,
+                      (value) => context.read<SearchDataBloc>().add(
+                        SearchDataEvent.passengers(
+                          travellers: {
+                            'adults': value,
+                            'children': state.travellers['children']!,
+                            'infants': state.travellers['infants']!,
+                          },
+                        ),
+                      ),
+                      min: 1,
+                    ),
+                    SizedBox(height: 20),
+                    _buildPassengerType(
+                      context,
+                      "Children",
+                      "2-12 years",
+                      state.travellers['children']!,
+                      (value) => context.read<SearchDataBloc>().add(
+                        SearchDataEvent.passengers(
+                          travellers: {
+                            'adults': state.travellers['adults']!,
+                            'children': value,
+                            'infants': state.travellers['infants']!,
+                          },
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    _buildPassengerType(
+                      context,
+                      "Infants",
+                      "0-2 years",
+                      state.travellers['infants']!,
+                      (value) => context.read<SearchDataBloc>().add(
+                        SearchDataEvent.passengers(
+                          travellers: {
+                            'adults': state.travellers['adults']!,
+                            'children': state.travellers['children']!,
+                            'infants': value,
+                          },
+                        ),
+                      ),
+                      max: state.travellers['adults'],
+                    ),
+                    SizedBox(height: 32),
+                    
+                    // Buttons
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => Navigator.pop(context),
+                            style: OutlinedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(vertical: 15),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              side: BorderSide(color: _secondaryColor),
+                            ),
+                            child: Text(
+                              "Cancel",
+                              style: TextStyle(color: _secondaryColor),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 16),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () => Navigator.pop(context),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: _secondaryColor,
+                              padding: EdgeInsets.symmetric(vertical: 15),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Text(
+                              "Done",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showClassBottomSheet(BuildContext context, SearchDataState state) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          margin: EdgeInsets.only(top: 60),
+          padding: EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(28),
+              topRight: Radius.circular(28),
+            ),
+          ),
+          child: BlocProvider.value(
+            value: context.read<SearchDataBloc>(),
+            child: BlocBuilder<SearchDataBloc, SearchDataState>(
+              builder: (context, state) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Drag handle
+                    Center(
+                      child: Container(
+                        width: 48,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 24),
+                    
+                    // Title
+                    Text(
+                      "Select Class",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: _primaryColor,
+                      ),
+                    ),
+                    SizedBox(height: 24),
+                    
+                    // Class Options
+                    _buildClassOption(
+                      context,
+                      "Economy",
+                      "Standard seating with essential services",
+                      state.seatClass == 'Economy',
+                      () => context.read<SearchDataBloc>().add(
+                        const SearchDataEvent.classChange(seatClass: 'Economy'),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    _buildClassOption(
+                      context,
+                      "Business",
+                      "Premium seating with enhanced services",
+                      state.seatClass == 'Business',
+                      () => context.read<SearchDataBloc>().add(
+                        const SearchDataEvent.classChange(seatClass: 'Business'),
+                      ),
+                    ),
+                    SizedBox(height: 32),
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildClassOption(
+    BuildContext context,
+    String title,
+    String description,
+    bool isSelected,
+    VoidCallback onTap,
+  ) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isSelected ? _secondaryColor.withOpacity(0.1) : Colors.transparent,
+          border: Border.all(
+            color: isSelected ? _secondaryColor : Colors.grey.shade300,
+            width: 2,
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: isSelected ? _secondaryColor : Colors.grey,
+                  width: isSelected ? 6 : 2,
+                ),
+              ),
+            ),
+            SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: isSelected ? _secondaryColor : _textPrimary,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    description,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: _textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1104,61 +1018,78 @@ class FlightBookingTab extends StatelessWidget {
     int min = 0,
     int? max,
   }) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
-            Text(
-              description,
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
-            ),
-          ],
-        ),
-        Row(
-          children: [
-            IconButton(
-              icon: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: const Icon(Icons.remove, size: 18),
-              ),
-              onPressed: count > min ? () => onChanged(count - 1) : null,
-              padding: EdgeInsets.zero,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Text(
-                count.toString(),
-                style: const TextStyle(
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: _backgroundColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
+                  color: _textPrimary,
                 ),
               ),
-            ),
-            IconButton(
-              icon: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(4),
+              SizedBox(height: 4),
+              Text(
+                description,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: _textSecondary,
                 ),
-                child: const Icon(Icons.add, size: 18),
               ),
-              onPressed: max == null || count < max
-                  ? () => onChanged(count + 1)
-                  : null,
-              padding: EdgeInsets.zero,
-            ),
-          ],
-        ),
-      ],
+            ],
+          ),
+          Row(
+            children: [
+              IconButton(
+                icon: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade400),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(Icons.remove, size: 18, color: Colors.grey.shade600),
+                ),
+                onPressed: count > min ? () => onChanged(count - 1) : null,
+                padding: EdgeInsets.zero,
+              ),
+              Container(
+                width: 40,
+                alignment: Alignment.center,
+                child: Text(
+                  count.toString(),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: _textPrimary,
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade400),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(Icons.add, size: 18, color: Colors.grey.shade600),
+                ),
+                onPressed: max == null || count < max
+                    ? () => onChanged(count + 1)
+                    : null,
+                padding: EdgeInsets.zero,
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

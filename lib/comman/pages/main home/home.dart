@@ -9,12 +9,14 @@ import 'package:minna/Electyicity%20&%20Water/water%20bill/water%20bill%20home/w
 import 'package:minna/bus/application/location%20fetch/bus_location_fetch_bloc.dart';
 import 'package:minna/bus/pages/screen%20bus%20home%20/bus_home.dart';
 import 'package:minna/cab/pages/TripSelectionPage/TripSelectionPage.dart';
+import 'package:minna/comman/application/login/login_bloc.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/pages/histoy/histoty.dart';
+import 'package:minna/comman/pages/log%20in/login_page.dart';
 import 'package:minna/comman/pages/screen%20bookings/screen_booking.dart';
 import 'package:minna/comman/pages/screen%20my%20account/my_account_page.dart';
 import 'package:minna/flight/presendation/screen%20flight/home_flight.dart';
-import 'package:minna/hotel%20booking/pages/holel%20home%20page/home_page_hotel.dart';
+import 'package:minna/hotel%20booking/pages/holel%20home%20page/home_page_hotel.dart' hide FlightBookingTab;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -32,6 +34,11 @@ class _HomePageState extends State<HomePage> {
     HistoryPage(),
     MyAccountPage(),
   ];
+  void initState() {
+    super.initState();
+    // Load login info from bloc
+    context.read<LoginBloc>().add(const LoginEvent.loginInfo());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,10 +88,6 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-
-
-
-
 class HomeContentPage extends StatefulWidget {
   const HomeContentPage({super.key});
 
@@ -111,17 +114,20 @@ class _HomeContentPageState extends State<HomeContentPage> {
     {
       'title': 'Summer Getaway',
       'subtitle': 'Up to 40% OFF',
-      'image': 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+      'image':
+          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
     },
     {
       'title': 'Mountain Trek',
       'subtitle': 'Adventure Packages',
-      'image': 'https://res.cloudinary.com/enchanting/q_70,f_auto,w_1600,h_1001,c_fit/exodus-web/2021/12/trekking-poles-himalaya-1.jpg',
+      'image':
+          'https://res.cloudinary.com/enchanting/q_70,f_auto,w_1600,h_1001,c_fit/exodus-web/2021/12/trekking-poles-himalaya-1.jpg',
     },
     {
       'title': 'Beach Paradise',
       'subtitle': 'All Inclusive',
-      'image': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+      'image':
+          'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
     },
   ];
 
@@ -130,28 +136,31 @@ class _HomeContentPageState extends State<HomeContentPage> {
     {
       'name': 'Bali',
       'country': 'Indonesia',
-      'image': 'https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+      'image':
+          'https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
       'price': '\$899',
     },
-     {
+    {
       'name': 'New York',
       'country': 'USA',
-      'image': 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+      'image':
+          'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
       'price': '\$1,199',
     },
     {
       'name': 'Paris',
       'country': 'France',
-      'image': 'https://media.istockphoto.com/id/1345426734/photo/eiffel-tower-paris-river-seine-sunset-twilight-france.jpg?s=612x612&w=0&k=20&c=I5rAH5d_-Yyag8F0CKzk9vzMr_1rgkAASGTE11YMh9A=',
+      'image':
+          'https://media.istockphoto.com/id/1345426734/photo/eiffel-tower-paris-river-seine-sunset-twilight-france.jpg?s=612x612&w=0&k=20&c=I5rAH5d_-Yyag8F0CKzk9vzMr_1rgkAASGTE11YMh9A=',
       'price': '\$1,299',
     },
     {
       'name': 'Tokyo',
       'country': 'Japan',
-      'image': 'https://i.natgeofe.com/n/eb9f0faa-75bc-47e2-8b14-253031b74125/bigtripjapantokyocrossing.jpg',
+      'image':
+          'https://i.natgeofe.com/n/eb9f0faa-75bc-47e2-8b14-253031b74125/bigtripjapantokyocrossing.jpg',
       'price': '\$1,599',
     },
-   
   ];
 
   // Travel Services Data with theme colors
@@ -292,19 +301,39 @@ class _HomeContentPageState extends State<HomeContentPage> {
     final Size screenSize = MediaQuery.of(context).size;
     final bool isSmallScreen = screenSize.width < 360;
     final bool isTablet = screenSize.width > 600;
-    
+
     // Responsive sizing
-    final double iconSize = isSmallScreen ? 18 : isTablet ? 28 : 24;
-    final double titleFontSize = isSmallScreen ? 16 : isTablet ? 24 : 20;
-    final double headingFontSize = isSmallScreen ? 14 : isTablet ? 20 : 18;
-    final double bodyFontSize = isSmallScreen ? 12 : isTablet ? 16 : 12;
+    final double iconSize = isSmallScreen
+        ? 18
+        : isTablet
+        ? 28
+        : 24;
+    final double titleFontSize = isSmallScreen
+        ? 16
+        : isTablet
+        ? 24
+        : 20;
+    final double headingFontSize = isSmallScreen
+        ? 14
+        : isTablet
+        ? 20
+        : 18;
+    final double bodyFontSize = isSmallScreen
+        ? 12
+        : isTablet
+        ? 16
+        : 12;
 
     return Scaffold(
       backgroundColor: _backgroundColor,
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
-            _buildAppBar(isSmallScreen, isTablet, titleFontSize),
+            BlocBuilder<LoginBloc, LoginState>(
+              builder: (context, state) {
+                return _buildAppBar(isSmallScreen, isTablet, titleFontSize ,state);
+              },
+            ),
           ];
         },
         body: SingleChildScrollView(
@@ -313,23 +342,48 @@ class _HomeContentPageState extends State<HomeContentPage> {
             children: [
               // Search Section
               // _buildSearchSection(isSmallScreen, isTablet, bodyFontSize),
-              
+
               // Popular Destinations - MOVED TO TOP
-              _buildPopularDestinations(isSmallScreen, isTablet, headingFontSize, bodyFontSize),
-              
+              _buildPopularDestinations(
+                isSmallScreen,
+                isTablet,
+                headingFontSize,
+                bodyFontSize,
+              ),
+
               // Travel Offers Banner
-              
+
               // Travel Services Grid
-              _buildTravelServicesSection(context, isSmallScreen, isTablet, iconSize, headingFontSize, bodyFontSize),
-                            _buildOffersBanner(isSmallScreen, isTablet, bodyFontSize),
+              _buildTravelServicesSection(
+                context,
+                isSmallScreen,
+                isTablet,
+                iconSize,
+                headingFontSize,
+                bodyFontSize,
+              ),
+              _buildOffersBanner(isSmallScreen, isTablet, bodyFontSize),
 
               // Quick Services
-              _buildQuickServicesSection(context, isSmallScreen, isTablet, iconSize, headingFontSize, bodyFontSize),
-              
+              _buildQuickServicesSection(
+                context,
+                isSmallScreen,
+                isTablet,
+                iconSize,
+                headingFontSize,
+                bodyFontSize,
+              ),
+
               // Promo Banner
               _buildPromoBanner(isSmallScreen, isTablet, bodyFontSize),
-              
-              SizedBox(height: isSmallScreen ? 20 : isTablet ? 40 : 30),
+
+              SizedBox(
+                height: isSmallScreen
+                    ? 20
+                    : isTablet
+                    ? 40
+                    : 30,
+              ),
             ],
           ),
         ),
@@ -337,15 +391,28 @@ class _HomeContentPageState extends State<HomeContentPage> {
     );
   }
 
-SliverAppBar _buildAppBar(bool isSmallScreen, bool isTablet, double titleFontSize) {
+  SliverAppBar _buildAppBar(
+  bool isSmallScreen,
+  bool isTablet,
+  double titleFontSize,
+  LoginState state
+) {
+  final isLoggedIn = state.isLoggedIn ?? false;
+
   return SliverAppBar(
     backgroundColor: Colors.white,
-    expandedHeight: isTablet ? 140 : isSmallScreen ? 100 : 200,
-    floating: false,
+    expandedHeight: ! isLoggedIn?
+    
+    
+    
+    ( isTablet ? 180 : isSmallScreen ? 150 : 280): isTablet ? 130 : isSmallScreen ? 100 : 180,
+     floating: false,
     pinned: true,
-    elevation: 2,
+    elevation: 0,
     shadowColor: Colors.black.withOpacity(0.1),
     surfaceTintColor: Colors.white,
+    stretch: true,
+    collapsedHeight: 60,
     flexibleSpace: FlexibleSpaceBar(
       background: Container(
         decoration: BoxDecoration(
@@ -441,57 +508,113 @@ SliverAppBar _buildAppBar(bool isSmallScreen, bool isTablet, double titleFontSiz
                         ),
                       ],
                     ),
-
-                    // Notification Icon
-                    Container(
-                      padding: EdgeInsets.all(isSmallScreen ? 8 : 12),
-                      decoration: BoxDecoration(
-                        color: _secondaryColor.withOpacity(0.1),
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: _secondaryColor.withOpacity(0.2),
-                          width: 1,
-                        ),
-                      ),
-                      child: Stack(
-                        children: [
-                          Icon(
-                            Icons.notifications_outlined,
-                            color: _primaryColor,
-                            size: isSmallScreen ? 20 : 24,
-                          ),
-                          Positioned(
-                            right: 0,
-                            top: 0,
+                    Spacer(),
+                    
+                    // Profile/Login Section
+                    Row(
+                      children: [
+                        if (isLoggedIn) ...[
+                          // Profile Icon with Badge
+                          GestureDetector(
+                            onTap: () {
+                              // Navigate to profile
+                            },
                             child: Container(
-                              width: isSmallScreen ? 10 : 12,
-                              height: isSmallScreen ? 10 : 12,
+                              padding: EdgeInsets.all(isSmallScreen ? 6 : 8),
                               decoration: BoxDecoration(
-                                color: Colors.red[500],
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: Colors.white,
-                                  width: 2,
+                                  color: _secondaryColor.withOpacity(0.2),
+                                  width: 1,
                                 ),
+                              ),
+                              child: Stack(
+                                children: [
+                                  Icon(
+                                    Icons.person_outline_sharp,
+                                    color: _primaryColor,
+                                    size: isSmallScreen ? 16 : 20,
+                                  ),
+                                  Positioned(
+                                    right: 0,
+                                    top: 0,
+                                    child: Container(
+                                      width: isSmallScreen ? 8 : 10,
+                                      height: isSmallScreen ? 8 : 10,
+                                      decoration: BoxDecoration(
+                                        color: Colors.red[500],
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: Colors.white,
+                                          width: 1.5,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ] else ...[
+                          // Login Button with Alert Functionality
+                          GestureDetector(
+                            onTap: () {
+ showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => LoginBottomSheet(login: 2),
+                );                            },
+                            child: Container(
+                              height: isSmallScreen ? 36 : 40,
+                              padding: EdgeInsets.symmetric(horizontal: 16),
+                              decoration: BoxDecoration(
+                              color: _primaryColor,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                 
+                                ],
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.login,
+                                    color: Colors.white,
+                                    size: isSmallScreen ? 16 : 18,
+                                  ),
+                                  SizedBox(width: 6),
+                                  Text(
+                                    'Login',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: isSmallScreen ? 12 : 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
                         ],
-                      ),
+                      ],
                     ),
                   ],
                 ),
 
+                // Login Alert Banner (only when not logged in)
+                if (!isLoggedIn) ...[
+                  SizedBox(height: isSmallScreen ? 12 : 16),
+                  _buildLoginAlertBanner(isSmallScreen),
+                ],
+
                 // Search Bar Section
-                SizedBox(height: isSmallScreen ? 12 : 20),
+                SizedBox(height: isSmallScreen ? 12 : 16),
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.grey[50],
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: Colors.grey[200]!,
-                      width: 1,
-                    ),
+                    border: Border.all(color: Colors.grey[200]!, width: 1),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.03),
@@ -526,9 +649,6 @@ SliverAppBar _buildAppBar(bool isSmallScreen, bool isTablet, double titleFontSiz
                     ),
                   ),
                 ),
-
-                // Quick Stats Row (Optional)
-             
               ],
             ),
           ),
@@ -538,30 +658,142 @@ SliverAppBar _buildAppBar(bool isSmallScreen, bool isTablet, double titleFontSiz
   );
 }
 
-// Helper method for stat items
-Widget _buildStatItem(String value, String label, bool isSmallScreen) {
-  return Column(
-    children: [
-      Text(
-        value,
-        style: TextStyle(
-          color: _primaryColor,
-          fontSize: isSmallScreen ? 12 : 14,
-          fontWeight: FontWeight.bold,
+// Login Alert Banner Widget
+Widget _buildLoginAlertBanner(bool isSmallScreen) {
+  return GestureDetector(
+    onTap: () {
+      // _showLoginAlert(context);
+    },
+    child: Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        horizontal: isSmallScreen ? 16 : 20,
+        vertical: isSmallScreen ? 12 : 16,
+      ),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            _secondaryColor.withOpacity(0.1),
+            _secondaryColor.withOpacity(0.05)
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: _secondaryColor.withOpacity(0.2),
         ),
       ),
-      SizedBox(height: 2),
-      Text(
-        label,
-        style: TextStyle(
-          color: _textSecondary,
-          fontSize: isSmallScreen ? 10 : 12,
-        ),
+      child: Row(
+        children: [
+          // Alert Icon
+          Container(
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: _secondaryColor.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.info_outline,
+              color: _secondaryColor,
+              size: isSmallScreen ? 18 : 20,
+            ),
+          ),
+          SizedBox(width: isSmallScreen ? 12 : 16),
+          
+          // Alert Message
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Login Required!',
+                  style: TextStyle(
+                    color: _primaryColor,
+                    fontSize: isSmallScreen ? 14 : 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'login to manage trips, explore offers & more',
+                  style: TextStyle(
+                    color: _textSecondary,
+                    fontSize: isSmallScreen ? 12 : 13,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          
+          // // Quick Login Button
+          // Container(
+          //   height: isSmallScreen ? 32 : 36,
+          //   padding: EdgeInsets.symmetric(horizontal: 12),
+          //   decoration: BoxDecoration(
+          //     color: _primaryColor,
+          //     borderRadius: BorderRadius.circular(12),
+          //   ),
+          //   child: TextButton(
+          //     onPressed: () {
+          //       // _showLoginAlert(context);
+          //     },
+          //     style: TextButton.styleFrom(
+          //       padding: EdgeInsets.zero,
+          //       shape: RoundedRectangleBorder(
+          //         borderRadius: BorderRadius.circular(12),
+          //       ),
+          //     ),
+          //     child: Text(
+          //       'Login Now',
+          //       style: TextStyle(
+          //         color: Colors.white,
+          //         fontSize: isSmallScreen ? 11 : 12,
+          //         fontWeight: FontWeight.w600,
+          //       ),
+          //     ),
+          //   ),
+          // ),
+        ],
       ),
-    ],
+    ),
   );
 }
-  Widget _buildSearchSection(bool isSmallScreen, bool isTablet, double bodyFontSize) {
+
+// Show Login Alert Dialog
+
+
+  // Helper method for stat items
+  Widget _buildStatItem(String value, String label, bool isSmallScreen) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: TextStyle(
+            color: _primaryColor,
+            fontSize: isSmallScreen ? 12 : 14,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 2),
+        Text(
+          label,
+          style: TextStyle(
+            color: _textSecondary,
+            fontSize: isSmallScreen ? 10 : 12,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSearchSection(
+    bool isSmallScreen,
+    bool isTablet,
+    double bodyFontSize,
+  ) {
     return Container(
       padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
       color: _cardColor,
@@ -611,16 +843,25 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
               ),
             ),
           ),
-          if (_searchText.isNotEmpty) _buildSearchResults(isSmallScreen, isTablet, bodyFontSize),
+          if (_searchText.isNotEmpty)
+            _buildSearchResults(isSmallScreen, isTablet, bodyFontSize),
         ],
       ),
     );
   }
 
-  Widget _buildSearchResults(bool isSmallScreen, bool isTablet, double bodyFontSize) {
-    final filteredServices = _travelServices.where((service) => 
-      service['label'].toLowerCase().contains(_searchText.toLowerCase())
-    ).toList();
+  Widget _buildSearchResults(
+    bool isSmallScreen,
+    bool isTablet,
+    double bodyFontSize,
+  ) {
+    final filteredServices = _travelServices
+        .where(
+          (service) => service['label'].toLowerCase().contains(
+            _searchText.toLowerCase(),
+          ),
+        )
+        .toList();
 
     if (filteredServices.isEmpty) return SizedBox();
 
@@ -654,7 +895,11 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
             spacing: 12,
             runSpacing: 12,
             children: filteredServices.map((service) {
-              return _buildSearchResultItem(service, isSmallScreen, bodyFontSize);
+              return _buildSearchResultItem(
+                service,
+                isSmallScreen,
+                bodyFontSize,
+              );
             }).toList(),
           ),
         ],
@@ -662,7 +907,11 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
     );
   }
 
-  Widget _buildSearchResultItem(Map<String, dynamic> service, bool isSmallScreen, double bodyFontSize) {
+  Widget _buildSearchResultItem(
+    Map<String, dynamic> service,
+    bool isSmallScreen,
+    double bodyFontSize,
+  ) {
     return GestureDetector(
       onTap: () => service['onTap'](context),
       child: Container(
@@ -675,7 +924,11 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            FaIcon(service['icon'], color: service['color'], size: isSmallScreen ? 14 : 16),
+            FaIcon(
+              service['icon'],
+              color: service['color'],
+              size: isSmallScreen ? 14 : 16,
+            ),
             SizedBox(width: 8),
             Text(
               service['label'],
@@ -691,7 +944,12 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
     );
   }
 
-  Widget _buildPopularDestinations(bool isSmallScreen, bool isTablet, double headingFontSize, double bodyFontSize) {
+  Widget _buildPopularDestinations(
+    bool isSmallScreen,
+    bool isTablet,
+    double headingFontSize,
+    double bodyFontSize,
+  ) {
     return Container(
       padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
       child: Column(
@@ -699,7 +957,11 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
         children: [
           Row(
             children: [
-              Icon(Icons.trending_up, color: _primaryColor, size: headingFontSize),
+              Icon(
+                Icons.trending_up,
+                color: _primaryColor,
+                size: headingFontSize,
+              ),
               SizedBox(width: 8),
               Text(
                 'Popular Destinations',
@@ -710,31 +972,39 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
                 ),
               ),
               Spacer(),
-              GestureDetector(
-                onTap: () {
-                  // Handle see all action
-                },
-                child: Text(
-                  'See All',
-                  style: TextStyle(
-                    fontSize: bodyFontSize,
-                    color: _secondaryColor,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
+              // GestureDetector(
+              //   onTap: () {
+              //     // Handle see all action
+              //   },
+              //   child: Text(
+              //     'See All',
+              //     style: TextStyle(
+              //       fontSize: bodyFontSize,
+              //       color: _secondaryColor,
+              //       fontWeight: FontWeight.w600,
+              //     ),
+              //   ),
+              // ),
             ],
           ),
           SizedBox(height: 16),
           SizedBox(
-            height: isSmallScreen ? 130 : isTablet ? 150 : 130,
+            height: isSmallScreen
+                ? 130
+                : isTablet
+                ? 150
+                : 130,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: _popularDestinations.length,
               itemBuilder: (context, index) {
                 final destination = _popularDestinations[index];
                 return Container(
-                  width: isSmallScreen ? 170 : isTablet ? 210 : 190,
+                  width: isSmallScreen
+                      ? 170
+                      : isTablet
+                      ? 210
+                      : 190,
                   margin: EdgeInsets.only(right: 16),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
@@ -788,7 +1058,10 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
                             ),
                             SizedBox(height: 4),
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: _secondaryColor,
                                 borderRadius: BorderRadius.circular(8),
@@ -816,17 +1089,32 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
     );
   }
 
-  Widget _buildOffersBanner(bool isSmallScreen, bool isTablet, double bodyFontSize) {
+  Widget _buildOffersBanner(
+    bool isSmallScreen,
+    bool isTablet,
+    double bodyFontSize,
+  ) {
     return Container(
-      height: isSmallScreen ? 140 : isTablet ? 200 : 160,
+      height: isSmallScreen
+          ? 140
+          : isTablet
+          ? 200
+          : 160,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.symmetric(horizontal: isSmallScreen ? 16 : 24, vertical: 16),
+        padding: EdgeInsets.symmetric(
+          horizontal: isSmallScreen ? 16 : 24,
+          vertical: 16,
+        ),
         itemCount: _travelOffers.length,
         itemBuilder: (context, index) {
           final offer = _travelOffers[index];
           return Container(
-            width: isSmallScreen ? 280 : isTablet ? 350 : 320,
+            width: isSmallScreen
+                ? 280
+                : isTablet
+                ? 350
+                : 320,
             margin: EdgeInsets.only(right: 16),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
@@ -855,7 +1143,10 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: _secondaryColor,
                           borderRadius: BorderRadius.circular(15),
@@ -897,9 +1188,20 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
     );
   }
 
-  Widget _buildTravelServicesSection(BuildContext context, bool isSmallScreen, bool isTablet, double iconSize, double headingFontSize, double bodyFontSize) {
-    final crossAxisCount = isTablet ? 4 : isSmallScreen ? 4 : 4;
-    
+  Widget _buildTravelServicesSection(
+    BuildContext context,
+    bool isSmallScreen,
+    bool isTablet,
+    double iconSize,
+    double headingFontSize,
+    double bodyFontSize,
+  ) {
+    final crossAxisCount = isTablet
+        ? 4
+        : isSmallScreen
+        ? 4
+        : 4;
+
     return Container(
       padding: EdgeInsets.all(isSmallScreen ? 16 : 24),
       child: Column(
@@ -907,7 +1209,11 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
         children: [
           Row(
             children: [
-              Icon(Icons.travel_explore, color: _primaryColor, size: headingFontSize),
+              Icon(
+                Icons.travel_explore,
+                color: _primaryColor,
+                size: headingFontSize,
+              ),
               SizedBox(width: 8),
               Text(
                 'Travel Services',
@@ -918,19 +1224,19 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
                 ),
               ),
               Spacer(),
-              GestureDetector(
-                onTap: () {
-                  // Handle view all action
-                },
-                child: Text(
-                  'View All',
-                  style: TextStyle(
-                    fontSize: bodyFontSize,
-                    color: _secondaryColor,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
+              // GestureDetector(
+              //   onTap: () {
+              //     // Handle view all action
+              //   },
+              //   child: Text(
+              //     'View All',
+              //     style: TextStyle(
+              //       fontSize: bodyFontSize,
+              //       color: _secondaryColor,
+              //       fontWeight: FontWeight.w600,
+              //     ),
+              //   ),
+              // ),
             ],
           ),
           // SizedBox(height: 10),
@@ -941,12 +1247,18 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
               crossAxisCount: crossAxisCount,
               crossAxisSpacing: isSmallScreen ? 12 : 16,
               mainAxisSpacing: isSmallScreen ? 12 : 16,
-              childAspectRatio:isSmallScreen? 0.7:0.7,
+              childAspectRatio: isSmallScreen ? 0.7 : 0.7,
             ),
             itemCount: _travelServices.length,
             itemBuilder: (context, index) {
               final service = _travelServices[index];
-              return _buildServiceCard(service, isSmallScreen, isTablet, iconSize, bodyFontSize);
+              return _buildServiceCard(
+                service,
+                isSmallScreen,
+                isTablet,
+                iconSize,
+                bodyFontSize,
+              );
             },
           ),
         ],
@@ -954,7 +1266,13 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
     );
   }
 
-  Widget _buildServiceCard(Map<String, dynamic> service, bool isSmallScreen, bool isTablet, double iconSize, double bodyFontSize) {
+  Widget _buildServiceCard(
+    Map<String, dynamic> service,
+    bool isSmallScreen,
+    bool isTablet,
+    double iconSize,
+    double bodyFontSize,
+  ) {
     return GestureDetector(
       onTap: () => service['onTap'](context),
       child: Container(
@@ -974,7 +1292,13 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: EdgeInsets.all(isSmallScreen ? 12 : isTablet ? 16 : 14),
+              padding: EdgeInsets.all(
+                isSmallScreen
+                    ? 12
+                    : isTablet
+                    ? 16
+                    : 14,
+              ),
               decoration: BoxDecoration(
                 color: service['color'].withOpacity(0.1),
                 shape: BoxShape.circle,
@@ -991,7 +1315,7 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
               style: TextStyle(
                 fontSize: bodyFontSize,
                 fontWeight: FontWeight.w600,
-                
+
                 color: _textPrimary,
               ),
               textAlign: TextAlign.center,
@@ -1002,7 +1326,14 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
     );
   }
 
-  Widget _buildQuickServicesSection(BuildContext context, bool isSmallScreen, bool isTablet, double iconSize, double headingFontSize, double bodyFontSize) {
+  Widget _buildQuickServicesSection(
+    BuildContext context,
+    bool isSmallScreen,
+    bool isTablet,
+    double iconSize,
+    double headingFontSize,
+    double bodyFontSize,
+  ) {
     return Container(
       padding: EdgeInsets.all(isSmallScreen ? 16 : 24),
       color: _cardColor,
@@ -1028,7 +1359,11 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: isTablet ? 4 : isSmallScreen ? 4 : 4,
+              crossAxisCount: isTablet
+                  ? 4
+                  : isSmallScreen
+                  ? 4
+                  : 4,
               crossAxisSpacing: isSmallScreen ? 12 : 16,
               mainAxisSpacing: isSmallScreen ? 12 : 16,
               childAspectRatio: 0.8,
@@ -1036,7 +1371,13 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
             itemCount: _quickServices.length,
             itemBuilder: (context, index) {
               final service = _quickServices[index];
-              return _buildQuickServiceCard(service, isSmallScreen, isTablet, iconSize, bodyFontSize);
+              return _buildQuickServiceCard(
+                service,
+                isSmallScreen,
+                isTablet,
+                iconSize,
+                bodyFontSize,
+              );
             },
           ),
         ],
@@ -1044,7 +1385,13 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
     );
   }
 
-  Widget _buildQuickServiceCard(Map<String, dynamic> service, bool isSmallScreen, bool isTablet, double iconSize, double bodyFontSize) {
+  Widget _buildQuickServiceCard(
+    Map<String, dynamic> service,
+    bool isSmallScreen,
+    bool isTablet,
+    double iconSize,
+    double bodyFontSize,
+  ) {
     return GestureDetector(
       onTap: service['onTap'],
       child: Container(
@@ -1057,7 +1404,13 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: EdgeInsets.all(isSmallScreen ? 10 : isTablet ? 14 : 12),
+              padding: EdgeInsets.all(
+                isSmallScreen
+                    ? 10
+                    : isTablet
+                    ? 14
+                    : 12,
+              ),
               decoration: BoxDecoration(
                 color: service['color'].withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
@@ -1083,7 +1436,11 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
     );
   }
 
-  Widget _buildPromoBanner(bool isSmallScreen, bool isTablet, double bodyFontSize) {
+  Widget _buildPromoBanner(
+    bool isSmallScreen,
+    bool isTablet,
+    double bodyFontSize,
+  ) {
     return Container(
       margin: EdgeInsets.all(isSmallScreen ? 16 : 24),
       padding: EdgeInsets.all(isSmallScreen ? 20 : 30),
@@ -1111,7 +1468,11 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
               opacity: 0.1,
               child: Icon(
                 Icons.airplanemode_active,
-                size: isSmallScreen ? 100 : isTablet ? 150 : 120,
+                size: isSmallScreen
+                    ? 100
+                    : isTablet
+                    ? 150
+                    : 120,
                 color: Colors.white,
               ),
             ),
@@ -1123,11 +1484,16 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: _secondaryColor.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: _secondaryColor.withOpacity(0.4)),
+                        border: Border.all(
+                          color: _secondaryColor.withOpacity(0.4),
+                        ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -1150,7 +1516,11 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
                       'Travel The World\nWith Confidence',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: isSmallScreen ? 18 : isTablet ? 26 : 22,
+                        fontSize: isSmallScreen
+                            ? 18
+                            : isTablet
+                            ? 26
+                            : 22,
                         fontWeight: FontWeight.bold,
                         height: 1.3,
                       ),
@@ -1209,11 +1579,7 @@ Widget _buildStatItem(String value, String label, bool isSmallScreen) {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.construction,
-                size: 60,
-                color: _secondaryColor,
-              ),
+              Icon(Icons.construction, size: 60, color: _secondaryColor),
               SizedBox(height: 20),
               Text(
                 '$service Coming Soon!',
