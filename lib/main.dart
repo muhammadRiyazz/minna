@@ -27,6 +27,7 @@ import 'package:minna/flight/application/search%20data/search_data_bloc.dart';
 import 'package:minna/flight/application/trip%20request/trip_request_bloc.dart';
 import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/application/oparator/operators_bloc.dart';
 import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/application/proceed_recharge/recharge_proceed_bloc.dart';
+import 'package:minna/hotel%20booking/application/bloc/hotel_booking_confirm_bloc.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -149,6 +150,7 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(create: (context) => BookedInfoBloc()),
         BlocProvider(create: (context) => ConfirmBillBloc()),
         BlocProvider(create: (context) => BillPaymentBloc(BillPaymentRepository())),
+        BlocProvider(create: (context) => HotelBookingConfirmBloc()),
 
         
       ],

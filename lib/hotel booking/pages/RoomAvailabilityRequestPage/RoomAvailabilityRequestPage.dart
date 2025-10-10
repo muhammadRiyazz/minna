@@ -1409,7 +1409,7 @@ class _RoomAvailabilityRequestPageState
     onPressed: () => Navigator.pop(context),
   ),
             backgroundColor: _primaryColor,
-            expandedHeight: 240,
+            expandedHeight: 200,
             floating: false,
             pinned: true,
             elevation: 4,
@@ -1430,7 +1430,7 @@ class _RoomAvailabilityRequestPageState
                   // Hotel Image Carousel
                   CarouselSlider(
                     options: CarouselOptions(
-                      height: 280,
+                      height: 240,
                       autoPlay: true,
                       autoPlayInterval: Duration(seconds: 3),
                       autoPlayAnimationDuration: Duration(milliseconds: 800),
@@ -1495,7 +1495,7 @@ class _RoomAvailabilityRequestPageState
           // Main Content
           SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.all(20),
+              padding: EdgeInsets.all(15),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -1522,7 +1522,7 @@ class _RoomAvailabilityRequestPageState
                           Text(
                             widget.hotel.hotelName,
                             style: TextStyle(
-                              fontSize: 20,
+                              fontSize: 15,
                               fontWeight: FontWeight.bold,
                               color: _textPrimary,
                             ),
@@ -1581,7 +1581,7 @@ class _RoomAvailabilityRequestPageState
 
                     // Dates Section
                     _buildSectionHeader("Booking Dates"),
-                    SizedBox(height: 16),
+                    SizedBox(height: 10),
                     Row(
                       children: [
                         Expanded(
@@ -1691,7 +1691,7 @@ class _RoomAvailabilityRequestPageState
 
                     // Preferences Section
                     _buildSectionHeader("Preferences"),
-                    SizedBox(height: 16),
+                    SizedBox(height: 10),
                     Container(
                       decoration: BoxDecoration(
                         color: _cardColor,
@@ -1705,117 +1705,103 @@ class _RoomAvailabilityRequestPageState
                         ],
                       ),
                       child: Padding(
-                        padding: EdgeInsets.all(20),
+                        padding: EdgeInsets.symmetric(vertical: 25,horizontal: 15),
                         child: Column(
                           children: [
-                            Container(
-                              padding: EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: _backgroundColor,
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: _secondaryColor.withOpacity(0.1),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Icon(Icons.assignment_return_rounded, color: _secondaryColor, size: 20),
+                            Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: _secondaryColor.withOpacity(0.1),
+                                    shape: BoxShape.circle,
                                   ),
-                                  SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "Only Refundable Rooms",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            color: _textPrimary,
-                                          ),
+                                  child: Icon(Icons.assignment_return_rounded, color: _secondaryColor, size: 20),
+                                ),
+                                SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Only Refundable Rooms",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          color: _textPrimary,
                                         ),
-                                        SizedBox(height: 4),
-                                        Text(
-                                          "Show only rooms with free cancellation",
-                                          style: TextStyle(
-                                            color: _textLight,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Switch(
-                                    value: refundableOnly,
-                                    onChanged: (val) => setState(() => refundableOnly = val),
-                                    activeColor: _secondaryColor,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 16),
-                            Container(
-                              padding: EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: _backgroundColor,
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: _secondaryColor.withOpacity(0.1),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Icon(Icons.restaurant_rounded, color: _secondaryColor, size: 20),
-                                  ),
-                                  SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "Meal Type",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            color: _textPrimary,
-                                          ),
-                                        ),
-                                        SizedBox(height: 4),
-                                        Text(
-                                          "Select your preferred meal option",
-                                          style: TextStyle(
-                                            color: _textLight,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  DropdownButton<String>(
-                                    value: mealType,
-                                    underline: Container(),
-                                    items: const [
-                                      DropdownMenuItem(
-                                        value: 'All',
-                                        child: Text('All Meals'),
                                       ),
-                                      DropdownMenuItem(
-                                        value: 'WithMeal',
-                                        child: Text('With Meal'),
-                                      ),
-                                      DropdownMenuItem(
-                                        value: 'RoomOnly',
-                                        child: Text('Room Only'),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        "Show only rooms with free cancellation",
+                                        style: TextStyle(
+                                          color: _textLight,
+                                          fontSize: 12,
+                                        ),
                                       ),
                                     ],
-                                    onChanged: (val) => setState(() => mealType = val!),
                                   ),
-                                ],
-                              ),
+                                ),
+                                Switch(
+                                  value: refundableOnly,
+                                  onChanged: (val) => setState(() => refundableOnly = val),
+                                  activeColor: _secondaryColor,
+                                ),
+                              ],
+                            ),
+                            Divider(height: 50,),
+                            Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: _secondaryColor.withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(Icons.restaurant_rounded, color: _secondaryColor, size: 20),
+                                ),
+                                SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Meal Type",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          color: _textPrimary,
+                                        ),
+                                      ),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        "Select your preferred meal option",
+                                        style: TextStyle(
+                                          color: _textLight,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                DropdownButton<String>(
+                                  value: mealType,
+                                  underline: Container(),
+                                  items: const [
+                                    DropdownMenuItem(
+                                      value: 'All',
+                                      child: Text('All Meals',style: TextStyle(fontSize: 13),),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: 'WithMeal',
+                                      child: Text('With Meal',style: TextStyle(fontSize: 13),),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: 'RoomOnly',
+                                      child: Text('Room Only',style: TextStyle(fontSize: 13),),
+                                    ),
+                                  ],
+                                  onChanged: (val) => setState(() => mealType = val!),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -1874,7 +1860,7 @@ class _RoomAvailabilityRequestPageState
     return Text(
       title,
       style: TextStyle(
-        fontSize: 18,
+        fontSize: 15,
         fontWeight: FontWeight.bold,
         color: _textPrimary,
       ),
@@ -1916,7 +1902,7 @@ class _RoomAvailabilityRequestPageState
                   child: Icon(
                     Icons.calendar_today_rounded,
                     color: isError ? Colors.red : _secondaryColor,
-                    size: 16,
+                    size: 14,
                   ),
                 ),
                 SizedBox(width: 8),
@@ -1936,7 +1922,7 @@ class _RoomAvailabilityRequestPageState
                   ? DateFormat('EEE, MMM d, y').format(date)
                   : 'Select Date',
               style: TextStyle(
-                fontSize: 15,
+                fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: isError ? Colors.red : _textPrimary,
               ),

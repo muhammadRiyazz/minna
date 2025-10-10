@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:http/http.dart' as http;
+import 'package:minna/hotel%20booking/core/core.dart';
 import 'package:minna/hotel%20booking/domain/authentication/authendication.dart';
 
 class AuthApiService {
@@ -89,35 +90,51 @@ log(response.body);
     }
   }
 
-  Future<ApiResult<PreBookResponse>> preBookRoom({
-    required String bookingCode,
-  }) async {
-    try {
-      final request = PreBookRequest(bookingCode: bookingCode);
+Future<ApiResult<PreBookResponse>> preBookRoom({
+  required String bookingCode,
+}) async {
+  try {
+    // ✅ Define Basic Auth correctly
+    final String basicAuth = 'Basic ${base64Encode(utf8.encode('$livehotelusername:$livehoteluserpass'))}';
 
-      final response = await http.post(
-        Uri.parse('$_baseHotelUrl/PreBook'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(request.toJson()),
-      );
-      log(json.encode(request.toJson()));
-log(response.body)
-;      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final preBookResponse = PreBookResponse.fromJson(data);
-        
-        if (preBookResponse.isSuccess) {
-          return ApiResult.success(preBookResponse);
-        } else {
-          return ApiResult.error('Pre-book failed: ${preBookResponse.status.description}');
-        }
+    // ✅ Create request body
+    final request = PreBookRequest(bookingCode: bookingCode);
+
+    // ✅ Make HTTP POST call
+    final response = await http.post(
+      Uri.parse('$_baseHotelUrl/PreBook'),
+      headers: {
+        'Authorization': basicAuth,
+        'Content-Type': 'application/json',
+      },
+      body: json.encode(request.toJson()),
+    );
+
+    // ✅ Log request and response
+    log('PreBook Request: ${json.encode(request.toJson())}');
+    log('PreBook Response: ${response.body}');
+
+    // ✅ Handle response
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final preBookResponse = PreBookResponse.fromJson(data);
+
+      if (preBookResponse.isSuccess) {
+        return ApiResult.success(preBookResponse);
       } else {
-        return ApiResult.error('HTTP Error: ${response.statusCode}');
+        return ApiResult.error(
+          'Pre-book failed: ${preBookResponse.status.description}',
+        );
       }
-    } catch (e) {
-      return ApiResult.error('Network error: $e');
+    } else {
+      return ApiResult.error('HTTP Error: ${response.statusCode}');
     }
+  } catch (e) {
+    log('PreBook Error: $e');
+    return ApiResult.error('Network error: $e');
   }
+}
+
 
   // Helper method to check if user has sufficient balance
   Future<bool> checkSufficientBalance(double roomAmount) async {

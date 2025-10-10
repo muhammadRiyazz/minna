@@ -1,937 +1,782 @@
+// hotel_booking_confirmation_page.dart
+import 'dart:async';
+import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:minna/comman/core/api.dart';
-import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:minna/comman/const/const.dart';
+import 'package:minna/comman/core/api.dart';
+import 'package:minna/comman/functions/create_order_id.dart';
+import 'package:minna/hotel%20booking/application/bloc/hotel_booking_confirm_bloc.dart';
+import 'package:minna/hotel%20booking/domain/authentication/authendication.dart';
 import 'package:minna/hotel%20booking/domain/hotel%20details%20/hotel_details.dart';
-import 'package:minna/hotel%20booking/domain/rooms/rooms.dart';
+import 'package:minna/hotel%20booking/domain/rooms/rooms.dart' hide CancelPolicy;
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 
-class BookingPreviewPage extends StatefulWidget {
+class HotelBookingConfirmationPage extends StatefulWidget {
   final Room room;
   final HotelSearchRequest hotelSearchRequest;
   final HotelDetail hotel;
   final List<Map<String, dynamic>> passengers;
+  final List<List<Map<String, dynamic>>>? roomPassengers;
+  final String tableId;
+  final String bookingId;
+  final PreBookResponse preBookResponse;
 
-  const BookingPreviewPage({
+  const HotelBookingConfirmationPage({
     super.key,
     required this.room,
     required this.hotelSearchRequest,
     required this.hotel,
     required this.passengers,
+    required this.roomPassengers,
+    required this.tableId,
+    required this.bookingId,
+    required this.preBookResponse,
   });
 
   @override
-  State<BookingPreviewPage> createState() => _BookingPreviewPageState();
+  State<HotelBookingConfirmationPage> createState() => _HotelBookingConfirmationPageState();
 }
 
-class _BookingPreviewPageState extends State<BookingPreviewPage> {
-  final Razorpay _razorpay = Razorpay();
-  bool _isProcessing = false;
+class _HotelBookingConfirmationPageState extends State<HotelBookingConfirmationPage> {
+  late Timer _timer;
+  int _remainingSeconds = 8 * 60; // 8 minutes
+  bool _isTimerExpired = false;
+  late Razorpay _razorpay;
+  String? _orderId;
+  String _displayTime = '08:00';
+
+  // Theme colors
+  final Color _primaryColor = Colors.black;
+  final Color _secondaryColor = Color(0xFFD4AF37);
+  final Color _backgroundColor = Color(0xFFF8F9FA);
+  final Color _cardColor = Colors.white;
+  final Color _textPrimary = Colors.black;
+  final Color _textSecondary = Color(0xFF666666);
+  final Color _textLight = Color(0xFF999999);
+  final Color _errorColor = Color(0xFFE53935);
+  final Color _successColor = Color(0xFF4CAF50);
+  final Color _warningColor = Color(0xFFFF9800);
 
   @override
   void initState() {
     super.initState();
+    _startOptimizedTimer();
+    _initRazorpay();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    _razorpay.clear();
+    super.dispose();
+  }
+
+  void _startOptimizedTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_remainingSeconds > 0) {
+        _remainingSeconds--;
+        
+        final newDisplayTime = _formatTime(_remainingSeconds);
+        final shouldRebuild = _displayTime != newDisplayTime || _remainingSeconds <= 10;
+        
+        if (shouldRebuild) {
+          _displayTime = newDisplayTime;
+          if (mounted) {
+            setState(() {});
+          }
+        }
+      } else {
+        _isTimerExpired = true;
+        _timer.cancel();
+        if (mounted) {
+          _showTimeExpiredDialog();
+        }
+      }
+    });
+  }
+
+  void _initRazorpay() {
+    _razorpay = Razorpay();
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
   }
 
-  @override
-  void dispose() {
-    _razorpay.clear();
-    super.dispose();
-  }
+  void _handlePaymentSuccess(PaymentSuccessResponse response) async {
+    log("Hotel Payment Success: ${response.paymentId}");
+    
+    final bookingRequest = _generateBookingRequest();
+    final totalAmount = _getTotalAmount();
 
-  void _handlePaymentSuccess(PaymentSuccessResponse response) {
-    setState(() {
-      _isProcessing = false;
-    });
-    _showPaymentSuccessBottomSheet(response);
-  }
-
-  void _handlePaymentError(PaymentFailureResponse response) {
-    setState(() {
-      _isProcessing = false;
-    });
-    _showPaymentFailedBottomSheet(response);
-  }
-
-  void _handleExternalWallet(ExternalWalletResponse response) {
-    setState(() {
-      _isProcessing = false;
-    });
-    // _showExternalWalletBottomSheet(response);
-  }
-
-  void _processPayment(double amount) {
-    setState(() {
-      _isProcessing = true;
-    });
-
-    var options = {
-      'key': razorpaykey, // Replace with your actual Razorpay key
-      'amount': (amount * 100).toInt(), // Amount in paise
-      'name': 'Minna Hotels',
-      'description': 'Hotel Booking - ${widget.hotel.hotelName}',
-      'prefill': {
-        'contact': widget.passengers.first['Phone'] ?? '',
-        'email': widget.passengers.first['Email'] ?? '',
-      },
-      'theme': {'color': '#${maincolor1!.value.toRadixString(16).substring(2)}'}
-    };
-
-    try {
-      _razorpay.open(options);
-    } catch (e) {
-      setState(() {
-        _isProcessing = false;
-      });
-      _showErrorDialog('Payment Error', 'Failed to initialize payment: $e');
-    }
-  }
-void _showPaymentSuccessBottomSheet(PaymentSuccessResponse response) {
-  showModalBottomSheet(
-    context: context,
-   isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    isDismissible: false, // Prevent closing by tapping outside
-    enableDrag: false, // Prevent closing by dragging down
-    builder: (context) => WillPopScope(
-
-        onWillPop: () async {
-        // Prevent closing by back button
-        return false;
-      },
-      child: Container(
-        height: MediaQuery.of(context).size.height * 0.8,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(24),
-            topRight: Radius.circular(24),
-          ),
-        ),
-        child: Column(
-          children: [
-            // Header with warning icon (since booking failed)
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.orange[50],
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(24),
-                  topRight: Radius.circular(24),
-                ),
-              ),
-              child: Column(
-                children: [
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: Colors.orange,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.warning_amber_rounded,
-                      color: Colors.white,
-                      size: 40,
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    'Payment Successful!',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orange[800],
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'But hotel booking failed to confirm',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.orange[700],
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            ),
-            
-            Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Status Alert Box
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.red[50],
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.red[200]!),
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.error_outline, color: Colors.red[700], size: 20),
-                              SizedBox(width: 8),
-                              Text(
-                                'Booking Status: Failed',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.red[700],
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 12),
-                          Text(
-                            'We apologize for the inconvenience. Your payment was successful but we were unable to confirm your hotel booking. Your amount will be refunded shortly.',
-                            style: TextStyle(
-                              color: Colors.red[700],
-                              fontSize: 14,
-                              height: 1.5,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 24),
-                    
-                    // Payment Details
-                    Text(
-                      'Payment Details',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey[800],
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    
-                    _buildSuccessDetailItem(
-                      'Transaction ID',
-                      response.paymentId ?? 'N/A',
-                      Icons.receipt,
-                      Colors.green,
-                    ),
-                    SizedBox(height: 12),
-                    _buildSuccessDetailItem(
-                      'Amount Paid',
-                      '₹${(widget.room.totalFare + widget.room.totalTax).toStringAsFixed(2)}',
-                      Icons.currency_rupee,
-                      Colors.green,
-                    ),
-                    SizedBox(height: 12),
-                    _buildSuccessDetailItem(
-                      'Payment Status',
-                      'Completed',
-                      Icons.check_circle,
-                      Colors.green,
-                    ),
-                    SizedBox(height: 12),
-                    _buildSuccessDetailItem(
-                      'Payment Date',
-                      '${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}',
-                      Icons.calendar_today,
-                      Colors.blue,
-                    ),
-                    
-                    SizedBox(height: 24),
-                    
-                    // Refund Information
-                    Container(
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.blue[50],
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.blue[200]!),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.refresh, color: Colors.blue[700]),
-                              SizedBox(width: 8),
-                              Text(
-                                'Refund Information',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue[700],
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 12),
-                          // _buildRefundTimeline(),
-                          SizedBox(height: 12),
-                          Text(
-                            '• Refund will be processed to your original payment method\n• Typically takes 5-7 business days\n• You will receive confirmation email and SMS\n• Contact support if not received within 7 days',
-                            style: TextStyle(
-                              color: Colors.blue[700],
-                              fontSize: 12,
-                              height: 1.6,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    
-                    SizedBox(height: 24),
-                    
-                    // // Support Information
-                    // Container(
-                    //   padding: EdgeInsets.all(16),
-                    //   decoration: BoxDecoration(
-                    //     color: Colors.grey[100],
-                    //     borderRadius: BorderRadius.circular(12),
-                    //     border: Border.all(color: Colors.grey[300]!),
-                    //   ),
-                    //   child: Row(
-                    //     children: [
-                    //       Icon(Icons.support_agent, color: maincolor1, size: 24),
-                    //       SizedBox(width: 12),
-                    //       Expanded(
-                    //         child: Column(
-                    //           crossAxisAlignment: CrossAxisAlignment.start,
-                    //           children: [
-                    //             Text(
-                    //               'Need Help?',
-                    //               style: TextStyle(
-                    //                 fontWeight: FontWeight.bold,
-                    //                 color: Colors.grey[800],
-                    //               ),
-                    //             ),
-                    //             SizedBox(height: 4),
-                    //             Text(
-                    //               'Contact our 24/7 support team',
-                    //               style: TextStyle(
-                    //                 color: Colors.grey[600],
-                    //                 fontSize: 12,
-                    //               ),
-                    //             ),
-                    //             SizedBox(height: 4),
-                    //             Text(
-                    //               '📞 +91-XXXXXXXXXX',
-                    //               style: TextStyle(
-                    //                 color: maincolor1,
-                    //                 fontWeight: FontWeight.w500,
-                    //                 fontSize: 12,
-                    //               ),
-                    //             ),
-                    //           ],
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-                  ],
-                ),
-              ),
-            ),
-            
-            // Bottom Actions
-            Container(
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                border: Border(top: BorderSide(color: Colors.grey[300]!)),
-              ),
-              child: Row(
-                children: [
-               
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.popUntil(context, (route) => route.isFirst);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: maincolor1,
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: Text('Back to Home',style: TextStyle(color: Colors.white),),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+    context.read<HotelBookingConfirmBloc>().add(
+      HotelBookingConfirmEvent.paymentDone(
+        orderId: response.orderId ?? _orderId ?? '',
+        transactionId: response.paymentId ?? '',
+        tableId: widget.tableId,
+        bookingId: widget.bookingId,
+        amount: totalAmount,
+        bookingRequest: bookingRequest,
       ),
-    ),
-  );
-}
+    );
 
-  // void _showPaymentSuccessBottomSheet(PaymentSuccessResponse response) {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     isScrollControlled: true,
-  //     backgroundColor: Colors.transparent,
-  //     builder: (context) => Container(
-  //       height: MediaQuery.of(context).size.height * 0.8,
-  //       decoration: BoxDecoration(
-  //         color: Colors.white,
-  //         borderRadius: BorderRadius.only(
-  //           topLeft: Radius.circular(24),
-  //           topRight: Radius.circular(24),
-  //         ),
-  //       ),
-  //       child: Column(
-  //         children: [
-  //           // Header with success icon
-  //           Container(
-  //             width: double.infinity,
-  //             padding: EdgeInsets.all(24),
-  //             decoration: BoxDecoration(
-  //               color: Colors.green[50],
-  //               borderRadius: BorderRadius.only(
-  //                 topLeft: Radius.circular(24),
-  //                 topRight: Radius.circular(24),
-  //               ),
-  //             ),
-  //             child: Column(
-  //               children: [
-  //                 Container(
-  //                   width: 80,
-  //                   height: 80,
-  //                   decoration: BoxDecoration(
-  //                     color: Colors.green,
-  //                     shape: BoxShape.circle,
-  //                   ),
-  //                   child: Icon(
-  //                     Icons.check,
-  //                     color: Colors.white,
-  //                     size: 40,
-  //                   ),
-  //                 ),
-  //                 SizedBox(height: 16),
-  //                 Text(
-  //                   'Payment Successful!',
-  //                   style: TextStyle(
-  //                     fontSize: 24,
-  //                     fontWeight: FontWeight.bold,
-  //                     color: Colors.green[800],
-  //                   ),
-  //                 ),
-  //                 SizedBox(height: 8),
-  //                 Text(
-  //                   'Your booking has been confirmed',
-  //                   style: TextStyle(
-  //                     fontSize: 16,
-  //                     color: Colors.green[700],
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-            
-  //           Expanded(
-  //             child: SingleChildScrollView(
-  //               padding: EdgeInsets.all(24),
-  //               child: Column(
-  //                 crossAxisAlignment: CrossAxisAlignment.start,
-  //                 children: [
-  //                   // Booking DetailsFR
-  //                   _buildSuccessDetailItem(
-  //                     'Booking ID',
-  //                     '#${DateTime.now().millisecondsSinceEpoch}',
-  //                     Icons.confirmation_number,
-  //                   ),
-  //                   SizedBox(height: 16),
-  //                   _buildSuccessDetailItem(
-  //                     'Transaction ID',
-  //                     response.paymentId ?? 'N/A',
-  //                     Icons.receipt,
-  //                   ),
-  //                   SizedBox(height: 16),
-  //                   _buildSuccessDetailItem(
-  //                     'Hotel',
-  //                     widget.hotel.hotelName,
-  //                     Icons.hotel,
-  //                   ),
-  //                   SizedBox(height: 16),
-  //                   _buildSuccessDetailItem(
-  //                     'Check-in',
-  //                     widget.hotelSearchRequest.checkIn,
-  //                     Icons.calendar_today,
-  //                   ),
-  //                   SizedBox(height: 16),
-  //                   _buildSuccessDetailItem(
-  //                     'Amount Paid',
-  //                     '₹${(widget.room.totalFare + widget.room.totalTax).toStringAsFixed(2)}',
-  //                     Icons.currency_rupee,
-  //                   ),
-                    
-  //                   SizedBox(height: 24),
-                    
-  //                   // Important Information
-  //                   Container(
-  //                     padding: EdgeInsets.all(16),
-  //                     decoration: BoxDecoration(
-  //                       color: Colors.blue[50],
-  //                       borderRadius: BorderRadius.circular(12),
-  //                       border: Border.all(color: Colors.blue[200]!),
-  //                     ),
-  //                     child: Column(
-  //                       crossAxisAlignment: CrossAxisAlignment.start,
-  //                       children: [
-  //                         Row(
-  //                           children: [
-  //                             Icon(Icons.info, color: Colors.blue[700]),
-  //                             SizedBox(width: 8),
-  //                             Text(
-  //                               'Important Information',
-  //                               style: TextStyle(
-  //                                 fontWeight: FontWeight.bold,
-  //                                 color: Colors.blue[700],
-  //                               ),
-  //                             ),
-  //                           ],
-  //                         ),
-  //                         SizedBox(height: 8),
-  //                         Text(
-  //                           '• Booking confirmation will be sent to your email\n• Present this booking ID at hotel reception\n• Free cancellation available as per policy',
-  //                           style: TextStyle(
-  //                             color: Colors.blue[700],
-  //                             fontSize: 12,
-  //                           ),
-  //                         ),
-  //                       ],
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //           ),
-            
-  //           // Bottom Actions
-  //           Container(
-  //             padding: EdgeInsets.all(16),
-  //             decoration: BoxDecoration(
-  //               border: Border(top: BorderSide(color: Colors.grey[300]!)),
-  //             ),
-  //             child: Row(
-  //               children: [
-  //                 Expanded(
-  //                   child: OutlinedButton(
-  //                     onPressed: () {
-  //                       Navigator.pop(context); // Close bottom sheet
-  //                       _shareBookingDetails();
-  //                     },
-  //                     style: OutlinedButton.styleFrom(
-  //                       padding: EdgeInsets.symmetric(vertical: 12),
-  //                       shape: RoundedRectangleBorder(
-  //                         borderRadius: BorderRadius.circular(8),
-  //                       ),
-  //                       side: BorderSide(color: maincolor1!),
-  //                     ),
-  //                     child: Row(
-  //                       mainAxisAlignment: MainAxisAlignment.center,
-  //                       children: [
-  //                         Icon(Icons.share, color: maincolor1),
-  //                         SizedBox(width: 8),
-  //                         Text(
-  //                           'Share',
-  //                           style: TextStyle(color: maincolor1),
-  //                         ),
-  //                       ],
-  //                     ),
-  //                   ),
-  //                 ),
-  //                 SizedBox(width: 12),
-  //                 Expanded(
-  //                   child: ElevatedButton(
-  //                     onPressed: () {
-  //                       Navigator.popUntil(context, (route) => route.isFirst);
-  //                     },
-  //                     style: ElevatedButton.styleFrom(
-  //                       backgroundColor: maincolor1,
-  //                       padding: EdgeInsets.symmetric(vertical: 12),
-  //                       shape: RoundedRectangleBorder(
-  //                         borderRadius: BorderRadius.circular(8),
-  //                       ),
-  //                     ),
-  //                     child: Text('Done'),
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
+    _timer.cancel();
+  }
 
-  void _showPaymentFailedBottomSheet(PaymentFailureResponse response) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.5,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(24),
-            topRight: Radius.circular(24),
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Header with error icon
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                // color: Colors.red[50],
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(24),
-                  topRight: Radius.circular(24),
-                ),
-              ),
-              child: Column(
-                children: [
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.error_outline,
-                      color: Colors.white,
-                      size: 40,
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    'Payment Failed',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.red[800],
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'We couldn\'t process your payment',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.red[700],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            
-         
-            // Bottom Actions
-            Container(
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                border: Border(top: BorderSide(color: Colors.grey[300]!)),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      style: OutlinedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        side: BorderSide(color: Colors.grey[400]!),
-                      ),
-                      child: Text(
-                        'Try Again Later',
-                        style: TextStyle(color: Colors.grey[600]),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _processPayment(widget.room.totalFare + widget.room.totalTax);
-                        Navigator.pop(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: maincolor1,
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: Text('Retry Payment',style: TextStyle(color: Colors.white),),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+  void _handlePaymentError(PaymentFailureResponse response) async {
+    log("Hotel Payment Failed: ${response.message}");
+
+    context.read<HotelBookingConfirmBloc>().add(
+      HotelBookingConfirmEvent.paymentFail(
+        orderId: _orderId ?? '',
+        tableId: widget.tableId,
+        bookingId: widget.bookingId,
       ),
     );
   }
 
-  // void _showExternalWalletBottomSheet(ExternalWalletResponse response) {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     isScrollControlled: true,
-  //     backgroundColor: Colors.transparent,
-  //     builder: (context) => Container(
-  //       height: MediaQuery.of(context).size.height * 0.5,
-  //       decoration: BoxDecoration(
-  //         color: Colors.white,
-  //         borderRadius: BorderRadius.only(
-  //           topLeft: Radius.circular(24),
-  //           topRight: Radius.circular(24),
-  //         ),
-  //       ),
-  //       child: Column(
-  //         children: [
-  //           Container(
-  //             width: double.infinity,
-  //             padding: EdgeInsets.all(24),
-  //             decoration: BoxDecoration(
-  //               color: Colors.blue[50],
-  //               borderRadius: BorderRadius.only(
-  //                 topLeft: Radius.circular(24),
-  //                 topRight: Radius.circular(24),
-  //               ),
-  //             ),
-  //             child: Column(
-  //               children: [
-  //                 Icon(
-  //                   Icons.account_balance_wallet,
-  //                   size: 60,
-  //                   color: Colors.blue[700],
-  //                 ),
-  //                 SizedBox(height: 16),
-  //                 Text(
-  //                   'External Wallet',
-  //                   style: TextStyle(
-  //                     fontSize: 20,
-  //                     fontWeight: FontWeight.bold,
-  //                     color: Colors.blue[800],
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //           Expanded(
-  //             child: Padding(
-  //               padding: EdgeInsets.all(24),
-  //               child: Column(
-  //                 mainAxisAlignment: MainAxisAlignment.center,
-  //                 children: [
-  //                   Text(
-  //                     'Redirected to ${response.walletName}',
-  //                     style: TextStyle(
-  //                       fontSize: 18,
-  //                       fontWeight: FontWeight.bold,
-  //                     ),
-  //                   ),
-  //                   SizedBox(height: 16),
-  //                   Text(
-  //                     'Please complete the payment in your external wallet app.',
-  //                     textAlign: TextAlign.center,
-  //                     style: TextStyle(
-  //                       color: Colors.grey[600],
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //           ),
-  //           Container(
-  //             padding: EdgeInsets.all(16),
-  //             child: ElevatedButton(
-  //               onPressed: () {
-  //                 Navigator.pop(context);
-  //               },
-  //               style: ElevatedButton.styleFrom(
-  //                 backgroundColor: maincolor1,
-  //                 padding: EdgeInsets.symmetric(vertical: 12, horizontal: 32),
-  //                 shape: RoundedRectangleBorder(
-  //                   borderRadius: BorderRadius.circular(8),
-  //                 ),
-  //               ),
-  //               child: Text('OK'),
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    log("External Wallet: ${response.walletName}");
+  }
 
-  Widget _buildSuccessDetailItem(String title, String value, IconData icon, MaterialColor green) {
-    return Container(
-      padding: EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: maincolor1, size: 20),
-          SizedBox(width: 12),
-          Expanded(
+  String _formatTime(int seconds) {
+    int minutes = seconds ~/ 60;
+    int remainingSeconds = seconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
+  }
+
+  void _showTimeExpiredDialog() {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          margin: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: _cardColor,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: _errorColor.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.timer_off_rounded, size: 40, color: _errorColor),
+                ),
+                SizedBox(height: 20),
                 Text(
-                  title,
+                  "Booking Time Expired",
                   style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: _textPrimary,
                   ),
                 ),
-                SizedBox(height: 4),
+                SizedBox(height: 12),
                 Text(
-                  value,
+                  "Your hotel booking time has expired. Please try again.",
+                  textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[800],
+                    fontSize: 16,
+                    color: _textSecondary,
+                  ),
+                ),
+                SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _primaryColor,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    child: Text(
+                      "Go to Home",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  void _shareBookingDetails() {
-    // Implement share functionality
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Booking details shared!'),
-        backgroundColor: Colors.green,
-      ),
-    );
+  double _getTotalAmount() {
+    // Use PreBook response data for accurate pricing
+    final preBookRoom = widget.preBookResponse.hotelResult.firstOrNull?.rooms.firstOrNull;
+    if (preBookRoom != null) {
+      return preBookRoom.totalFare + preBookRoom.totalTax;
+    }
+    // Fallback to room data
+    return widget.room.totalFare + widget.room.totalTax;
   }
 
-  void _showErrorDialog(String title, String message) {
-    showDialog(
+  Map<String, dynamic> _generateBookingRequest() {
+    final hotelRoomsDetails = <Map<String, dynamic>>[];
+    final totalRooms = widget.roomPassengers?.length ?? 1;
+    final isSingleRoom = totalRooms == 1;
+    final totalAmount = _getTotalAmount();
+
+    // Use room-wise structure if available
+    if (widget.roomPassengers != null) {
+      for (final room in widget.roomPassengers!) {
+        final hotelPassengers = <Map<String, dynamic>>[];
+        
+        for (final passenger in room) {
+          hotelPassengers.add({
+            "Title": passenger['Title'] ?? "Mr.",
+            "FirstName": passenger['FirstName'] ?? "",
+            "MiddleName": "",
+            "LastName": passenger['LastName'] ?? "",
+            "Email": passenger['Email'],
+            "PaxType": passenger['PaxType'] ?? 1,
+            "LeadPassenger": passenger['LeadPassenger'] ?? false,
+            "Age": passenger['Age'] ?? 0,
+            "PassportNo": passenger['Passport'],
+            "PassportIssueDate": null,
+            "PassportExpDate": null,
+            "Phoneno": passenger['Phone'],
+            "PaxId": 0,
+            "GSTCompanyAddress": null,
+            "GSTCompanyContactNumber": null,
+            "GSTCompanyName": null,
+            "GSTNumber": null,
+            "GSTCompanyEmail": null,
+            "PAN": passenger['PAN'],
+          });
+        }
+        
+        hotelRoomsDetails.add({
+          "HotelPassenger": hotelPassengers,
+        });
+      }
+    } else {
+      // Fallback to single room structure
+      final hotelPassengers = <Map<String, dynamic>>[];
+      
+      for (final passenger in widget.passengers) {
+        hotelPassengers.add({
+          "Title": passenger['Title'] ?? "Mr.",
+          "FirstName": passenger['FirstName'] ?? "",
+          "MiddleName": "",
+          "LastName": passenger['LastName'] ?? "",
+          "Email": passenger['Email'],
+          "PaxType": passenger['PaxType'] ?? 1,
+          "LeadPassenger": passenger['LeadPassenger'] ?? false,
+          "Age": passenger['Age'] ?? 0,
+          "PassportNo": passenger['Passport'],
+          "PassportIssueDate": null,
+          "PassportExpDate": null,
+          "Phoneno": passenger['Phone'],
+          "PaxId": 0,
+          "GSTCompanyAddress": null,
+          "GSTCompanyContactNumber": null,
+          "GSTCompanyName": null,
+          "GSTNumber": null,
+          "GSTCompanyEmail": null,
+          "PAN": passenger['PAN'],
+        });
+      }
+      
+      hotelRoomsDetails.add({
+        "HotelPassenger": hotelPassengers,
+      });
+    }
+
+    final bookingRequest = {
+      "BookingCode": widget.room.bookingCode,
+      "IsVoucherBooking": true, // Set to true for direct voucher
+      "GuestNationality": "IN",
+      "EndUserIp": "192.168.9.119",
+      "RequestedBookingMode": isSingleRoom ? 5 : 1,
+      "HotelRoomsDetails": hotelRoomsDetails,
+    };
+
+    // Add additional fields for single room booking
+    if (isSingleRoom) {
+      bookingRequest["NetAmount"] = totalAmount;
+      bookingRequest["ClientReferenceId"] = _generateClientReferenceId();
+    } else {
+      bookingRequest["TokenId"] = widget.room.bookingCode;
+      bookingRequest["TraceId"] = _generateTraceId();
+      bookingRequest["AgencyId"] = 56870;
+    }
+
+    return bookingRequest;
+  }
+
+  String _generateTraceId() {
+    return '${DateTime.now().millisecondsSinceEpoch}';
+  }
+
+  String _generateClientReferenceId() {
+    return 'hotel_ref_${DateTime.now().millisecondsSinceEpoch}';
+  }
+
+  Future<bool> _onWillPop() async {
+    final shouldExit = await showModalBottomSheet<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(title),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('OK'),
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          margin: EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: _cardColor,
+            borderRadius: BorderRadius.circular(20),
           ),
-        ],
-      ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: _warningColor.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.exit_to_app_rounded, color: _warningColor, size: 30),
+                ),
+                SizedBox(height: 16),
+                Text(
+                  "Exit Hotel Booking?",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: _textPrimary,
+                  ),
+                ),
+                SizedBox(height: 12),
+                Text(
+                  "Are you sure you want to exit the booking process?",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: _textSecondary,
+                    fontSize: 15,
+                  ),
+                ),
+                SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: _textSecondary,
+                          side: BorderSide(color: Colors.grey.shade400),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                        ),
+                        child: Text(
+                          "Continue Booking",
+                          style: TextStyle(fontWeight: FontWeight.w600,fontSize: 12),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: (){                    Navigator.of(context).popUntil((route) => route.isFirst);
+},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _primaryColor,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                        ),
+                        child: Text(
+                          "Exit",
+                          style: TextStyle(fontWeight: FontWeight.w600,fontSize: 12),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
+
+    return shouldExit ?? false;
+  }
+
+  void _onProceedToPayment() async {
+    context.read<HotelBookingConfirmBloc>().add(
+      HotelBookingConfirmEvent.startLoading(),
+    );
+
+    try {
+      final totalAmount = _getTotalAmount();
+      final orderId = await createOrder(totalAmount);
+      
+      if (orderId == null) {
+        log("Order ID creation failed");
+        context.read<HotelBookingConfirmBloc>().add(
+          HotelBookingConfirmEvent.stopLoading(),
+        );
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Failed to create order. Please try again."),
+            backgroundColor: _errorColor,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          )
+        );
+        return;
+      }
+
+      setState(() {
+        _orderId = orderId;
+      });
+
+      final leadPassenger = _getLeadPassenger();
+      final name = "${leadPassenger['Title']} ${leadPassenger['FirstName']} ${leadPassenger['LastName']}";
+      final phone = leadPassenger['Phone'] ?? '';
+      final email = leadPassenger['Email'] ?? '';
+
+      var options = {
+        'key': razorpaykey,
+        'amount': (totalAmount * 100).toInt(),
+        'name': 'Minna Hotels',
+        'order_id': orderId,
+        'description': 'Hotel Booking - ${widget.hotel.hotelName}',
+        'prefill': {'contact': phone, 'email': email},
+        'theme': {'color': '#000000'}
+      };
+
+      try {
+        _razorpay.open(options);
+      } catch (e) {
+        log("Razorpay Error: $e");
+        context.read<HotelBookingConfirmBloc>().add(
+          HotelBookingConfirmEvent.stopLoading(),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Payment error: $e"),
+            backgroundColor: _errorColor,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          )
+        );
+      }
+    } catch (e) {
+      log("Error in payment process: $e");
+      context.read<HotelBookingConfirmBloc>().add(
+        HotelBookingConfirmEvent.stopLoading(),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("An error occurred: $e"),
+          backgroundColor: _errorColor,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        )
+      );
+    }
+  }
+
+  Map<String, dynamic> _getLeadPassenger() {
+    // Find lead passenger from all rooms
+    for (final room in widget.roomPassengers ?? [widget.passengers]) {
+      for (final passenger in room) {
+        if (passenger['LeadPassenger'] == true) {
+          return passenger;
+        }
+      }
+    }
+    return widget.passengers.first;
   }
 
   @override
   Widget build(BuildContext context) {
-    final double totalAmount = widget.room.totalFare + widget.room.totalTax;
-    final int nights = _calculateNights();
+    final totalAmount = _getTotalAmount();
+    final totalRooms = widget.roomPassengers?.length ?? 1;
+    final totalGuests = widget.passengers.length;
+    final preBookRoom = widget.preBookResponse.hotelResult.firstOrNull?.rooms.firstOrNull;
 
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: Text(
-          'Booking Preview',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<HotelBookingConfirmBloc, HotelBookingConfirmState>(
+          listener: (context, state) {
+            state.whenOrNull(
+              success: (data, bookingId, confirmationNo, bookingRefNo) {
+                log("HotelBookingSuccessPage---");
+                // Navigator.pushReplacement(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => HotelBookingSuccessPage(
+                //       bookingResponse: data,
+                //       bookingId: bookingId,
+                //       confirmationNo: confirmationNo,
+                //       bookingRefNo: bookingRefNo,
+                //       hotel: widget.hotel,
+                //       room: widget.room,
+                //     ),
+                //   ),
+                // );
+              },
+              paymentFailed: (message, orderId, tableId, bookingId) {
+                log('HotelBookingFailedPage');
+              },
+              refundInitiated: (message, orderId, transactionId, amount, tableId, bookingId) {
+                log('HotelRefundInitiatedPage--');
+              },
+              refundFailed: (message, orderId, transactionId, amount, tableId, bookingId) {
+                log('HotelBookingFailedPage. ---');
+              },
+              error: (message, shouldRefund, orderId, transactionId, amount, tableId, bookingId) {
+                if (shouldRefund) {
+                  context.read<HotelBookingConfirmBloc>().add(
+                    HotelBookingConfirmEvent.initiateRefund(
+                      orderId: orderId,
+                      transactionId: transactionId,
+                      amount: amount,
+                      tableId: tableId,
+                      bookingId: bookingId,
+                    ),
+                  );
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text("Booking Error", style: TextStyle(color: _errorColor)),
+                      content: Text(message),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text('OK', style: TextStyle(color: _primaryColor)),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              },
+            );
+          },
         ),
-        centerTitle: true,
-        elevation: 0,
-        flexibleSpace: Container(color: maincolor1),
-        iconTheme: IconThemeData(color: Colors.white),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHotelSummaryCard(),
-                  SizedBox(height: 10),
-                  _buildBookingDetailsCard(nights),
-                  SizedBox(height: 10),
-                  _buildPassengerDetailsCard(),
-                  SizedBox(height: 10),
-                  _buildPriceBreakdownCard(totalAmount, nights),
-                  SizedBox(height: 10),
-                ],
+      ],
+      child: WillPopScope(
+        onWillPop: _onWillPop,
+        child: Scaffold(
+          backgroundColor: _backgroundColor,
+          body: Column(
+            children: [
+              Expanded(
+                child: CustomScrollView(
+                  slivers: [
+                    // App Bar
+                    SliverAppBar(
+                      backgroundColor: _primaryColor,
+                      expandedHeight: 140,
+                      floating: false,
+                      pinned: true,
+                      elevation: 4,
+                      shadowColor: Colors.black.withOpacity(0.3),
+                      leading: IconButton(
+                        icon: Icon(Icons.arrow_back_rounded, color: Colors.white),
+                        onPressed: (){_onWillPop();},
+                      ),
+                      title: Text(
+                        "Confirm Hotel Booking",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      centerTitle: true,
+                      // flexibleSpace: FlexibleSpaceBar(
+                      //   background: Container(
+                      //     decoration: BoxDecoration(
+                      //       gradient: LinearGradient(
+                      //         colors: [_primaryColor, Color(0xFF2D2D2D)],
+                      //         begin: Alignment.topLeft,
+                      //         end: Alignment.bottomRight,
+                      //       ),
+                      //     ),
+                      //     child: Padding(
+                      //       padding: const EdgeInsets.only(bottom: 20, left: 24, right: 24),
+                      //       child: Column(
+                      //         mainAxisAlignment: MainAxisAlignment.end,
+                      //         crossAxisAlignment: CrossAxisAlignment.start,
+                      //         children: [
+                      //           Text(
+                      //             'Complete Your Booking',
+                      //             style: TextStyle(
+                      //               color: Colors.white,
+                      //               fontSize: 18,
+                      //               fontWeight: FontWeight.bold,
+                      //             ),
+                      //           ),
+                      //           SizedBox(height: 8),
+                      //           Text(
+                      //             '$totalGuests guest${totalGuests > 1 ? 's' : ''} across $totalRooms room${totalRooms > 1 ? 's' : ''}',
+                      //             style: TextStyle(
+                      //               color: Colors.white70,
+                      //               fontSize: 14,
+                      //             ),
+                      //           ),
+                      //         ],
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                      bottom: PreferredSize(
+                        preferredSize: Size.fromHeight(60),
+                        child: Container(
+                          color: _primaryColor,
+                          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Time remaining:',
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.timer, color: Colors.white, size: 18),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      _displayTime,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // Main Content
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            _buildHotelSummary(),
+                            SizedBox(height: 16),
+                            _buildBookingDetails(),
+                            SizedBox(height: 16),
+                            _buildGuestSummary(),
+                            SizedBox(height: 16),
+                            _buildPriceBreakdown(preBookRoom),
+                            if (preBookRoom?.cancelPolicies.isNotEmpty == true) ...[
+                              SizedBox(height: 16),
+                              _buildCancellationPolicy(preBookRoom!),
+                            ],
+                            SizedBox(height: 20),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
+              _buildPaymentSection(totalAmount),
+            ],
           ),
-          _buildBottomPaymentSection(totalAmount, context),
-        ],
+        ),
       ),
     );
   }
 
-  int _calculateNights() {
-    final checkIn = DateTime.parse(widget.hotelSearchRequest.checkIn);
-    final checkOut = DateTime.parse(widget.hotelSearchRequest.checkOut);
-    return checkOut.difference(checkIn).inDays;
-  }
-
-  Widget _buildHotelSummaryCard() {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  Widget _buildHotelSummary() {
+    return Container(
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 12,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Icon(Icons.hotel, color: maincolor1, size: 24),
-                SizedBox(width: 8),
-                Text(
-                  'Hotel Information',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: maincolor1,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 12),
+            _buildSectionHeader('Hotel Information', Icons.hotel_rounded),
+            SizedBox(height: 16),
             Text(
               widget.hotel.hotelName,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
+                color: _textPrimary,
               ),
             ),
             SizedBox(height: 8),
-            Text(
-              widget.hotel.address,
-              style: TextStyle(color: Colors.grey[600]),
+            Row(crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.location_on_rounded, color: _secondaryColor, size: 16),
+                SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    widget.hotel.address,
+                    style: TextStyle(color: _textSecondary),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(Icons.room_service_rounded, color: _secondaryColor, size: 16),
+                SizedBox(width: 6),
+                Text(
+                  '${widget.roomPassengers?.length ?? 1} Room${(widget.roomPassengers?.length ?? 1) > 1 ? 's' : ''}',
+                  style: TextStyle(color: _textSecondary),
+                ),
+              ],
             ),
           ],
         ),
@@ -939,78 +784,72 @@ void _showPaymentSuccessBottomSheet(PaymentSuccessResponse response) {
     );
   }
 
-  Widget _buildBookingDetailsCard(int nights) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  Widget _buildBookingDetails() {
+    final checkIn = DateTime.parse(widget.hotelSearchRequest.checkIn);
+    final checkOut = DateTime.parse(widget.hotelSearchRequest.checkOut);
+    final nights = checkOut.difference(checkIn).inDays;
+    final dateFormat = DateFormat('dd MMM yyyy');
+
+    return Container(
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 12,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            SizedBox(height: 10,),
+            _buildSectionHeader('Booking Details', Icons.calendar_month_rounded),
+            GridView.count(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 1.8,
               children: [
-                Icon(Icons.calendar_today, color: maincolor1, size: 20),
-                SizedBox(width: 8),
-                Text(
-                  'Booking Details',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: maincolor1,
-                  ),
+                _buildDetailItem(
+                  'Check-in',
+                  dateFormat.format(checkIn),
+                  Icons.login_rounded,
+                ),
+                _buildDetailItem(
+                  'Check-out',
+                  dateFormat.format(checkOut),
+                  Icons.logout_rounded,
+                ),
+                _buildDetailItem(
+                  'Duration',
+                  '$nights ${nights > 1 ? 'Nights' : 'Night'}',
+                  Icons.access_time_rounded,
+                ),
+                _buildDetailItem(
+                  'Guests',
+                  '${widget.passengers.length}',
+                  Icons.people_rounded,
                 ),
               ],
             ),
             SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildDetailItem(
-                    'Check-in',
-                    widget.hotelSearchRequest.checkIn,
-                    Icons.login,
-                  ),
-                ),
-                Expanded(
-                  child: _buildDetailItem(
-                    'Check-out',
-                    widget.hotelSearchRequest.checkOut,
-                    Icons.logout,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildDetailItem(
-                    'Duration',
-                    '$nights Nights',
-                    Icons.access_time,
-                  ),
-                ),
-                Expanded(
-                  child: _buildDetailItem(
-                    'Guests',
-                    '${widget.passengers.length} Person${widget.passengers.length > 1 ? 's' : ''}',
-                    Icons.people,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
             _buildDetailItem(
               'Room Type',
               widget.room.name.join(', '),
-              Icons.king_bed,
+              Icons.king_bed_rounded,
             ),
-            SizedBox(height: 8),
+            SizedBox(height: 12),
             _buildDetailItem(
               'Meal Plan',
-              widget.room.mealType,
-              Icons.restaurant,
+              widget.room.mealType.isNotEmpty ? widget.room.mealType : 'Not Included',
+              Icons.restaurant_rounded,
             ),
           ],
         ),
@@ -1019,192 +858,155 @@ void _showPaymentSuccessBottomSheet(PaymentSuccessResponse response) {
   }
 
   Widget _buildDetailItem(String title, String value, IconData icon) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(icon, size: 16, color: Colors.grey[600]),
-            SizedBox(width: 4),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[600],
-                fontWeight: FontWeight.w500,
-              ),
+    return Container(
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: _backgroundColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: _secondaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
             ),
-          ],
-        ),
-        SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey[800],
+            child: Icon(icon, color: _secondaryColor, size: 16),
           ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPassengerDetailsCard() {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+          SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.person, color: maincolor1, size: 24),
-                SizedBox(width: 8),
                 Text(
-                  'Passenger Details',
+                  title,
                   style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: maincolor1,
+                    fontSize: 11,
+                    color: _textSecondary,
+                    fontWeight: FontWeight.w500,
                   ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: _textPrimary,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGuestSummary() {
+    final totalGuests = widget.passengers.length;
+    final totalRooms = widget.roomPassengers?.length ?? 1;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 12,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionHeader('Guest Summary', Icons.people_alt_rounded),
             SizedBox(height: 12),
-            ...widget.passengers.asMap().entries.map((entry) {
-              final index = entry.key;
-              final passenger = entry.value;
-              return Container(
-                margin: EdgeInsets.only(bottom: 12),
-                padding: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.grey[50],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          'Passenger ${index + 1}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: maincolor1,
-                          ),
-                        ),
-                        if (passenger['LeadPassenger'] == true) ...[
-                          SizedBox(width: 8),
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: Colors.amber[50],
-                              borderRadius: BorderRadius.circular(4),
-                              border: Border.all(color: Colors.amber!),
-                            ),
-                            child: Text(
-                              'Lead',
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: Colors.amber[700],
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                        Spacer(),
-                        Text(
-                          _getPaxTypeText(passenger['PaxType']),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ],
+            Text(
+              '$totalGuests guest${totalGuests > 1 ? 's' : ''} across $totalRooms room${totalRooms > 1 ? 's' : ''}',
+              style: TextStyle(
+                fontSize: 15,
+                color: _textPrimary,
+              ),
+            ),
+            SizedBox(height: 8),
+            if (widget.roomPassengers != null)
+              ...widget.roomPassengers!.asMap().entries.map((entry) {
+                final roomIndex = entry.key;
+                final room = entry.value;
+                return Padding(
+                  padding: EdgeInsets.only(top: 8),
+                  child: Text(
+                    'Room ${roomIndex + 1}: ${room.length} guest${room.length > 1 ? 's' : ''}',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: _textSecondary,
                     ),
-                    SizedBox(height: 8),
-                    Text(
-                      '${passenger['Title']} ${passenger['FirstName']} ${passenger['LastName']}',
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    SizedBox(height: 4),
-                    Text('Age: ${passenger['Age']} years'),
-                    SizedBox(height: 4),
-                    Text('Email: ${passenger['Email']}'),
-                    SizedBox(height: 4),
-                    Text('Phone: ${passenger['Phone']}'),
-                  ],
-                ),
-              );
-            }).toList(),
+                  ),
+                );
+              }).toList(),
           ],
         ),
       ),
     );
   }
 
-  String _getPaxTypeText(int paxType) {
-    switch (paxType) {
-      case 1: return 'Adult';
-      case 2: return 'Child';
-      case 3: return 'Infant';
-      default: return 'Adult';
-    }
-  }
+  Widget _buildPriceBreakdown(PreBookRoom? preBookRoom) {
+    final totalAmount = _getTotalAmount();
+    final roomFare = preBookRoom?.totalFare ?? widget.room.totalFare;
+    final roomTax = preBookRoom?.totalTax ?? widget.room.totalTax;
 
-  Widget _buildPriceBreakdownCard(double totalAmount, int nights) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    return Container(
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 12,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Icon(Icons.receipt, color: maincolor1, size: 24),
-                SizedBox(width: 8),
-                Text(
-                  'Price Breakdown',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: maincolor1,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 12),
-            _buildPriceRow('Room Fare (${nights} nights)', widget.room.totalFare),
-            _buildPriceRow('Taxes & Fees', widget.room.totalTax),
-            Divider(height: 20),
-            _buildPriceRow(
-              'Total Amount',
-              totalAmount,
-              isTotal: true,
-            ),
+            _buildSectionHeader('Price Breakdown', Icons.receipt_long_rounded),
+            SizedBox(height: 16),
+            _buildPriceRow('Room Fare', roomFare),
             SizedBox(height: 8),
-            if (widget.room.isRefundable)
+            _buildPriceRow('Taxes & Fees', roomTax),
+            Divider(height: 20, color: Colors.grey.shade300),
+            _buildPriceRow('Total Amount', totalAmount, isTotal: true),
+            SizedBox(height: 12),
+            if (preBookRoom?.isRefundable == true)
               Container(
-                padding: EdgeInsets.all(8),
+                padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.green[50],
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: Colors.green!),
+                  color: _successColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: _successColor.withOpacity(0.3)),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.check_circle, color: Colors.green, size: 16),
-                    SizedBox(width: 8),
+                    Icon(Icons.check_circle_rounded, color: _successColor, size: 20),
+                    SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         'Fully Refundable - Free cancellation available',
                         style: TextStyle(
-                          color: Colors.green[700],
-                          fontSize: 12,
+                          color: _successColor,
+                          fontSize: 14,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -1218,131 +1020,319 @@ void _showPaymentSuccessBottomSheet(PaymentSuccessResponse response) {
     );
   }
 
-  Widget _buildPriceRow(String label, double amount, {bool isTotal = false}) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4),
-      child: Row(
+ Widget _buildCancellationPolicy(PreBookRoom preBookRoom) {
+  // Format date from "2024-01-01T00:00:00" to "01 Jan 2024"
+  String _formatPolicyDate(String dateString) {
+    try {
+      final date = DateTime.parse(dateString);
+      return DateFormat('dd MMM yyyy').format(date);
+    } catch (e) {
+      return dateString; // Return original if parsing fails
+    }
+  }
+
+  // Format charge type to be more readable
+  String _formatChargeType(String chargeType) {
+    switch (chargeType.toLowerCase()) {
+      case 'flat':
+        return 'Flat Charge';
+      case 'percentage':
+        return 'Percentage';
+      case 'night':
+        return 'Per Night';
+      default:
+        return chargeType;
+    }
+  }
+
+  // Get policy description based on charge type and amount
+  String _getPolicyDescription(CancelPolicy policy) {
+    final formattedDate = _formatPolicyDate(policy.fromDate);
+    final chargeType = _formatChargeType(policy.chargeType);
+    final charge = policy.cancellationCharge;
+
+    if (policy.chargeType.toLowerCase() == 'percentage') {
+      return 'Before $formattedDate: $chargeType - ${charge.toStringAsFixed(0)}% of booking amount';
+    } else if (policy.chargeType.toLowerCase() == 'flat') {
+      return 'Before $formattedDate: $chargeType - ₹${charge.toStringAsFixed(0)}';
+    } else if (policy.chargeType.toLowerCase() == 'night') {
+      return 'Before $formattedDate: $chargeType - ₹${charge.toStringAsFixed(0)} per night';
+    } else {
+      return 'Before $formattedDate: $chargeType - ₹${charge.toStringAsFixed(0)}';
+    }
+  }
+
+  return Container(
+    decoration: BoxDecoration(
+      color: _cardColor,
+      borderRadius: BorderRadius.circular(16),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.08),
+          blurRadius: 12,
+          offset: Offset(0, 4),
+        ),
+      ],
+    ),
+    child: Padding(
+      padding: EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              color: Colors.grey[700],
-              fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+          _buildSectionHeader('Cancellation Policy', Icons.policy_rounded),
+          SizedBox(height: 10),
+          
+          if (preBookRoom.cancelPolicies.isEmpty)
+            Text(
+              'Free cancellation available',
+              style: TextStyle(
+                fontSize: 14,
+                color: _successColor,
+                fontWeight: FontWeight.w500,
+              ),
+            )
+          else
+            Column(
+              children: [
+                // Free cancellation period if available
+                if (preBookRoom.cancelPolicies.isNotEmpty && 
+                    preBookRoom.cancelPolicies.first.cancellationCharge == 0)
+                  Container(
+                    padding: EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: _successColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: _successColor.withOpacity(0.3)),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.check_circle_rounded, color: _successColor, size: 18),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Free cancellation available',
+                            style: TextStyle(
+                              color: _successColor,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                
+               
+
+                ...preBookRoom.cancelPolicies.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final policy = entry.value;
+                  final isLast = index == preBookRoom.cancelPolicies.length - 1;
+
+                  return Container(
+                    margin: EdgeInsets.only(bottom: isLast ? 0 : 12),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Timeline indicator
+                   
+                        
+                        // Policy content
+                        Expanded(
+                          child: Container(
+                            padding: EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: _backgroundColor,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _getPolicyDescription(policy),
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: _textPrimary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                               
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+
+                // Additional information
+                if (preBookRoom.cancelPolicies.isNotEmpty)
+                  Container(
+                    margin: EdgeInsets.only(top: 12),
+                    padding: EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: _warningColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: _warningColor.withOpacity(0.3)),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(Icons.info_outline_rounded, color: _warningColor, size: 16),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Cancellation policies are subject to hotel terms and conditions. Please review carefully before booking.',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: _textSecondary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
             ),
-          ),
-          Spacer(),
-          Text(
-            '₹${amount.toStringAsFixed(2)}',
-            style: TextStyle(
-              color: isTotal ? maincolor1 : Colors.grey[800],
-              fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-              fontSize: isTotal ? 16 : 14,
-            ),
-          ),
         ],
       ),
+    ),
+  );
+}
+
+  Widget _buildPriceRow(String label, double amount, {bool isTotal = false}) {
+    return Row(
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            color: isTotal ? _textPrimary : _textSecondary,
+            fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+            fontSize: isTotal ? 16 : 14,
+          ),
+        ),
+        Spacer(),
+        Text(
+          '₹${amount.toStringAsFixed(2)}',
+          style: TextStyle(
+            color: isTotal ? _primaryColor : _textPrimary,
+            fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+            fontSize: isTotal ? 18 : 14,
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildBottomPaymentSection(double totalAmount, BuildContext context) {
+  Widget _buildSectionHeader(String title, IconData icon) {
+    return Row(
+      children: [
+        Container(
+          padding: EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: _secondaryColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(icon, color: _secondaryColor, size: 20),
+        ),
+        SizedBox(width: 12),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            color: _textPrimary,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPaymentSection(double totalAmount) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: _cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black12,
-            blurRadius: 8,
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
             offset: Offset(0, -2),
           ),
         ],
       ),
-      child: SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                Text(
-                  'Total Amount:',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey[700],
-                  ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              Text(
+                'Total Amount:',
+                style: TextStyle(
+                  fontSize: 15,
+                  color: _textSecondary,
+                  fontWeight: FontWeight.w500,
                 ),
-                Spacer(),
-                Text(
-                  '₹${totalAmount.toStringAsFixed(2)}',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: maincolor1,
-                  ),
+              ),
+              Spacer(),
+              Text(
+                '₹${totalAmount.toStringAsFixed(2)}',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: _primaryColor,
                 ),
-              ],
-            ),
-            SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: _isProcessing
-                      ? ElevatedButton(
-                          onPressed: null,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: maincolor1!.withOpacity(0.7),
-                            padding: EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                ),
-                              ),
-                              SizedBox(width: 12),
-                              Text(
-                                'Processing...',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
+              ),
+            ],
+          ),
+          SizedBox(height: 10),
+          BlocBuilder<HotelBookingConfirmBloc, HotelBookingConfirmState>(
+            builder: (context, state) {
+              return SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: (_isTimerExpired || state is HotelBookingConfirmLoading)
+                      ? null
+                      : _onProceedToPayment,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _isTimerExpired ? Colors.grey : _primaryColor,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 2,
+                  ),
+                  child: state is HotelBookingConfirmLoading
+                      ? SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
                         )
-                      : ElevatedButton.icon(
-                          onPressed: () {
-                            _processPayment(totalAmount);
-                          },
-                          icon: Icon(Icons.payment, size: 20, color: Colors.white),
-                          label: Text(
-                            'Pay Now',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.payment_rounded, size: 22),
+                            SizedBox(width: 12),
+                            Text(
+                              _isTimerExpired ? "TIME EXPIRED" : "PROCEED TO PAYMENT",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: maincolor1,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            padding: EdgeInsets.symmetric(vertical: 14),
-                            elevation: 2,
-                          ),
+                          ],
                         ),
                 ),
-              ],
-            ),
-          ],
-        ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

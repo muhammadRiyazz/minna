@@ -36,12 +36,29 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
   final Color _textLight = const Color(0xFF999999);
 
   final AuthApiService _apiService = AuthApiService();
-  bool _isLoading = false;
+  final Map<String, bool> _loadingRooms = {}; // Use bookingCode as key
   String? _errorMessage;
 
   // Helper method to get number of rooms in a room combination
   int _getNumberOfRoomsInCombination(Room room) {
     return room.name.length;
+  }
+
+  // Helper method to check if a specific room is loading
+  bool _isRoomLoading(Room room) {
+    return _loadingRooms[room.bookingCode] == true;
+  }
+
+  // Helper method to set loading state for a specific room
+  void _setRoomLoading(Room room, bool loading) {
+    setState(() {
+      _loadingRooms[room.bookingCode] = loading;
+    });
+  }
+
+  // Check if any room is loading
+  bool get _isAnyRoomLoading {
+    return _loadingRooms.values.any((loading) => loading);
   }
 
   // Show loading dialog
@@ -104,12 +121,8 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
   // Main booking flow
   Future<void> _handleBooking(Room room) async {
     try {
-      setState(() {
-        _isLoading = true;
-        _errorMessage = null;
-      });
-
-      // _showLoadingDialog('Authenticating...');
+      _setRoomLoading(room, true);
+      _errorMessage = null;
 
       // Step 1: Authenticate
       final authResult = await _apiService.authenticate(
@@ -117,30 +130,26 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
       );
 
       if (!authResult.isSuccess) {
-        _hideLoadingDialog();
+        _setRoomLoading(room, false);
         _showErrorDialog(authResult.error!);
         return;
       }
-
-      // _showLoadingDialog('Checking wallet balance...');
 
       // Step 2: Check wallet balance
       final hasSufficientBalance = await _apiService.checkSufficientBalance(room.totalFare);
       
       if (!hasSufficientBalance) {
-        // _hideLoadingDialog();
-        // _showErrorDialog('Insufficient wallet balance for this booking');
+        _setRoomLoading(room, false);
+        _showErrorDialog('Insufficient wallet balance for this booking');
         return;
       }
-
-      // _showLoadingDialog('Pre-booking room...');
 
       // Step 3: Pre-book room
       final preBookResult = await _apiService.preBookRoom(
         bookingCode: room.bookingCode,
       );
 
-      _hideLoadingDialog();
+      _setRoomLoading(room, false);
 
       if (preBookResult.isSuccess) {
         // Success - navigate to passenger input page
@@ -149,12 +158,8 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
         _showErrorDialog(preBookResult.error!);
       }
     } catch (e) {
-      _hideLoadingDialog();
+      _setRoomLoading(room, false);
       _showErrorDialog('An unexpected error occurred: $e');
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
     }
   }
 
@@ -166,7 +171,7 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
           hotel: widget.hotel,
           hotelSearchRequest: widget.hotelSearchRequest,
           room: room,
-          // preBookResponse: preBookResponse,
+          preBookResponse: preBookResponse,
         ),
       ),
     );
@@ -188,11 +193,11 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
             shadowColor: Colors.black.withOpacity(0.3),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
-              onPressed: _isLoading ? null : () => Navigator.pop(context),
+              onPressed: _isAnyRoomLoading ? null : () => Navigator.pop(context),
             ),
             title: const Text(
               'Available Rooms',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600,fontSize: 16),
             ),
             centerTitle: true,
             flexibleSpace: FlexibleSpaceBar(
@@ -214,7 +219,7 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
                         widget.hotel.hotelName,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 20,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                         maxLines: 2,
@@ -290,9 +295,10 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
     
     final roomNames = room.name;
     final primaryRoomName = roomNames.isNotEmpty ? roomNames[0] : 'Standard Room';
+    final isRoomLoading = _isRoomLoading(room);
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: _cardColor,
         borderRadius: BorderRadius.circular(18),
@@ -305,7 +311,7 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -316,8 +322,8 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
                 Stack(
                   children: [
                     Container(
-                      width: 80,
-                      height: 80,
+                      width: 65,
+                      height: 65,
                       decoration: BoxDecoration(
                         color: _secondaryColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(16),
@@ -325,7 +331,7 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
                       child: Icon(
                         numberOfRooms > 1 ? Icons.king_bed_outlined : Icons.king_bed_rounded,
                         color: _secondaryColor,
-                        size: 34,
+                        size: 28,
                       ),
                     ),
                     if (numberOfRooms > 1)
@@ -360,7 +366,7 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
                             ? '$numberOfRooms Rooms Package' 
                             : primaryRoomName,
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: _textPrimary,
                         ),
@@ -440,7 +446,7 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
                           Text(
                             currencyFormat.format(totalFare),
                             style: TextStyle(
-                              fontSize: 20,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: _primaryColor,
                             ),
@@ -480,7 +486,7 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
                               isRefundable ? 'Refundable' : 'Non-refundable',
                               style: TextStyle(
                                   color: isRefundable ? Colors.green : Colors.redAccent,
-                                  fontSize: 12,
+                                  fontSize: 10,
                                   fontWeight: FontWeight.w600),
                             ),
                           ],
@@ -495,7 +501,7 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
                     children: [
                       Expanded(
                         child: OutlinedButton(
-                          onPressed: _isLoading ? null : () => _showRoomDetails(context, room, currency),
+                          onPressed: isRoomLoading ? null : () => _showRoomDetails(context, room, currency),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: _primaryColor,
                             side: BorderSide(color: _primaryColor.withOpacity(0.3)),
@@ -509,7 +515,7 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
                             children: [
                               Icon(Icons.info_outline_rounded, size: 16),
                               SizedBox(width: 8),
-                              Text('Details', style: TextStyle(fontWeight: FontWeight.w600)),
+                              Text('Details', style: TextStyle(fontWeight: FontWeight.w600,fontSize: 12)),
                             ],
                           ),
                         ),
@@ -517,7 +523,7 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
                       const SizedBox(width: 12),
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: _isLoading ? null : () => _handleBooking(room),
+                          onPressed: isRoomLoading ? null : () => _handleBooking(room),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: _primaryColor,
                             foregroundColor: Colors.white,
@@ -527,7 +533,7 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             elevation: 2,
                           ),
-                          child: _isLoading
+                          child: isRoomLoading
                               ? const SizedBox(
                                   height: 20,
                                   width: 20,
@@ -536,21 +542,11 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
                                     valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                   ),
                                 )
-                              : Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      numberOfRooms > 1 ? Icons.room_service_rounded : Icons.credit_card_rounded, 
-                                      size: 16
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      numberOfRooms > 1 ? 'Book ${numberOfRooms} Rooms' : 'Book Now',
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w600, fontSize: 14),
-                                    ),
-                                  ],
-                                ),
+                              : Text(
+                                numberOfRooms > 1 ? 'Book ${numberOfRooms} Rooms' : 'Book Now',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w600, fontSize: 12),
+                              ),
                         ),
                       ),
                     ],
@@ -564,10 +560,6 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
     );
   }
 
-  // Keep your existing helper methods (_showRoomDetails, _buildRoomDetailsSheet, 
-  // _buildDetailSection, _buildFeatureChip, _buildPriceRow) exactly as they were...
-  // [Include all the existing helper methods from your previous code here]
-  
   void _showRoomDetails(BuildContext context, Room room, String currency) {
     showModalBottomSheet(
       context: context,
@@ -583,6 +575,7 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
     final numberOfRooms = _getNumberOfRoomsInCombination(room);
     final roomNames = room.name;
     final primaryRoomName = roomNames.isNotEmpty ? roomNames[0] : 'Standard Room';
+    final isRoomLoading = _isRoomLoading(room);
 
     return Container(
       margin: const EdgeInsets.only(top: 60),
@@ -782,7 +775,7 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
               width: double.infinity,
               height: 54,
               child: ElevatedButton(
-                onPressed: _isLoading ? null : () {
+                onPressed: isRoomLoading ? null : () {
                   Navigator.pop(context);
                   _handleBooking(room);
                 },
@@ -793,7 +786,7 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                child: _isLoading
+                child: isRoomLoading
                     ? const SizedBox(
                         height: 20,
                         width: 20,

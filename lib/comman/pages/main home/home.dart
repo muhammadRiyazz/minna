@@ -1203,7 +1203,7 @@ Widget _buildLoginAlertBanner(bool isSmallScreen) {
         : 4;
 
     return Container(
-      padding: EdgeInsets.all(isSmallScreen ? 16 : 24),
+      padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1306,14 +1306,16 @@ Widget _buildLoginAlertBanner(bool isSmallScreen) {
               child: FaIcon(
                 service['icon'],
                 color: service['color'],
-                size: isSmallScreen ? iconSize - 2 : iconSize,
+                size:
+                
+                 isSmallScreen ? iconSize - 2 : iconSize-5,
               ),
             ),
             SizedBox(height: isSmallScreen ? 6 : 8),
             Text(
               service['label'],
               style: TextStyle(
-                fontSize: bodyFontSize,
+                fontSize: bodyFontSize-2,
                 fontWeight: FontWeight.w600,
 
                 color: _textPrimary,
@@ -1354,7 +1356,6 @@ Widget _buildLoginAlertBanner(bool isSmallScreen) {
               ),
             ],
           ),
-          SizedBox(height: 16),
           GridView.builder(
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
@@ -1364,9 +1365,9 @@ Widget _buildLoginAlertBanner(bool isSmallScreen) {
                   : isSmallScreen
                   ? 4
                   : 4,
-              crossAxisSpacing: isSmallScreen ? 12 : 16,
-              mainAxisSpacing: isSmallScreen ? 12 : 16,
-              childAspectRatio: 0.8,
+              crossAxisSpacing: isSmallScreen ? 10 : 13,
+              mainAxisSpacing: isSmallScreen ? 10 : 13,
+              childAspectRatio: 0.76,
             ),
             itemCount: _quickServices.length,
             itemBuilder: (context, index) {
@@ -1375,8 +1376,8 @@ Widget _buildLoginAlertBanner(bool isSmallScreen) {
                 service,
                 isSmallScreen,
                 isTablet,
-                iconSize,
-                bodyFontSize,
+                iconSize-2,
+                bodyFontSize-2,
               );
             },
           ),
@@ -1483,51 +1484,49 @@ Widget _buildLoginAlertBanner(bool isSmallScreen) {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _secondaryColor.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: _secondaryColor.withOpacity(0.4),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.star, size: 14, color: _secondaryColor),
-                          SizedBox(width: 6),
-                          Text(
-                            'Premium Member',
-                            style: TextStyle(
-                              color: _secondaryColor,
-                              fontSize: isSmallScreen ? 10 : 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    // Container(
+                    //   padding: EdgeInsets.symmetric(
+                    //     horizontal: 12,
+                    //     vertical: 6,
+                    //   ),
+                    //   decoration: BoxDecoration(
+                    //     color: _secondaryColor.withOpacity(0.2),
+                    //     borderRadius: BorderRadius.circular(20),
+                    //     border: Border.all(
+                    //       color: _secondaryColor.withOpacity(0.4),
+                    //     ),
+                    //   ),
+                    //   child: Row(
+                    //     mainAxisSize: MainAxisSize.min,
+                    //     children: [
+                    //       Icon(Icons.star, size: 14, color: _secondaryColor),
+                    //       SizedBox(width: 6),
+                    //       Text(
+                    //         'Premium Member',
+                    //         style: TextStyle(
+                    //           color: _secondaryColor,
+                    //           fontSize: isSmallScreen ? 10 : 12,
+                    //           fontWeight: FontWeight.w600,
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
                     SizedBox(height: 12),
                     Text(
                       'Travel The World\nWith Confidence',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: isSmallScreen
-                            ? 18
-                            : isTablet
-                            ? 26
-                            : 22,
+                        fontSize: 
+                            18,
+                            
                         fontWeight: FontWeight.bold,
                         height: 1.3,
                       ),
                     ),
                     SizedBox(height: 8),
                     Text(
-                      'Exclusive deals on flights, hotels and packages\nfor our premium members',
+                      'Exclusive deals on flights, hotels and packages. for our premium members',
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.9),
                         fontSize: bodyFontSize,
@@ -1535,28 +1534,28 @@ Widget _buildLoginAlertBanner(bool isSmallScreen) {
                       ),
                     ),
                     SizedBox(height: 16),
-                    Container(
-                      width: 130,
-                      height: 40,
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _secondaryColor,
-                          foregroundColor: _primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          elevation: 2,
-                        ),
-                        child: Text(
-                          'Explore',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: bodyFontSize,
-                          ),
-                        ),
-                      ),
-                    ),
+                    // Container(
+                    //   width: 130,
+                    //   height: 40,
+                    //   child: ElevatedButton(
+                    //     onPressed: () {},
+                    //     style: ElevatedButton.styleFrom(
+                    //       backgroundColor: _secondaryColor,
+                    //       foregroundColor: _primaryColor,
+                    //       shape: RoundedRectangleBorder(
+                    //         borderRadius: BorderRadius.circular(20),
+                    //       ),
+                    //       elevation: 2,
+                    //     ),
+                    //     child: Text(
+                    //       'Explore',
+                    //       style: TextStyle(
+                    //         fontWeight: FontWeight.bold,
+                    //         fontSize: bodyFontSize,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

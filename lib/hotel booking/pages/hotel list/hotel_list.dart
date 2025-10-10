@@ -67,7 +67,10 @@ class _HotelListPageState extends State<HotelListPage> {
             expandedHeight: 120,
             floating: false,
             pinned: true,
-            elevation: 4,
+            elevation: 4,leading: IconButton(
+              icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
+            ),
             shadowColor: Colors.black.withOpacity(0.3),
             surfaceTintColor: Colors.white,
             flexibleSpace: FlexibleSpaceBar(
@@ -75,7 +78,7 @@ class _HotelListPageState extends State<HotelListPage> {
                 'Hotels in ${widget.cityName}',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -149,8 +152,10 @@ class _HotelListPageState extends State<HotelListPage> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 16),
-                  
+                                                        if (_searchController.text.isNotEmpty)
+ SizedBox(height: 16),
+                                          if (_searchController.text.isNotEmpty)
+
                   // Results Count
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -169,16 +174,13 @@ class _HotelListPageState extends State<HotelListPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          _searchController.text.isEmpty
-                              ? '${_allHotels.length} hotels in ${widget.cityName}'
-                              : '${_filteredHotels.length} hotels found',
+                         '${_filteredHotels.length} hotels found',
                           style: TextStyle(
                             color: _textSecondary,
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
                           ),
                         ),
-                        if (_searchController.text.isNotEmpty)
                           GestureDetector(
                             onTap: () {
                               _searchController.clear();
@@ -210,7 +212,7 @@ class _HotelListPageState extends State<HotelListPage> {
 
           // Hotel List
           SliverPadding(
-            padding: EdgeInsets.all(16),
+            padding: EdgeInsets.symmetric(horizontal: 12),
             sliver: FutureBuilder<List<Hotel>>(
               future: _hotelsFuture,
               builder: (context, snapshot) {
@@ -221,10 +223,10 @@ class _HotelListPageState extends State<HotelListPage> {
                       childCount: 6,
                     ),
                   );
+                } else if (!snapshot.hasData || _filteredHotels.isEmpty||_filteredHotels==null ) {
+                  return SliverToBoxAdapter(child: _buildEmptyState());
                 } else if (snapshot.hasError) {
                   return SliverToBoxAdapter(child: _buildErrorState(snapshot.error.toString()));
-                } else if (!snapshot.hasData || _filteredHotels.isEmpty) {
-                  return SliverToBoxAdapter(child: _buildEmptyState());
                 } else {
                   return SliverList(
                     delegate: SliverChildBuilderDelegate(
@@ -426,8 +428,8 @@ class _HotelListPageState extends State<HotelListPage> {
 
   Widget _buildEmptyState() {
     return Container(
-      margin: EdgeInsets.all(20),
-      padding: EdgeInsets.all(32),
+      margin: EdgeInsets.all(10),
+      padding: EdgeInsets.all(25),
       decoration: BoxDecoration(
         color: _cardColor,
         borderRadius: BorderRadius.circular(20),
@@ -479,7 +481,7 @@ class _HotelListPageState extends State<HotelListPage> {
 
   Widget _buildHotelCard(Hotel hotel) {
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: EdgeInsets.only(bottom: 14),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         elevation: 0,
@@ -499,25 +501,25 @@ class _HotelListPageState extends State<HotelListPage> {
             );
           },
           child: Padding(
-            padding: EdgeInsets.all(16),
+            padding: EdgeInsets.all(15),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Hotel Image
                 Container(
-                  width: 100,
-                  height: 100,
+                  width: 80,
+                  height: 80,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
                     color: _secondaryColor.withOpacity(0.1),
                   ),
                   child: Icon(
                     Icons.hotel_rounded,
-                    size: 40,
+                    size: 30,
                     color: _secondaryColor,
                   ),
                 ),
-                SizedBox(width: 16),
+                SizedBox(width: 15),
                 
                 // Hotel Details
                 Expanded(
@@ -532,7 +534,7 @@ class _HotelListPageState extends State<HotelListPage> {
                             child: Text(
                               hotel.hotelName,
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 14,
                                 fontWeight: FontWeight.bold,
                                 color: _textPrimary,
                                 height: 1.2,
@@ -541,35 +543,38 @@ class _HotelListPageState extends State<HotelListPage> {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: _secondaryColor.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: _secondaryColor.withOpacity(0.3)),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.star_rounded, color: _secondaryColor, size: 14),
-                                SizedBox(width: 4),
-                                Text(
-                                  hotel.hotelRating,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: _secondaryColor,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                          // Container(
+                          //   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          //   decoration: BoxDecoration(
+                          //     color: _secondaryColor.withOpacity(0.1),
+                          //     borderRadius: BorderRadius.circular(8),
+                          //     border: Border.all(color: _secondaryColor.withOpacity(0.3)),
+                          //   ),
+                          //   child: Row(
+                          //     mainAxisSize: MainAxisSize.min,
+                          //     children: [
+                          //       Icon(Icons.star_rounded, color: _secondaryColor, size: 14),
+                          //       SizedBox(width: 4),
+                          //       Text(
+                          //         hotel.hotelRating,
+                          //         style: TextStyle(
+                          //           fontSize: 12,
+                          //           fontWeight: FontWeight.bold,
+                          //           color: _secondaryColor,
+                          //         ),
+                          //       ),
+                          //     ],
+                          //   ),
+                          // ),
                         ],
                       ),
                       SizedBox(height: 8),
-                      Row(
+                      Row(crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.location_on_rounded, size: 16, color: _textLight),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 3),
+                            child: Icon(Icons.location_on_rounded, size: 14, color: _secondaryColor,),
+                          ),
                           SizedBox(width: 6),
                           Expanded(
                             child: Text(

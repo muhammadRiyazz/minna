@@ -136,7 +136,10 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
             expandedHeight: 140,
             floating: false,
             pinned: true,
-            elevation: 4,
+            elevation: 4,   leading: IconButton(
+              icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
+            ),
             shadowColor: Colors.black.withOpacity(0.3),
             surfaceTintColor: Colors.white,
             flexibleSpace: FlexibleSpaceBar(
@@ -144,7 +147,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
                 'Hotel Booking',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 18,
+                  fontSize: 15,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -154,32 +157,34 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [_primaryColor, Color(0xFF2D2D2D)],
+                    colors: [_primaryColor,],
                   ),
                 ),
               ),
             ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(
-                bottom: Radius.circular(20),
-              ),
-            ),
+            // shape: RoundedRectangleBorder(
+            //   borderRadius: BorderRadius.vertical(
+            //     bottom: Radius.circular(20),
+            //   ),
+            // ),
           ),
 
           // Main Content
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 15),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Header Section
+                                    const SizedBox(height: 5),
+
                   _buildHeaderSection(),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 20),
                   
                   // Search Cards Section
                   _buildSearchCardsSection(),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 15),
                   
                   // Search Button
                   _buildSearchButton(),
@@ -197,13 +202,15 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
 
   Widget _buildHeaderSection() {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [_primaryColor, Color(0xFF2D2D2D)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+
+        color: _primaryColor,
+        // gradient: LinearGradient(
+        //   colors: [_primaryColor, Color(0xFF2D2D2D)],
+        //   begin: Alignment.topLeft,
+        //   end: Alignment.bottomRight,
+        // ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -224,7 +231,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
             child: Icon(
               Icons.hotel_rounded,
               color: _secondaryColor,
-              size: 28,
+              size: 22,
             ),
           ),
           SizedBox(width: 16),
@@ -235,7 +242,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
                 Text(
                   "Find Your Perfect Stay",
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                     height: 1.2,
@@ -245,7 +252,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
                 Text(
                   "Discover luxury hotels at the best prices",
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 12,
                     color: Colors.white.withOpacity(0.8),
                     fontWeight: FontWeight.w500,
                   ),
@@ -260,7 +267,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
 
   Widget _buildSearchCardsSection() {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: _cardColor,
         borderRadius: BorderRadius.circular(20),
@@ -282,7 +289,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
             isLoading: isLoadingCountries,
             onTap: _showCountryBottomSheet,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 15),
           
           // City Card
           _buildLocationCard(
@@ -309,7 +316,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
     return GestureDetector(
       onTap: isDisabled ? null : onTap,
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
           color: isDisabled ? Colors.grey[50] : _cardColor,
           borderRadius: BorderRadius.circular(16),
@@ -347,7 +354,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
                   Text(
                     title,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 12,
                       color: isDisabled ? Colors.grey : _textSecondary,
                       fontWeight: FontWeight.w500,
                     ),
@@ -359,7 +366,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
                     Text(
                       value,
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: isDisabled ? Colors.grey[400] : _textPrimary,
                       ),

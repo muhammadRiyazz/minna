@@ -36,7 +36,10 @@ class FlightBookingTab extends StatelessWidget {
                 expandedHeight: 140,
                 floating: false,
                 pinned: true,
-                elevation: 4,
+                elevation: 4,leading: IconButton(
+              icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
+            ),
                 shadowColor: Colors.black.withOpacity(0.3),
                 surfaceTintColor: Colors.white,
                 flexibleSpace: FlexibleSpaceBar(
@@ -44,18 +47,14 @@ class FlightBookingTab extends StatelessWidget {
                     'Flight Booking',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 18,
+                      fontSize: 15,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   centerTitle: true,
                   background: Container(
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [_primaryColor, Color(0xFF2D2D2D)],
-                      ),
+                    color: _primaryColor
                     ),
                   ),
                 ),
@@ -75,11 +74,11 @@ class FlightBookingTab extends StatelessWidget {
                     children: [
                       // Header Section
                       _buildHeaderSection(),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 15),
 
                       // Search Cards Section
                       _buildSearchCardsSection(context, state),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 20),
 
                       // Search Button
                       _buildSearchButton(context, state),
@@ -98,11 +97,7 @@ class FlightBookingTab extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [_primaryColor, Color(0xFF2D2D2D)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+     color: _primaryColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -134,7 +129,7 @@ class FlightBookingTab extends StatelessWidget {
                 Text(
                   "Find Your Perfect Flight",
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                     height: 1.2,
@@ -144,7 +139,7 @@ class FlightBookingTab extends StatelessWidget {
                 Text(
                   "Discover the best flights at amazing prices",
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 12,
                     color: Colors.white.withOpacity(0.8),
                     fontWeight: FontWeight.w500,
                   ),
@@ -159,7 +154,7 @@ class FlightBookingTab extends StatelessWidget {
 
   Widget _buildSearchCardsSection(BuildContext context, SearchDataState state) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
         color: _cardColor,
         borderRadius: BorderRadius.circular(20),
@@ -175,7 +170,7 @@ class FlightBookingTab extends StatelessWidget {
         children: [
           // Trip Type Selector
           _buildTripTypeSelector(context, state),
-          const SizedBox(height: 24),
+          const SizedBox(height: 14),
 
           // Location Cards
           _buildLocationCards(context, state),
@@ -219,7 +214,7 @@ class FlightBookingTab extends StatelessWidget {
                   child: Text(
                     'One Way',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 12,
                       color: state.oneWay ? Colors.white : _textPrimary,
                       fontWeight: FontWeight.w600,
                     ),
@@ -245,7 +240,7 @@ class FlightBookingTab extends StatelessWidget {
                   child: Text(
                     'Round Trip',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 12,
                       color: !state.oneWay ? Colors.white : _textPrimary,
                       fontWeight: FontWeight.w600,
                     ),
@@ -302,7 +297,7 @@ class FlightBookingTab extends StatelessWidget {
     return GestureDetector(
       onTap: () => showAirportBottomSheet(context, isFrom: isFrom),
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: _cardColor,
           borderRadius: BorderRadius.only(
@@ -343,7 +338,7 @@ class FlightBookingTab extends StatelessWidget {
                   Text(
                     subtitle,
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: _textPrimary,
                     ),
@@ -363,38 +358,31 @@ class FlightBookingTab extends StatelessWidget {
   }
 
   Widget _buildDateSelectors(BuildContext context, SearchDataState state) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade200),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // Departure Date
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        // Departure Date
+        Expanded(
+          child: _buildDateSelector(
+            context: context,
+            title: "Departure Date",
+            date: state.departureDate,
+            isDeparture: true,
+            state: state,
+          ),
+        ),
+        if (!state.oneWay) const SizedBox(width: 16),
+        if (!state.oneWay)
           Expanded(
             child: _buildDateSelector(
               context: context,
-              title: "Departure Date",
-              date: state.departureDate,
-              isDeparture: true,
+              title: "Return Date",
+              date: state.returnDate,
+              isDeparture: false,
               state: state,
             ),
           ),
-          if (!state.oneWay) const SizedBox(width: 16),
-          if (!state.oneWay)
-            Expanded(
-              child: _buildDateSelector(
-                context: context,
-                title: "Return Date",
-                date: state.returnDate,
-                isDeparture: false,
-                state: state,
-              ),
-            ),
-        ],
-      ),
+      ],
     );
   }
 
@@ -449,7 +437,7 @@ class FlightBookingTab extends StatelessWidget {
         }
       },
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: _backgroundColor,
           borderRadius: BorderRadius.circular(12),
@@ -466,7 +454,7 @@ class FlightBookingTab extends StatelessWidget {
               child: Icon(
                 Icons.calendar_month_rounded,
                 color: _secondaryColor,
-                size: 20,
+                size: 15,
               ),
             ),
             const SizedBox(width: 12),
@@ -477,7 +465,7 @@ class FlightBookingTab extends StatelessWidget {
                   Text(
                     title,
                     style: TextStyle(
-                      fontSize: 10,
+                      fontSize: 8,
                       color: _textSecondary,
                       fontWeight: FontWeight.w500,
                     ),
@@ -488,7 +476,7 @@ class FlightBookingTab extends StatelessWidget {
                         ? DateFormat('dd MMM yyyy').format(date)
                         : "Select date",
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: date != null ? _textPrimary : _textLight,
                     ),
@@ -503,27 +491,23 @@ class FlightBookingTab extends StatelessWidget {
   }
 
   Widget _buildTravelInfo(BuildContext context, SearchDataState state) {
-    return Row(
+    return Column(
       children: [
         // Travellers
-        Expanded(
-          child: _buildTravelInfoCard(
-            title: "Travellers",
-            value:
-                "${state.travellers['adults']! + state.travellers['children']! + state.travellers['infants']!} Travellers",
-            icon: Icons.people_rounded,
-            onTap: () => _showTravellersBottomSheet(context, state),
-          ),
+        _buildTravelInfoCard(
+          title: "Travellers",
+          value:
+              "${state.travellers['adults']! + state.travellers['children']! + state.travellers['infants']!} Travellers",
+          icon: Icons.people_rounded,
+          onTap: () => _showTravellersBottomSheet(context, state),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(height: 14),
         // Class
-        Expanded(
-          child: _buildTravelInfoCard(
-            title: "Class",
-            value: state.seatClass,
-            icon: Icons.airline_seat_recline_normal_rounded,
-            onTap: () => _showClassBottomSheet(context, state),
-          ),
+        _buildTravelInfoCard(
+          title: "Class",
+          value: state.seatClass,
+          icon: Icons.airline_seat_recline_normal_rounded,
+          onTap: () => _showClassBottomSheet(context, state),
         ),
       ],
     );
@@ -538,7 +522,7 @@ class FlightBookingTab extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: _cardColor,
           borderRadius: BorderRadius.circular(12),
@@ -762,7 +746,7 @@ class FlightBookingTab extends StatelessWidget {
                     Text(
                       "Travellers",
                       style: TextStyle(
-                        fontSize: 22,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: _primaryColor,
                       ),
@@ -909,7 +893,7 @@ class FlightBookingTab extends StatelessWidget {
                     Text(
                       "Select Class",
                       style: TextStyle(
-                        fontSize: 22,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: _primaryColor,
                       ),
@@ -957,12 +941,12 @@ class FlightBookingTab extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: isSelected ? _secondaryColor.withOpacity(0.1) : Colors.transparent,
           border: Border.all(
             color: isSelected ? _secondaryColor : Colors.grey.shade300,
-            width: 2,
+            width: 1.5,
           ),
           borderRadius: BorderRadius.circular(12),
         ),
@@ -975,7 +959,7 @@ class FlightBookingTab extends StatelessWidget {
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: isSelected ? _secondaryColor : Colors.grey,
-                  width: isSelected ? 6 : 2,
+                  width: isSelected ? 2 :1,
                 ),
               ),
             ),
@@ -987,7 +971,7 @@ class FlightBookingTab extends StatelessWidget {
                   Text(
                     title,
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: isSelected ? _secondaryColor : _textPrimary,
                     ),
@@ -996,7 +980,7 @@ class FlightBookingTab extends StatelessWidget {
                   Text(
                     description,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 11,
                       color: _textSecondary,
                     ),
                   ),
@@ -1033,7 +1017,7 @@ class FlightBookingTab extends StatelessWidget {
               Text(
                 title,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: _textPrimary,
                 ),

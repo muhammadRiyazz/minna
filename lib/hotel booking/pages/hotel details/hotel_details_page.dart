@@ -297,7 +297,7 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                             hotel.address,
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
-                              fontSize: 14,
+                              fontSize: 12,
                               color: _textPrimary,
                               height: 1.4,
                             ),
@@ -375,7 +375,7 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
     onPressed: () => Navigator.pop(context),
   ),
   backgroundColor: _primaryColor,
-  expandedHeight: 260,
+  expandedHeight: 240,
   floating: false,
   pinned: true,
   title: Text(
@@ -423,7 +423,7 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                     children: [
                       // Hotel Header Info
                       Container(
-                        padding: EdgeInsets.all(20),
+                        padding: EdgeInsets.all(15),
                         decoration: BoxDecoration(
                           color: _cardColor,
                           borderRadius: BorderRadius.circular(20),
@@ -441,7 +441,7 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                             Text(
                               hotel.hotelName,
                               style: TextStyle(
-                                fontSize: 24,
+                                fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 color: _textPrimary,
                                 height: 1.2,
@@ -449,6 +449,7 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                             ),
                             SizedBox(height: 12),
                             Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Icon(Icons.location_on_rounded, size: 18, color: _secondaryColor),
                                 SizedBox(width: 6),
@@ -474,14 +475,14 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                                   ),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.star_rounded, color: _secondaryColor, size: 16),
+                                      Icon(Icons.star_rounded, color: _secondaryColor, size: 14),
                                       SizedBox(width: 6),
                                       Text(
                                         "${hotel.hotelRating} Star Hotel",
                                         style: TextStyle(
                                           color: _secondaryColor,
                                           fontWeight: FontWeight.w600,
-                                          fontSize: 13,
+                                          fontSize: 12,
                                         ),
                                       ),
                                     ],
@@ -514,7 +515,7 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                                       color: _selectedImageIndex == index 
                                           ? _secondaryColor
                                           : Colors.transparent,
-                                      width: 3,
+                                      width: 2,
                                     ),
                                   ),
                                   child: ClipRRect(
@@ -538,7 +539,7 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                       Row(
                         children: [
                           Expanded(child: _buildInfoCard('Check-in', Icons.login_rounded, hotel.checkInTime)),
-                          SizedBox(width: 12),
+                          SizedBox(width: 10),
                           Expanded(child: _buildInfoCard('Check-out', Icons.logout_rounded, hotel.checkOutTime)),
                         ],
                       ),
@@ -645,7 +646,7 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
         Text(
           title,
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 15,
             fontWeight: FontWeight.bold,
             color: _textPrimary,
           ),
@@ -688,7 +689,7 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                   color: _secondaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(icon, color: _secondaryColor, size: 18),
+                child: Icon(icon, color: _secondaryColor, size: 14),
               ),
               SizedBox(width: 8),
               Text(
@@ -719,7 +720,7 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
     final cleanedDescription = _cleanDescription(description);
     
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.all(15),
       decoration: BoxDecoration(
         color: _cardColor,
         borderRadius: BorderRadius.circular(20),
@@ -797,7 +798,7 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
 
   Widget _buildFacilitiesSection(List<String> facilities) {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.symmetric(vertical: 15),
       decoration: BoxDecoration(
         color: _cardColor,
         borderRadius: BorderRadius.circular(20),
@@ -811,56 +812,63 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
       ),
       child: Column(
         children: [
-          Wrap(
+          Wrap(alignment: WrapAlignment.start,
             spacing: 12,
             runSpacing: 12,
             children: facilities.take(8).map((facility) {
               return Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
                 decoration: BoxDecoration(
                   color: _secondaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      _getFacilityIcon(facility),
-                      color: _secondaryColor,
-                      size: 16,
-                    ),
-                    SizedBox(width: 6),
-                    Text(
-                      facility,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: _textPrimary,
-                        fontWeight: FontWeight.w500,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Row(
+                    
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        _getFacilityIcon(facility),
+                        color: _secondaryColor,
+                        size: 16,
                       ),
-                    ),
-                  ],
+                      SizedBox(width: 6),
+                      Text(
+                        facility,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: _textPrimary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             }).toList(),
           ),
           if (facilities.length > 8) ...[
             SizedBox(height: 12),
-            GestureDetector(
-              onTap: () => _showAllFacilitiesBottomSheet(facilities),
-              child: Container(
-                padding: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: _primaryColor.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: _primaryColor.withOpacity(0.2)),
-                ),
-                child: Center(
-                  child: Text(
-                    "+ ${facilities.length - 8} more facilities",
-                    style: TextStyle(
-                      color: _primaryColor,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: GestureDetector(
+                onTap: () => _showAllFacilitiesBottomSheet(facilities),
+                child: Container(
+                  padding: EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: _primaryColor.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: _primaryColor.withOpacity(0.2)),
+                  ),
+                  child: Center(
+                    child: Text(
+                      "+ ${facilities.length - 8} more facilities",
+                      style: TextStyle(
+                        color: _primaryColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
@@ -874,7 +882,7 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
 
   Widget _buildAttractionsSection(List<String> attractions) {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         color: _cardColor,
         borderRadius: BorderRadius.circular(20),
@@ -895,7 +903,7 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
               crossAxisCount: 2,
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
-              childAspectRatio: 4,
+              childAspectRatio: 3,
             ),
             itemCount: attractions.length > 6 ? 6 : attractions.length,
             itemBuilder: (context, index) {
@@ -925,6 +933,7 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                 ),
               ),
             ),
+            SizedBox(height: 12,)
           ],
         ],
       ),
@@ -942,16 +951,21 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
         child: Row(
           children: [
             Container(
-              width: 28,
-              height: 28,
+              // width: 28,
+              // height: 38,
               decoration: BoxDecoration(
                 color: _secondaryColor,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(
-                Icons.place_rounded,
-                color: Colors.white,
-                size: 16,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                  child: Icon(
+                    Icons.place_rounded,
+                    color: Colors.white,
+                    size: 16,
+                  ),
+                ),
               ),
             ),
             SizedBox(width: 12),
@@ -1109,90 +1123,100 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
         .trim();
   }
 
-  void _showAllFacilitiesBottomSheet(List<String> facilities) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return Container(
-          margin: EdgeInsets.only(top: 100),
-          decoration: BoxDecoration(
-            color: _cardColor,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(28),
-              topRight: Radius.circular(28),
-            ),
+void _showAllFacilitiesBottomSheet(List<String> facilities) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) {
+      return Container(
+        margin: EdgeInsets.only(top: 120),
+        decoration: BoxDecoration(
+          color: _cardColor,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(28),
+            topRight: Radius.circular(28),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: _primaryColor,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(28),
-                    topRight: Radius.circular(28),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "All Facilities (${facilities.length})",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: Icon(Icons.close_rounded, color: Colors.white),
-                    ),
-                  ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: _primaryColor,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(28),
+                  topRight: Radius.circular(28),
                 ),
               ),
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.all(24),
-                  child: Wrap(
-                    spacing: 12,
-                    runSpacing: 12,
-                    children: facilities.map((facility) {
-                      return Container(
-                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: _secondaryColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(_getFacilityIcon(facility), color: _secondaryColor, size: 16),
-                            SizedBox(width: 8),
-                            Text(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "All Facilities (${facilities.length})",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: Icon(Icons.close_rounded, color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.all(24),
+                child: Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: facilities.map((facility) {
+                    return Container(
+                      constraints: BoxConstraints(
+                        minWidth: 100,
+                        maxWidth: MediaQuery.of(context).size.width * 0.8,
+                      ),
+                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: _secondaryColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(_getFacilityIcon(facility), color: _secondaryColor, size: 16),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
                               facility,
                               style: TextStyle(
                                 color: _textPrimary,
                                 fontWeight: FontWeight.w500,
                               ),
+                              maxLines: 2, // Allow up to 2 lines
+                              overflow: TextOverflow.ellipsis, // Show ellipsis if still too long
+                              softWrap: true, // Enable text wrapping
                             ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
-                  ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
                 ),
               ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
   void _showAllAttractionsBottomSheet(List<String> attractions) {
     showModalBottomSheet(
       context: context,
@@ -1240,7 +1264,7 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
               ),
               Expanded(
                 child: ListView.builder(
-                  padding: EdgeInsets.all(24),
+                  padding: EdgeInsets.all(15),
                   itemCount: attractions.length,
                   itemBuilder: (context, index) {
                     return Container(
