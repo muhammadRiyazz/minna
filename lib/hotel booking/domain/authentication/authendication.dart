@@ -41,6 +41,13 @@ class AuthenticateResponse {
     );
   }
 
+  Map<String, dynamic> toJson() => {
+        'Status': status,
+        'TokenId': tokenId,
+        'Member': member.toJson(),
+        'Error': error.toJson(),
+      };
+
   bool get isSuccess => status == 1;
 }
 
@@ -74,6 +81,18 @@ class Member {
       loginDetails: json['LoginDetails'] ?? '',
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'FirstName': firstName,
+        'LastName': lastName,
+        'Email': email,
+        'MemberId': memberId,
+        'AgencyId': agencyId,
+        'LoginName': loginName,
+        'LoginDetails': loginDetails,
+      };
+
+  String get userId => memberId.toString();
 }
 
 class ApiError {
@@ -91,6 +110,11 @@ class ApiError {
       errorMessage: json['ErrorMessage'] ?? '',
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'ErrorCode': errorCode,
+        'ErrorMessage': errorMessage,
+      };
 
   bool get hasError => errorCode != 0;
 }
@@ -144,7 +168,17 @@ class AgencyBalanceResponse {
     );
   }
 
+  Map<String, dynamic> toJson() => {
+        'Status': status,
+        'AgencyType': agencyType,
+        'CashBalance': cashBalance,
+        'CreditBalance': creditBalance,
+        'Error': error.toJson(),
+      };
+
   bool get isSuccess => status == 1;
+  
+  double get totalBalance => cashBalance + creditBalance;
 }
 
 class PreBookRequest {
@@ -185,6 +219,16 @@ class PreBookResponse {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['Status'] = status.toJson();
+    data['HotelResult'] = hotelResult.map((v) => v.toJson()).toList();
+    if (validationInfo != null) {
+      data['ValidationInfo'] = validationInfo!.toJson();
+    }
+    return data;
+  }
+
   bool get isSuccess => status.code == 200;
 }
 
@@ -212,6 +256,15 @@ class HotelPreBookResult {
           .map((e) => e.toString())
           .toList(),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['HotelCode'] = hotelCode;
+    data['Currency'] = currency;
+    data['Rooms'] = rooms.map((v) => v.toJson()).toList();
+    data['RateConditions'] = rateConditions;
+    return data;
   }
 }
 
@@ -270,6 +323,26 @@ class PreBookRoom {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['Name'] = name;
+    data['BookingCode'] = bookingCode;
+    data['Inclusion'] = inclusion;
+    data['DayRates'] = dayRates.map((roomRates) => 
+        roomRates.map((rate) => rate.toJson()).toList()).toList();
+    data['TotalFare'] = totalFare;
+    data['TotalTax'] = totalTax;
+    data['RoomPromotion'] = roomPromotion;
+    data['CancelPolicies'] = cancelPolicies.map((v) => v.toJson()).toList();
+    data['MealType'] = mealType;
+    data['IsRefundable'] = isRefundable;
+    data['Supplements'] = supplements.map((roomSupplements) =>
+        roomSupplements.map((supplement) => supplement.toJson()).toList()).toList();
+    data['WithTransfers'] = withTransfers;
+    data['Amenities'] = amenities;
+    return data;
+  }
+
   static List<List<DayRate>> _parseDayRates(dynamic dayRates) {
     if (dayRates is List) {
       return dayRates.map<List<DayRate>>((roomRates) {
@@ -311,7 +384,6 @@ class PreBookRoom {
   }
 }
 
-// Missing Model Classes
 class DayRate {
   final double basePrice;
 
@@ -445,6 +517,25 @@ class ValidationInfo {
       gstAllowed: json['GSTAllowed'] ?? false,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'PanMandatory': panMandatory,
+      'PassportMandatory': passportMandatory,
+      'CorporateBookingAllowed': corporateBookingAllowed,
+      'PanCountRequired': panCountRequired,
+      'SamePaxNameAllowed': samePaxNameAllowed,
+      'SpaceAllowed': spaceAllowed,
+      'SpecialCharAllowed': specialCharAllowed,
+      'PaxNameMinLength': paxNameMinLength,
+      'PaxNameMaxLength': paxNameMaxLength,
+      'CharLimit': charLimit,
+      'PackageFare': packageFare,
+      'PackageDetailsMandatory': packageDetailsMandatory,
+      'DepartureDetailsMandatory': departureDetailsMandatory,
+      'GSTAllowed': gstAllowed,
+    };
+  }
 }
 
 class ApiStatus {
@@ -462,6 +553,13 @@ class ApiStatus {
       description: json['Description'] ?? '',
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'Code': code,
+      'Description': description,
+    };
+  }
 }
 
 // Generic result class for API responses
@@ -477,4 +575,60 @@ class ApiResult<T> {
   ApiResult.error(this.error) 
       : data = null, 
         isSuccess = false;
+}
+
+// Prebook Callback Response Model
+class PrebookCallbackResponse {
+  final String status;
+  final int statusCode;
+  final String statusDesc;
+  final PrebookCallbackData data;
+
+  PrebookCallbackResponse({
+    required this.status,
+    required this.statusCode,
+    required this.statusDesc,
+    required this.data,
+  });
+
+  factory PrebookCallbackResponse.fromJson(Map<String, dynamic> json) {
+    return PrebookCallbackResponse(
+      status: json['status'] ?? '',
+      statusCode: json['statusCode'] ?? 0,
+      statusDesc: json['statusDesc'] ?? '',
+      data: PrebookCallbackData.fromJson(json['data'] ?? {}),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'status': status,
+      'statusCode': statusCode,
+      'statusDesc': statusDesc,
+      'data': data.toJson(),
+    };
+  }
+
+  bool get isSuccess => status == 'SUCCESS';
+  int get prebookId => data.prebookId;
+}
+
+class PrebookCallbackData {
+  final int prebookId;
+
+  PrebookCallbackData({
+    required this.prebookId,
+  });
+
+  factory PrebookCallbackData.fromJson(Map<String, dynamic> json) {
+    return PrebookCallbackData(
+      prebookId: json['prebookId'] ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'prebookId': prebookId,
+    };
+  }
 }

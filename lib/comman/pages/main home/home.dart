@@ -192,6 +192,8 @@ class _HomeContentPageState extends State<HomeContentPage> {
       'icon': FontAwesomeIcons.bus,
       'color': Color(0xFFD4AF37), // Gold
       'onTap': (BuildContext context) {
+            context.read<BusLocationFetchBloc>().add(const GetData());
+
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => BusHomeTab()),

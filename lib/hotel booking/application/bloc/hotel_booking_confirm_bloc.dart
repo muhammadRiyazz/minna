@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:developer';
-
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:http/http.dart' as http;
@@ -8,6 +7,7 @@ import 'package:minna/comman/core/api.dart';
 import 'package:minna/comman/functions/refund_payment.dart';
 import 'package:minna/comman/functions/save_payment.dart';
 import 'package:minna/hotel%20booking/core/core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'hotel_booking_confirm_event.dart';
 part 'hotel_booking_confirm_state.dart';
@@ -15,18 +15,25 @@ part 'hotel_booking_confirm_bloc.freezed.dart';
 
 class HotelBookingConfirmBloc extends Bloc<HotelBookingConfirmEvent, HotelBookingConfirmState> {
   HotelBookingConfirmBloc() : super(HotelBookingConfirmInitial()) {
-    on<HotelBookingConfirmEvent>((event, emit) {
     on<_PaymentDone>(_onPaymentDone);
     on<_PaymentFail>(_onPaymentFail);
     on<_InitiateRefund>(_onInitiateRefund);
     on<_StartLoading>(_onStartLoading);
     on<_StopLoading>(_onStopLoading);
-
-
-
-    }  ); }
+  }
 
   Future<void> _onPaymentDone(_PaymentDone event, Emitter<HotelBookingConfirmState> emit) async {
+
+
+
+  SharedPreferences preferences = await SharedPreferences.getInstance();
+       final userId = preferences.getString('userId') ?? '';
+
+
+
+
+
+
     emit(HotelBookingConfirmLoading());
     
     log('🟢 Hotel PaymentDone event received: '
@@ -37,17 +44,34 @@ class HotelBookingConfirmBloc extends Bloc<HotelBookingConfirmEvent, HotelBookin
 
     try {
       // 1. Save payment details
-      log('🔹 Saving payment details...');
+      // log('🔹 Saving payment details...');
       // final saveResult = await savePaymentDetails(
       //   orderId: event.orderId,
       //   status: 1,
-      //   table: "hotel_data",
+      //   table: "mm_hotel_book",
       //   tableid: event.tableId,
       //   transactionId: event.transactionId,
       // );
 
       // if (!saveResult['success']) {
       //   log('❌ Payment save failed');
+        
+      //   // Call callback API for payment failure
+      //   await _callBookingCallback(
+      //     userId: userId,
+      //     prebookId: event.prebookId,
+      //     bookingStatus: "failed",
+      //     hotelBookingStatus: "payment_failed",
+      //     response: {"error": "Payment details could not be saved"},
+      //     bookingId: event.bookingId,
+      //     noOfPassenger: _getPassengerCount(event.bookingRequest),
+      //     passengerDetails: _getPassengerDetails(event.bookingRequest),
+      //     signature: "",
+      //     orderId: event.orderId,
+      //     paymentId: event.transactionId,
+      //     paymentStatus: "failed",
+      //   );
+
       //   emit(HotelBookingConfirmPaymentSavedFailed(
       //     message: "Payment details could not be saved",
       //     orderId: event.orderId,
@@ -65,13 +89,21 @@ class HotelBookingConfirmBloc extends Bloc<HotelBookingConfirmEvent, HotelBookin
       final bookingResponse = await _confirmHotelBooking(event.bookingRequest);
 
       if (bookingResponse['success']) {
-        // 3. Save booking status
-        // await _saveHotelStatus(
-        //   tableId: event.tableId,
-        //   type: "confirm",
-        //   request: event.bookingRequest,
-        //   response: bookingResponse,
-        // );
+        // 3. Call callback API for successful booking
+        await _callBookingCallback(
+          userId:userId,
+          prebookId: event.prebookId,
+          bookingStatus: "confirmed",
+          hotelBookingStatus: "booked",
+          response: bookingResponse,
+          bookingId: bookingResponse['BookResult']['BookingId']?.toString() ?? event.bookingId,
+          noOfPassenger: _getPassengerCount(event.bookingRequest),
+          passengerDetails: _getPassengerDetails(event.bookingRequest),
+          signature: "",
+          orderId: event.orderId,
+          paymentId: event.transactionId,
+          paymentStatus: "success",
+        );
 
         emit(HotelBookingConfirmSuccess(
           data: bookingResponse,
@@ -80,8 +112,9 @@ class HotelBookingConfirmBloc extends Bloc<HotelBookingConfirmEvent, HotelBookin
           bookingRefNo: bookingResponse['BookResult']['BookingRefNo'] ?? '',
         ));
       } else {
-        // Handle booking failure with refund
+        // Handle booking failure with refund and callback
         await _handleBookingFailure(
+          userId: userId,
           event: event,
           bookingResponse: bookingResponse,
           emit: emit,
@@ -89,12 +122,22 @@ class HotelBookingConfirmBloc extends Bloc<HotelBookingConfirmEvent, HotelBookin
       }
     } catch (e) {
       log('💥 Hotel booking error: $e');
-      // await _saveHotelStatus(
-      //   tableId: event.tableId,
-      //   type: "failure",
-      //   request: event.bookingRequest,
-      //   response: {"error": e.toString()},
-      // );
+      
+      // Call callback API for error
+      await _callBookingCallback(
+        userId: userId,
+        prebookId: event.prebookId,
+        bookingStatus: "failed",
+        hotelBookingStatus: "error",
+        response: {"error": e.toString()},
+        bookingId: event.bookingId,
+        noOfPassenger: _getPassengerCount(event.bookingRequest),
+        passengerDetails: _getPassengerDetails(event.bookingRequest),
+        signature: "",
+        orderId: event.orderId,
+        paymentId: event.transactionId,
+        paymentStatus: "error",
+      );
 
       emit(HotelBookingConfirmError(
         message: e.toString(),
@@ -108,16 +151,23 @@ class HotelBookingConfirmBloc extends Bloc<HotelBookingConfirmEvent, HotelBookin
     }
   }
 
+
+
+
+
+
+
+
+
+
   Future<Map<String, dynamic>> _confirmHotelBooking(Map<String, dynamic> bookingRequest) async {
     try {
-          final String basicAuth = 'Basic ${base64Encode(utf8.encode('$livehotelusername:$livehoteluserpass'))}';
+      final String basicAuth = 'Basic ${base64Encode(utf8.encode('$livehotelusername:$livehoteluserpass'))}';
 
       final response = await http.post(
         Uri.parse('https://HotelBE.tektravels.com/hotelservice.svc/rest/book/'),
         headers: {
-
-        'Authorization': basicAuth,
-
+          'Authorization': basicAuth,
           'Content-Type': 'application/json',
         },
         body: jsonEncode(bookingRequest),
@@ -130,13 +180,12 @@ class HotelBookingConfirmBloc extends Bloc<HotelBookingConfirmEvent, HotelBookin
         final jsonData = jsonDecode(response.body);
         final bookResult = jsonData['BookResult'];
         
-        // Check if booking was successful
         if (bookResult['ResponseStatus'] == 1 && bookResult['Status'] == 1) {
           return {
             'success': true,
             'BookResult': bookResult,
           };
-        } else if (bookResult['Status'] == 3) { // VerifyPrice status
+        } else if (bookResult['Status'] == 3) {
           return {
             'success': false,
             'error': 'Price changed',
@@ -163,25 +212,37 @@ class HotelBookingConfirmBloc extends Bloc<HotelBookingConfirmEvent, HotelBookin
     required _PaymentDone event,
     required Map<String, dynamic> bookingResponse,
     required Emitter<HotelBookingConfirmState> emit,
+        required String userId,
+
   }) async {
     try {
-      // Save failure status
-      // await _saveHotelStatus(
-      //   tableId: event.tableId,
-      //   type: "failure",
-      //   request: event.bookingRequest,
-      //   response: bookingResponse,
-      // );
+      // Call callback API for booking failure
+      await _callBookingCallback(
+        userId: userId,
+        prebookId: event.prebookId,
+        bookingStatus: "failed",
+        hotelBookingStatus: "booking_failed",
+        response: bookingResponse,
+        bookingId: event.bookingId,
+        noOfPassenger: _getPassengerCount(event.bookingRequest),
+        passengerDetails: _getPassengerDetails(event.bookingRequest),
+        signature: "",
+        orderId: event.orderId,
+        paymentId: event.transactionId,
+        paymentStatus: "refund_pending",
+      );
 
       // Initiate refund
       final refundResult = await refundPayment(
         transactionId: event.transactionId,
         amount: event.amount,
         tableId: event.tableId,
-        table: 'hotel_data',
+        table: 'mm_hotel_book',
       );
 
       if (refundResult['success']) {
+       
+
         emit(HotelBookingConfirmRefundInitiated(
           message: refundResult['message'] ?? "Booking failed. Refund initiated.",
           orderId: event.orderId,
@@ -191,6 +252,25 @@ class HotelBookingConfirmBloc extends Bloc<HotelBookingConfirmEvent, HotelBookin
           bookingId: event.bookingId,
         ));
       } else {
+        // Update callback with refund failure
+        await _callBookingCallback(
+          userId: userId,
+          prebookId: event.prebookId,
+          bookingStatus: "failed",
+          hotelBookingStatus: "refund_failed",
+          response: {...bookingResponse, 'refund_error': refundResult
+          
+          
+          },
+          bookingId: event.bookingId,
+          noOfPassenger: _getPassengerCount(event.bookingRequest),
+          passengerDetails: _getPassengerDetails(event.bookingRequest),
+          signature: "",
+          orderId: event.orderId,
+          paymentId: event.transactionId,
+          paymentStatus: "refund_failed",
+        );
+
         emit(HotelBookingConfirmRefundFailed(
           message: refundResult['message'] ?? "Booking failed and refund failed",
           orderId: event.orderId,
@@ -201,6 +281,24 @@ class HotelBookingConfirmBloc extends Bloc<HotelBookingConfirmEvent, HotelBookin
         ));
       }
     } catch (e) {
+      log('💥 Booking failure handling error: $e');
+      
+      // Call callback for error in failure handling
+      await _callBookingCallback(
+        userId: userId,
+        prebookId: event.prebookId,
+        bookingStatus: "error",
+        hotelBookingStatus: "system_error",
+        response: {"error": e.toString()},
+        bookingId: event.bookingId,
+        noOfPassenger: _getPassengerCount(event.bookingRequest),
+        passengerDetails: _getPassengerDetails(event.bookingRequest),
+        signature: "",
+        orderId: event.orderId,
+        paymentId: event.transactionId,
+        paymentStatus: "error",
+      );
+
       emit(HotelBookingConfirmRefundFailed(
         message: "Booking failed with error: $e",
         orderId: event.orderId,
@@ -212,39 +310,41 @@ class HotelBookingConfirmBloc extends Bloc<HotelBookingConfirmEvent, HotelBookin
     }
   }
 
-  // Future<void> _saveHotelStatus({
-  //   required String tableId,
-  //   required String type,
-  //   required Map<String, dynamic> request,
-  //   required Map<String, dynamic> response,
-  // }) async {
-  //   try {
-  //     final saveResponse = await http.post(
-  //       Uri.parse('${baseUrl}hotel-status'),
-  //       body: {
-  //         "booking_id": tableId,
-  //         "type": type,
-  //         "request": jsonEncode(request),
-  //         "response": jsonEncode(response),
-  //       },
-  //     );
-  //     log('📩 Hotel status save response: ${saveResponse.body}');
-  //   } catch (e) {
-  //     log('💥 Hotel status save error: $e');
-  //   }
-  // }
-
   Future<void> _onPaymentFail(_PaymentFail event, Emitter<HotelBookingConfirmState> emit) async {
     emit(HotelBookingConfirmLoading());
     
     try {
-      final saveResult = await savePaymentDetails(
-        orderId: event.orderId,
-        status: 2,
-        table: "hotel_data",
-        tableid: event.tableId,
-        transactionId: "",
-      );
+      // final saveResult = await savePaymentDetails(
+      //   orderId: event.orderId,
+      //   status: 2,
+      //   table: "mm_hotel_book",
+      //   tableid: event.tableId,
+      //   transactionId: "",
+
+      // );
+
+
+
+
+
+
+
+      // Call callback API for payment failure
+      // await _callBookingCallback(
+      //   userId: userId,
+      //   prebookId: event.prebookId,
+      //   bookingStatus: "failed",
+      //   hotelBookingStatus: "payment_failed",
+      //   response: {"error": "Payment failed or cancelled by user"},
+      //   bookingId: event.bookingId,
+      //   noOfPassenger: 0,
+      //   passengerDetails: [],
+      //   signature: "",
+      //   orderId: event.orderId,
+      //   paymentId: "",
+      //   paymentStatus: "failed",
+
+      // );
 
       emit(HotelBookingConfirmPaymentFailed(
         message: "Payment failed",
@@ -253,6 +353,24 @@ class HotelBookingConfirmBloc extends Bloc<HotelBookingConfirmEvent, HotelBookin
         bookingId: event.bookingId,
       ));
     } catch (e) {
+      log('💥 Payment failure error: $e');
+      
+      // Call callback for payment failure error
+      // await _callBookingCallback(
+      //   userId: event.userId,
+      //   prebookId: event.prebookId,
+      //   bookingStatus: "failed",
+      //   hotelBookingStatus: "payment_error",
+      //   response: {"error": e.toString()},
+      //   bookingId: event.bookingId,
+      //   noOfPassenger: 0,
+      //   passengerDetails: [],
+      //   signature: "",
+      //   orderId: event.orderId,
+      //   paymentId: "",
+      //   paymentStatus: "error",
+      // );
+
       emit(HotelBookingConfirmPaymentFailed(
         message: "Payment failed with error: $e",
         orderId: event.orderId,
@@ -276,7 +394,7 @@ class HotelBookingConfirmBloc extends Bloc<HotelBookingConfirmEvent, HotelBookin
         transactionId: event.transactionId,
         amount: event.amount,
         tableId: event.tableId,
-        table: 'hotel_data',
+        table: 'mm_hotel_book',
       );
 
       if (refundResult['success']) {
@@ -326,328 +444,120 @@ class HotelBookingConfirmBloc extends Bloc<HotelBookingConfirmEvent, HotelBookin
         emit(HotelBookingConfirmInitial());
       }
     }
-
-
-
   }
 
+  // New method to call booking callback API
+  Future<Map<String, dynamic>> _callBookingCallback({
+    required String userId,
+    required String prebookId,
+    required String bookingStatus,
+    required String hotelBookingStatus,
+    required Map<String, dynamic> response,
+    required String bookingId,
+    required int noOfPassenger,
+    required List<Map<String, dynamic>> passengerDetails,
+    required String signature,
+    required String orderId,
+    required String paymentId,
+    required String paymentStatus,
+  }) async {
+    try {
+      log('🔹 Calling booking callback API...');
+      
+      final callbackResponse = await http.post(
+        Uri.parse('${baseUrl}hotel-api-call-book'),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: {
+          'userId': userId,
+          'prebookId': prebookId,
+          'bookingStatus': bookingStatus,
+          'HotelBookingStatus': hotelBookingStatus,
+          'response': jsonEncode(response),
+          'bookingId': bookingId,
+          'noOfPassenger': noOfPassenger.toString(),
+          'passengerDetails': jsonEncode(passengerDetails),
+          'signature': signature,
+          'orderId': orderId,
+          'paymentId': paymentId,
+          'paymentStatus': paymentStatus,
+        },
+      );
+
+      log('📩 Booking callback API response: ${callbackResponse.statusCode}');
+      log('📩 Booking callback API body: ${callbackResponse.body}');
+
+      if (callbackResponse.statusCode == 200) {
+        final result = jsonDecode(callbackResponse.body);
+        log('✅ Booking callback successful: $result');
+        return {
+          'success': true,
+          'data': result,
+        };
+      } else {
+        log('❌ Booking callback failed with status: ${callbackResponse.statusCode}');
+        return {
+          'success': false,
+          'error': 'HTTP ${callbackResponse.statusCode}',
+        };
+      }
+    } catch (e) {
+      log('💥 Booking callback error: $e');
+      return {
+        'success': false,
+        'error': e.toString(),
+      };
+    }
+  }
+
+  // Helper methods to extract data from booking request
+  int _getPassengerCount(Map<String, dynamic> bookingRequest) {
+    try {
+      final hotelRoomsDetails = bookingRequest['HotelRoomsDetails'] as List?;
+      if (hotelRoomsDetails == null || hotelRoomsDetails.isEmpty) return 0;
+      
+      int totalPassengers = 0;
+      for (final room in hotelRoomsDetails) {
+        final passengers = room['HotelPassenger'] as List?;
+        if (passengers != null) {
+          totalPassengers += passengers.length;
+        }
+      }
+      return totalPassengers;
+    } catch (e) {
+      log('Error getting passenger count: $e');
+      return 0;
+    }
+  }
+
+  List<Map<String, dynamic>> _getPassengerDetails(Map<String, dynamic> bookingRequest) {
+    try {
+      final List<Map<String, dynamic>> passengerDetails = [];
+      final hotelRoomsDetails = bookingRequest['HotelRoomsDetails'] as List?;
+      
+      if (hotelRoomsDetails != null) {
+        for (final room in hotelRoomsDetails) {
+          final passengers = room['HotelPassenger'] as List?;
+          if (passengers != null) {
+            for (final passenger in passengers) {
+              passengerDetails.add({
+                'Title': passenger['Title'] ?? '',
+                'FirstName': passenger['FirstName'] ?? '',
+                'LastName': passenger['LastName'] ?? '',
+                'Email': passenger['Email'] ?? '',
+                'Phone': passenger['Phoneno'] ?? '',
+                'Age': passenger['Age'] ?? 0,
+                'Passport': passenger['PassportNo'] ?? '',
+              });
+            }
+          }
+        }
+      }
+      return passengerDetails;
+    } catch (e) {
+      log('Error getting passenger details: $e');
+      return [];
+    }
+  }
 }
-  
-
-// hotel_booking_bloc.dart
-// import 'dart:convert';
-// import 'dart:developer';
-// import 'package:bloc/bloc.dart';
-// import 'package:freezed_annotation/freezed_annotation.dart';
-// import 'package:http/http.dart' as http;
-// import 'package:minna/comman/core/api.dart';
-// import 'package:minna/comman/functions/refund_payment.dart';
-// import 'package:minna/comman/functions/save_payment.dart';
-
-
-// class HotelBookingBloc extends Bloc<HotelBookingEvent, HotelBookingState> {
-//   HotelBookingBloc() : super(HotelBookingInitial()) {
-//     on<_PaymentDone>(_onPaymentDone);
-//     on<_PaymentFail>(_onPaymentFail);
-//     on<_InitiateRefund>(_onInitiateRefund);
-//     on<_StartLoading>(_onStartLoading);
-//     on<_StopLoading>(_onStopLoading);
-//   }
-
-  // Future<void> _onPaymentDone(_PaymentDone event, Emitter<HotelBookingState> emit) async {
-  //   emit(HotelBookingLoading());
-    
-  //   log('🟢 Hotel PaymentDone event received: '
-  //       'orderId=${event.orderId}, '
-  //       'bookingId=${event.bookingId}, '
-  //       'transactionId=${event.transactionId}, '
-  //       'amount=${event.amount}');
-
-  //   try {
-  //     // 1. Save payment details
-  //     log('🔹 Saving payment details...');
-  //     final saveResult = await savePaymentDetails(
-  //       orderId: event.orderId,
-  //       status: 1,
-  //       table: "hotel_data",
-  //       tableid: event.tableId,
-  //       transactionId: event.transactionId,
-  //     );
-
-  //     if (!saveResult['success']) {
-  //       log('❌ Payment save failed');
-  //       emit(HotelBookingPaymentSavedFailed(
-  //         message: "Payment details could not be saved",
-  //         orderId: event.orderId,
-  //         transactionId: event.transactionId,
-  //         amount: event.amount,
-  //         tableId: event.tableId,
-  //         bookingId: event.bookingId,
-  //         shouldRefund: true,
-  //       ));
-  //       return;
-  //     }
-
-  //     // 2. Confirm hotel booking
-  //     log('🔹 Confirming hotel booking...');
-  //     final bookingResponse = await _confirmHotelBooking(event.bookingRequest);
-
-  //     if (bookingResponse['success']) {
-  //       // 3. Save booking status
-  //       await _saveHotelStatus(
-  //         tableId: event.tableId,
-  //         type: "confirm",
-  //         request: event.bookingRequest,
-  //         response: bookingResponse,
-  //       );
-
-  //       emit(HotelBookingSuccess(
-  //         data: bookingResponse,
-  //         bookingId: bookingResponse['BookResult']['BookingId']?.toString() ?? '',
-  //         confirmationNo: bookingResponse['BookResult']['ConfirmationNo'] ?? '',
-  //         bookingRefNo: bookingResponse['BookResult']['BookingRefNo'] ?? '',
-  //       ));
-  //     } else {
-  //       // Handle booking failure with refund
-  //       await _handleBookingFailure(
-  //         event: event,
-  //         bookingResponse: bookingResponse,
-  //         emit: emit,
-  //       );
-  //     }
-  //   } catch (e) {
-  //     log('💥 Hotel booking error: $e');
-  //     await _saveHotelStatus(
-  //       tableId: event.tableId,
-  //       type: "failure",
-  //       request: event.bookingRequest,
-  //       response: {"error": e.toString()},
-  //     );
-
-  //     emit(HotelBookingError(
-  //       message: e.toString(),
-  //       shouldRefund: true,
-  //       orderId: event.orderId,
-  //       transactionId: event.transactionId,
-  //       amount: event.amount,
-  //       tableId: event.tableId,
-  //       bookingId: event.bookingId,
-  //     ));
-  //   }
-  // }
-
-  // Future<Map<String, dynamic>> _confirmHotelBooking(Map<String, dynamic> bookingRequest) async {
-  //   try {
-  //     final response = await http.post(
-  //       Uri.parse('https://HotelBE.tektravels.com/hotelservice.svc/rest/book/'),
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: jsonEncode(bookingRequest),
-  //     );
-
-  //     log('📩 Hotel Book API Response: ${response.statusCode}');
-  //     log('📩 Hotel Book API Body: ${response.body}');
-
-  //     if (response.statusCode == 200) {
-  //       final jsonData = jsonDecode(response.body);
-  //       final bookResult = jsonData['BookResult'];
-        
-  //       // Check if booking was successful
-  //       if (bookResult['ResponseStatus'] == 1 && bookResult['Status'] == 1) {
-  //         return {
-  //           'success': true,
-  //           'BookResult': bookResult,
-  //         };
-  //       } else if (bookResult['Status'] == 3) { // VerifyPrice status
-  //         return {
-  //           'success': false,
-  //           'error': 'Price changed',
-  //           'BookResult': bookResult,
-  //           'requiresReprice': true,
-  //         };
-  //       } else {
-  //         return {
-  //           'success': false,
-  //           'error': bookResult['Error']['ErrorMessage'] ?? 'Booking failed',
-  //           'BookResult': bookResult,
-  //         };
-  //       }
-  //     } else {
-  //       throw Exception('HTTP ${response.statusCode}: ${response.body}');
-  //     }
-  //   } catch (e) {
-  //     log('💥 Hotel booking API error: $e');
-  //     rethrow;
-  //   }
-  // }
-
-  // Future<void> _handleBookingFailure({
-  //   required _PaymentDone event,
-  //   required Map<String, dynamic> bookingResponse,
-  //   required Emitter<HotelBookingState> emit,
-  // }) async {
-  //   try {
-  //     // Save failure status
-  //     await _saveHotelStatus(
-  //       tableId: event.tableId,
-  //       type: "failure",
-  //       request: event.bookingRequest,
-  //       response: bookingResponse,
-  //     );
-
-  //     // Initiate refund
-  //     final refundResult = await refundPayment(
-  //       transactionId: event.transactionId,
-  //       amount: event.amount,
-  //       tableId: event.tableId,
-  //       table: 'hotel_data',
-  //     );
-
-  //     if (refundResult['success']) {
-  //       emit(HotelBookingRefundInitiated(
-  //         message: refundResult['message'] ?? "Booking failed. Refund initiated.",
-  //         orderId: event.orderId,
-  //         transactionId: event.transactionId,
-  //         amount: event.amount,
-  //         tableId: event.tableId,
-  //         bookingId: event.bookingId,
-  //       ));
-  //     } else {
-  //       emit(HotelBookingRefundFailed(
-  //         message: refundResult['message'] ?? "Booking failed and refund failed",
-  //         orderId: event.orderId,
-  //         transactionId: event.transactionId,
-  //         amount: event.amount,
-  //         tableId: event.tableId,
-  //         bookingId: event.bookingId,
-  //       ));
-  //     }
-  //   } catch (e) {
-  //     emit(HotelBookingRefundFailed(
-  //       message: "Booking failed with error: $e",
-  //       orderId: event.orderId,
-  //       transactionId: event.transactionId,
-  //       amount: event.amount,
-  //       tableId: event.tableId,
-  //       bookingId: event.bookingId,
-  //     ));
-  //   }
-  // }
-
-  // Future<void> _saveHotelStatus({
-  //   required String tableId,
-  //   required String type,
-  //   required Map<String, dynamic> request,
-  //   required Map<String, dynamic> response,
-  // }) async {
-  //   try {
-  //     final saveResponse = await http.post(
-  //       Uri.parse('${baseUrl}hotel-status'),
-  //       body: {
-  //         "booking_id": tableId,
-  //         "type": type,
-  //         "request": jsonEncode(request),
-  //         "response": jsonEncode(response),
-  //       },
-  //     );
-  //     log('📩 Hotel status save response: ${saveResponse.body}');
-  //   } catch (e) {
-  //     log('💥 Hotel status save error: $e');
-  //   }
-  // }
-
-  // Future<void> _onPaymentFail(_PaymentFail event, Emitter<HotelBookingState> emit) async {
-  //   emit(HotelBookingLoading());
-    
-  //   try {
-  //     final saveResult = await savePaymentDetails(
-  //       orderId: event.orderId,
-  //       status: 2,
-  //       table: "hotel_data",
-  //       tableid: event.tableId,
-  //       transactionId: "",
-  //     );
-
-  //     emit(HotelBookingPaymentFailed(
-  //       message: "Payment failed",
-  //       orderId: event.orderId,
-  //       tableId: event.tableId,
-  //       bookingId: event.bookingId,
-  //     ));
-  //   } catch (e) {
-  //     emit(HotelBookingPaymentFailed(
-  //       message: "Payment failed with error: $e",
-  //       orderId: event.orderId,
-  //       tableId: event.tableId,
-  //       bookingId: event.bookingId,
-  //     ));
-  //   }
-  // }
-
-  // Future<void> _onInitiateRefund(_InitiateRefund event, Emitter<HotelBookingState> emit) async {
-  //   emit(HotelBookingRefundProcessing(
-  //     orderId: event.orderId,
-  //     transactionId: event.transactionId,
-  //     amount: event.amount,
-  //     tableId: event.tableId,
-  //     bookingId: event.bookingId,
-  //   ));
-
-  //   try {
-  //     final refundResult = await refundPayment(
-  //       transactionId: event.transactionId,
-  //       amount: event.amount,
-  //       tableId: event.tableId,
-  //       table: 'hotel_data',
-  //     );
-
-  //     if (refundResult['success']) {
-  //       emit(HotelBookingRefundInitiated(
-  //         message: refundResult['message'] ?? "Refund initiated successfully",
-  //         orderId: event.orderId,
-  //         transactionId: event.transactionId,
-  //         amount: event.amount,
-  //         tableId: event.tableId,
-  //         bookingId: event.bookingId,
-  //       ));
-  //     } else {
-  //       emit(HotelBookingRefundFailed(
-  //         message: refundResult['message'] ?? "Refund failed",
-  //         orderId: event.orderId,
-  //         transactionId: event.transactionId,
-  //         amount: event.amount,
-  //         tableId: event.tableId,
-  //         bookingId: event.bookingId,
-  //       ));
-  //     }
-  //   } catch (e) {
-  //     emit(HotelBookingRefundFailed(
-  //       message: "Refund failed with error: $e",
-  //       orderId: event.orderId,
-  //       transactionId: event.transactionId,
-  //       amount: event.amount,
-  //       tableId: event.tableId,
-  //       bookingId: event.bookingId,
-  //     ));
-  //   }
-  // }
-
-  // void _onStartLoading(_StartLoading event, Emitter<HotelBookingState> emit) {
-  //   final currentState = state;
-  //   if (currentState is! HotelBookingLoading) {
-  //     emit(HotelBookingLoading(previousState: currentState));
-  //   }
-  // }
-
-  // void _onStopLoading(_StopLoading event, Emitter<HotelBookingState> emit) {
-  //   if (state is HotelBookingLoading) {
-  //     final loadingState = state as HotelBookingLoading;
-  //     if (loadingState.previousState != null) {
-  //       emit(loadingState.previousState!);
-  //     } else {
-  //       emit(HotelBookingInitial());
-  //     }
-  //   }
-//   }
-// }

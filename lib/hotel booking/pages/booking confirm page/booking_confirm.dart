@@ -14,6 +14,8 @@ import 'package:minna/hotel%20booking/domain/rooms/rooms.dart' hide CancelPolicy
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class HotelBookingConfirmationPage extends StatefulWidget {
+      final String prebookId;
+
   final Room room;
   final HotelSearchRequest hotelSearchRequest;
   final HotelDetail hotel;
@@ -26,6 +28,8 @@ class HotelBookingConfirmationPage extends StatefulWidget {
   const HotelBookingConfirmationPage({
     super.key,
     required this.room,
+        required this.prebookId,
+
     required this.hotelSearchRequest,
     required this.hotel,
     required this.passengers,
@@ -112,6 +116,7 @@ class _HotelBookingConfirmationPageState extends State<HotelBookingConfirmationP
 
     context.read<HotelBookingConfirmBloc>().add(
       HotelBookingConfirmEvent.paymentDone(
+        prebookId:widget.prebookId ,
         orderId: response.orderId ?? _orderId ?? '',
         transactionId: response.paymentId ?? '',
         tableId: widget.tableId,

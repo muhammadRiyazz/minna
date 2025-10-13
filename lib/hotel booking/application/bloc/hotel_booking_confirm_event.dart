@@ -8,6 +8,8 @@ class HotelBookingConfirmEvent with _$HotelBookingConfirmEvent {
     required String tableId,
     required String bookingId,
     required double amount,
+      required String prebookId,
+
     required Map<String, dynamic> bookingRequest,
   }) = _PaymentDone;
 

@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:minna/bus/infrastructure/time.dart';
 import 'package:minna/bus/pages/Screen%20available%20Trip/screen_available_triplist.dart';
 import 'package:minna/bus/pages/screen%20passengers%20input/screen_passengers_input.dart';
 
@@ -36,34 +37,16 @@ class _ScreenBdDpDetailsState extends State<ScreenBdDpDetails> {
   String? boardingpointname;
   String? droppingpointname;
 
-  void _showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Icon(Icons.error_outline, color: Colors.white),
-            SizedBox(width: 12),
-            Expanded(
-              child: Text(message, style: TextStyle(color: Colors.white)),
-            ),
-          ],
-        ),
-        backgroundColor: Colors.red[600],
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: EdgeInsets.all(10),
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        duration: Duration(seconds: 3),
-        action: SnackBarAction(
-          label: 'OK',
-          textColor: Colors.white,
-          onPressed: () {
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          },
-        ),
-      ),
-    );
-  }
+ 
+  final Color _primaryColor = Colors.black;
+  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
+  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
+  final Color _backgroundColor = Color(0xFFF8F9FA);
+  final Color _cardColor = Colors.white;
+  final Color _textPrimary = Colors.black;
+  final Color _textSecondary = Color(0xFF666666);
+  final Color _textLight = Color(0xFF999999);
+  final Color _errorColor = Color(0xFFE53935);
 
   @override
   Widget build(BuildContext context) {
@@ -75,15 +58,17 @@ class _ScreenBdDpDetailsState extends State<ScreenBdDpDetails> {
 
     return DefaultTabController(
       length: 2,
+      
       child: Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
-          backgroundColor: maincolor1!,
+          backgroundColor: _primaryColor!,
           iconTheme: const IconThemeData(color: Colors.white),
         ),
         body: Column(
           children: [
             Container(
-              color: maincolor1!,
+              color: _primaryColor,
               child: TabBar(
                 labelColor: Colors.white,
                 indicatorColor: Colors.white,
@@ -147,73 +132,48 @@ class _ScreenBdDpDetailsState extends State<ScreenBdDpDetails> {
 
   Widget _buildPointList(List<BoardingPoint> points, bool isBoarding) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
         borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            spreadRadius: 2,
-            offset: Offset(0, 4),
-          ),
-        ],
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: Colors.black.withOpacity(0.1),
+        //     blurRadius: 10,
+        //     spreadRadius: 2,
+        //     offset: Offset(0, 4),
+        //   ),
+        // ],
       ),
-      child: ListView.builder(
-        itemCount: points.length,
-        itemBuilder: (context, index) {
-          final point = points[index];
-          final selected =
-              (isBoarding ? boardingpoint : droppingpoint) == point.bpId;
-          return Container(
-            margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                width: selected ? 1.5 : 1,
-                color: selected ? maincolor1! : Colors.grey.shade300,
+      child: 
+
+       ListView.builder(
+      padding: EdgeInsets.all(12),
+      itemCount: points.length,
+      itemBuilder: (context, index) {
+        final point = points[index];
+        final selected =
+            (isBoarding ? boardingpoint : droppingpoint) == point.bpId;
+        return Container(
+          margin: EdgeInsets.only(bottom: 12),
+          decoration: BoxDecoration(
+            color: _cardColor,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: 12,
+                spreadRadius: 1,
+                offset: Offset(0, 2),
               ),
+            ],
+            border: Border.all(
+              color: selected ? _secondaryColor : Colors.transparent,
+              width: selected ? 1 : 0,
             ),
-            child: ListTile(
-              leading: Radio<String>(
-                value: point.bpId,
-                groupValue: isBoarding ? boardingpoint : droppingpoint,
-                onChanged: (value) {
-                  setState(() {
-                    if (isBoarding) {
-                      boardingpoint = value;
-                      boardingpointname = point.bpName;
-                    } else {
-                      droppingpoint = value;
-                      droppingpointname = point.bpName;
-                    }
-                  });
-                },
-                activeColor: maincolor1!,
-              ),
-              title: Text(
-                point.bpName,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: selected ? maincolor1! : Colors.black,
-                ),
-              ),
-              subtitle: Text(
-                point.landmark,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: selected ? maincolor1! : Colors.grey[600],
-                ),
-              ),
-              trailing: Text(
-                changetime(time: point.time),
-                style: TextStyle(
-                  color: selected ? maincolor1! : Colors.grey[700],
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
               onTap: () {
                 setState(() {
                   if (isBoarding) {
@@ -225,10 +185,99 @@ class _ScreenBdDpDetailsState extends State<ScreenBdDpDetails> {
                   }
                 });
               },
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color:  _secondaryColor.withOpacity(.1)
+                           ,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color:  _secondaryColor ,
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Icon(
+                        
+                            Icons.place_outlined,
+                        color: _secondaryColor ,
+                        size: 20,
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            point.bpName,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: selected ? _primaryColor : _textPrimary,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            point.landmark,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: selected ? _textSecondary : _textLight,
+                            ),
+                          ),
+                          SizedBox(height: 6),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.access_time_rounded,
+                                size: 14,
+                                color: selected ? _secondaryColor : _textLight,
+                              ),
+                              SizedBox(width: 4),
+                              Text(
+                                changetime(time: point.time),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: selected ? _secondaryColor : _textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: selected ? _secondaryColor : _textLight,
+                          width: 2,
+                        ),
+                        color: selected ? _secondaryColor : Colors.transparent,
+                      ),
+                      child: selected
+                          ? Icon(
+                              Icons.check,
+                              size: 14,
+                              color: Colors.white,
+                            )
+                          : null,
+                    ),
+                  ],
+                ),
+              ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
+    ),
     );
   }
 
@@ -238,7 +287,7 @@ class _ScreenBdDpDetailsState extends State<ScreenBdDpDetails> {
       margin: const EdgeInsets.symmetric(horizontal: 10),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: maincolor1!,
+          backgroundColor: _primaryColor,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           elevation: 2,
@@ -284,4 +333,71 @@ class _ScreenBdDpDetailsState extends State<ScreenBdDpDetails> {
       ),
     );
   }
+   void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.error_outline, color: _errorColor, size: 20),
+            ),
+            SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Selection Required',
+                    style: TextStyle(
+                      color: _textPrimary,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                  ),
+                  SizedBox(height: 2),
+                  Text(
+                    message,
+                    style: TextStyle(
+                      color: _textSecondary,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: _cardColor,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: _errorColor.withOpacity(0.2), width: 1),
+        ),
+        margin: EdgeInsets.all(16),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        duration: Duration(seconds: 4),
+        elevation: 8,
+        action: SnackBarAction(
+          label: 'OK',
+          textColor: _primaryColor,
+          onPressed: () {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          },
+        ),
+      ),
+    );}
+
+
+
+
 }
+
+
+
+

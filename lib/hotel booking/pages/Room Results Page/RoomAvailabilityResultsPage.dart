@@ -5,8 +5,9 @@ import 'package:minna/hotel%20booking/domain/authentication/authendication.dart'
 import 'package:minna/hotel%20booking/domain/hotel%20details%20/hotel_details.dart';
 import 'package:minna/hotel%20booking/domain/rooms/rooms.dart'
     show HotelRoomResult, Room, HotelSearchRequest;
-import 'package:minna/hotel%20booking/functions/auth.dart';
+import 'package:minna/hotel%20booking/functions/auth.dart' hide ApiResult;
 import 'package:minna/hotel%20booking/functions/preBook.dart';
+import 'package:minna/hotel%20booking/functions/pre_book_store.dart';
 import 'package:minna/hotel%20booking/pages/PassengerInputPage/PassengerInputPage.dart';
 
 class RoomAvailabilityResultsPage extends StatefulWidget {
@@ -119,15 +120,15 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
   }
 
   // Main booking flow
+
+  // Main booking flow with Prebook Callback API
   Future<void> _handleBooking(Room room) async {
     try {
       _setRoomLoading(room, true);
       _errorMessage = null;
 
       // Step 1: Authenticate
-      final authResult = await _apiService.authenticate(
-       
-      );
+      final authResult = await _apiService.authenticate();
 
       if (!authResult.isSuccess) {
         _setRoomLoading(room, false);
@@ -149,21 +150,62 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
         bookingCode: room.bookingCode,
       );
 
+      if (!preBookResult.isSuccess) {
+        _setRoomLoading(room, false);
+        _showErrorDialog(preBookResult.error!);
+        return;
+      }
+
+      // Step 4: Call Prebook Callback API
+      final callbackResult = await _callPrebookCallback(
+        room: room,
+        preBookResponse: preBookResult.data!,
+      );
+
       _setRoomLoading(room, false);
 
-      if (preBookResult.isSuccess) {
-        // Success - navigate to passenger input page
-        _navigateToPassengerInput(room, preBookResult.data!);
+      if (callbackResult.isSuccess) {
+        // Success - navigate to passenger input page with prebookId
+        _navigateToPassengerInput(
+          room, 
+          preBookResult.data!, 
+          callbackResult.data!
+        );
       } else {
-        _showErrorDialog(preBookResult.error!);
+        _showErrorDialog(callbackResult.error!);
       }
     } catch (e) {
       _setRoomLoading(room, false);
       _showErrorDialog('An unexpected error occurred: $e');
     }
   }
+  // Call Prebook Callback API
+  Future<ApiResult<PrebookCallbackResponse>> _callPrebookCallback({
+    required Room room,
+    required PreBookResponse preBookResponse,
+  }) async {
+    try {
+      final response = await PreBookService().callPrebookCallback(
+        bookingCode: room.bookingCode,
+        noOfRooms: room.name.length,
+        hotelCode: widget.hotel.hotelCode,
+        response:   preBookResponse.toJson(), // Convert to JSON string
+        serviceCharge: 0.0, // Adjust as per your business logic
+        amount: room.totalFare,
+      );
 
-  void _navigateToPassengerInput(Room room, PreBookResponse preBookResponse) {
+      if (response['status'] == 'SUCCESS') {
+        final prebookCallbackResponse = PrebookCallbackResponse.fromJson(response);
+        return ApiResult.success(prebookCallbackResponse);
+      } else {
+        return ApiResult.error(response['statusDesc'] ?? 'Callback API failed');
+      }
+    } catch (e) {
+      return ApiResult.error('Callback API error: $e');
+    }
+  }
+
+  void _navigateToPassengerInput(Room room, PreBookResponse preBookResponse, PrebookCallbackResponse callbackResponse) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -172,6 +214,7 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
           hotelSearchRequest: widget.hotelSearchRequest,
           room: room,
           preBookResponse: preBookResponse,
+          prebookId: callbackResponse.prebookId.toString(), // Pass prebookId to next page
         ),
       ),
     );

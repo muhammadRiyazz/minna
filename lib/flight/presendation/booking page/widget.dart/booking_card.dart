@@ -12,6 +12,15 @@ class FlightbookingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Theme colors
+    final Color _primaryColor = Colors.black;
+    final Color _secondaryColor = Color(0xFFD4AF37);
+    final Color _backgroundColor = Color(0xFFF8F9FA);
+    final Color _cardColor = Colors.white;
+    final Color _textPrimary = Colors.black;
+    final Color _textSecondary = Color(0xFF666666);
+    final Color _textLight = Color(0xFF999999);
+
     // Safely get onward and return legs with null checks
     final onwardLegs = flightOption.flightOnwardLegs ?? [];
     final returnLegs = flightOption.flightRetunLegs ?? [];
@@ -60,213 +69,263 @@ class FlightbookingCard extends StatelessWidget {
     }
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.grey.shade300, width: .5),
-        borderRadius: BorderRadius.circular(10),
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(.1),
-            spreadRadius: 1,
-            blurRadius: 6,
-            offset: const Offset(0, 2),
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: Offset(0, 4),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Header
           Container(
             width: double.infinity,
+            padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: maincolor1,
-
+              // color: _secondaryColor.withOpacity(0.1),
               borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(10),
-                topRight: Radius.circular(10),
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
               ),
             ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-              child: Text(
-                'Flight Details',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                  letterSpacing: 0.5,
+            child: Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: _secondaryColor,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.flight_takeoff_rounded,
+                    size: 16,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
+                SizedBox(width: 12),
+                Text(
+                  'Flight Details',
+                  style: TextStyle(
+                    
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: _primaryColor,
+                  ),
+                ),
+              ],
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Divider(),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                // Airline header with price
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 45,
-                            height: 40,
-                            decoration: BoxDecoration(),
-                            child: Center(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(5),
-                                child: Image.network(
-                                  fit: BoxFit.fill,
-                                  flightOption.flightimg ?? "",
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      Container(color: Colors.grey[200]),
-                                ),
+                // Airline header
+                Container(
+                  padding: EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: _secondaryColor.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: _secondaryColor.withOpacity(0.2)),
+                  ),
+                  child: Row(
+                    children: [
+                      // Airline Logo
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 4,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            flightOption.flightimg ?? "",
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                              color: _backgroundColor,
+                              child: Icon(
+                                Icons.airlines_rounded,
+                                color: _secondaryColor,
+                                size: 20,
                               ),
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          // Airline Name
-                          Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  flightOption.flightName ?? '---',
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  flightOption.ticketingCarrier ?? '---',
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.normal,
-                                    color: Colors.black54,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 14),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: DottedLine(dashColor: Colors.grey.shade400),
+                      SizedBox(width: 12),
+                      // Airline Info
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              flightOption.flightName ?? 'Airline',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: _primaryColor,
+                              ),
+                            ),
+                            SizedBox(height: 2),
+                            Text(
+                              flightOption.ticketingCarrier ?? 'Flight Carrier',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: _textSecondary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // Flight Type Badge
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: _secondaryColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: _secondaryColor.withOpacity(0.3)),
+                        ),
+                        child: Text(
+                          returnLegs.isNotEmpty ? 'Round Trip' : 'One Way',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: _secondaryColor,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
 
-                // Onward Journey Section (only if we have onward legs)
+                SizedBox(height: 16),
+
+                // Onward Journey Section
                 if (onwardLegs.isNotEmpty &&
                     onwardDepartureTime != null &&
                     onwardArrivalTime != null)
-                  buildFlightLegSection(
+                  _buildJourneySection(
+                    title: 'Onward Journey',
                     firstLeg: onwardLegs.first,
                     lastLeg: onwardLegs.last,
                     departureTime: onwardDepartureTime,
                     arrivalTime: onwardArrivalTime,
                     duration: onwardDuration!,
                     stops: onwardStops,
+                    primaryColor: _primaryColor,
+                    secondaryColor: _secondaryColor,
+                    textSecondary: _textSecondary,
                   ),
 
-                // Return Journey Section (if exists)
+                // Return Journey Section
                 if (returnLegs.isNotEmpty &&
                     returnDepartureTime != null &&
                     returnArrivalTime != null) ...[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    child: DottedLine(
-                      direction: Axis.horizontal,
-                      lineLength: double.infinity,
-                      lineThickness: 1.0,
-                      dashLength: 4.0,
-                      dashColor: Colors.grey,
-                      dashGapLength: 4.0,
-                    ),
-                  ),
-                  buildFlightLegSection(
+                  SizedBox(height: 16),
+                  _buildJourneySection(
+                    title: 'Return Journey',
                     firstLeg: returnLegs.first,
                     lastLeg: returnLegs.last,
                     departureTime: returnDepartureTime,
                     arrivalTime: returnArrivalTime,
                     duration: returnDuration!,
                     stops: returnStops,
+                    primaryColor: _primaryColor,
+                    secondaryColor: _secondaryColor,
+                    textSecondary: _textSecondary,
                   ),
                 ],
-                SizedBox(height: 10),
 
-                // Flight legs expansion tile
+                SizedBox(height: 16),
+
+                // Flight Legs Expansion
                 if (onwardLegs.isNotEmpty || returnLegs.isNotEmpty)
-                  ExpansionTile(
-                    collapsedBackgroundColor: Colors.blue.shade50,
-                    iconColor: maincolor1,
-                    tilePadding: EdgeInsets.symmetric(horizontal: 10),
-                    title: Text(
-                      'Flight Legs',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: maincolor1,
-                      ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: _backgroundColor,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey.shade200),
                     ),
-                    children: [
-                      // Onward legs
-                      if (onwardLegs.isNotEmpty) ...[
+                    child: ExpansionTile(
+                      collapsedIconColor: _secondaryColor,
+                      iconColor: _secondaryColor,
+                      tilePadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      title: Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: _secondaryColor.withOpacity(0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.list_alt_rounded,
+                              size: 16,
+                              color: _secondaryColor,
+                            ),
+                          ),
+                          SizedBox(width: 12),
+                          Text(
+                            'Detailed Flight Legs',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: _primaryColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                      children: [
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                          padding: EdgeInsets.all(16),
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                ' Onward Journey',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey[800],
+                              // Onward Legs
+                              if (onwardLegs.isNotEmpty) ...[
+                                _buildLegsSection(
+                                  title: 'Onward Journey Legs',
+                                  legs: onwardLegs,
+                                  primaryColor: _primaryColor,
+                                  secondaryColor: _secondaryColor,
+                                  textSecondary: _textSecondary,
                                 ),
-                              ),
-                              SizedBox(height: 8),
-                              ..._buildLegsDetails(onwardLegs),
+                                if (returnLegs.isNotEmpty) SizedBox(height: 20),
+                              ],
+                              // Return Legs
+                              if (returnLegs.isNotEmpty)
+                                _buildLegsSection(
+                                  title: 'Return Journey Legs',
+                                  legs: returnLegs,
+                                  primaryColor: _primaryColor,
+                                  secondaryColor: _secondaryColor,
+                                  textSecondary: _textSecondary,
+                                ),
                             ],
                           ),
                         ),
                       ],
-
-                      if (returnLegs.isNotEmpty) ...[
-                        SizedBox(height: 16),
-                        // Return legs
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 0.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Return Journey',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey[800],
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              ..._buildLegsDetails(returnLegs),
-                            ],
-                          ),
-                        ),
-                      ],
-                      SizedBox(height: 8),
-                    ],
+                    ),
                   ),
               ],
             ),
@@ -276,57 +335,279 @@ class FlightbookingCard extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildLegsDetails(List<FFlightLeg> legs) {
-    List<Widget> widgets = [];
-
-    for (int i = 0; i < legs.length; i++) {
-      final leg = legs[i];
-      widgets.add(_buildLegDetail(leg));
-
-      // Add layover information if not the last leg
-      if (i < legs.length - 1) {
-        final currentArrival = DateTime.parse(legs[i].arrivalTime!);
-        final nextDeparture = DateTime.parse(legs[i + 1].departureTime!);
-        final layoverDuration = nextDeparture.difference(currentArrival);
-        final hours = layoverDuration.inHours;
-        final minutes = layoverDuration.inMinutes.remainder(60);
-
-        widgets.add(
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Container(
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 238, 248, 255),
-                border: Border.all(color: Colors.grey.shade300),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Layover of ${hours}h ${minutes}m',
-                        style: TextStyle(color: maincolor1, fontSize: 10),
-                      ),
-                      Text(
-                        'At ${leg.destinationName}',
-                        style: TextStyle(color: maincolor1, fontSize: 8),
-                      ),
-                    ],
-                  ),
+  Widget _buildJourneySection({
+    required String title,
+    required FFlightLeg firstLeg,
+    required FFlightLeg lastLeg,
+    required DateTime departureTime,
+    required DateTime arrivalTime,
+    required Duration duration,
+    required int stops,
+    required Color primaryColor,
+    required Color secondaryColor,
+    required Color textSecondary,
+  }) {
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: secondaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Icon(
+                  Icons.flight_rounded,
+                  size: 14,
+                  color: secondaryColor,
                 ),
               ),
+              SizedBox(width: 8),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: primaryColor,
+                ),
+              ),
+              Spacer(),
+              if (stops > 0)
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: secondaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    '$stops ${stops == 1 ? 'stop' : 'stops'}',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: secondaryColor,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          SizedBox(height: 12),
+          
+          // Flight route and timing
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Departure
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      DateFormat('HH:mm').format(departureTime),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: primaryColor,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      firstLeg.origin ?? '--',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: primaryColor,
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      firstLeg.originName ?? '--',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: textSecondary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              
+              // Duration and stops
+              Expanded(
+                child: Column(
+                  children: [
+                    Text(
+                      '${duration.inHours}h ${duration.inMinutes.remainder(60)}m',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: secondaryColor,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        DottedLine(
+                          dashLength: 4,
+                          dashGapLength: 4,
+                          lineThickness: 2,
+                          dashColor: secondaryColor.withOpacity(0.5),
+                        ),
+                        Container(
+                          padding: EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: secondaryColor,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.flight_rounded,
+                            size: 14,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 4),
+                    if (stops > 0)
+                      Text(
+                        '$stops ${stops == 1 ? 'stop' : 'stops'}',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: textSecondary,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              
+              // Arrival
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      DateFormat('HH:mm').format(arrivalTime),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: primaryColor,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      lastLeg.destination ?? '--',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: primaryColor,
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      lastLeg.destinationName ?? '--',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: textSecondary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          
+          SizedBox(height: 8),
+          
+          // Date
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: secondaryColor.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.calendar_today_rounded,
+                  size: 12,
+                  color: secondaryColor,
+                ),
+                SizedBox(width: 6),
+                Text(
+                  DateFormat('MMM dd, yyyy').format(departureTime),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: textSecondary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
           ),
-        );
-      }
-    }
-
-    return widgets;
+        ],
+      ),
+    );
   }
 
-  Widget _buildLegDetail(FFlightLeg leg) {
+  Widget _buildLegsSection({
+    required String title,
+    required List<FFlightLeg> legs,
+    required Color primaryColor,
+    required Color secondaryColor,
+    required Color textSecondary,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: primaryColor,
+          ),
+        ),
+        SizedBox(height: 12),
+        ...legs.asMap().entries.map((entry) {
+          final index = entry.key;
+          final leg = entry.value;
+          final isLast = index == legs.length - 1;
+          
+          return Column(
+            children: [
+              _buildLegDetailCard(
+                leg: leg,
+                primaryColor: primaryColor,
+                secondaryColor: secondaryColor,
+                textSecondary: textSecondary,
+              ),
+              if (!isLast) _buildLayoverInfo(leg, legs[index + 1], secondaryColor, textSecondary),
+            ],
+          );
+        }).toList(),
+      ],
+    );
+  }
+
+  Widget _buildLegDetailCard({
+    required FFlightLeg leg,
+    required Color primaryColor,
+    required Color secondaryColor,
+    required Color textSecondary,
+  }) {
     final departureTime = leg.departureTime != null
         ? DateTime.parse(leg.departureTime!)
         : DateTime.now();
@@ -336,187 +617,242 @@ class FlightbookingCard extends StatelessWidget {
     final duration = arrivalTime.difference(departureTime);
 
     return Container(
-      padding: const EdgeInsets.all(12),
-      margin: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.all(16),
+      margin: EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(color: Colors.grey.shade300),
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(.1),
-            spreadRadius: 1,
-            blurRadius: 6,
-            offset: const Offset(0, 2),
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 4,
+            offset: Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         children: [
-          // Airline info
+          // Flight header
           Row(
             children: [
               Container(
-                width: 45,
-                height: 30,
+                width: 32,
+                height: 32,
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 219, 245, 255),
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(6),
+                  color: secondaryColor.withOpacity(0.1),
                 ),
-                child: Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
-                    child: Image.network(flightOption.flightimg ?? ""),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: Image.network(
+                    flightOption.flightimg ?? "",
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) =>
+                        Icon(Icons.airlines_rounded, size: 16, color: secondaryColor),
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     leg.flightName ?? '--',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: primaryColor,
                     ),
                   ),
                   Text(
                     '${leg.airlineCode} ${leg.flightNo}',
-                    style: TextStyle(fontSize: 9, color: Colors.grey.shade600),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: textSecondary,
+                    ),
                   ),
                 ],
+              ),
+              Spacer(),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: secondaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '${duration.inHours}h ${duration.inMinutes.remainder(60)}m',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: secondaryColor,
+                  ),
+                ),
               ),
             ],
           ),
-
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
+          
+          // Flight route
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Departure
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    DateFormat('HH:mm').format(departureTime),
-                    style: const TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    leg.origin ?? '',
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              // Flight duration and path
               Expanded(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${duration.inHours}h ${duration.inMinutes.remainder(60)}m',
+                      DateFormat('HH:mm').format(departureTime),
                       style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.grey.shade600,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: primaryColor,
                       ),
                     ),
-                    const SizedBox(height: 5),
-                    Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 30),
-                          child: Container(
-                            height: 1,
-                            width: double.infinity,
-                            color: Colors.grey.shade300,
-                          ),
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: maincolor1,
-                          ),
-                          padding: const EdgeInsets.all(6),
-                          child: Icon(
-                            Icons.flight,
-                            size: 13,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
+                    SizedBox(height: 4),
+                    Text(
+                      leg.origin ?? '--',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: primaryColor,
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      'Terminal ${leg.departureTerminal ?? '-'}',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: textSecondary,
+                      ),
                     ),
                   ],
                 ),
               ),
+              
+              // Flight icon
+              Expanded(
+                child: Center(
+                  child: Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: secondaryColor,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.flight_rounded,
+                      size: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              
               // Arrival
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    DateFormat('HH:mm').format(arrivalTime),
-                    style: const TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      DateFormat('HH:mm').format(arrivalTime),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: primaryColor,
+                      ),
                     ),
-                  ),
-                  Text(
-                    leg.destination ?? '',
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
+                    SizedBox(height: 4),
+                    Text(
+                      leg.destination ?? '--',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: primaryColor,
+                      ),
                     ),
-                  ),
-                ],
+                    SizedBox(height: 2),
+                    Text(
+                      'Terminal ${leg.arrivalTerminal ?? '-'}',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
-          // Terminal and date info
+          
+          SizedBox(height: 8),
+          
+          // Airport names
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Terminal ${leg.departureTerminal ?? '-'}',
-                    style: TextStyle(fontSize: 9, color: Colors.grey.shade600),
+              Expanded(
+                child: Text(
+                  leg.originName ?? '--',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: textSecondary,
                   ),
-                  Text(
-                    leg.originName ?? '--',
-                    style: TextStyle(fontSize: 10, color: Colors.grey.shade700),
-                  ),
-                  Text(
-                    DateFormat('MMM dd, yyyy').format(departureTime),
-                    style: TextStyle(fontSize: 11, color: Colors.grey.shade900),
-                  ),
-                ],
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    'Terminal ${leg.arrivalTerminal ?? '-'}',
-                    style: TextStyle(fontSize: 9, color: Colors.grey.shade600),
+              Expanded(
+                child: Text(
+                  leg.destinationName ?? '--',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: textSecondary,
                   ),
-                  Text(
-                    leg.destinationName ?? '--',
-                    style: TextStyle(fontSize: 10, color: Colors.grey.shade700),
-                  ),
-                  Text(
-                    DateFormat('MMM dd, yyyy').format(arrivalTime),
-                    style: TextStyle(fontSize: 11, color: Colors.grey.shade900),
-                  ),
-                ],
+                  textAlign: TextAlign.end,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLayoverInfo(FFlightLeg currentLeg, FFlightLeg nextLeg, Color secondaryColor, Color textSecondary) {
+    final currentArrival = DateTime.parse(currentLeg.arrivalTime!);
+    final nextDeparture = DateTime.parse(nextLeg.departureTime!);
+    final layoverDuration = nextDeparture.difference(currentArrival);
+    final hours = layoverDuration.inHours;
+    final minutes = layoverDuration.inMinutes.remainder(60);
+
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 8),
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: secondaryColor.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: secondaryColor.withOpacity(0.2)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.schedule_rounded,
+            size: 14,
+            color: secondaryColor,
+          ),
+          SizedBox(width: 8),
+          Text(
+            'Layover: ${hours}h ${minutes}m at ${currentLeg.destinationName}',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: secondaryColor,
+            ),
           ),
         ],
       ),

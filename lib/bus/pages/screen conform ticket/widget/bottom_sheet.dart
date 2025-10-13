@@ -1,94 +1,124 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/pages/main%20home/home.dart';
 
-
 Future<dynamic> showBottomSheetbooking({
   required BuildContext context,
   required Timer timer,
-  required String busORFlight
-
+  required String busORFlight,
+  required Color primaryColor,
+  required Color secondaryColor,
 }) {
+  final Color _backgroundColor = Color(0xFFF8F9FA);
+  final Color _cardColor = Colors.white;
+  final Color _textPrimary = Colors.black;
+  final Color _textSecondary = Color(0xFF666666);
+
   return showModalBottomSheet(
     context: context,
+    backgroundColor: Colors.transparent,
     builder: (context) {
-      return SizedBox(
-        height: 300,
+      return Container(
+        decoration: BoxDecoration(
+          color: _cardColor,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(25),
+            topRight: Radius.circular(25),
+          ),
+        ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
                 height: 5,
                 width: 50,
                 decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 215, 205, 205),
+                  color: _textSecondary.withOpacity(0.3),
                   borderRadius: BorderRadius.circular(5),
                 ),
               ),
-              SizedBox(height: 20),
-              Text(
-                'Are You sure you want to go back ?',
-                style: TextStyle(fontWeight: FontWeight.w400, fontSize: 15),
+              SizedBox(height: 24),
+              Container(
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: secondaryColor.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.warning_amber_rounded,
+                  color: secondaryColor,
+                  size: 32,
+                ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 16),
               Text(
-                'This $busORFlight seems popular! Hurry, book before all the seats get filled',
+                'Are you sure you want to go back?',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: _textPrimary,
+                ),
                 textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14),
               ),
-              Spacer(),
-              // SizedBox(
-              //     height: 300,
-              //     child:
-              //         Lottie.asset('asset/19618-bus-pop (1).json')),
-              InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: Container(
-                  height: 55,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: maincolor1,
-                    borderRadius: BorderRadius.circular(10),
+              SizedBox(height: 12),
+              Text(
+                'This $busORFlight seems popular! Hurry, book before all the seats get filled.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: _textSecondary,
+                  height: 1.4,
+                ),
+              ),
+              SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primaryColor,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
                   ),
-                  child: Center(
-                    child: Text(
-                      'Continue Booking',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w300,
-                      ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    'Continue Booking',
+                    style: TextStyle(
+                      fontSize: 16,
+
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 12),
               TextButton(
                 onPressed: () {
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
-                      builder: (context) {
-                        return HomePage();
-                      },
+                      builder: (context) => HomePage(),
                     ),
                     (route) => false,
                   );
                   timer.cancel();
                 },
-                child: Text('Back'),
+                child: Text(
+                  'Cancel Booking',
+                  style: TextStyle(
+                    color: _textSecondary,
+                    fontSize: 14,
+                  ),
+                ),
               ),
-              // Container(
-              //   height: 55,
-              //   width: double.infinity,
-              //   decoration: BoxDecoration(
-              //       color: Colors.red,
-              //       borderRadius: BorderRadius.circular(10)),
-              // )
             ],
           ),
         ),

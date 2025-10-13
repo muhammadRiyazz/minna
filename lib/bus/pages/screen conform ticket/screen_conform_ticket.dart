@@ -58,6 +58,19 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
   // Payment
   late Razorpay _razorpay;
 
+  // Color Theme - Black & Gold Premium
+  final Color _primaryColor = Colors.black;
+  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
+  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
+  final Color _backgroundColor = Color(0xFFF8F9FA);
+  final Color _cardColor = Colors.white;
+  final Color _textPrimary = Colors.black;
+  final Color _textSecondary = Color(0xFF666666);
+  final Color _textLight = Color(0xFF999999);
+  final Color _errorColor = Color(0xFFE53935);
+  final Color _successColor = Color(0xFF388E3C);
+  final Color _warningColor = Color(0xFFF57C00);
+
   @override
   void initState() {
     super.initState();
@@ -97,62 +110,107 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
-          children: [
-            Icon(Icons.warning_amber_rounded, color: Colors.orange),
-            SizedBox(width: 8),
-            Text("Fare Updated", style: TextStyle(fontWeight: FontWeight.bold)),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "The operator has updated the fare during block time.",
-              style: TextStyle(color: Colors.grey[700]),
-            ),
-            const SizedBox(height: 12),
-            _buildFareComparisonRow("Original Fare", totalFare),
-            _buildFareComparisonRow("Updated Fare", updatedFare),
-            const SizedBox(height: 8),
-            Text(
-              "This updated fare will be collected from you.",
-              style: TextStyle(
-                color: Colors.orange[800],
-                fontWeight: FontWeight.w500,
+      builder: (_) => Dialog(
+        backgroundColor: _cardColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Container(
+          padding: EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: _warningColor.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.warning_amber_rounded, color: _warningColor, size: 40),
               ),
-            ),
-          ],
+              SizedBox(height: 16),
+              Text(
+                "Fare Updated",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: _textPrimary,
+                ),
+              ),
+              SizedBox(height: 12),
+              Text(
+                "The operator has updated the fare during block time.",
+                style: TextStyle(color: _textSecondary),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 16),
+              Container(
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: _backgroundColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  children: [
+                    _buildFareComparisonRow("Original Fare", totalFare),
+                    SizedBox(height: 8),
+                    _buildFareComparisonRow("Updated Fare", updatedFare, isUpdated: true),
+                  ],
+                ),
+              ),
+              SizedBox(height: 16),
+              Text(
+                "This updated fare will be collected from you.",
+                style: TextStyle(
+                  color: _warningColor,
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _primaryColor,
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    "Continue with Updated Fare",
+                    style: TextStyle(
+                      color: _secondaryColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("OK, Continue"),
-          )
-        ],
       ),
     );
   }
 
-  Widget _buildFareComparisonRow(String label, double amount) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: const TextStyle(fontSize: 14)),
-          Text(
-            '₹ ${amount.toStringAsFixed(2)}',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: label.contains("Updated") ? Colors.orange : Colors.black,
-            ),
+  Widget _buildFareComparisonRow(String label, double amount, {bool isUpdated = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: TextStyle(
+          fontSize: 14,
+          color: isUpdated ? _secondaryColor : _textSecondary,
+          fontWeight: isUpdated ? FontWeight.w600 : FontWeight.normal,
+        )),
+        Text(
+          '₹ ${amount.toStringAsFixed(2)}',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: isUpdated ? _secondaryColor : _textPrimary,
+            fontSize: isUpdated ? 16 : 14,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -190,9 +248,9 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
   }
 
   Color get _timerColor {
-    if (_secondsRemaining < 60) return Colors.red;
-    if (_secondsRemaining < 180) return Colors.orange;
-    return Colors.yellow;
+    if (_secondsRemaining < 60) return _errorColor;
+    if (_secondsRemaining < 180) return _warningColor;
+    return _secondaryColor;
   }
 
   Future<bool> _onWillPop() async {
@@ -207,6 +265,8 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
       context: context,
       timer: _timer!,
       busORFlight: 'bus',
+      primaryColor: _primaryColor,
+      secondaryColor: _secondaryColor,
     );
   }
 
@@ -323,7 +383,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
         'contact': passenger?.mobile ?? "0000000000",
         'email': passenger?.email ?? "email@example.com"
       },
-      'theme': {'color': maincolor1!.value.toRadixString(16)},
+      'theme': {'color': _primaryColor.value.toRadixString(16)},
       'timeout': 300, // 5 minutes timeout
     };
   }
@@ -363,10 +423,6 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
 
       // Success - cancel timer
       _timer?.cancel();
-
-      // if (mounted) {
-      //   // _showSuccessDialog();
-      // }
 
     } catch (e) {
       log("Booking processing error: $e");
@@ -438,60 +494,72 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
     }
   }
 
-  // void _showSuccessDialog() {
-  //   showDialog(
-  //     context: context,
-  //     barrierDismissible: false,
-  //     builder: (context) => AlertDialog(
-  //       title: const Row(
-  //         children: [
-  //           Icon(Icons.check_circle, color: Colors.green),
-  //           SizedBox(width: 8),
-  //           Text("Booking Successful!"),
-  //         ],
-  //       ),
-  //       content: const Text("Your bus tickets have been booked successfully."),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () => Navigator.pop(context),
-  //           child: const Text("OK"),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   void _showErrorDialog(String message, {String? errorDetails}) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Row(
-          children: [
-            Icon(Icons.error_outline, color: Colors.red),
-            SizedBox(width: 8),
-            Text("Booking Issue"),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(message),
-            if (errorDetails != null) ...[
-              const SizedBox(height: 8),
+      builder: (context) => Dialog(
+        backgroundColor: _cardColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Container(
+          padding: EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: _errorColor.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.error_outline_rounded, color: _errorColor, size: 40),
+              ),
+              SizedBox(height: 16),
               Text(
-                "Error details: $errorDetails",
-                style: const TextStyle(fontSize: 12, color: Colors.grey),
+                "Booking Issue",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: _textPrimary,
+                ),
+              ),
+              SizedBox(height: 12),
+              Text(
+                message,
+                style: TextStyle(color: _textSecondary),
+                textAlign: TextAlign.center,
+              ),
+              if (errorDetails != null) ...[
+                SizedBox(height: 8),
+                Text(
+                  "Error details: $errorDetails",
+                  style: TextStyle(fontSize: 12, color: _textLight),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+              SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _primaryColor,
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    "OK",
+                    style: TextStyle(
+                      color: _secondaryColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
               ),
             ],
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("OK"),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -499,9 +567,53 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
   void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
+        content: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.error_outline_rounded, color: _errorColor, size: 20),
+            ),
+            SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Error',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                  ),
+                  SizedBox(height: 2),
+                  Text(
+                    message,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: _errorColor,
         behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: _errorColor.withOpacity(0.2), width: 1),
+        ),
+        margin: EdgeInsets.all(16),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        duration: Duration(seconds: 4),
+        elevation: 8,
       ),
     );
   }
@@ -511,28 +623,39 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        backgroundColor: Colors.grey[100],
+        backgroundColor: _backgroundColor,
         appBar: AppBar(
-          iconTheme: const IconThemeData(color: Colors.white),
-          backgroundColor: maincolor1,
+
+          backgroundColor: _primaryColor,
           elevation: 0,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              const Icon(Icons.timer, color: Colors.white),
-              const SizedBox(width: 8),
-              Text(
-                _timerText,
-                style: TextStyle(
-                  color: _timerColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
+              Icon(Icons.timer_rounded, color:                      Colors.white,
+),
+              SizedBox(width: 8),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: _timerColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(                    color: Colors.white,
+),
+                ),
+                child: Text(
+                  _timerText,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
               ),
             ],
           ),
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
+            color: Colors.white,
+            icon: Icon(Icons.arrow_back_rounded, ),
             onPressed: _showExitConfirmation,
           ),
         ),
@@ -543,13 +666,28 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
 
   Widget _buildBody() {
     if (_isLoading) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
-            Text("Initializing booking..."),
+            CircularProgressIndicator(color: _secondaryColor),
+            SizedBox(height: 20),
+            Text(
+              "Initializing Booking...",
+              style: TextStyle(
+                fontSize: 16,
+                color: _textSecondary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              "Please wait while we prepare your booking",
+              style: TextStyle(
+                fontSize: 14,
+                color: _textLight,
+              ),
+            ),
           ],
         ),
       );
@@ -557,30 +695,69 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
 
     if (_isError) {
       return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error_outline, size: 64, color: Colors.red),
-            const SizedBox(height: 16),
-            const Text(
-              "Failed to initialize booking",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            const Text("Please try again later"),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _insertData,
-              child: const Text("Retry"),
-            ),
-          ],
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: _errorColor.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.error_outline_rounded, size: 64, color: _errorColor),
+              ),
+              SizedBox(height: 24),
+              Text(
+                "Failed to Initialize Booking",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: _textPrimary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 12),
+              Text(
+                "We encountered an issue while setting up your booking. Please try again.",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: _textSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _primaryColor,
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: _insertData,
+                  child: Text(
+                    "Try Again",
+                    style: TextStyle(
+                      color: _secondaryColor,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
 
     return Column(
       children: [
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         Expanded(child: _buildDetailsCard()),
         _buildBookButton(),
       ],
@@ -591,26 +768,50 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
     final currentFare = _getCurrentFare();
 
     return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       children: [
+        // Trip Summary Card
+        _buildTripSummaryCard(),
+        SizedBox(height: 16),
+        
+        // Booking Details Card
         Card(
-          elevation: 4,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Passenger details section
-                _buildPassengerSection(),
-                const Divider(height: 32, thickness: 1.2),
-                
-                // Fare update warning (if applicable)
-                if (_hasFareChanged()) _buildFareUpdateWarning(),
-                
-                // Fare breakdown section
-                _buildFareBreakdown(currentFare),
+          elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          child: Container(
+            decoration: BoxDecoration(
+              color: _cardColor,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 16,
+                  spreadRadius: 1,
+                  offset: Offset(0, 4),
+                ),
               ],
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Passenger details section
+                  _buildPassengerSection(),
+                  SizedBox(height: 24),
+                  Divider(height: 1, color: _textLight.withOpacity(0.3)),
+                  SizedBox(height: 24),
+                  
+                  // Fare update warning (if applicable)
+                  if (_hasFareChanged()) ...[
+                    _buildFareUpdateWarning(),
+                    SizedBox(height: 20),
+                  ],
+                  
+                  // Fare breakdown section
+                  _buildFareBreakdown(currentFare),
+                ],
+              ),
             ),
           ),
         ),
@@ -618,27 +819,142 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
     );
   }
 
+  Widget _buildTripSummaryCard() {
+    return Container(
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 12,
+            spreadRadius: 1,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: _secondaryColor.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.directions_bus_rounded,
+              color: _secondaryColor,
+              size: 24,
+            ),
+          ),
+          SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Ready to Book",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: _textPrimary,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  "${widget.selectedSeats.length} ${widget.selectedSeats.length == 1 ? 'Seat' : 'Seats'} • ${widget.alldata.inventoryItems?.first.passenger.name ?? 'Passenger'}",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: _textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+        ],
+      ),
+    );
+  }
+
   Widget _buildPassengerSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "Passenger Details",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        Row(
+          children: [
+            Icon(Icons.people_alt_rounded, color: _secondaryColor, size: 20),
+            SizedBox(width: 8),
+            Text(
+              "Passenger Details",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: _textPrimary,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 12),
-        ...widget.alldata.inventoryItems?.map((item) => ListTile(
-          leading: CircleAvatar(
-            backgroundColor: maincolor1!.withOpacity(0.1),
-            child: const Icon(Icons.person, color: Colors.black54),
+        SizedBox(height: 16),
+        ...widget.alldata.inventoryItems?.map((item) => Container(
+          margin: EdgeInsets.only(bottom: 12),
+          padding: EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: _backgroundColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: _textLight.withOpacity(0.2)),
           ),
-          title: Text(item.passenger.name),
-          subtitle: Text('Seat ${item.seatName}'),
-          trailing: Text(
-            '₹ ${item.fare}',
-            style: const TextStyle(fontWeight: FontWeight.bold),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: _secondaryColor.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.person_rounded,
+                  color: _secondaryColor,
+                  size: 20,
+                ),
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.passenger.name,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: _textPrimary,
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      'Seat ${item.seatName} • ${item.passenger.gender} • ${item.passenger.age} years',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: _textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Text(
+                '₹ ${item.fare}',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: _secondaryColor,
+                ),
+              ),
+            ],
           ),
-        )) ?? [const Text("No passenger data")],
+        )) ?? [SizedBox()],
       ],
     );
   }
@@ -646,31 +962,35 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
   Widget _buildFareUpdateWarning() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.orange.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.orange),
+        color: _warningColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _warningColor.withOpacity(0.3)),
       ),
       child: Row(
         children: [
-          const Icon(Icons.info_outline, color: Colors.orange, size: 20),
-          const SizedBox(width: 8),
+          Icon(Icons.info_outline_rounded, color: _warningColor, size: 24),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "Fare Updated During Block Time",
+                Text(
+                  "Fare Updated",
                   style: TextStyle(
-                    color: Colors.orange,
+                    color: _warningColor,
                     fontWeight: FontWeight.bold,
+                    fontSize: 14,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
-                  "The fare has been updated by the operator. New fare will be collected.",
-                  style: TextStyle(color: Colors.orange[800], fontSize: 12),
+                  "The fare has been updated by the operator during block time.",
+                  style: TextStyle(
+                    color: _warningColor.withOpacity(0.8),
+                    fontSize: 12,
+                  ),
                 ),
               ],
             ),
@@ -684,28 +1004,51 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "Fare Breakdown",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        Row(
+          children: [
+            Icon(Icons.receipt_long_rounded, color: _secondaryColor, size: 20),
+            SizedBox(width: 8),
+            Text(
+              "Fare Breakdown",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: _textPrimary,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 12),
-        _buildFareRow('Base Fare', totalBaseFare),
-        const SizedBox(height: 8),
-        _buildFareRow('Service Tax / GST', updatedServiceTax),
-        const Divider(height: 20),
-        _buildFareRow(
-          'Total Amount',
-          currentFare,
-          isTotal: true,
-          isUpdated: _hasFareChanged(),
+        SizedBox(height: 16),
+        Container(
+          padding: EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: _backgroundColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            children: [
+              _buildFareRow('Base Fare', totalBaseFare),
+              SizedBox(height: 12),
+              _buildFareRow('Service Tax / GST', updatedServiceTax),
+              SizedBox(height: 12),
+              Divider(height: 1, color: _textLight.withOpacity(0.3)),
+              SizedBox(height: 12),
+              _buildFareRow(
+                'Total Amount',
+                currentFare,
+                isTotal: true,
+                isUpdated: _hasFareChanged(),
+              ),
+            ],
+          ),
         ),
         if (_hasFareChanged()) ...[
-          const SizedBox(height: 8),
+          SizedBox(height: 12),
           Text(
             "Note: Fare was updated during the booking process",
             style: TextStyle(
               fontSize: 12,
-              color: Colors.grey[600],
+              color: _textLight,
               fontStyle: FontStyle.italic,
             ),
           ),
@@ -723,7 +1066,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
           style: TextStyle(
             fontSize: isTotal ? 16 : 14,
             fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-            color: isUpdated && isTotal ? Colors.orange : Colors.black87,
+            color: isUpdated && isTotal ? _secondaryColor : _textPrimary,
           ),
         ),
         Text(
@@ -731,7 +1074,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
           style: TextStyle(
             fontSize: isTotal ? 18 : 14,
             fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-            color: isUpdated && isTotal ? Colors.orange : maincolor1,
+            color: isUpdated && isTotal ? _secondaryColor : _secondaryColor,
           ),
         ),
       ],
@@ -743,55 +1086,75 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
     final currentFare = _getCurrentFare();
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: _cardColor,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, -2),
+            blurRadius: 16,
+            offset: Offset(0, -4),
           ),
         ],
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
       ),
       child: SafeArea(
         child: SizedBox(
           width: double.infinity,
-          height: 55,
+          height: 60,
           child: ElevatedButton(
             onPressed: isEnabled ? _onBookNow : null,
             style: ElevatedButton.styleFrom(
-              backgroundColor: isEnabled ? maincolor1 : Colors.grey[400],
+              backgroundColor: isEnabled ? _primaryColor : _textLight,
+              foregroundColor: Colors.white,
+              elevation: 0,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
               ),
-              elevation: 4,
             ),
             child: _isBooking
-                ? const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      strokeWidth: 2.5,
-                    ),
-                  )
-                : Column(
+                ? Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        'BOOK NOW',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                      SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          valueColor: AlwaysStoppedAnimation<Color>(_secondaryColor),
                         ),
                       ),
+                      SizedBox(width: 12),
+                      Text(
+                        'Processing Payment...',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.lock_rounded, size: 20),
+                      SizedBox(width: 8),
+                      Text(
+                        'PAY NOW',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Spacer(),
                       Text(
                         '₹ ${currentFare.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.white70,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],

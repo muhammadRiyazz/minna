@@ -12,6 +12,8 @@ class PassengerInputPage extends StatefulWidget {
   final HotelSearchRequest hotelSearchRequest;
   final HotelDetail hotel;
   final PreBookResponse preBookResponse;
+    final String prebookId;
+
 
   const PassengerInputPage({
     super.key,
@@ -19,6 +21,8 @@ class PassengerInputPage extends StatefulWidget {
     required this.hotelSearchRequest,
     required this.hotel,
     required this.preBookResponse,
+        required this.prebookId,
+
   });
 
   @override
@@ -1177,6 +1181,8 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
     context,
     MaterialPageRoute(
       builder: (context) => HotelBookingConfirmationPage(
+
+        prebookId:widget.prebookId,
         room: widget.room,
         hotelSearchRequest: widget.hotelSearchRequest,
         hotel: widget.hotel,

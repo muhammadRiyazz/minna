@@ -25,6 +25,7 @@ mixin _$HotelBookingConfirmEvent {
       String tableId,
       String bookingId,
       double amount,
+      String prebookId,
       Map<String, dynamic> bookingRequest,
     )
     paymentDone,
@@ -49,6 +50,7 @@ mixin _$HotelBookingConfirmEvent {
       String tableId,
       String bookingId,
       double amount,
+      String prebookId,
       Map<String, dynamic> bookingRequest,
     )?
     paymentDone,
@@ -73,6 +75,7 @@ mixin _$HotelBookingConfirmEvent {
       String tableId,
       String bookingId,
       double amount,
+      String prebookId,
       Map<String, dynamic> bookingRequest,
     )?
     paymentDone,
@@ -155,6 +158,7 @@ abstract class _$$PaymentDoneImplCopyWith<$Res> {
     String tableId,
     String bookingId,
     double amount,
+    String prebookId,
     Map<String, dynamic> bookingRequest,
   });
 }
@@ -178,6 +182,7 @@ class __$$PaymentDoneImplCopyWithImpl<$Res>
     Object? tableId = null,
     Object? bookingId = null,
     Object? amount = null,
+    Object? prebookId = null,
     Object? bookingRequest = null,
   }) {
     return _then(
@@ -202,6 +207,10 @@ class __$$PaymentDoneImplCopyWithImpl<$Res>
             ? _value.amount
             : amount // ignore: cast_nullable_to_non_nullable
                   as double,
+        prebookId: null == prebookId
+            ? _value.prebookId
+            : prebookId // ignore: cast_nullable_to_non_nullable
+                  as String,
         bookingRequest: null == bookingRequest
             ? _value._bookingRequest
             : bookingRequest // ignore: cast_nullable_to_non_nullable
@@ -220,6 +229,7 @@ class _$PaymentDoneImpl implements _PaymentDone {
     required this.tableId,
     required this.bookingId,
     required this.amount,
+    required this.prebookId,
     required final Map<String, dynamic> bookingRequest,
   }) : _bookingRequest = bookingRequest;
 
@@ -233,6 +243,8 @@ class _$PaymentDoneImpl implements _PaymentDone {
   final String bookingId;
   @override
   final double amount;
+  @override
+  final String prebookId;
   final Map<String, dynamic> _bookingRequest;
   @override
   Map<String, dynamic> get bookingRequest {
@@ -243,7 +255,7 @@ class _$PaymentDoneImpl implements _PaymentDone {
 
   @override
   String toString() {
-    return 'HotelBookingConfirmEvent.paymentDone(orderId: $orderId, transactionId: $transactionId, tableId: $tableId, bookingId: $bookingId, amount: $amount, bookingRequest: $bookingRequest)';
+    return 'HotelBookingConfirmEvent.paymentDone(orderId: $orderId, transactionId: $transactionId, tableId: $tableId, bookingId: $bookingId, amount: $amount, prebookId: $prebookId, bookingRequest: $bookingRequest)';
   }
 
   @override
@@ -258,6 +270,8 @@ class _$PaymentDoneImpl implements _PaymentDone {
             (identical(other.bookingId, bookingId) ||
                 other.bookingId == bookingId) &&
             (identical(other.amount, amount) || other.amount == amount) &&
+            (identical(other.prebookId, prebookId) ||
+                other.prebookId == prebookId) &&
             const DeepCollectionEquality().equals(
               other._bookingRequest,
               _bookingRequest,
@@ -272,6 +286,7 @@ class _$PaymentDoneImpl implements _PaymentDone {
     tableId,
     bookingId,
     amount,
+    prebookId,
     const DeepCollectionEquality().hash(_bookingRequest),
   );
 
@@ -292,6 +307,7 @@ class _$PaymentDoneImpl implements _PaymentDone {
       String tableId,
       String bookingId,
       double amount,
+      String prebookId,
       Map<String, dynamic> bookingRequest,
     )
     paymentDone,
@@ -314,6 +330,7 @@ class _$PaymentDoneImpl implements _PaymentDone {
       tableId,
       bookingId,
       amount,
+      prebookId,
       bookingRequest,
     );
   }
@@ -327,6 +344,7 @@ class _$PaymentDoneImpl implements _PaymentDone {
       String tableId,
       String bookingId,
       double amount,
+      String prebookId,
       Map<String, dynamic> bookingRequest,
     )?
     paymentDone,
@@ -349,6 +367,7 @@ class _$PaymentDoneImpl implements _PaymentDone {
       tableId,
       bookingId,
       amount,
+      prebookId,
       bookingRequest,
     );
   }
@@ -362,6 +381,7 @@ class _$PaymentDoneImpl implements _PaymentDone {
       String tableId,
       String bookingId,
       double amount,
+      String prebookId,
       Map<String, dynamic> bookingRequest,
     )?
     paymentDone,
@@ -386,6 +406,7 @@ class _$PaymentDoneImpl implements _PaymentDone {
         tableId,
         bookingId,
         amount,
+        prebookId,
         bookingRequest,
       );
     }
@@ -440,6 +461,7 @@ abstract class _PaymentDone implements HotelBookingConfirmEvent {
     required final String tableId,
     required final String bookingId,
     required final double amount,
+    required final String prebookId,
     required final Map<String, dynamic> bookingRequest,
   }) = _$PaymentDoneImpl;
 
@@ -448,6 +470,7 @@ abstract class _PaymentDone implements HotelBookingConfirmEvent {
   String get tableId;
   String get bookingId;
   double get amount;
+  String get prebookId;
   Map<String, dynamic> get bookingRequest;
 
   /// Create a copy of HotelBookingConfirmEvent
@@ -556,6 +579,7 @@ class _$PaymentFailImpl implements _PaymentFail {
       String tableId,
       String bookingId,
       double amount,
+      String prebookId,
       Map<String, dynamic> bookingRequest,
     )
     paymentDone,
@@ -584,6 +608,7 @@ class _$PaymentFailImpl implements _PaymentFail {
       String tableId,
       String bookingId,
       double amount,
+      String prebookId,
       Map<String, dynamic> bookingRequest,
     )?
     paymentDone,
@@ -612,6 +637,7 @@ class _$PaymentFailImpl implements _PaymentFail {
       String tableId,
       String bookingId,
       double amount,
+      String prebookId,
       Map<String, dynamic> bookingRequest,
     )?
     paymentDone,
@@ -828,6 +854,7 @@ class _$InitiateRefundImpl implements _InitiateRefund {
       String tableId,
       String bookingId,
       double amount,
+      String prebookId,
       Map<String, dynamic> bookingRequest,
     )
     paymentDone,
@@ -856,6 +883,7 @@ class _$InitiateRefundImpl implements _InitiateRefund {
       String tableId,
       String bookingId,
       double amount,
+      String prebookId,
       Map<String, dynamic> bookingRequest,
     )?
     paymentDone,
@@ -890,6 +918,7 @@ class _$InitiateRefundImpl implements _InitiateRefund {
       String tableId,
       String bookingId,
       double amount,
+      String prebookId,
       Map<String, dynamic> bookingRequest,
     )?
     paymentDone,
@@ -1025,6 +1054,7 @@ class _$StartLoadingImpl implements _StartLoading {
       String tableId,
       String bookingId,
       double amount,
+      String prebookId,
       Map<String, dynamic> bookingRequest,
     )
     paymentDone,
@@ -1053,6 +1083,7 @@ class _$StartLoadingImpl implements _StartLoading {
       String tableId,
       String bookingId,
       double amount,
+      String prebookId,
       Map<String, dynamic> bookingRequest,
     )?
     paymentDone,
@@ -1081,6 +1112,7 @@ class _$StartLoadingImpl implements _StartLoading {
       String tableId,
       String bookingId,
       double amount,
+      String prebookId,
       Map<String, dynamic> bookingRequest,
     )?
     paymentDone,
@@ -1198,6 +1230,7 @@ class _$StopLoadingImpl implements _StopLoading {
       String tableId,
       String bookingId,
       double amount,
+      String prebookId,
       Map<String, dynamic> bookingRequest,
     )
     paymentDone,
@@ -1226,6 +1259,7 @@ class _$StopLoadingImpl implements _StopLoading {
       String tableId,
       String bookingId,
       double amount,
+      String prebookId,
       Map<String, dynamic> bookingRequest,
     )?
     paymentDone,
@@ -1254,6 +1288,7 @@ class _$StopLoadingImpl implements _StopLoading {
       String tableId,
       String bookingId,
       double amount,
+      String prebookId,
       Map<String, dynamic> bookingRequest,
     )?
     paymentDone,

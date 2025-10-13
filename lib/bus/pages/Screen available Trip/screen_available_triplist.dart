@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:minna/bus/application/busListfetch/bus_list_fetch_bloc.dart';
 import 'package:minna/bus/application/busListfetch/bus_list_fetch_state.dart';
 import 'package:minna/bus/application/change%20location/location_bloc.dart';
+import 'package:minna/bus/infrastructure/time.dart';
 import 'package:minna/bus/pages/Screen%20available%20Trip/widgets/trip_container.dart';
 import 'package:minna/bus/presendation/widgets/error_widget.dart';
 import 'package:minna/bus/domain/trips%20list%20modal/trip_list_modal.dart';
@@ -13,41 +14,132 @@ import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ScreenAvailableTrips extends StatelessWidget {
-  const ScreenAvailableTrips({super.key});
+   ScreenAvailableTrips({super.key});
+
+  // Color Theme - Consistent with flight booking
+  final Color _primaryColor = Colors.black;
+  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
+  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
+  final Color _backgroundColor = Color(0xFFF8F9FA);
+  final Color _cardColor = Colors.white;
+  final Color _textPrimary = Colors.black;
+  final Color _textSecondary = Color(0xFF666666);
+  final Color _textLight = Color(0xFF999999);
+  final Color _errorColor = Color(0xFFE53935);
 
   @override
   Widget build(BuildContext context) {
     final selectedData = context.read<LocationBloc>().state;
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 250, 250, 250),
+      backgroundColor: _backgroundColor,
       appBar: AppBar(
-        backgroundColor: maincolor1,
-        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: _primaryColor,
+        iconTheme: IconThemeData(color: Colors.white),
+        elevation: 0,
+        title: Text(
+          'Available Buses',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         actions: [
-          Row(
-            children: [
-              Text(
-                DateFormat('d MMMM yyyy').format(selectedData.dateOfJourney),
-                style: const TextStyle(color: Colors.white, fontSize: 12),
-              ),
-              const SizedBox(width: 5),
-              const Icon(Icons.date_range, color: Colors.white, size: 17),
-              const SizedBox(width: 15),
-            ],
+          Container(
+            margin: EdgeInsets.only(right: 16),
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: _secondaryColor.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: _secondaryColor.withOpacity(0.3)),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.calendar_today_rounded, color: _secondaryColor, size: 14),
+                SizedBox(width: 6),
+                Text(
+                  DateFormat('d MMM yyyy').format(selectedData.dateOfJourney),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
       body: BlocBuilder<BusListFetchBloc, BusListFetchState>(
         builder: (context, state) {
           if (state.isLoading) {
-            return const BusListloadingPage();
+            return  BusListloadingPage();
           }
 
           if (state.isError) {
-            return Erroricon(
-              ontap: () {
-                // Add retry logic here if needed
+            return _buildErrorWidget(context, selectedData);
+          }
+
+          if (state.notripp! ||
+              state.availableTrips == null ||
+              state.availableTrips!.isEmpty) {
+            return _buildNoTripsWidget();
+          }
+
+          return _buildTripList(context, state, selectedData);
+        },
+      ),
+    );
+  }
+
+  Widget _buildErrorWidget(BuildContext context, LocationState selectedData) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: _cardColor,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Icon(
+                Icons.error_outline_rounded,
+                color: _errorColor,
+                size: 48,
+              ),
+            ),
+            SizedBox(height: 24),
+            Text(
+              'Something went wrong',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: _textPrimary,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'We couldn\'t load the bus list. Please try again.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                color: _textSecondary,
+              ),
+            ),
+            SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () {
                 context.read<BusListFetchBloc>().add(
                   FetchTrip(
                     dateOfjurny: selectedData.dateOfJourney,
@@ -56,169 +148,243 @@ class ScreenAvailableTrips extends StatelessWidget {
                   ),
                 );
               },
-            );
-          }
-
-          if (state.notripp! ||
-              state.availableTrips == null ||
-              state.availableTrips!.isEmpty) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Main message
-                    Text(
-                      'Oops! No buses found',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey[700],
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-
-                    // Sub message
-                    Text(
-                      'We couldn\'t find any buses for your selected route and date',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                    ),
-                  ],
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _primaryColor,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
-            );
-          }
-
-          return SafeArea(
-            child: Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 15,
-                  ),
-                  decoration: BoxDecoration(color: maincolor1),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              selectedData.from?.name ?? '--',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            const SizedBox(height: 5),
-                            Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 30,
-                                  ),
-                                  child: Container(
-                                    height: 1,
-                                    width: double.infinity,
-                                    color: Colors.grey.shade300,
-                                  ),
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: maincolor1,
-                                  ),
-                                  padding: const EdgeInsets.all(6),
-                                  child: const Icon(
-                                    Icons.directions_bus_outlined,
-                                    size: 18,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              selectedData.to?.name ?? '--',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+              child: Text(
+                'Try Again',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
                 ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: state.availableTrips!.length,
-                    itemBuilder: (context, index) {
-                      final startfare = faredecode(
-                        fare: state.availableTrips![index].fareDetails,
-                      );
-                      final arrivalTime = changetime(
-                        time: state.availableTrips![index].arrivalTime,
-                      );
-                      final departureTime = changetime(
-                        time: state.availableTrips![index].departureTime,
-                      );
-                      return TripCountainer(
-                        index: index,
-                        availableTriplist: state.availableTrips!,
-                        startfare: startfare,
-                        departureTime: departureTime,
-                        arrivalTime: arrivalTime,
-                      );
-                    },
-                  ),
-                ),
-              ],
+              ),
             ),
-          );
-        },
+          ],
+        ),
       ),
     );
   }
 
-  String changetime({required String time}) {
-    final int tim = int.parse(time);
-    int journeyDay = tim ~/ (24 * 60);
-    int remainingTime = tim % (24 * 60);
-    int hour = remainingTime ~/ 60;
-    int minutes = remainingTime % 60;
-
-    String timePeriod = hour >= 12 ? 'P.M' : 'A.M';
-    hour = hour > 12 ? hour - 12 : hour;
-    hour = hour == 0 ? 12 : hour;
-
-    return '${hour.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')} $timePeriod';
+  Widget _buildNoTripsWidget() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: _cardColor,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Icon(
+                Icons.directions_bus_rounded,
+                color: _textLight,
+                size: 48,
+              ),
+            ),
+            SizedBox(height: 24),
+            Text(
+              'No buses found',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: _textPrimary,
+              ),
+            ),
+            SizedBox(height: 12),
+            Text(
+              'We couldn\'t find any buses for your selected route and date. '
+              'Try changing your search criteria or select a different date.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                color: _textSecondary,
+                height: 1.5,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
+
+  Widget _buildTripList(BuildContext context, BusListFetchState state, LocationState selectedData) {
+    return Column(
+      children: [
+        // Route Header
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: _primaryColor,
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 10,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'FROM',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.white.withOpacity(0.7),
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      selectedData.from?.name ?? '--',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: _secondaryColor,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.arrow_forward_rounded,
+                        color: Colors.white,
+                        size: 16,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      '${state.availableTrips!.length} buses',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.white.withOpacity(0.7),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      'TO',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.white.withOpacity(0.7),
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      selectedData.to?.name ?? '--',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: 16),
+        
+        // Trip Count
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            children: [
+              Icon(
+                Icons.directions_bus_rounded,
+                color: _secondaryColor,
+                size: 16,
+              ),
+              SizedBox(width: 8),
+              Text(
+                '${state.availableTrips!.length} buses available',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: _textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: 12),
+        
+        // Trip List
+        Expanded(
+          child: ListView.builder(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            itemCount: state.availableTrips!.length,
+            itemBuilder: (context, index) {
+              final startfare = faredecode(
+                fare: state.availableTrips![index].fareDetails,
+              );
+              final arrivalTime = changetime(
+                time: state.availableTrips![index].arrivalTime,
+              );
+              final departureTime = changetime(
+                time: state.availableTrips![index].departureTime,
+              );
+              return TripCountainer(
+                index: index,
+                availableTriplist: state.availableTrips!,
+                startfare: startfare,
+                departureTime: departureTime,
+                arrivalTime: arrivalTime,
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+ 
 
   double faredecode({required dynamic fare}) {
     List<FareDetail> fareList;
@@ -246,218 +412,126 @@ class ScreenAvailableTrips extends StatelessWidget {
   }
 }
 
-String changetime({required String time}) {
-  final int tim = int.parse(time);
-  int journeyDay = tim ~/ (24 * 60);
-  int remainingTime = tim % (24 * 60);
-  int hour = remainingTime ~/ 60;
-  int minutes = remainingTime % 60;
-
-  String timePeriod = hour >= 12 ? 'P.M' : 'A.M';
-  hour = hour > 12 ? hour - 12 : hour;
-  hour = hour == 0 ? 12 : hour;
-
-  String formattedTime =
-      '${hour.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')} $timePeriod';
-
-  print('Exact Time Format: $formattedTime');
-  print('Journey Day: $journeyDay');
-
-  // final double count = int.parse(time) / 60;
-  // int decimalPart = ((count - count.floor()) * 100).toInt();
-
-  // final hour = count.toInt() % 24;
-
-  // String time24 = '$hour:$decimalPart';
-
-  // DateFormat format24 = DateFormat('HH:mm');
-  // DateFormat format12 = DateFormat('h:mm a');
-
-  // DateTime dateTime = format24.parse(time24);
-  // String time12 = format12.format(dateTime);
-  return formattedTime;
-}
-
-double faredecode({required dynamic fare}) {
-  List<FareDetail> fareList;
-
-  // Handle both single FareDetail and List<FareDetail>
-  if (fare is List<FareDetail>) {
-    fareList = fare;
-  } else if (fare is FareDetail) {
-    fareList = [fare];
-  } else {
-    // Default value if fare is neither type
-    return 0.0;
-  }
-
-  if (fareList.isEmpty) return 0.0;
-
-  num smallestValue = double.parse(fareList[0].baseFare);
-
-  for (int i = 1; i < fareList.length; i++) {
-    num currentValue = double.parse(fareList[i].baseFare);
-    log(fareList[i].baseFare);
-
-    if (currentValue < smallestValue) {
-      smallestValue = currentValue;
-    }
-  }
-
-  return double.parse(smallestValue.toString());
-}
-
-// state.isError
-//               ? Erroricon(
-//                 ontap: () {
-//                   log('errrororooror');
-//                 },
-//               )
-//               : state.notripp!
-//               ? Center(
-//                 child: Column(
-//                   mainAxisAlignment: MainAxisAlignment.center,
-//                   crossAxisAlignment: CrossAxisAlignment.center,
-//                   children: [
-//                     Lottie.asset('asset/90333-error.json'),
-//                     SizedBox(height: 10),
-//                     Text(
-//                       'Trip is not available.\n Please select another location or date',
-//                       textAlign: TextAlign.center,
-//                     ),
-//                   ],
-//                 ),
-//               )
-//               : state.availableTrips!.isEmpty
-//               ? Center(
-//                 child: Padding(
-//                   padding: const EdgeInsets.all(13.0),
-//                   child: Column(
-//                     mainAxisAlignment: MainAxisAlignment.center,
-//                     crossAxisAlignment: CrossAxisAlignment.center,
-//                     children: [
-//                       Text(
-//                         'Trip is not available.\nTo view more results, try changing the search filters you applied',
-//                         textAlign: TextAlign.center,
-//                       ),
-//                       SizedBox(height: 10),
-//                       ClipRRect(
-//                         borderRadius: BorderRadius.circular(15),
-//                         child: ElevatedButton(
-//                           style: ButtonStyle(
-//                             backgroundColor: MaterialStateProperty.all<Color>(
-//                               maincolor1,
-//                             ),
-//                           ),
-//                           onPressed: () {
-//                             BlocProvider.of<BusFilterSelectionBloc>(
-//                               context,
-//                             ).add(
-//                               SelectFilter(
-//                                 arrivalTimes: [false, false, false, false],
-//                                 busTypeslist: [false, false, false, false],
-//                                 departureTimes: [false, false, false, false],
-//                               ),
-//                             );
-//                             // BlocProvider.of<BusTripListBloc>(context).add(
-//                             //   FetchTrip(
-//                             //     dateOfjurny: globalPostRedBus.dateOfJurny,
-//                             //     destID: globalPostRedBus.idToLocation,
-//                             //     sourceID: globalPostRedBus.idFromLocation,
-//                             //   ),
-//                             // );
-//                           },
-//                           child: SizedBox(
-//                             height: 50,
-//                             width: double.infinity,
-//                             child: Center(
-//                               child: Text(
-//                                 'Clear All Filter',
-//                                 style: TextStyle(color: Colors.white),
-//                               ),
-//                             ),
-//                           ),
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//               )
-//
 class BusListloadingPage extends StatelessWidget {
-  const BusListloadingPage({super.key});
+   BusListloadingPage({super.key});
+
+  final Color _primaryColor = Colors.black;
+  final Color _secondaryColor = Color(0xFFD4AF37);
+  final Color _backgroundColor = Color(0xFFF8F9FA);
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      padding: EdgeInsets.all(16),
       itemCount: 6,
       itemBuilder: (context, index) {
         return Container(
-          margin: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+          margin: EdgeInsets.only(bottom: 16),
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey.shade300),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          padding: EdgeInsets.all(12),
-          child: Column(
-            children: [
-              // Airline logo and flight code
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Shimmer.fromColors(
-                    baseColor: Colors.grey[300]!,
-                    highlightColor: Colors.grey[100]!,
-                    child: Container(
-                      width: 70,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                  ),
-                  Shimmer.fromColors(
-                    baseColor: Colors.grey[300]!,
-                    highlightColor: Colors.grey[100]!,
-                    child: Container(
-                      width: 80,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                  ),
-                ],
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: Offset(0, 4),
               ),
-
-              SizedBox(height: 16),
-
-              // Flight route and timing
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Shimmer.fromColors(
-                        baseColor: Colors.grey[300]!,
-                        highlightColor: Colors.grey[100]!,
-                        child: Container(
-                          width: 110,
-                          height: 20,
+            ],
+          ),
+          padding: EdgeInsets.all(16),
+          child: Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Column(
+              children: [
+                // Top section: Bus info and price
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                    ),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            height: 16,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Container(
+                            width: 120,
+                            height: 14,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Container(
+                          width: 60,
+                          height: 12,
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
-                      ),
-                      SizedBox(height: 8),
-                      Shimmer.fromColors(
-                        baseColor: Colors.grey[300]!,
-                        highlightColor: Colors.grey[100]!,
-                        child: Container(
+                        SizedBox(height: 6),
+                        Container(
+                          width: 80,
+                          height: 18,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                
+                // Divider
+                Container(
+                  width: double.infinity,
+                  height: 1,
+                  color: Colors.white,
+                ),
+                SizedBox(height: 16),
+                
+                // Time section
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 50,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Container(
                           width: 70,
                           height: 16,
                           decoration: BoxDecoration(
@@ -465,104 +539,104 @@ class BusListloadingPage extends StatelessWidget {
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-
-                  // Duration and plane icon
-                  Column(
-                    children: [
-                      Shimmer.fromColors(
-                        baseColor: Colors.grey[300]!,
-                        highlightColor: Colors.grey[100]!,
-                        child: Container(
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        Container(
+                          width: 60,
+                          height: 14,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Container(
+                              width: 20,
+                              height: 1,
+                              color: Colors.white,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4),
+                              child: Container(
+                                width: 16,
+                                height: 16,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              width: 20,
+                              height: 1,
+                              color: Colors.white,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Container(
                           width: 50,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Container(
+                          width: 70,
                           height: 16,
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
-                      ),
-                      SizedBox(height: 8),
-                      Shimmer.fromColors(
-                        baseColor: Colors.grey[300]!,
-                        highlightColor: Colors.grey[100]!,
-                        child: Icon(
-                          Icons.directions_bus_filled_rounded,
-                          size: 15,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Shimmer.fromColors(
-                        baseColor: Colors.grey[300]!,
-                        highlightColor: Colors.grey[100]!,
-                        child: Container(
-                          width: 120,
-                          height: 20,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Shimmer.fromColors(
-                        baseColor: Colors.grey[300]!,
-                        highlightColor: Colors.grey[100]!,
-                        child: Container(
-                          width: 80,
-                          height: 16,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 16),
-
-              // Price and buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Shimmer.fromColors(
-                    baseColor: Colors.grey[300]!,
-                    highlightColor: Colors.grey[100]!,
-                    child: Container(
-                      width: 80,
-                      height: 24,
+                      ],
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                
+                // Divider
+                Container(
+                  width: double.infinity,
+                  height: 1,
+                  color: Colors.white,
+                ),
+                SizedBox(height: 16),
+                
+                // Bottom section: Seats and button
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      width: 100,
+                      height: 16,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
-                  ),
-
-                  Shimmer.fromColors(
-                    baseColor: Colors.grey[300]!,
-                    highlightColor: Colors.grey[100]!,
-                    child: Container(
+                    Container(
                       width: 100,
                       height: 36,
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(5),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         );
       },

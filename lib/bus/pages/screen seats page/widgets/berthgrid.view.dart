@@ -10,11 +10,27 @@ class BerthGridView extends StatefulWidget {
     required this.seatlist,
     required this.selectedseats,
     required this.onSeatSelected,
+    required this.primaryColor,
+    required this.secondaryColor,
+    required this.accentColor,
+    required this.backgroundColor,
+    required this.cardColor,
+    required this.textPrimary,
+    required this.textSecondary,
+    required this.textLight,
   });
 
   final List<Seat> seatlist;
   final List<Seat> selectedseats;
   final Function(Seat, bool) onSeatSelected;
+  final Color primaryColor;
+  final Color secondaryColor;
+  final Color accentColor;
+  final Color backgroundColor;
+  final Color cardColor;
+  final Color textPrimary;
+  final Color textSecondary;
+  final Color textLight;
 
   @override
   State<BerthGridView> createState() => _BerthGridViewState();
@@ -23,6 +39,7 @@ class BerthGridView extends StatefulWidget {
 class _BerthGridViewState extends State<BerthGridView> {
   late int totalRowno;
   late int totalcolumn;
+  bool showSeatInfo = true;
 
   @override
   void initState() {
@@ -36,163 +53,19 @@ class _BerthGridViewState extends State<BerthGridView> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            child: ExpansionTile(
-              collapsedIconColor: Colors.white,
-              iconColor: Colors.white,
-              initiallyExpanded: false,
-              textColor: Colors.white,
-              tilePadding: const EdgeInsets.symmetric(horizontal: 16),
-              collapsedBackgroundColor: maincolor1!,
-              collapsedTextColor: Colors.white,
-              backgroundColor: maincolor1!,
-              collapsedShape: RoundedRectangleBorder(
-                side: BorderSide(color: Colors.grey.shade300),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              title: const Row(
-                children: [
-                  Icon(Icons.event_seat_rounded, size: 18),
-                  SizedBox(width: 8),
-                  Text(
-                    'Know your seat types',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-              children: [
-                // Shadow Container (now works!)
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    // border: Border.all(color: Colors.grey, width: .6),
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(
-                          0.08,
-                        ), // Lower opacity (0.1–0.3 works best)
-                        blurRadius: 10,
-                        spreadRadius: 2,
-                        offset: const Offset(0, 4), // Shadow position (x, y)
-                      ),
-                    ],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 12),
-                        _buildLegendItem(
-                          _buildSeatContainer(
-                            width: '1',
-                            boxhight: 50,
-
-                            length: '1',
-                            borderColor: maincolor1!, // Selected seat border
-                            fillColor: maincolor1!, // Semi-transparent fill
-                            borderWidth: 2.5,
-                            lBoxColor: Colors.white,
-                          ),
-                          'Selected by you',
-                        ),
-                        _buildLegendItem(
-                          _buildSeatContainer(
-                            width: '1',
-                            length: '1',
-                            lBoxColor: Colors.grey,
-                            boxhight: 50,
-
-                            borderColor: Colors.grey.withOpacity(
-                              0.3,
-                            ), // Unavailable seat border
-                            fillColor: Colors.grey.withOpacity(
-                              0.3,
-                            ), // Light fill to show unavailable
-                          ),
-                          'Selected by others',
-                        ),
-                        _buildLegendItem(
-                          _buildSeatContainer(
-                            width: '1',
-                            length: '1',
-                            lBoxColor: maincolor1!,
-                            boxhight: 50,
-
-                            borderColor:
-                                maincolor1!, // Default seat border color
-                            fillColor: Colors.transparent,
-                          ),
-                          'Available for anyone',
-                        ),
-                        _buildLegendItem(
-                          _buildSeatContainer(
-                            width: '1',
-                            length: '1',
-                            lBoxColor: Colors.pink,
-                            boxhight: 50,
-
-                            borderColor:
-                                Colors.pink, // Ladies seat border color
-                            fillColor: Colors.transparent,
-                          ),
-                          'Ladies only',
-                        ),
-                        _buildLegendItem(
-                          _buildSeatContainer(
-                            width: '1',
-                            length: '1',
-                            lBoxColor: Colors.blue,
-                            boxhight: 50,
-
-                            borderColor: Colors.blue, // Males seat border color
-                            fillColor: Colors.transparent,
-                          ),
-                          'Male only',
-                        ),
-                        _buildLegendItem(
-                          _buildSeatContainer(
-                            width: '1',
-                            boxhight: 60,
-
-                            length: '2',
-                            borderColor: maincolor1!, // Selected seat border
-                            fillColor: Colors.white, // Semi-transparent fill
-                            borderWidth: .8,
-                            lBoxColor: maincolor1!,
-                          ),
-                          'Sleeper seat',
-                        ),
-                        const SizedBox(height: 12),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          const SizedBox(height: 16),
+          _buildSeatInfoSection(),
           Container(
-            margin: const EdgeInsets.symmetric(
-              vertical: 7,
-              horizontal: 15,
-            ), // Add margin so shadow isn't clipped
+            margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
             decoration: BoxDecoration(
-              color:
-                  Colors.white, // Background color (must contrast with shadow)
-              borderRadius: BorderRadius.circular(10),
+              color: widget.cardColor,
+              borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(
-                    0.08,
-                  ), // Lower opacity (0.1–0.3 works best)
-                  blurRadius: 10,
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 12,
                   spreadRadius: 2,
-                  offset: const Offset(0, 4), // Shadow position (x, y)
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
@@ -202,9 +75,25 @@ class _BerthGridViewState extends State<BerthGridView> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const SizedBox(height: 100),
-                        Lottie.asset('asset/90333-error.json'),
-                        const SizedBox(height: 10),
-                        const Text('No Seats Available'),
+                        Lottie.asset('asset/90333-error.json',
+                            width: 120, height: 120),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No Seats Available',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: widget.textSecondary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Please try another berth type',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: widget.textSecondary.withOpacity(0.7),
+                          ),
+                        ),
                       ],
                     ),
                   )
@@ -221,8 +110,7 @@ class _BerthGridViewState extends State<BerthGridView> {
                       },
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         childAspectRatio: .9,
-                        crossAxisCount:
-                            totalRowno, // Changed from totalRowno to totalcolumn
+                        crossAxisCount: totalRowno,
                       ),
                     ),
                   ),
@@ -235,18 +123,18 @@ class _BerthGridViewState extends State<BerthGridView> {
   EdgeInsets _getPaddingBasedOnRows(int rows) {
     switch (rows) {
       case 1:
-        return const EdgeInsets.symmetric(horizontal: 130, vertical: 15);
+        return const EdgeInsets.symmetric(horizontal: 130, vertical: 20);
       case 2:
-        return const EdgeInsets.symmetric(horizontal: 100, vertical: 15);
+        return const EdgeInsets.symmetric(horizontal: 100, vertical: 20);
       case 3:
-        return const EdgeInsets.symmetric(horizontal: 70, vertical: 15);
+        return const EdgeInsets.symmetric(horizontal: 70, vertical: 20);
       case 4:
-        return const EdgeInsets.symmetric(horizontal: 40, vertical: 15);
+        return const EdgeInsets.symmetric(horizontal: 40, vertical: 20);
       case 5:
       case 6:
-        return const EdgeInsets.only(top: 15, bottom: 0, right: 0, left: 0);
+        return const EdgeInsets.all(20);
       default:
-        return const EdgeInsets.symmetric(horizontal: 0, vertical: 15);
+        return const EdgeInsets.symmetric(horizontal: 16, vertical: 20);
     }
   }
 
@@ -272,9 +160,6 @@ class _BerthGridViewState extends State<BerthGridView> {
       onTap: () {
         if (isAvailable) {
           widget.onSeatSelected(seat, !isSelected);
-          if (!isSelected) {
-            // _showSeatSelectedSnackbar(context, seat);
-          }
         }
       },
       child: _getSeatImage(seat, isSelected, isAvailable),
@@ -294,11 +179,10 @@ class _BerthGridViewState extends State<BerthGridView> {
       return _buildSeatContainer(
         width: seat.width,
         length: seat.length,
-        lBoxColor: Colors.pink,
-        boxhight: 50,
-
-        borderColor: Colors.pink, // Ladies seat border color
+        borderColor: Colors.pink,
         fillColor: Colors.transparent,
+        seatColor: Colors.pink,
+        isSelected: isSelected,
       );
     }
 
@@ -306,55 +190,42 @@ class _BerthGridViewState extends State<BerthGridView> {
       return _buildSeatContainer(
         width: seat.width,
         length: seat.length,
-        lBoxColor: Colors.blue,
-        boxhight: 50,
-
-        borderColor: Colors.blue, // Males seat border color
+        borderColor: Colors.blue,
         fillColor: Colors.transparent,
+        seatColor: Colors.blue,
+        isSelected: isSelected,
       );
     }
 
     return _buildSeatContainer(
       width: seat.width,
       length: seat.length,
-      lBoxColor: maincolor1!,
-      boxhight: 50,
-
-      borderColor: maincolor1!, // Default seat border color
+      borderColor: widget.primaryColor,
       fillColor: Colors.transparent,
+      seatColor: widget.primaryColor,
+      isSelected: isSelected,
     );
   }
 
   Widget _getUnavailableSeatImage(Seat seat) {
     return _buildSeatContainer(
       width: seat.width,
-      boxhight: 50,
       length: seat.length,
-      lBoxColor: Colors.grey,
-
-      borderColor: Colors.grey.withOpacity(0.3), // Unavailable seat border
-      fillColor: Colors.grey.withOpacity(0.3), // Light fill to show unavailable
+      borderColor: Colors.grey.withOpacity(0.3),
+      fillColor: Colors.grey.withOpacity(0.1),
+      seatColor: Colors.grey,
+      isSelected: false,
     );
   }
 
   Widget _getSelectedSeatImage(Seat seat) {
     return _buildSeatContainer(
       width: seat.width,
-      boxhight: 60,
-
       length: seat.length,
-      borderColor: seat.malesSeat == 'true'
-          ? Colors.blueAccent
-          : seat.ladiesSeat == 'true'
-          ? Colors.pink
-          : maincolor1!, // Selected seat border
-      fillColor: maincolor1!, // Semi-transparent fill
-      borderWidth: 2.5,
-      lBoxColor: seat.malesSeat == 'true'
-          ? Colors.blueAccent
-          : seat.ladiesSeat == 'true'
-          ? Colors.pink
-          : Colors.white,
+      borderColor: widget.secondaryColor,
+      fillColor: widget.secondaryColor.withOpacity(0.1),
+      seatColor: widget.secondaryColor,
+      isSelected: true,
     );
   }
 
@@ -363,73 +234,61 @@ class _BerthGridViewState extends State<BerthGridView> {
     required String length,
     required Color borderColor,
     required Color fillColor,
-    required Color lBoxColor,
-
-    required double boxhight,
-    double borderWidth = 1.0,
+    required Color seatColor,
+    required bool isSelected,
   }) {
-    bool sleeper = false;
-    if (width == '2' || length == '2') {
-      sleeper = true;
-    }
-    // Convert seat dimensions to numbers
-    // double w = double.tryParse(width) ?? 1.0;
-    // double l = double.tryParse(length) ?? 1.0;
+    bool sleeper = width == '2' || length == '2';
+    double containerHeight = sleeper ? 60 : 50;
 
-    // // Base size constants
-    // const double baseSize = 30.0;
-    // const double marginSize = 5.0;
-
-    // // Calculate dimensions based on seat proportions
-    // double containerWidth = w * baseSize;
-    // double containerHeight = l * baseSize;
-
-    return
-    //  width == '1' && length == '1'
-    // ? Icon(Icons.event_seat_outlined, size: 50, weight: 0.5)
-    // :
-    Padding(
-      padding: EdgeInsets.only(top: sleeper ? 0 : 7),
+    return Padding(
+      padding: EdgeInsets.only(top: sleeper ? 0 : 8),
       child: Container(
-        margin: EdgeInsets.all(4),
-
+        margin: const EdgeInsets.all(4),
         width: 45,
-        height: boxhight,
+        height: containerHeight,
         decoration: BoxDecoration(
           color: fillColor,
-          borderRadius: BorderRadius.circular(4.0),
-          border: Border.all(color: borderColor, width: borderWidth),
+          borderRadius: BorderRadius.circular(6.0),
+          border: Border.all(
+            color: borderColor,
+            width: isSelected ? 2.0 : 1.5,
+          ),
+          // boxShadow: isSelected
+          //     ? [
+          //         BoxShadow(
+          //           color: widget.secondaryColor.withOpacity(0.3),
+          //           blurRadius: 8,
+          //           spreadRadius: 1,
+          //         ),
+          //       ]
+          //     : null,
         ),
         child: Column(
           children: [
-            sleeper
-                ? Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: lBoxColor,
-                        border: Border.all(color: borderColor),
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(2),
-                          topRight: Radius.circular(2),
-                        ),
-                      ),
-                      height: 17, // 15% of container height
-                      width: double.infinity,
+            if (sleeper) ...[
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: seatColor,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(2),
+                      topRight: Radius.circular(2),
                     ),
-                  )
-                : SizedBox(),
-            Spacer(),
-            Container(
-              margin: EdgeInsets.symmetric(
-                horizontal: 8, // 10% of width
-                vertical: 6, // 5% of height
+                  ),
+                  height: 12,
+                  width: double.infinity,
+                ),
               ),
+            ],
+            const Spacer(),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
               decoration: BoxDecoration(
-                color: lBoxColor,
+                color: seatColor,
                 borderRadius: BorderRadius.circular(2),
               ),
-              height: 7, // 15% of container height
+              height: 6,
               width: double.infinity,
             ),
           ],
@@ -437,18 +296,216 @@ class _BerthGridViewState extends State<BerthGridView> {
       ),
     );
   }
-}
 
-Widget _buildLegendItem(Widget box, String text) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8),
-    child: Row(
+  Widget _buildSeatInfoSection() {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: widget.cardColor,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                showSeatInfo = !showSeatInfo;
+              });
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      
+                      
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        
+                        color: widget.secondaryColor.withOpacity(0.1)),
+                      child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(Icons.info_outline, color: widget.secondaryColor, size: 20),
+                    )),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Seat Information',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: widget.textPrimary,
+                      ),
+                    ),
+                  ],
+                ),
+                Icon(
+                  showSeatInfo ? Icons.expand_less : Icons.expand_more,
+                  color: widget.textSecondary,
+                ),
+              ],
+            ),
+          ),
+          
+          if (showSeatInfo) ...[
+                        const SizedBox(height: 10),
+
+                        _buildBerthTypeInfo(),
+
+            const SizedBox(height: 16),
+            _buildSeatTypeIndicators(),
+            const SizedBox(height: 12),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSeatTypeIndicators() {
+    return Wrap(
+      spacing: 20,
+      runSpacing: 12,
       children: [
-        box,
+        _buildIndicatorItem(widget.primaryColor, 'Available', 'Regular seats'),
+        _buildIndicatorItem(widget.secondaryColor, 'Selected', 'Your selection'),
+        _buildIndicatorItem(Colors.grey, 'Booked', 'Not available'),
+        _buildIndicatorItem(Colors.pink, 'Ladies Only', 'Female passengers'),
+        _buildIndicatorItem(Colors.blue, 'Male Only', 'Male passengers'),
+      ],
+    );
+  }
 
-        const SizedBox(width: 16),
-        Text(text, style: const TextStyle(fontSize: 14)),
+  Widget _buildIndicatorItem(Color color, String title, String subtitle) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 16,
+          height: 16,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(4),
+            border: Border.all(color: color.withOpacity(0.3)),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: widget.textPrimary,
+              ),
+            ),
+            Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 10,
+                color: widget.textSecondary,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+Widget _buildBerthTypeInfo() {
+  return Container(
+    padding: const EdgeInsets.all(8),
+    decoration: BoxDecoration(
+      color: widget.backgroundColor,
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        // Seater Section
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Seater',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: widget.primaryColor,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                border: Border.all(color: widget.primaryColor.withOpacity(0.4)),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Column(
+                children: [
+                 
+                  const SizedBox(height: 15),
+                  Container(
+                    height: 3,
+                    width: 20,
+                    color: widget.primaryColor,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+
+        // Sleeper Section
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Sleeper',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: widget.primaryColor,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                border: Border.all(color: widget.primaryColor.withOpacity(0.4)),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    height: 7,
+                    width: 25,
+                    color: widget.primaryColor,
+                  ),
+                  const SizedBox(height: 14),
+                  Container(
+                    height: 3,
+                    width: 20,
+                    color: widget.primaryColor,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ],
     ),
   );
+}
+
 }
