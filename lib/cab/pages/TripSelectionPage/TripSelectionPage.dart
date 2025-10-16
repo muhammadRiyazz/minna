@@ -12,7 +12,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:minna/comman/core/api.dart';
 
-// Enum to track which location field is being edited - moved to top level
+// Enum to track which location field is being edited
 enum LocationFieldType {
   source,
   destination,
@@ -67,13 +67,16 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
   // For airport transfer
   bool _isAirportPickup = true;
 
-  // Color scheme
-  final Color primaryColor = maincolor1!;
-  final Color secondaryColor = const Color(0xFF00CC99);
-  final Color backgroundColor = const Color(0xFFF8F9FA);
-  final Color cardColor = Colors.white;
-  final Color textColor = const Color(0xFF333333);
-  final Color hintColor = const Color(0xFF999999);
+  // New Color Theme - Consistent with flight booking
+  final Color _primaryColor = Colors.black;
+  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
+  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
+  final Color _backgroundColor = Color(0xFFF8F9FA);
+  final Color _cardColor = Colors.white;
+  final Color _textPrimary = Colors.black;
+  final Color _textSecondary = Color(0xFF666666);
+  final Color _textLight = Color(0xFF999999);
+  final Color _errorColor = Color(0xFFE53935);
 
   final Map<int, String> tripTypes = {
     1: 'ONE WAY',
@@ -98,22 +101,18 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
   @override
   void initState() {
     super.initState();
-    // Request location permission when the app starts
     _requestLocationPermission();
   }
 
   Future<void> _requestLocationPermission() async {
-
-
     try {
-       LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-    }
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
     } catch (e) {
       log(e.toString());
     }
-   
   }
 
   void _showVehicleSelectionSheet() {
@@ -125,35 +124,34 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
         return StatefulBuilder(
           builder: (context, setModalState) {
             return Container(
+              margin: EdgeInsets.only(top: 60),
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(25),
-                ),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.2),
-                    blurRadius: 10,
+                    blurRadius: 20,
                     spreadRadius: 0,
                   ),
                 ],
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   // Drag handle
                   Center(
                     child: Container(
-                      width: 60,
-                      height: 5,
+                      width: 48,
+                      height: 4,
                       decoration: BoxDecoration(
                         color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(5),
+                        borderRadius: BorderRadius.circular(2),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 24),
 
                   // Header
                   Row(
@@ -164,11 +162,11 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.grey[800],
+                          color: _textPrimary,
                         ),
                       ),
                       IconButton(
-                        icon: Icon(Icons.close, color: Colors.grey[600]),
+                        icon: Icon(Icons.close, color: _textLight),
                         onPressed: () => Navigator.pop(context),
                       ),
                     ],
@@ -178,13 +176,11 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.5,
                     child: ListView.separated(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                       itemCount: cabTypes.length,
                       separatorBuilder: (context, index) => Divider(
                         height: 1,
                         color: Colors.grey[200],
-                        indent: 20,
-                        endIndent: 20,
                       ),
                       itemBuilder: (context, index) {
                         final entry = cabTypes.entries.elementAt(index);
@@ -213,27 +209,38 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
     final bool isSelected = _selectedCabTypes.contains(cabId);
 
     return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       leading: Container(
         width: 50,
         height: 50,
         decoration: BoxDecoration(
-          color: Colors.blue[50],
-          borderRadius: BorderRadius.circular(10),
+          color: _secondaryColor.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
         ),
-        child: Icon(Icons.directions_car, color: Colors.blue[700], size: 30),
+        child: Icon(Icons.directions_car, color: _secondaryColor, size: 28),
       ),
       title: Text(
         cabName,
         style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
-          color: Colors.grey[800],
+          color: _textPrimary,
         ),
       ),
-      trailing: isSelected
-          ? Icon(Icons.check_circle, color: Colors.blue[700])
-          : Icon(Icons.radio_button_unchecked, color: Colors.grey[400]),
+      trailing: Container(
+        width: 24,
+        height: 24,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: isSelected ? _secondaryColor : Colors.grey,
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        child: isSelected
+            ? Icon(Icons.check, color: _secondaryColor, size: 16)
+            : null,
+      ),
       onTap: () {
         setModalState(() {
           if (isSelected) {
@@ -242,15 +249,12 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
             _selectedCabTypes.add(cabId);
           }
         });
-
-        // also update main page
         setState(() {});
       },
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     );
   }
 
- // Location Search Methods
   void _showLocationSearchSheet(LocationFieldType fieldType, [int? multiCityIndex]) {
     _currentLocationField = fieldType;
     _searchController.clear();
@@ -269,39 +273,30 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
               height: MediaQuery.of(context).size.height * 0.9,
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(25),
-                ),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.2),
-                    blurRadius: 10,
+                    blurRadius: 20,
                     spreadRadius: 0,
                   ),
                 ],
               ),
               child: Column(
                 children: [
+                  SizedBox(height: 12,),
+
                   // Header
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(25),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 3,
-                          spreadRadius: 0,
-                        ),
-                      ],
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
                     ),
                     child: Row(
                       children: [
                         IconButton(
-                          icon: Icon(Icons.arrow_back, color: Colors.grey[700]),
+                          icon: Icon(Icons.arrow_back, color: _textPrimary),
                           onPressed: () => Navigator.pop(context),
                         ),
                         const SizedBox(width: 8),
@@ -311,34 +306,35 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Colors.grey[800],
+                              color: _textPrimary,
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
+SizedBox(height: 12,),
 
                   // Current Location Button
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 15, ),
                     child: GestureDetector(
                       onTap: () => _getCurrentLocation(setModalState, fieldType, multiCityIndex),
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: primaryColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: primaryColor.withOpacity(0.3)),
+                          color: _secondaryColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: _secondaryColor.withOpacity(0.3)),
                         ),
                         child: Row(
                           children: [
                             Icon(
                               Icons.my_location,
-                              color: primaryColor,
+                              color: _secondaryColor,
                               size: 24,
                             ),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: 16),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -348,14 +344,14 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
-                                      color: primaryColor,
+                                      color: _secondaryColor,
                                     ),
                                   ),
                                   Text(
                                     'Get your current location automatically',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: primaryColor.withOpacity(0.7),
+                                      color: _secondaryColor.withOpacity(0.7),
                                     ),
                                   ),
                                 ],
@@ -367,7 +363,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                 height: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  color: primaryColor,
+                                  color: _secondaryColor,
                                 ),
                               ),
                           ],
@@ -375,10 +371,11 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                       ),
                     ),
                   ),
+SizedBox(height: 12,),
 
                   // Divider
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 15, ),
                     child: Row(
                       children: [
                         Expanded(
@@ -392,7 +389,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                           child: Text(
                             'OR',
                             style: TextStyle(
-                              color: Colors.grey[500],
+                              color: _textLight,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -406,22 +403,26 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                       ],
                     ),
                   ),
-
+SizedBox(height: 12,),
                   // Search Bar
                   Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.symmetric(vertical: 5,horizontal: 15),
                     child: TextField(
                       controller: _searchController,
                       decoration: InputDecoration(
                         hintText: 'Search for a place...',
-                        prefixIcon: Icon(Icons.search, color: primaryColor),
+                        hintStyle: TextStyle(color: _textLight),
+                        prefixIcon: Icon(Icons.search, color: _secondaryColor),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide(color: Colors.grey.shade300),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: primaryColor, width: 2),
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide(color: _secondaryColor, width: 2),
                         ),
+                        filled: true,
+                        fillColor: _backgroundColor,
                       ),
                       onChanged: (query) {
                         if (query.length > 2) {
@@ -440,7 +441,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                   Expanded(
                     child: _isSearching
                         ? Center(
-                            child: CircularProgressIndicator(color: primaryColor),
+                            child: CircularProgressIndicator(color: _secondaryColor),
                           )
                         : _searchResults.isEmpty
                             ? Center(
@@ -458,7 +459,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                           ? 'Search for places'
                                           : 'No results found',
                                       style: TextStyle(
-                                        color: Colors.grey[500],
+                                        color: _textLight,
                                         fontSize: 16,
                                       ),
                                     ),
@@ -466,21 +467,22 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                 ),
                               )
                             : ListView.builder(
-                                padding: const EdgeInsets.only(bottom: 16),
+                                padding: const EdgeInsets.only(bottom: 10),
                                 itemCount: _searchResults.length,
                                 itemBuilder: (context, index) {
                                   final place = _searchResults[index];
                                   return ListTile(
+                                    // contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                                     leading: Container(
-                                      width: 40,
-                                      height: 40,
+                                      width: 44,
+                                      height: 44,
                                       decoration: BoxDecoration(
-                                        color: primaryColor.withOpacity(0.1),
-                                        borderRadius: BorderRadius.circular(8),
+                                        color: _secondaryColor.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Icon(
                                         Icons.place,
-                                        color: primaryColor,
+                                        color: _secondaryColor,
                                         size: 20,
                                       ),
                                     ),
@@ -488,14 +490,14 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                       place['description'] ?? '',
                                       style: TextStyle(
                                         fontWeight: FontWeight.w500,
-                                        color: Colors.grey[800],
+                                        color: _textPrimary,
                                       ),
                                     ),
                                     subtitle: place['structured_formatting'] != null
                                         ? Text(
                                             place['structured_formatting']['secondary_text'] ?? '',
                                             style: TextStyle(
-                                              color: Colors.grey[600],
+                                              color: _textSecondary,
                                               fontSize: 12,
                                             ),
                                           )
@@ -523,43 +525,29 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
     });
 
     try {
-      // Check if location service is enabled
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Please enable location services'),
-            backgroundColor: Colors.red[400],
-          ),
-        );
+        _showErrorSnackBar('Please enable location services');
         setModalState(() {
           _isGettingCurrentLocation = false;
         });
         return;
       }
 
-      // Check permission
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied ||
           permission == LocationPermission.deniedForever) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Location permission is required'),
-            backgroundColor: Colors.red[400],
-          ),
-        );
+        _showErrorSnackBar('Location permission is required');
         setModalState(() {
           _isGettingCurrentLocation = false;
         });
         return;
       }
 
-      // Get current position
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
 
-      // Get address from coordinates
       List<Placemark> placemarks = await placemarkFromCoordinates(
         position.latitude,
         position.longitude,
@@ -575,7 +563,6 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
           'longitude': position.longitude,
         };
 
-        // Update the UI
         if (mounted) {
           setState(() {
             switch (fieldType) {
@@ -599,17 +586,11 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
           });
         }
 
-        // Close the bottom sheet
         Navigator.pop(context);
       }
     } catch (e) {
       log(e.toString());
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error getting location: $e'),
-          backgroundColor: Colors.red[400],
-        ),
-      );
+      _showErrorSnackBar('Error getting location: $e');
     } finally {
       setModalState(() {
         _isGettingCurrentLocation = false;
@@ -655,19 +636,6 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
     }
   }
 
-  // String _getLocationFieldTitle(LocationFieldType fieldType, int? multiCityIndex) {
-  //   switch (fieldType) {
-  //     case LocationFieldType.source:
-  //       return 'Pickup Location';
-  //     case LocationFieldType.destination:
-  //       return 'Drop Location';
-  //     case LocationFieldType.multiCitySource:
-  //       return 'Route ${multiCityIndex! + 1} - Pickup';
-  //     case LocationFieldType.multiCityDestination:
-  //       return 'Route ${multiCityIndex! + 1} - Drop';
-  //   }
-  // }
-
   Future<void> _searchPlaces(String query, StateSetter setModalState) async {
     setModalState(() {
       _isSearching = true;
@@ -709,7 +677,6 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
 
   Future<void> _selectPlace(dynamic place, LocationFieldType fieldType, int? multiCityIndex) async {
     try {
-      // Get place details for coordinates
       final placeId = place['place_id'];
       final detailsUrl = Uri.parse(
         'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$_apiKey&fields=name,formatted_address,geometry'
@@ -751,10 +718,9 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
         }
       }
     } catch (e) {
-      // Fallback: use prediction data if details fail
       final locationData = {
         'address': place['description'] ?? '',
-        'latitude': 0.0, // Default coordinates
+        'latitude': 0.0,
         'longitude': 0.0,
       };
 
@@ -795,11 +761,12 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: primaryColor,
+              primary: _secondaryColor,
               onPrimary: Colors.white,
-              surface: cardColor,
-              onSurface: textColor,
-            ), dialogTheme: DialogThemeData(backgroundColor: backgroundColor),
+              surface: _cardColor,
+              onSurface: _textPrimary,
+            ), 
+            dialogTheme: DialogThemeData(backgroundColor: _backgroundColor),
           ),
           child: child!,
         );
@@ -831,11 +798,12 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: primaryColor,
+              primary: _secondaryColor,
               onPrimary: Colors.white,
-              surface: cardColor,
-              onSurface: textColor,
-            ), dialogTheme: DialogThemeData(backgroundColor: backgroundColor),
+              surface: _cardColor,
+              onSurface: _textPrimary,
+            ), 
+            dialogTheme: DialogThemeData(backgroundColor: _backgroundColor),
           ),
           child: child!,
         );
@@ -877,13 +845,11 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
   }
 
   Map<String, dynamic> _buildRequestJson() {
-    // Basic structure
     Map<String, dynamic> request = {
       "tripType": _selectedTripType,
       "cabType": _selectedCabTypes.toList(),
     };
 
-    // Add return date for round trips
     if (_selectedTripType == 2 && _returnDate != null && _returnTime != null) {
       request["returnDate"] = DateFormat('yyyy-MM-dd HH:mm:ss').format(
         DateTime(
@@ -896,11 +862,9 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
       );
     }
 
-    // Build routes based on trip type
     List<Map<String, dynamic>> routes = [];
 
     if (_selectedTripType == 3) {
-      // Multi-city
       for (var route in _multiCityRoutes) {
         final sourceData = route['sourceData'] as Map<String, dynamic>;
         final destinationData = route['destinationData'] as Map<String, dynamic>;
@@ -925,7 +889,6 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
         });
       }
     } else if (_selectedTripType == 4) {
-      // Airport transfer
       if (_isAirportPickup) {
         routes.add({
           "startDate": DateFormat('yyyy-MM-dd').format(_selectedDate),
@@ -968,7 +931,6 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
         });
       }
     } else if (_selectedTripType == 10 || _selectedTripType == 11) {
-      // Day rental - source and destination are the same
       routes.add({
         "startDate": DateFormat('yyyy-MM-dd').format(_selectedDate),
         "startTime": "${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}:00",
@@ -980,7 +942,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
           }
         },
         "destination": {
-          "address": _sourceController.text, // Same as source for day rental
+          "address": _sourceController.text,
           "coordinates": {
             "latitude": _sourceLocationData['latitude'] ?? 22.7008099,
             "longitude": _sourceLocationData['longitude'] ?? 88.3747597,
@@ -988,7 +950,6 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
         },
       });
     } else {
-      // One way or round trip (first leg)
       routes.add({
         "startDate": DateFormat('yyyy-MM-dd').format(_selectedDate),
         "startTime": "${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}:00",
@@ -1008,7 +969,6 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
         },
       });
 
-      // Add return trip for round trip
       if (_selectedTripType == 2 && _returnDate != null && _returnTime != null) {
         routes.add({
           "startDate": DateFormat('yyyy-MM-dd').format(_returnDate!),
@@ -1036,72 +996,30 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
   }
 
   void _proceedToBooking() {
-    // Validate required fields
     if (_selectedCabTypes.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Please select at least one vehicle type'),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          backgroundColor: Colors.red[400],
-        ),
-      );
+      _showErrorSnackBar('Please select at least one vehicle type');
       return;
     }
 
-    // Validate based on trip type
     if (_selectedTripType == 3) {
-      // Multi-city validation
       for (var route in _multiCityRoutes) {
         if (route['source'].text.isEmpty || route['destination'].text.isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('Please fill all source and destination fields'),
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              backgroundColor: Colors.red[400],
-            ),
-          );
+          _showErrorSnackBar('Please fill all source and destination fields');
           return;
         }
       }
     } else if (_selectedTripType == 2) {
-      // Round trip validation
       if (_returnDate == null || _returnTime == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Please select return date and time'),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            backgroundColor: Colors.red[400],
-          ),
-        );
+        _showErrorSnackBar('Please select return date and time');
         return;
       }
     } else {
-      // Other trip types validation
       if (_sourceController.text.isEmpty || _destinationController.text.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Please fill all required fields'),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            backgroundColor: Colors.red[400],
-          ),
-        );
+        _showErrorSnackBar('Please fill all required fields');
         return;
       }
     }
 
-    // Generate the request JSON
     final requestJson = _buildRequestJson();
     log('Request JSON: $requestJson');
 
@@ -1109,7 +1027,6 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
       FetchCabsEvent.fetchCabs(requestData: requestJson),
     );
 
-    // Navigate to booking summary with the JSON data
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -1118,513 +1035,821 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
     );
   }
 
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: EdgeInsets.all(16),
+        backgroundColor: _errorColor,
+        content: Row(
+          children: [
+            Icon(Icons.error_outline_rounded, color: Colors.white, size: 20),
+            SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
+        duration: Duration(seconds: 3),
+        action: SnackBarAction(
+          label: 'OK',
+          textColor: Colors.white,
+          onPressed: () {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroundColor,
-      appBar: AppBar(
-        title: const Text('Book Your Cab'),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: primaryColor,
-        foregroundColor: Colors.white,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header with image
-            SizedBox(height: 100),
-            Align(
-              alignment: Alignment.topRight,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    'Book Your Ride',
+      backgroundColor: _backgroundColor,
+    
+      body: CustomScrollView(
+        slivers: [
+
+
+
+      SliverAppBar(
+                backgroundColor: _primaryColor,
+                expandedHeight: 130,
+                floating: false,
+                pinned: true,
+                elevation: 4,leading: IconButton(
+              icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
+            ),
+                shadowColor: Colors.black.withOpacity(0.3),
+                surfaceTintColor: Colors.white,
+                flexibleSpace: FlexibleSpaceBar(
+                  title: Text(
+                    'Cab Booking',
                     style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                  Text(
-                    'Safe, comfortable and on-time',
-                    style: TextStyle(fontSize: 14, color: hintColor),
+                  centerTitle: true,
+                  background: Container(
+                    decoration: BoxDecoration(
+                    color: _primaryColor
+                    ),
                   ),
+                ),
+                // shape: RoundedRectangleBorder(
+                //   borderRadius: BorderRadius.vertical(
+                //     bottom: Radius.circular(20),
+                //   ),
+                // ),
+              ),
+
+
+
+
+
+
+
+
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header Section
+                  _buildHeaderSection(),
+                  const SizedBox(height: 20),
+
+                  // Trip Type Selection
+                  _buildTripTypeSection(),
+                  const SizedBox(height: 20),
+
+                  // Airport Transfer Type (if applicable)
+                  if (_selectedTripType == 4) ...[
+                    _buildTransferTypeSection(),
+                    const SizedBox(height: 8),
+                  ],
+
+                  // Location Fields
+                  if (_selectedTripType != 3) 
+                    _buildLocationSection(),
+                                      const SizedBox(height: 8),
+
+                  // Multi-city routes
+                  if (_selectedTripType == 3)
+                    _buildMultiCitySection(),
+                    const SizedBox(height: 8),
+
+                  // Date and Time Section
+                  if (_selectedTripType != 3)
+                    _buildDateTimeSection(),
+
+                  const SizedBox(height: 20),
+
+                  // Vehicle Selection
+                  _buildVehicleSelectionSection(),
+                  const SizedBox(height: 20),
+
+                  // Search Button
+                  _buildSearchButton(),
                 ],
               ),
             ),
-            const SizedBox(height: 35),
+          ),
+        ],
+      ),
+    );
+  }
 
-            // Trip Type Selection
+  Widget _buildHeaderSection() {
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: _primaryColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: _primaryColor.withOpacity(0.3),
+            blurRadius: 15,
+            offset: Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: _secondaryColor.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.directions_car_rounded,
+              color: _secondaryColor,
+              size: 28,
+            ),
+          ),
+          SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Find Your Perfect Ride",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    height: 1.2,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  "Safe, comfortable and on-time cab service",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.white.withOpacity(0.8),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTripTypeSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'SELECT TRIP TYPE',
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: _textLight,
+            letterSpacing: 1,
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 40,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: tripTypes.entries.map((entry) {
+              final isSelected = _selectedTripType == entry.key;
+              return Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedTripType = entry.key;
+                      if (entry.key != 3) {
+                        _multiCityRoutes = [
+                          {
+                            'source': TextEditingController(),
+                            'destination': TextEditingController(),
+                            'date': DateTime.now(),
+                            'time': TimeOfDay.now(),
+                            'sourceData': {},
+                            'destinationData': {},
+                          }
+                        ];
+                      }
+                    });
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: isSelected ? _secondaryColor : _cardColor,
+                      borderRadius: BorderRadius.circular(14),
+                      // border: Border.all(
+                      //   color: isSelected ? _secondaryColor : Colors.grey.shade300,
+                      //   width: 1.5,
+                      // ),
+                      // boxShadow: [
+                      //   BoxShadow(
+                      //     color: Colors.black.withOpacity(0.05),
+                      //     blurRadius: 8,
+                      //     offset: Offset(0, 2),
+                      //   ),
+                      // ],
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          _getTripTypeIcon(entry.key),
+                          size: 20,
+                          color: isSelected ? Colors.white : _secondaryColor,
+                        ),
+
+                        const SizedBox(width: 6),
+
+
+                         Text(
+                          entry.value,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: isSelected ? Colors.white : _textPrimary,
+                          ),
+                        ),
+                       
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTransferTypeSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'TRANSFER TYPE',
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: _textLight,
+            letterSpacing: 1,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _isAirportPickup = true;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  decoration: BoxDecoration(
+                    color: _isAirportPickup ? _secondaryColor : _cardColor,
+                    borderRadius: BorderRadius.circular(16),
+                    // border: Border.all(
+                    //   color: _isAirportPickup ? _secondaryColor : Colors.grey.shade300,
+                    //   width: 1.5,
+                    // ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.flight_land,size: 12,
+                        color: _isAirportPickup ? Colors.white : _secondaryColor,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Airport Pickup',
+                        style: TextStyle(
+                          color: _isAirportPickup ? Colors.white : _textPrimary,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _isAirportPickup = false;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  decoration: BoxDecoration(
+                    color: !_isAirportPickup ? _secondaryColor : _cardColor,
+                    borderRadius: BorderRadius.circular(16),
+                    // border: Border.all(
+                    //   color: !_isAirportPickup ? _secondaryColor : Colors.grey.shade300,
+                    //   width: 1.5,
+                    // ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.flight_takeoff,size: 12,
+                        color: !_isAirportPickup ? Colors.white : _secondaryColor,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Airport Drop',
+                        style: TextStyle(
+                          color: !_isAirportPickup ? Colors.white : _textPrimary,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLocationSection() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          _buildLocationField(
+            controller: _sourceController,
+            label: _selectedTripType == 4 && _isAirportPickup
+                ? 'Airport'
+                : 'Pickup Location',
+            icon: Icons.location_on_rounded,
+            onTap: () => _showLocationSearchSheet(LocationFieldType.source),
+          ),
+          if (_selectedTripType != 10 && _selectedTripType != 11) ...[
+            SizedBox(height: 16),
+            _buildLocationField(
+              controller: _destinationController,
+              label: _selectedTripType == 4 && !_isAirportPickup
+                  ? 'Airport'
+                  : 'Drop Location',
+              icon: Icons.location_on_rounded,
+              onTap: () => _showLocationSearchSheet(LocationFieldType.destination),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMultiCitySection() {
+    return Column(
+      children: [
+        for (int i = 0; i < _multiCityRoutes.length; i++)
+          Container(
+            margin: EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: _cardColor,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 20,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                                    SizedBox(height: 10),
+
+                    Text(
+                      ' Route ${i + 1}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: _secondaryColor,
+                        fontSize: 16,
+                      ),
+                    ),
+                    Spacer(),
+                    if (_multiCityRoutes.length > 1)
+                      IconButton(
+                        icon: Icon(Icons.remove_circle, color: _errorColor),
+                        onPressed: () => _removeMultiCityRoute(i),
+                      ),
+                  ],
+                ),
+                SizedBox(height: 10),
+                _buildLocationField(
+                  controller: _multiCityRoutes[i]['source'],
+                  label: 'Pickup Location',
+                  icon: Icons.location_on_rounded,
+                  onTap: () => _showLocationSearchSheet(LocationFieldType.multiCitySource, i),
+                ),
+                SizedBox(height: 16),
+                _buildLocationField(
+                  controller: _multiCityRoutes[i]['destination'],
+                  label: 'Drop Location',
+                  icon: Icons.location_on_rounded,
+                  onTap: () => _showLocationSearchSheet(LocationFieldType.multiCityDestination, i),
+                ),
+                SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildDateTimeField(
+                        label: 'Pickup Date',
+                        value: DateFormat('dd MMM yyyy').format(_multiCityRoutes[i]['date']),
+                        icon: Icons.calendar_month_rounded,
+                        onTap: () => _selectDate(context, multiCityIndex: i),
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: _buildDateTimeField(
+                        label: 'Pickup Time',
+                        value: _multiCityRoutes[i]['time'].format(context),
+                        icon: Icons.access_time_rounded,
+                        onTap: () => _selectTime(context, multiCityIndex: i),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ElevatedButton.icon(
+          onPressed: _addMultiCityRoute,
+          icon: Icon(Icons.add, color: Colors.white),
+          label: Text('Add Another Route', style: TextStyle(color: Colors.white)),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: _secondaryColor,
+            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDateTimeSection() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: _buildDateTimeField(
+                  label: 'Pickup Date',
+                  value: DateFormat('dd MMM yyyy').format(_selectedDate),
+                  icon: Icons.calendar_month_rounded,
+                  onTap: () => _selectDate(context),
+                ),
+              ),
+              SizedBox(width: 16),
+              Expanded(
+                child: _buildDateTimeField(
+                  label: 'Pickup Time',
+                  value: _selectedTime.format(context),
+                  icon: Icons.access_time_rounded,
+                  onTap: () => _selectTime(context),
+                ),
+              ),
+            ],
+          ),
+          if (_selectedTripType == 2) ...[
+            SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildDateTimeField(
+                    label: 'Return Date',
+                    value: _returnDate != null
+                        ? DateFormat('dd MMM yyyy').format(_returnDate!)
+                        : 'Select date',
+                    icon: Icons.calendar_month_rounded,
+                    onTap: () => _selectDate(context, isReturnDate: true),
+                  ),
+                ),
+                SizedBox(width: 16),
+                Expanded(
+                  child: _buildDateTimeField(
+                    label: 'Return Time',
+                    value: _returnTime != null
+                        ? _returnTime!.format(context)
+                        : 'Select time',
+                    icon: Icons.access_time_rounded,
+                    onTap: () => _selectTime(context, isReturnTime: true),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVehicleSelectionSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'SELECT VEHICLE TYPE',
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: _textLight,
+            letterSpacing: 1,
+          ),
+        ),
+        const SizedBox(height: 12),
+        GestureDetector(
+          onTap: _showVehicleSelectionSheet,
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: _cardColor,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 8,
+                  offset: Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: _secondaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.directions_car_rounded,
+                    color: _selectedCabTypes.isNotEmpty ? _secondaryColor : _textLight,
+                    size: 22,
+                  ),
+                ),
+                SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Vehicle Type',
+                        style: TextStyle(fontSize: 10, color: _textLight),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        _selectedCabTypes.isNotEmpty
+                            ? _selectedCabTypes
+                                .map((id) => cabTypes[id])
+                                .join(", ")
+                            : 'Select your vehicle',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: _selectedCabTypes.isNotEmpty
+                              ? _textPrimary
+                              : _textLight,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(Icons.arrow_forward_ios_rounded, color: _textLight, size: 18),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSearchButton() {
+    return Container(
+      width: double.infinity,
+      height: 56,
+      child: ElevatedButton(
+        onPressed: _proceedToBooking,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: _primaryColor,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          elevation: 2,
+          shadowColor: _primaryColor.withOpacity(0.3),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.search_rounded, size: 20),
+            SizedBox(width: 12),
             Text(
-              'SELECT TRIP TYPE',
+              'FIND CABS',
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: hintColor,
                 letterSpacing: 1,
               ),
             ),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 60,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: tripTypes.entries.map((entry) {
-                  return Padding(
-                    padding: EdgeInsets.all(5),
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedTripType = entry.key;
-                          // Reset multi-city routes when changing trip type
-                          if (entry.key != 3) {
-                            _multiCityRoutes = [
-                              {
-                                'source': TextEditingController(),
-                                'destination': TextEditingController(),
-                                'date': DateTime.now(),
-                                'time': TimeOfDay.now(),
-                                'sourceData': {},
-                                'destinationData': {},
-                              }
-                            ];
-                          }
-                        });
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: _selectedTripType == entry.key
-                              ? primaryColor
-                              : cardColor,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color.fromARGB(
-                                255,
-                                212,
-                                212,
-                                212,
-                              ).withOpacity(0.1),
-                              blurRadius: 12,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        padding: const EdgeInsets.all(12),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              _getTripTypeIcon(entry.key),
-                              size: 20,
-                              color: _selectedTripType == entry.key
-                                  ? Colors.white
-                                  : primaryColor,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              entry.value,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                color: _selectedTripType == entry.key
-                                    ? Colors.white
-                                    : textColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLocationField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: _backgroundColor,
+          borderRadius: BorderRadius.circular(16),
+          // border: Border.all(color: Colors.grey.shade200),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: _secondaryColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                icon,
+                color: _secondaryColor,
+                size: 24,
               ),
             ),
-            const SizedBox(height: 10),
-
-            // Airport Transfer Type Selection
-            if (_selectedTripType == 4)
-              Column(
+            SizedBox(width: 16),
+            Expanded(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'TRANSFER TYPE',
+                    label,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: _textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    controller.text.isEmpty ? 'Select location' : controller.text,
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: hintColor,
-                      letterSpacing: 1,
+                      color: controller.text.isEmpty ? _textLight : _textPrimary,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _isAirportPickup = true;
-                            });
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: _isAirportPickup
-                                  ? primaryColor
-                                  : cardColor,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: _isAirportPickup
-                                    ? primaryColor
-                                    : Colors.grey.shade300,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.flight_land,
-                                  color: _isAirportPickup
-                                      ? Colors.white
-                                      : primaryColor,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Airport Pickup',
-                                  style: TextStyle(
-                                    color: _isAirportPickup
-                                        ? Colors.white
-                                        : textColor,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _isAirportPickup = false;
-                            });
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: !_isAirportPickup
-                                  ? primaryColor
-                                  : cardColor,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: !_isAirportPickup
-                                    ? primaryColor
-                                    : Colors.grey.shade300,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.flight_takeoff,
-                                  color: !_isAirportPickup
-                                      ? Colors.white
-                                      : primaryColor,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Airport Drop',
-                                  style: TextStyle(
-                                    color: !_isAirportPickup
-                                        ? Colors.white
-                                        : textColor,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
                 ],
-              ),
-
-            // Location Fields
-            if (_selectedTripType != 3) // Not multi-city
-              _buildLocationCard(
-                children: [
-                  _buildLocationField(
-                    controller: _sourceController,
-                    label: _selectedTripType == 4 && _isAirportPickup
-                        ? 'Airport'
-                        : 'Pickup Location',
-                    icon: Icons.local_taxi_outlined,
-                    iconColor: primaryColor,
-                    onTap: () => _showLocationSearchSheet(LocationFieldType.source),
-                  ),
-                  const SizedBox(height: 16),
-                  if (_selectedTripType != 10 && _selectedTripType != 11) // Not day rental
-                    _buildLocationField(
-                      controller: _destinationController,
-                      label: _selectedTripType == 4 && !_isAirportPickup
-                          ? 'Airport'
-                          : 'Drop Location',
-                      icon: Icons.local_taxi_outlined,
-                      iconColor: primaryColor,
-                      onTap: () => _showLocationSearchSheet(LocationFieldType.destination),
-                    ),
-                ],
-              ),
-
-            // Multi-city routes
-            if (_selectedTripType == 3)
-              Column(
-                children: [
-                  for (int i = 0; i < _multiCityRoutes.length; i++)
-                    Column(
-                      children: [
-                        _buildLocationCard(
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  'Route ${i + 1}',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: primaryColor,
-                                  ),
-                                ),
-                                const Spacer(),
-                                if (_multiCityRoutes.length > 1)
-                                  IconButton(
-                                    icon: Icon(Icons.remove_circle, color: Colors.red),
-                                    onPressed: () => _removeMultiCityRoute(i),
-                                  ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            _buildLocationField(
-                              controller: _multiCityRoutes[i]['source'],
-                              label: 'Pickup Location',
-                              icon: Icons.local_taxi_outlined,
-                              iconColor: primaryColor,
-                              onTap: () => _showLocationSearchSheet(LocationFieldType.multiCitySource, i),
-                            ),
-                            const SizedBox(height: 16),
-                            _buildLocationField(
-                              controller: _multiCityRoutes[i]['destination'],
-                              label: 'Drop Location',
-                              icon: Icons.local_taxi_outlined,
-                              iconColor: primaryColor,
-                              onTap: () => _showLocationSearchSheet(LocationFieldType.multiCityDestination, i),
-                            ),
-                            const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: _buildDateTimeField(
-                                    label: 'Pickup Date',
-                                    value: DateFormat('MMM dd, yyyy').format(_multiCityRoutes[i]['date']),
-                                    icon: Icons.calendar_today,
-                                    onTap: () => _selectDate(context, multiCityIndex: i),
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: _buildDateTimeField(
-                                    label: 'Pickup Time',
-                                    value: _multiCityRoutes[i]['time'].format(context),
-                                    icon: Icons.access_time,
-                                    onTap: () => _selectTime(context, multiCityIndex: i),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                      ],
-                    ),
-                  ElevatedButton.icon(
-                    onPressed: _addMultiCityRoute,
-                    icon: Icon(Icons.add, color: Colors.white),
-                    label: Text('Add Another Route', style: TextStyle(color: Colors.white)),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                ],
-              ),
-
-            // Date and Time
-            if (_selectedTripType != 3) // Not multi-city
-              _buildLocationCard(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildDateTimeField(
-                          label: 'Pickup Date',
-                          value: DateFormat('MMM dd, yyyy').format(_selectedDate),
-                          icon: Icons.calendar_today,
-                          onTap: () => _selectDate(context),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _buildDateTimeField(
-                          label: 'Pickup Time',
-                          value: _selectedTime.format(context),
-                          icon: Icons.access_time,
-                          onTap: () => _selectTime(context),
-                        ),
-                      ),
-                    ],
-                  ),
-                  
-                  // Return date and time for round trip
-                  if (_selectedTripType == 2)
-                    Column(
-                      children: [
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _buildDateTimeField(
-                                label: 'Return Date',
-                                value: _returnDate != null
-                                    ? DateFormat('MMM dd, yyyy').format(_returnDate!)
-                                    : 'Select date',
-                                icon: Icons.calendar_today,
-                                onTap: () => _selectDate(context, isReturnDate: true),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: _buildDateTimeField(
-                                label: 'Return Time',
-                                value: _returnTime != null
-                                    ? _returnTime!.format(context)
-                                    : 'Select time',
-                                icon: Icons.access_time,
-                                onTap: () => _selectTime(context, isReturnTime: true),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                ],
-              ),
-            const SizedBox(height: 25),
-
-            // Cab Type Selection
-            Text(
-              'SELECT VEHICLE TYPE',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: hintColor,
-                letterSpacing: 1,
               ),
             ),
-            const SizedBox(height: 10),
-            GestureDetector(
-              onTap: _showVehicleSelectionSheet,
-              child: Container(
-                padding: const EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  color: cardColor,
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 6,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.directions_car,
-                      color: _selectedCabTypes.isNotEmpty
-                          ? primaryColor
-                          : hintColor,
-                      size: 30,
-                    ),
-                    const SizedBox(width: 15),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Vehicle Type',
-                            style: TextStyle(fontSize: 12, color: hintColor),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            _selectedCabTypes.isNotEmpty
-                                ? _selectedCabTypes
-                                      .map((id) => cabTypes[id])
-                                      .join(", ")
-                                : 'Select your vehicle',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: _selectedCabTypes.isNotEmpty
-                                  ? textColor
-                                  : hintColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Icon(Icons.arrow_forward_ios, color: hintColor, size: 18),
-                  ],
-                ),
-              ),
+            Icon(
+              Icons.arrow_forward_ios_rounded,
+              color: _textLight,
+              size: 16,
             ),
-            const SizedBox(height: 30),
+          ],
+        ),
+      ),
+    );
+  }
 
-            // Proceed Button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _proceedToBooking,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryColor,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+  Widget _buildDateTimeField({
+    required String label,
+    required String value,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+        decoration: BoxDecoration(
+          color: _backgroundColor,
+          borderRadius: BorderRadius.circular(16),
+          // border: Border.all(color: Colors.grey.shade200),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: _secondaryColor,
+              size: 20,
+            ),
+            SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: _textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                  elevation: 3,
-                  shadowColor: primaryColor.withOpacity(0.3),
-                ),
-                child: const Text(
-                  'FIND CABS',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 1,
+                  SizedBox(height: 4),
+                  Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: _textPrimary,
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
           ],
@@ -1636,117 +1861,18 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
   IconData _getTripTypeIcon(int tripType) {
     switch (tripType) {
       case 1:
-        return Icons.arrow_forward;
+        return Icons.arrow_forward_rounded;
       case 2:
-        return Icons.compare_arrows;
+        return Icons.compare_arrows_rounded;
       case 3:
-        return Icons.alt_route;
+        return Icons.alt_route_rounded;
       case 4:
-        return Icons.airplanemode_active;
+        return Icons.airplanemode_active_rounded;
       case 10:
       case 11:
-        return Icons.timer;
+        return Icons.timer_rounded;
       default:
-        return Icons.directions_car;
+        return Icons.directions_car_rounded;
     }
-  }
-
-  Widget _buildLocationCard({required List<Widget> children}) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(children: children),
-      ),
-    );
-  }
-
-  Widget _buildLocationField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    required Color iconColor,
-    required VoidCallback onTap,
-  }) {
-    return TextField(
-      controller: controller,
-      readOnly: true,
-      onTap: onTap,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(color: hintColor),
-        prefixIcon: Icon(icon, color: iconColor),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: Colors.grey.shade50),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: Colors.grey.shade50),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: primaryColor, width: 1),
-        ),
-        filled: true,
-        fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 16,
-          horizontal: 16,
-        ),
-        suffixIcon: Icon(Icons.search, color: hintColor),
-      ),
-    );
-  }
-
-  Widget _buildDateTimeField({
-    required String label,
-    required String value,
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(10),
-      child: InputDecorator(
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: TextStyle(color: hintColor),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.grey.shade300),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.grey.shade300),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: primaryColor, width: 2),
-          ),
-          filled: true,
-          fillColor: Colors.white,
-          contentPadding: const EdgeInsets.symmetric(
-            vertical: 16,
-            horizontal: 16,
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 12,
-                color: textColor,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            Icon(icon, color: primaryColor,size: 15,),
-          ],
-        ),
-      ),
-    );
   }
 }

@@ -157,7 +157,7 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp(
         scaffoldMessengerKey: _scaffoldMessengerKey,
         debugShowCheckedModeBanner: false,
-        title: 'MINNA',
+        title: 'MT TRIP',
         theme: ThemeData(
           fontFamily: 'Montserrat',
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),

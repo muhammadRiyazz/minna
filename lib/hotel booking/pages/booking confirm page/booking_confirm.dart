@@ -21,7 +21,7 @@ class HotelBookingConfirmationPage extends StatefulWidget {
   final HotelDetail hotel;
   final List<Map<String, dynamic>> passengers;
   final List<List<Map<String, dynamic>>>? roomPassengers;
-  final String tableId;
+  // final String tableId;
   final String bookingId;
   final PreBookResponse preBookResponse;
 
@@ -34,7 +34,7 @@ class HotelBookingConfirmationPage extends StatefulWidget {
     required this.hotel,
     required this.passengers,
     required this.roomPassengers,
-    required this.tableId,
+    // required this.tableId,
     required this.bookingId,
     required this.preBookResponse,
   });
@@ -117,9 +117,8 @@ class _HotelBookingConfirmationPageState extends State<HotelBookingConfirmationP
     context.read<HotelBookingConfirmBloc>().add(
       HotelBookingConfirmEvent.paymentDone(
         prebookId:widget.prebookId ,
-        orderId: response.orderId ?? _orderId ?? '',
-        transactionId: response.paymentId ?? '',
-        tableId: widget.tableId,
+        orderId: response.orderId ?? _orderId ??  '' ,
+        transactionId: response.paymentId ?? '' ,
         bookingId: widget.bookingId,
         amount: totalAmount,
         bookingRequest: bookingRequest,
@@ -135,7 +134,7 @@ class _HotelBookingConfirmationPageState extends State<HotelBookingConfirmationP
     context.read<HotelBookingConfirmBloc>().add(
       HotelBookingConfirmEvent.paymentFail(
         orderId: _orderId ?? '',
-        tableId: widget.tableId,
+        prebookId: widget.prebookId,
         bookingId: widget.bookingId,
       ),
     );
@@ -268,7 +267,7 @@ class _HotelBookingConfirmationPageState extends State<HotelBookingConfirmationP
             "GSTCompanyName": null,
             "GSTNumber": null,
             "GSTCompanyEmail": null,
-            "PAN": passenger['PAN'],
+            // "PAN": passenger['PAN'],
           });
         }
         
@@ -300,7 +299,7 @@ class _HotelBookingConfirmationPageState extends State<HotelBookingConfirmationP
           "GSTCompanyName": null,
           "GSTNumber": null,
           "GSTCompanyEmail": null,
-          "PAN": passenger['PAN'],
+          // "PAN": passenger['PAN'],
         });
       }
       
@@ -339,6 +338,9 @@ class _HotelBookingConfirmationPageState extends State<HotelBookingConfirmationP
     return 'hotel_ref_${DateTime.now().millisecondsSinceEpoch}';
   }
 
+    // Bottom Sheet 1: Refund Initiated
+ 
+  
   Future<bool> _onWillPop() async {
     final shouldExit = await showModalBottomSheet<bool>(
       context: context,
@@ -434,6 +436,7 @@ class _HotelBookingConfirmationPageState extends State<HotelBookingConfirmationP
   }
 
   void _onProceedToPayment() async {
+    
     context.read<HotelBookingConfirmBloc>().add(
       HotelBookingConfirmEvent.startLoading(),
     );
@@ -471,7 +474,7 @@ class _HotelBookingConfirmationPageState extends State<HotelBookingConfirmationP
       var options = {
         'key': razorpaykey,
         'amount': (totalAmount * 100).toInt(),
-        'name': 'Minna Hotels',
+        'name': 'MT Hotels',
         'order_id': orderId,
         'description': 'Hotel Booking - ${widget.hotel.hotelName}',
         'prefill': {'contact': phone, 'email': email},
@@ -534,56 +537,46 @@ class _HotelBookingConfirmationPageState extends State<HotelBookingConfirmationP
         BlocListener<HotelBookingConfirmBloc, HotelBookingConfirmState>(
           listener: (context, state) {
             state.whenOrNull(
-              success: (data, bookingId, confirmationNo, bookingRefNo) {
+              success: (data, bookingId, confirmationNo, bookingRefNo ,booktableId) {
                 log("HotelBookingSuccessPage---");
-                // Navigator.pushReplacement(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => HotelBookingSuccessPage(
-                //       bookingResponse: data,
-                //       bookingId: bookingId,
-                //       confirmationNo: confirmationNo,
-                //       bookingRefNo: bookingRefNo,
-                //       hotel: widget.hotel,
-                //       room: widget.room,
-                //     ),
-                //   ),
-                // );
+               
               },
-              paymentFailed: (message, orderId, tableId, bookingId) {
-                log('HotelBookingFailedPage');
+              paymentFailed: (message, orderId, bookingId) {
               },
               refundInitiated: (message, orderId, transactionId, amount, tableId, bookingId) {
-                log('HotelRefundInitiatedPage--');
-              },
-              refundFailed: (message, orderId, transactionId, amount, tableId, bookingId) {
-                log('HotelBookingFailedPage. ---');
-              },
-              error: (message, shouldRefund, orderId, transactionId, amount, tableId, bookingId) {
+_showRefundInitiatedSheet(context);           
+   },
+              refundFailed: (message, orderId, transactionId, amount, bookingId ) {
+_showContactSupportSheet(context);            
+  },
+              error: (message, shouldRefund, orderId, transactionId, amount, booktableId, bookingId ) {
                 if (shouldRefund) {
+                  log("shouldRefund -----");
                   context.read<HotelBookingConfirmBloc>().add(
                     HotelBookingConfirmEvent.initiateRefund(
                       orderId: orderId,
                       transactionId: transactionId,
                       amount: amount,
-                      tableId: tableId,
+                      booktableId: booktableId,
                       bookingId: bookingId,
                     ),
                   );
                 } else {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: Text("Booking Error", style: TextStyle(color: _errorColor)),
-                      content: Text(message),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: Text('OK', style: TextStyle(color: _primaryColor)),
-                        ),
-                      ],
-                    ),
-                  );
+                  // _showContactSupportSheet();              
+
+                  // showDialog(
+                  //   context: context,
+                  //   builder: (context) => AlertDialog(
+                  //     title: Text("Booking Error", style: TextStyle(color: _errorColor)),
+                  //     content: Text(message),
+                  //     actions: [
+                  //       TextButton(
+                  //         onPressed: () => Navigator.pop(context),
+                  //         child: Text('OK', style: TextStyle(color: _primaryColor)),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // );
                 }
               },
             );
@@ -1299,9 +1292,14 @@ class _HotelBookingConfirmationPageState extends State<HotelBookingConfirmationP
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: (_isTimerExpired || state is HotelBookingConfirmLoading)
+                  onPressed: 
+                
+                  (_isTimerExpired || state is HotelBookingConfirmLoading)
                       ? null
-                      : _onProceedToPayment,
+                      :
+                      
+                      
+                      _onProceedToPayment,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _isTimerExpired ? Colors.grey : _primaryColor,
                     foregroundColor: Colors.white,
@@ -1339,6 +1337,260 @@ class _HotelBookingConfirmationPageState extends State<HotelBookingConfirmationP
           ),
         ],
       ),
+    );
+  }
+ void _showRefundInitiatedSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: Colors.transparent, // transparent for better design
+      builder: (context) {
+        final height = MediaQuery.of(context).size.height * 0.7;
+        return WillPopScope(
+             onWillPop: () async {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+            return false;
+          },
+          child: Container(
+            height: height,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            ),
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                const SizedBox(height: 12),
+                Container(
+                  width: 50,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[400],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                const SizedBox(height: 30),
+                // Success / Refund icon
+                CircleAvatar(
+                  radius: 50,
+                  backgroundColor: _secondaryColor.withOpacity(0.1),
+                  child:  Icon(Icons.check_circle_rounded,
+                      color: _secondaryColor, size: 60),
+                ),
+                const SizedBox(height: 30),
+                const Text(
+                  "Sorry, hotel booking failed",
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                              const SizedBox(height: 10),
+          
+                     Text(
+                                  "We couldn't complete your hotel booking",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: _textSecondary,
+                                    fontSize: 16,
+                                    height: 1.5,
+                                  ),
+                                ),
+                                                            const SizedBox(height: 20),
+          
+                  Container(
+                              padding: EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                              color: _secondaryColor.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(20),
+                              
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 50,
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      color: _successColor.withOpacity(0.2),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(Icons.credit_card_rounded, color: _successColor, size: 28),
+                                  ),
+                                  SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Refund Initiated",
+                                          style: TextStyle(
+                                            color: _textPrimary,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(height: 6),
+                                        Text(
+                                          "Your amount will be credited back to your account shortly",
+                                          style: TextStyle(
+                                            color: _textSecondary,
+                                            fontSize: 14,
+                                            height: 1.4,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            
+                const Spacer(),
+                ElevatedButton(
+                  onPressed: () =>                                 Navigator.of(context).popUntil((route) => route.isFirst),
+          
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(double.infinity, 55),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text("Okay, Got It"),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // ------------------- 2️⃣ Contact Support Sheet -------------------
+  void _showContactSupportSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        final height = MediaQuery.of(context).size.height * 0.75;
+        return Container(
+          height: height,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              const SizedBox(height: 12),
+              Container(
+                width: 50,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: _secondaryColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              const SizedBox(height: 25),
+              // Alert Icon
+              CircleAvatar(
+                radius: 45,
+                backgroundColor: _secondaryColor.withOpacity(0.1),
+                child: const Icon(Icons.error_outline_rounded,
+                    color: Colors.orange, size: 60),
+              ),
+              const SizedBox(height: 25),
+              const Text(
+                "Sorry, hotel booking failed",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 12),
+   Text(
+                                  "We couldn't complete your hotel booking",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: _textSecondary,
+                                    fontSize: 16,
+                                    height: 1.5,
+                                  ),
+                                ),              const SizedBox(height: 12),
+
+                 Container(
+                              padding: EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                              color: _secondaryColor.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(20),
+                              
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 50,
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      color: _successColor.withOpacity(0.2),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(Icons.credit_card_rounded, color: _successColor, size: 28),
+                                  ),
+                                  SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+  Text(
+                                          "The refund is still pending.",
+                                          style: TextStyle(
+                                            color: _textPrimary,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(height: 6),
+                                        Text(
+                                          "If the amount is debited from your account and you ,haven’t received a refund yet, please contact our support team."
+                                                                                               , style: TextStyle(
+                                            color: _textSecondary,
+                                            fontSize: 13,
+                                            height: 1.4,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+           
+    const Spacer(),
+                ElevatedButton(
+                  onPressed: () =>                                 Navigator.of(context).popUntil((route) => route.isFirst),
+          
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(double.infinity, 55),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text("Okay, Got It"),
+                ),           
+            ],
+          ),
+        );
+      },
     );
   }
 }

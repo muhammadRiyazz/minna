@@ -23,7 +23,12 @@ Future<Map<String, dynamic>> refundPayment({
         'table': table
       },
     );
-    
+    log( {
+        'id': tableId,
+        'transaction_id': transactionId,
+        'amount':  (amount* 100).toString(),
+        'table': table
+      }.toString());
     log('Refund API response: ${response.statusCode}, ${response.body}');
           final jsonResponse = jsonDecode(response.body);
 

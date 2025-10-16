@@ -42,6 +42,19 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
   bool _commissionLoading = true;
   String _displayTime = '06:00';
 
+  // New Color Theme
+  final Color _primaryColor = Colors.black;
+  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
+  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
+  final Color _backgroundColor = Color(0xFFF8F9FA);
+  final Color _cardColor = Colors.white;
+  final Color _textPrimary = Colors.black;
+  final Color _textSecondary = Color(0xFF666666);
+  final Color _textLight = Color(0xFF999999);
+  final Color _errorColor = Color(0xFFE53935);
+  final Color _successColor = Color(0xFF00C853);
+  final Color _warningColor = Color(0xFFFF9800);
+
   @override
   void initState() {
     super.initState();
@@ -169,35 +182,73 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
     showModalBottomSheet(
       context: context,
       isDismissible: false,
+      backgroundColor: Colors.transparent,
       builder: (context) {
         return Container(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.timer_off, size: 64, color: Colors.red),
-              const SizedBox(height: 16),
-              const Text(
-                "Time Expired",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                "Your booking time has expired. Please try again.",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).popUntil((route) => route.isFirst);
-                  },
-                  child: const Text("Go to Home"),
-                ),
+          margin: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: _cardColor,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 20,
+                offset: const Offset(0, 4),
               ),
             ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: _errorColor.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.timer_off_rounded, size: 40, color: _errorColor),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  "Time Expired",
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: _textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  "Your booking time has expired. Please try again.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: _textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _primaryColor,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text("Go to Home"),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -207,46 +258,81 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
   Future<bool> _onWillPop() async {
     final shouldExit = await showModalBottomSheet<bool>(
       context: context,
+      backgroundColor: Colors.transparent,
       builder: (context) {
         return Container(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                "Exit Booking?",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                "Are you sure you want to exit the booking process?",
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      child: const Text("Continue Booking"),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () => Navigator.pop(context, true),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: maincolor1,
-                      ),
-                      child: const Text(
-                        "Exit",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ],
+          margin: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: _cardColor,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 20,
+                offset: const Offset(0, 4),
               ),
             ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Exit Booking?",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: _textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  "Are you sure you want to exit the booking process?",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: _textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          side: BorderSide(color: _primaryColor),
+                        ),
+                        child: Text(
+                          "Continue Booking",
+                          style: TextStyle(color: _primaryColor),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _primaryColor,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text("Exit"),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -268,9 +354,7 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
           ConfirmBookingEvent.stopLoading(),
         );
         
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Failed to create order. Please try again."))
-        );
+        _showCustomSnackbar("Failed to create order. Please try again.", isError: true);
         return;
       }
 
@@ -290,7 +374,7 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
         'order_id': orderId,
         'description': 'Cab Booking Payment',
         'prefill': {'contact': phone, 'email': email},
-        'theme': {'color': maincolor1!.value.toRadixString(16)},
+        'theme': {'color': _primaryColor.value.toRadixString(16)},
       };
 
       try {
@@ -300,19 +384,43 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
         context.read<ConfirmBookingBloc>().add(
           ConfirmBookingEvent.stopLoading(),
         );
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Payment error: $e"))
-        );
+        _showCustomSnackbar("Payment error: $e", isError: true);
       }
     } catch (e) {
       log("Error in _onBookNow: $e");
       context.read<ConfirmBookingBloc>().add(
         ConfirmBookingEvent.stopLoading(),
       );
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("An error occurred: $e"))
-      );
+      _showCustomSnackbar("An error occurred: $e", isError: true);
     }
+  }
+
+  void _showCustomSnackbar(String message, {bool isError = false}) {
+    final color = isError ? _errorColor : _successColor;
+    final icon = isError ? Icons.error_outline_rounded : Icons.check_circle_rounded;
+
+    final snackBar = SnackBar(
+      margin: const EdgeInsets.fromLTRB(16, 20, 16, 10),
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: color,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      duration: const Duration(seconds: 3),
+      content: Row(
+        children: [
+          Icon(icon, color: Colors.white),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              message,
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   @override
@@ -403,13 +511,14 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
       child: WillPopScope(
         onWillPop: _onWillPop,
         child: Scaffold(
+          backgroundColor: _backgroundColor,
           appBar: AppBar(
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
                   child: Text(
-                    "Booking Confirmation",
+                    "Confirm Booking",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14,
@@ -418,19 +527,26 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: _remainingSeconds <= 60 ? _errorColor.withOpacity(0.9) : _secondaryColor.withOpacity(0.9),
                     borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.timer, color: Colors.white,size: 20,),
-                      const SizedBox(width: 5),
+                      Icon(Icons.timer_rounded, color: Colors.white, size: 18),
+                      const SizedBox(width: 6),
                       Text(
                         _displayTime,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
@@ -442,52 +558,20 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
               ],
             ),
             centerTitle: true,
-            backgroundColor: maincolor1,
-            iconTheme: const IconThemeData(color: Colors.white),
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
-            ),
+            backgroundColor: _primaryColor,
+            foregroundColor: Colors.white,
+            elevation: 0,
+           
           ),
           body: BlocBuilder<HoldCabBloc, HoldCabState>(
             builder: (context, state) {
               if (state is HoldCabLoading) {
-                return buildShimmerLoading();
+                return _buildShimmerLoading();
               } else if (state is HoldCabSuccess) {
                 final bookingData = state.data;
                 return _buildContent(bookingData, context);
               } else if (state is HoldCabError) {
-                return Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                        const SizedBox(height: 16),
-                        const Text(
-                          "Error Occurred",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          state.message,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        const SizedBox(height: 24),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).popUntil((route) => route.isFirst);
-                          },
-                          child: const Text("Go to Home"),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
+                return _buildErrorState(state.message);
               } else {
                 return Container();
               }
@@ -503,14 +587,14 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
       children: [
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(13),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildTripInformation(bookingData),
-                const SizedBox(height: 10),
+                const SizedBox(height: 16),
                 _buildCabDetails(bookingData),
-                const SizedBox(height: 10),
+                const SizedBox(height: 16),
                 _buildFareBreakdown(bookingData),
               ],
             ),
@@ -524,32 +608,43 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
   Widget _buildTripInformation(BookingData bookingData) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 8, offset: const Offset(0, 2)),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Icon(Icons.route, color: maincolor1, size: 22),
-                const SizedBox(width: 10),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: _secondaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(Icons.route_rounded, color: _secondaryColor, size: 22),
+                ),
+                const SizedBox(width: 12),
                 Text(
                   "Trip Information",
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: maincolor1,
+                    color: _textPrimary,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
 
             if (bookingData.tripType == 1)
               _buildOneWayTrip(bookingData),
@@ -566,35 +661,36 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
             if (bookingData.tripType == 10)
               _buildDayRental(bookingData),
 
-            const Divider(height: 30, thickness: 1, color: Colors.grey),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
+            Divider(height: 1, color: Colors.grey.shade200),
+            const SizedBox(height: 20),
 
             Wrap(
-              spacing: 20,
-              runSpacing: 15,
+              spacing: 12,
+              runSpacing: 12,
               children: [
                 _buildInfoChip(
-                  Icons.calendar_today,
+                  Icons.calendar_today_rounded,
                   "Date",
                   bookingData.startDate,
                 ),
                 _buildInfoChip(
-                  Icons.access_time,
+                  Icons.access_time_rounded,
                   "Time",
                   bookingData.startTime,
                 ),
                 _buildInfoChip(
-                  Icons.alt_route,
+                  Icons.alt_route_rounded,
                   "Distance",
                   "${bookingData.totalDistance} km",
                 ),
                 _buildInfoChip(
-                  Icons.timer,
+                  Icons.timer_rounded,
                   "Duration",
-                  formatDuration(bookingData.estimatedDuration.toInt()),
+                  _formatDuration(bookingData.estimatedDuration.toInt()),
                 ),
                 _buildInfoChip(
-                  Icons.directions_car,
+                  Icons.directions_car_rounded,
                   "Trip Type",
                   bookingData.tripDesc,
                 ),
@@ -606,7 +702,7 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
     );
   }
 
-  String formatDuration(int minutes) {
+  String _formatDuration(int minutes) {
     final hours = minutes ~/ 60;
     final mins = minutes % 60;
     if (hours > 0 && mins > 0) {
@@ -620,7 +716,7 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
 
   Widget _buildOneWayTrip(BookingData bookingData) {
     final route = bookingData.routes.first;
-    return _buildHorizontalRouteCard(
+    return _buildRouteCard(
       route.source.address,
       route.destination.address,
     );
@@ -631,13 +727,13 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildHorizontalRouteCard(
+        _buildRouteCard(
           route.source.address,
           route.destination.address,
           label: "Onward",
         ),
-        const SizedBox(height: 10),
-        _buildHorizontalRouteCard(
+        const SizedBox(height: 12),
+        _buildRouteCard(
           route.destination.address,
           route.source.address,
           label: "Return",
@@ -647,33 +743,25 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
   }
 
   Widget _buildMultiCityTrip(BookingData bookingData) {
-    return SizedBox(
-      height: 110,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        shrinkWrap: true,
-        itemCount: bookingData.routes.length,
-        itemBuilder: (context, index) {
-          final route = bookingData.routes[index];
-          return Padding(
-            padding: const EdgeInsets.only(right: 7),
-            child: SizedBox(
-              width: 200,
-              child: _buildHorizontalRouteCard(
-                route.source.address,
-                route.destination.address,
-                label: "Leg ${index + 1}",
-              ),
-            ),
-          );
-        },
-      ),
+    return Column(
+      children: bookingData.routes.asMap().entries.map((entry) {
+        final index = entry.key;
+        final route = entry.value;
+        return Padding(
+          padding: EdgeInsets.only(bottom: index < bookingData.routes.length - 1 ? 12 : 0),
+          child: _buildRouteCard(
+            route.source.address,
+            route.destination.address,
+            label: "Leg ${index + 1}",
+          ),
+        );
+      }).toList(),
     );
   }
 
   Widget _buildAirportTransfer(BookingData bookingData) {
     final route = bookingData.routes.first;
-    return _buildHorizontalRouteCard(
+    return _buildRouteCard(
       route.source.address,
       route.destination.address,
       label: "Airport Transfer",
@@ -682,67 +770,81 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
 
   Widget _buildDayRental(BookingData bookingData) {
     final route = bookingData.routes.first;
-    return _buildHorizontalRouteCard(
+    return _buildRouteCard(
       route.source.address,
       route.destination.address,
       label: "Day Rental",
     );
   }
 
-  Widget _buildHorizontalRouteCard(
-    String source,
-    String destination, {
-    String? label,
-  }) {
+  Widget _buildRouteCard(String source, String destination, {String? label}) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(12),
+        color: _backgroundColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade200),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            children: [
-              Icon(Icons.circle, size: 10, color: Colors.green),
-              Container(width: 2, height: 30, color: Colors.grey),
-              Icon(Icons.location_on, size: 18, color: Colors.red),
-            ],
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (label != null)
-                  Text(
-                    label,
-                    style: const TextStyle(
-                      fontSize: 8,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.blueGrey,
-                    ),
-                  ),
-                Text(
-                  source,
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                  overflow: TextOverflow.ellipsis,
+          if (label != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: _secondaryColor,
                 ),
-                Row(
+              ),
+            ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                children: [
+                  Icon(Icons.circle, size: 12, color: _successColor),
+                  Container(width: 2, height: 20, color: _textLight),
+                  Icon(Icons.location_on_rounded, size: 16, color: _errorColor),
+                ],
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(child: Divider(color: Colors.grey)),
-                    Icon(Icons.arrow_forward, size: 16, color: Colors.grey),
-                    Expanded(child: Divider(color: Colors.grey)),
+                    Text(
+                      source,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: _textPrimary,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      height: 1,
+                      color: Colors.grey.shade300,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      destination,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: _textPrimary,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ],
                 ),
-                Text(
-                  destination,
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ],
       ),
@@ -751,30 +853,49 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
 
   Widget _buildInfoChip(IconData icon, String label, String value) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey[200]!),
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: maincolor1),
-          const SizedBox(width: 6),
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: _secondaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, size: 16, color: _secondaryColor),
+          ),
+          const SizedBox(width: 8),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 label,
-                style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+                style: TextStyle(
+                  fontSize: 11,
+                  color: _textLight,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
+              const SizedBox(height: 2),
               Text(
                 value,
-                style:  TextStyle(
-                  fontSize: 12,
+                style: TextStyle(
+                  fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: Colors.grey[800],
+                  color: _textPrimary,
                 ),
               ),
             ],
@@ -787,83 +908,121 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
   Widget _buildCabDetails(BookingData bookingData) {
     final cab = bookingData.cabRate?.cab;
 
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    return Container(
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Cab Details",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: maincolor1,
-              ),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: _secondaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(Icons.directions_car_rounded, color: _secondaryColor, size: 22),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  "Cab Details",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: _textPrimary,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             if (cab != null) ...[
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    width: 60,
-                    height: 60,
+                    width: 80,
+                    height: 80,
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
+                      color: _backgroundColor,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.grey.shade200),
                     ),
                     child: cab.image.isNotEmpty
                         ? ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(16),
                             child: Image.network(
                               cab.image,
                               fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Center(
+                                  child: Icon(
+                                    Icons.directions_car_rounded,
+                                    size: 32,
+                                    color: _secondaryColor,
+                                  ),
+                                );
+                              },
                             ),
                           )
-                        : Icon(
-                            Icons.directions_car,
-                            size: 30,
-                            color: maincolor1,
+                        : Center(
+                            child: Icon(
+                              Icons.directions_car_rounded,
+                              size: 32,
+                              color: _secondaryColor,
+                            ),
                           ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           cab.type,
-                          style: const TextStyle(
-                            fontSize: 16,
+                          style: TextStyle(
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
+                            color: _textPrimary,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           cab.category,
-                          style: TextStyle(color: Colors.grey[600]),
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: _textSecondary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 6,
+                          children: [
+                            _buildFeatureChip(
+                              "${cab.seatingCapacity} Seats",
+                              Icons.people_alt_rounded,
+                            ),
+                            _buildFeatureChip("${cab.bagCapacity} Bags", Icons.luggage_rounded),
+                            if (cab.isAssured == "1")
+                              _buildFeatureChip("Assured", Icons.verified_rounded),
+                          ],
                         ),
                       ],
                     ),
                   ),
-                ],
-              ),
-            ],
-            const SizedBox(height: 12),
-            if (cab != null) ...[
-              Wrap(
-                spacing: 8,
-                runSpacing: 4,
-                children: [
-                  _buildFeatureChip(
-                    "${cab.seatingCapacity} Seats",
-                    Icons.people,
-                  ),
-                  _buildFeatureChip("${cab.bagCapacity} Bags", Icons.luggage),
-                  if (cab.isAssured == "1")
-                    _buildFeatureChip("Assured", Icons.verified),
                 ],
               ),
             ],
@@ -876,20 +1035,47 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
   Widget _buildFareBreakdown(BookingData bookingData) {
     final fare = bookingData.cabRate?.fare;
 
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    return Container(
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+
+          
+        ],
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Fare Breakdown",
-                style: TextStyle(
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: _secondaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(Icons.receipt_long_rounded, color: _secondaryColor, size: 22),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  "Fare Breakdown",
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: maincolor1)),
-            const SizedBox(height: 16),
+                    color: _textPrimary,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
             if (fare != null) ...[
               _buildFareRow("Base Fare", "₹${fare.baseFare}"),
               if (fare.driverAllowance > 0)
@@ -902,22 +1088,21 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
               if (fare.airportFee > 0)
                 _buildFareRow("Airport Fee", "₹${fare.airportFee}"),
               if (fare.additionalCharge > 0)
-                _buildFareRow(
-                    "Additional Charges", "₹${fare.additionalCharge}"),
-              const Divider(height: 24),
+                _buildFareRow("Additional Charges", "₹${fare.additionalCharge}"),
+              const SizedBox(height: 12),
+              Divider(height: 1, color: Colors.grey.shade300),
+              const SizedBox(height: 16),
               if (_commissionLoading)
-                const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: CircularProgressIndicator())
+                _buildLoadingRow()
               else if (_amountWithCommission != null)
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     _buildFareRow(
-                        "Service Charges & Other",
-                        "₹${(_amountWithCommission! - double.parse(fare.totalAmount.toString())).toStringAsFixed(0)}"),
-                    _buildFareRow("Total Amount",
-                        "₹${_amountWithCommission!.toStringAsFixed(0)}"),
+                      "Service Charges & Other",
+                      "₹${(_amountWithCommission! - double.parse(fare.totalAmount.toString())).toStringAsFixed(0)}",
+                    ),
+                    const SizedBox(height: 12),
+                    _buildTotalRow("Total Amount", "₹${_amountWithCommission!.toStringAsFixed(0)}"),
                   ],
                 ),
             ],
@@ -928,16 +1113,14 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
   }
 
   Widget _buildPaymentButton(BookingData bookingData, BuildContext context) {
-    final fare = bookingData.cabRate?.fare;
-
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: _cardColor,
         border: Border(top: BorderSide(color: Colors.grey.shade200)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black12,
+            color: Colors.black.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),
@@ -948,18 +1131,22 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 "Amount to Pay:",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: _textPrimary,
+                ),
               ),
               Text(
-                        "₹${_amountWithCommission?.toStringAsFixed(0)}",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: maincolor1,
-                        ),
-                      ),
+                "₹${_amountWithCommission?.toStringAsFixed(0) ?? '0'}",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: _secondaryColor,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -967,7 +1154,7 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
             builder: (context, state) {
               return SizedBox(
                 width: double.infinity,
-                height: 50,
+                height: 56,
                 child: ElevatedButton(
                   onPressed: (_isTimerExpired || state is ConfirmBookingLoading)
                       ? null
@@ -977,32 +1164,37 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
                           );
                         },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _isTimerExpired ? Colors.grey : maincolor1,
+                    backgroundColor: _isTimerExpired ? Colors.grey : _primaryColor,
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                     elevation: 2,
+                    shadowColor: _secondaryColor.withOpacity(0.3),
                   ),
                   child: state is ConfirmBookingLoading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
+                      ? SizedBox(
+                          width: 24,
+                          height: 24,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
-                            ),
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
                         )
-                      : Text(
-                          _isTimerExpired
-                              ? "TIME EXPIRED"
-                              : "PROCEED TO PAYMENT",
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.lock_rounded, size: 20),
+                            const SizedBox(width: 12),
+                            Text(
+                              _isTimerExpired ? "TIME EXPIRED" : "PROCEED TO PAYMENT",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
                         ),
                 ),
               );
@@ -1013,24 +1205,79 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
     );
   }
 
-  Widget _buildFareRow(String label, String amount, {bool isTotal = false}) {
+  Widget _buildFareRow(String label, String amount) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             label,
             style: TextStyle(
-              color: isTotal ? Colors.black : Colors.grey[600],
-              fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+              fontSize: 14,
+              color: _textSecondary,
+              fontWeight: FontWeight.w500,
             ),
           ),
           Text(
             amount,
             style: TextStyle(
-              color: isTotal ? maincolor1 : Colors.black,
-              fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+              fontSize: 14,
+              color: _textPrimary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTotalRow(String label, String amount) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 16,
+              color: _textPrimary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            amount,
+            style: TextStyle(
+              fontSize: 18,
+              color: _secondaryColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingRow() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            "Calculating...",
+            style: TextStyle(
+              fontSize: 14,
+              color: _textSecondary,
+            ),
+          ),
+          SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: _secondaryColor,
             ),
           ),
         ],
@@ -1039,16 +1286,90 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
   }
 
   Widget _buildFeatureChip(String text, IconData icon) {
-    return Chip(
-      label: Text(text),
-      avatar: Icon(icon, size: 16),
-      backgroundColor: Colors.blue.shade50,
-      labelStyle: const TextStyle(fontSize: 12),
-      visualDensity: VisualDensity.compact,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: _secondaryColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: _secondaryColor.withOpacity(0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: _secondaryColor),
+          const SizedBox(width: 4),
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 12,
+              color: _textPrimary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget buildShimmerLoading() {
+  Widget _buildErrorState(String message) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                color: _errorColor.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.error_outline_rounded, size: 48, color: _errorColor),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              "Error Occurred",
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: _textPrimary,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: _textSecondary,
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: 200,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _primaryColor,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text("Go to Home"),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShimmerLoading() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -1057,10 +1378,10 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
             baseColor: Colors.grey[300]!,
             highlightColor: Colors.grey[100]!,
             child: Container(
-              height: 200,
+              height: 220,
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
+                color: _cardColor,
+                borderRadius: BorderRadius.circular(20),
               ),
             ),
           ),
@@ -1069,10 +1390,10 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
             baseColor: Colors.grey[300]!,
             highlightColor: Colors.grey[100]!,
             child: Container(
-              height: 150,
+              height: 180,
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
+                color: _cardColor,
+                borderRadius: BorderRadius.circular(20),
               ),
             ),
           ),
@@ -1081,10 +1402,10 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
             baseColor: Colors.grey[300]!,
             highlightColor: Colors.grey[100]!,
             child: Container(
-              height: 200,
+              height: 240,
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
+                color: _cardColor,
+                borderRadius: BorderRadius.circular(20),
               ),
             ),
           ),

@@ -1188,7 +1188,6 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
         hotel: widget.hotel,
         passengers: allPassengers,
         roomPassengers: roomPassengers,
-        tableId: 'hotel_${DateTime.now().millisecondsSinceEpoch}',
         bookingId: widget.room.bookingCode,
         preBookResponse: widget.preBookResponse, // Pass PreBook response
       ),

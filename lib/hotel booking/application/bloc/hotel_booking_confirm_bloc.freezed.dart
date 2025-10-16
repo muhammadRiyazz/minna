@@ -22,20 +22,23 @@ mixin _$HotelBookingConfirmEvent {
     required TResult Function(
       String orderId,
       String transactionId,
-      String tableId,
       String bookingId,
       double amount,
       String prebookId,
       Map<String, dynamic> bookingRequest,
     )
     paymentDone,
-    required TResult Function(String orderId, String tableId, String bookingId)
+    required TResult Function(
+      String orderId,
+      String prebookId,
+      String bookingId,
+    )
     paymentFail,
     required TResult Function(
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     initiateRefund,
@@ -47,20 +50,19 @@ mixin _$HotelBookingConfirmEvent {
     TResult? Function(
       String orderId,
       String transactionId,
-      String tableId,
       String bookingId,
       double amount,
       String prebookId,
       Map<String, dynamic> bookingRequest,
     )?
     paymentDone,
-    TResult? Function(String orderId, String tableId, String bookingId)?
+    TResult? Function(String orderId, String prebookId, String bookingId)?
     paymentFail,
     TResult? Function(
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     initiateRefund,
@@ -72,20 +74,19 @@ mixin _$HotelBookingConfirmEvent {
     TResult Function(
       String orderId,
       String transactionId,
-      String tableId,
       String bookingId,
       double amount,
       String prebookId,
       Map<String, dynamic> bookingRequest,
     )?
     paymentDone,
-    TResult Function(String orderId, String tableId, String bookingId)?
+    TResult Function(String orderId, String prebookId, String bookingId)?
     paymentFail,
     TResult Function(
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     initiateRefund,
@@ -155,7 +156,6 @@ abstract class _$$PaymentDoneImplCopyWith<$Res> {
   $Res call({
     String orderId,
     String transactionId,
-    String tableId,
     String bookingId,
     double amount,
     String prebookId,
@@ -179,7 +179,6 @@ class __$$PaymentDoneImplCopyWithImpl<$Res>
   $Res call({
     Object? orderId = null,
     Object? transactionId = null,
-    Object? tableId = null,
     Object? bookingId = null,
     Object? amount = null,
     Object? prebookId = null,
@@ -194,10 +193,6 @@ class __$$PaymentDoneImplCopyWithImpl<$Res>
         transactionId: null == transactionId
             ? _value.transactionId
             : transactionId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        tableId: null == tableId
-            ? _value.tableId
-            : tableId // ignore: cast_nullable_to_non_nullable
                   as String,
         bookingId: null == bookingId
             ? _value.bookingId
@@ -226,7 +221,6 @@ class _$PaymentDoneImpl implements _PaymentDone {
   const _$PaymentDoneImpl({
     required this.orderId,
     required this.transactionId,
-    required this.tableId,
     required this.bookingId,
     required this.amount,
     required this.prebookId,
@@ -237,8 +231,6 @@ class _$PaymentDoneImpl implements _PaymentDone {
   final String orderId;
   @override
   final String transactionId;
-  @override
-  final String tableId;
   @override
   final String bookingId;
   @override
@@ -255,7 +247,7 @@ class _$PaymentDoneImpl implements _PaymentDone {
 
   @override
   String toString() {
-    return 'HotelBookingConfirmEvent.paymentDone(orderId: $orderId, transactionId: $transactionId, tableId: $tableId, bookingId: $bookingId, amount: $amount, prebookId: $prebookId, bookingRequest: $bookingRequest)';
+    return 'HotelBookingConfirmEvent.paymentDone(orderId: $orderId, transactionId: $transactionId, bookingId: $bookingId, amount: $amount, prebookId: $prebookId, bookingRequest: $bookingRequest)';
   }
 
   @override
@@ -266,7 +258,6 @@ class _$PaymentDoneImpl implements _PaymentDone {
             (identical(other.orderId, orderId) || other.orderId == orderId) &&
             (identical(other.transactionId, transactionId) ||
                 other.transactionId == transactionId) &&
-            (identical(other.tableId, tableId) || other.tableId == tableId) &&
             (identical(other.bookingId, bookingId) ||
                 other.bookingId == bookingId) &&
             (identical(other.amount, amount) || other.amount == amount) &&
@@ -283,7 +274,6 @@ class _$PaymentDoneImpl implements _PaymentDone {
     runtimeType,
     orderId,
     transactionId,
-    tableId,
     bookingId,
     amount,
     prebookId,
@@ -304,20 +294,23 @@ class _$PaymentDoneImpl implements _PaymentDone {
     required TResult Function(
       String orderId,
       String transactionId,
-      String tableId,
       String bookingId,
       double amount,
       String prebookId,
       Map<String, dynamic> bookingRequest,
     )
     paymentDone,
-    required TResult Function(String orderId, String tableId, String bookingId)
+    required TResult Function(
+      String orderId,
+      String prebookId,
+      String bookingId,
+    )
     paymentFail,
     required TResult Function(
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     initiateRefund,
@@ -327,7 +320,6 @@ class _$PaymentDoneImpl implements _PaymentDone {
     return paymentDone(
       orderId,
       transactionId,
-      tableId,
       bookingId,
       amount,
       prebookId,
@@ -341,20 +333,19 @@ class _$PaymentDoneImpl implements _PaymentDone {
     TResult? Function(
       String orderId,
       String transactionId,
-      String tableId,
       String bookingId,
       double amount,
       String prebookId,
       Map<String, dynamic> bookingRequest,
     )?
     paymentDone,
-    TResult? Function(String orderId, String tableId, String bookingId)?
+    TResult? Function(String orderId, String prebookId, String bookingId)?
     paymentFail,
     TResult? Function(
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     initiateRefund,
@@ -364,7 +355,6 @@ class _$PaymentDoneImpl implements _PaymentDone {
     return paymentDone?.call(
       orderId,
       transactionId,
-      tableId,
       bookingId,
       amount,
       prebookId,
@@ -378,20 +368,19 @@ class _$PaymentDoneImpl implements _PaymentDone {
     TResult Function(
       String orderId,
       String transactionId,
-      String tableId,
       String bookingId,
       double amount,
       String prebookId,
       Map<String, dynamic> bookingRequest,
     )?
     paymentDone,
-    TResult Function(String orderId, String tableId, String bookingId)?
+    TResult Function(String orderId, String prebookId, String bookingId)?
     paymentFail,
     TResult Function(
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     initiateRefund,
@@ -403,7 +392,6 @@ class _$PaymentDoneImpl implements _PaymentDone {
       return paymentDone(
         orderId,
         transactionId,
-        tableId,
         bookingId,
         amount,
         prebookId,
@@ -458,7 +446,6 @@ abstract class _PaymentDone implements HotelBookingConfirmEvent {
   const factory _PaymentDone({
     required final String orderId,
     required final String transactionId,
-    required final String tableId,
     required final String bookingId,
     required final double amount,
     required final String prebookId,
@@ -467,7 +454,6 @@ abstract class _PaymentDone implements HotelBookingConfirmEvent {
 
   String get orderId;
   String get transactionId;
-  String get tableId;
   String get bookingId;
   double get amount;
   String get prebookId;
@@ -487,7 +473,7 @@ abstract class _$$PaymentFailImplCopyWith<$Res> {
     $Res Function(_$PaymentFailImpl) then,
   ) = __$$PaymentFailImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({String orderId, String tableId, String bookingId});
+  $Res call({String orderId, String prebookId, String bookingId});
 }
 
 /// @nodoc
@@ -505,7 +491,7 @@ class __$$PaymentFailImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? orderId = null,
-    Object? tableId = null,
+    Object? prebookId = null,
     Object? bookingId = null,
   }) {
     return _then(
@@ -514,9 +500,9 @@ class __$$PaymentFailImplCopyWithImpl<$Res>
             ? _value.orderId
             : orderId // ignore: cast_nullable_to_non_nullable
                   as String,
-        tableId: null == tableId
-            ? _value.tableId
-            : tableId // ignore: cast_nullable_to_non_nullable
+        prebookId: null == prebookId
+            ? _value.prebookId
+            : prebookId // ignore: cast_nullable_to_non_nullable
                   as String,
         bookingId: null == bookingId
             ? _value.bookingId
@@ -532,20 +518,20 @@ class __$$PaymentFailImplCopyWithImpl<$Res>
 class _$PaymentFailImpl implements _PaymentFail {
   const _$PaymentFailImpl({
     required this.orderId,
-    required this.tableId,
+    required this.prebookId,
     required this.bookingId,
   });
 
   @override
   final String orderId;
   @override
-  final String tableId;
+  final String prebookId;
   @override
   final String bookingId;
 
   @override
   String toString() {
-    return 'HotelBookingConfirmEvent.paymentFail(orderId: $orderId, tableId: $tableId, bookingId: $bookingId)';
+    return 'HotelBookingConfirmEvent.paymentFail(orderId: $orderId, prebookId: $prebookId, bookingId: $bookingId)';
   }
 
   @override
@@ -554,13 +540,14 @@ class _$PaymentFailImpl implements _PaymentFail {
         (other.runtimeType == runtimeType &&
             other is _$PaymentFailImpl &&
             (identical(other.orderId, orderId) || other.orderId == orderId) &&
-            (identical(other.tableId, tableId) || other.tableId == tableId) &&
+            (identical(other.prebookId, prebookId) ||
+                other.prebookId == prebookId) &&
             (identical(other.bookingId, bookingId) ||
                 other.bookingId == bookingId));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, orderId, tableId, bookingId);
+  int get hashCode => Object.hash(runtimeType, orderId, prebookId, bookingId);
 
   /// Create a copy of HotelBookingConfirmEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -576,27 +563,30 @@ class _$PaymentFailImpl implements _PaymentFail {
     required TResult Function(
       String orderId,
       String transactionId,
-      String tableId,
       String bookingId,
       double amount,
       String prebookId,
       Map<String, dynamic> bookingRequest,
     )
     paymentDone,
-    required TResult Function(String orderId, String tableId, String bookingId)
+    required TResult Function(
+      String orderId,
+      String prebookId,
+      String bookingId,
+    )
     paymentFail,
     required TResult Function(
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     initiateRefund,
     required TResult Function() startLoading,
     required TResult Function() stopLoading,
   }) {
-    return paymentFail(orderId, tableId, bookingId);
+    return paymentFail(orderId, prebookId, bookingId);
   }
 
   @override
@@ -605,27 +595,26 @@ class _$PaymentFailImpl implements _PaymentFail {
     TResult? Function(
       String orderId,
       String transactionId,
-      String tableId,
       String bookingId,
       double amount,
       String prebookId,
       Map<String, dynamic> bookingRequest,
     )?
     paymentDone,
-    TResult? Function(String orderId, String tableId, String bookingId)?
+    TResult? Function(String orderId, String prebookId, String bookingId)?
     paymentFail,
     TResult? Function(
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     initiateRefund,
     TResult? Function()? startLoading,
     TResult? Function()? stopLoading,
   }) {
-    return paymentFail?.call(orderId, tableId, bookingId);
+    return paymentFail?.call(orderId, prebookId, bookingId);
   }
 
   @override
@@ -634,20 +623,19 @@ class _$PaymentFailImpl implements _PaymentFail {
     TResult Function(
       String orderId,
       String transactionId,
-      String tableId,
       String bookingId,
       double amount,
       String prebookId,
       Map<String, dynamic> bookingRequest,
     )?
     paymentDone,
-    TResult Function(String orderId, String tableId, String bookingId)?
+    TResult Function(String orderId, String prebookId, String bookingId)?
     paymentFail,
     TResult Function(
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     initiateRefund,
@@ -656,7 +644,7 @@ class _$PaymentFailImpl implements _PaymentFail {
     required TResult orElse(),
   }) {
     if (paymentFail != null) {
-      return paymentFail(orderId, tableId, bookingId);
+      return paymentFail(orderId, prebookId, bookingId);
     }
     return orElse();
   }
@@ -705,12 +693,12 @@ class _$PaymentFailImpl implements _PaymentFail {
 abstract class _PaymentFail implements HotelBookingConfirmEvent {
   const factory _PaymentFail({
     required final String orderId,
-    required final String tableId,
+    required final String prebookId,
     required final String bookingId,
   }) = _$PaymentFailImpl;
 
   String get orderId;
-  String get tableId;
+  String get prebookId;
   String get bookingId;
 
   /// Create a copy of HotelBookingConfirmEvent
@@ -731,7 +719,7 @@ abstract class _$$InitiateRefundImplCopyWith<$Res> {
     String orderId,
     String transactionId,
     double amount,
-    String tableId,
+    String booktableId,
     String bookingId,
   });
 }
@@ -753,7 +741,7 @@ class __$$InitiateRefundImplCopyWithImpl<$Res>
     Object? orderId = null,
     Object? transactionId = null,
     Object? amount = null,
-    Object? tableId = null,
+    Object? booktableId = null,
     Object? bookingId = null,
   }) {
     return _then(
@@ -770,9 +758,9 @@ class __$$InitiateRefundImplCopyWithImpl<$Res>
             ? _value.amount
             : amount // ignore: cast_nullable_to_non_nullable
                   as double,
-        tableId: null == tableId
-            ? _value.tableId
-            : tableId // ignore: cast_nullable_to_non_nullable
+        booktableId: null == booktableId
+            ? _value.booktableId
+            : booktableId // ignore: cast_nullable_to_non_nullable
                   as String,
         bookingId: null == bookingId
             ? _value.bookingId
@@ -790,7 +778,7 @@ class _$InitiateRefundImpl implements _InitiateRefund {
     required this.orderId,
     required this.transactionId,
     required this.amount,
-    required this.tableId,
+    required this.booktableId,
     required this.bookingId,
   });
 
@@ -801,13 +789,13 @@ class _$InitiateRefundImpl implements _InitiateRefund {
   @override
   final double amount;
   @override
-  final String tableId;
+  final String booktableId;
   @override
   final String bookingId;
 
   @override
   String toString() {
-    return 'HotelBookingConfirmEvent.initiateRefund(orderId: $orderId, transactionId: $transactionId, amount: $amount, tableId: $tableId, bookingId: $bookingId)';
+    return 'HotelBookingConfirmEvent.initiateRefund(orderId: $orderId, transactionId: $transactionId, amount: $amount, booktableId: $booktableId, bookingId: $bookingId)';
   }
 
   @override
@@ -819,7 +807,8 @@ class _$InitiateRefundImpl implements _InitiateRefund {
             (identical(other.transactionId, transactionId) ||
                 other.transactionId == transactionId) &&
             (identical(other.amount, amount) || other.amount == amount) &&
-            (identical(other.tableId, tableId) || other.tableId == tableId) &&
+            (identical(other.booktableId, booktableId) ||
+                other.booktableId == booktableId) &&
             (identical(other.bookingId, bookingId) ||
                 other.bookingId == bookingId));
   }
@@ -830,7 +819,7 @@ class _$InitiateRefundImpl implements _InitiateRefund {
     orderId,
     transactionId,
     amount,
-    tableId,
+    booktableId,
     bookingId,
   );
 
@@ -851,27 +840,36 @@ class _$InitiateRefundImpl implements _InitiateRefund {
     required TResult Function(
       String orderId,
       String transactionId,
-      String tableId,
       String bookingId,
       double amount,
       String prebookId,
       Map<String, dynamic> bookingRequest,
     )
     paymentDone,
-    required TResult Function(String orderId, String tableId, String bookingId)
+    required TResult Function(
+      String orderId,
+      String prebookId,
+      String bookingId,
+    )
     paymentFail,
     required TResult Function(
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     initiateRefund,
     required TResult Function() startLoading,
     required TResult Function() stopLoading,
   }) {
-    return initiateRefund(orderId, transactionId, amount, tableId, bookingId);
+    return initiateRefund(
+      orderId,
+      transactionId,
+      amount,
+      booktableId,
+      bookingId,
+    );
   }
 
   @override
@@ -880,20 +878,19 @@ class _$InitiateRefundImpl implements _InitiateRefund {
     TResult? Function(
       String orderId,
       String transactionId,
-      String tableId,
       String bookingId,
       double amount,
       String prebookId,
       Map<String, dynamic> bookingRequest,
     )?
     paymentDone,
-    TResult? Function(String orderId, String tableId, String bookingId)?
+    TResult? Function(String orderId, String prebookId, String bookingId)?
     paymentFail,
     TResult? Function(
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     initiateRefund,
@@ -904,7 +901,7 @@ class _$InitiateRefundImpl implements _InitiateRefund {
       orderId,
       transactionId,
       amount,
-      tableId,
+      booktableId,
       bookingId,
     );
   }
@@ -915,20 +912,19 @@ class _$InitiateRefundImpl implements _InitiateRefund {
     TResult Function(
       String orderId,
       String transactionId,
-      String tableId,
       String bookingId,
       double amount,
       String prebookId,
       Map<String, dynamic> bookingRequest,
     )?
     paymentDone,
-    TResult Function(String orderId, String tableId, String bookingId)?
+    TResult Function(String orderId, String prebookId, String bookingId)?
     paymentFail,
     TResult Function(
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     initiateRefund,
@@ -937,7 +933,13 @@ class _$InitiateRefundImpl implements _InitiateRefund {
     required TResult orElse(),
   }) {
     if (initiateRefund != null) {
-      return initiateRefund(orderId, transactionId, amount, tableId, bookingId);
+      return initiateRefund(
+        orderId,
+        transactionId,
+        amount,
+        booktableId,
+        bookingId,
+      );
     }
     return orElse();
   }
@@ -988,14 +990,14 @@ abstract class _InitiateRefund implements HotelBookingConfirmEvent {
     required final String orderId,
     required final String transactionId,
     required final double amount,
-    required final String tableId,
+    required final String booktableId,
     required final String bookingId,
   }) = _$InitiateRefundImpl;
 
   String get orderId;
   String get transactionId;
   double get amount;
-  String get tableId;
+  String get booktableId;
   String get bookingId;
 
   /// Create a copy of HotelBookingConfirmEvent
@@ -1051,20 +1053,23 @@ class _$StartLoadingImpl implements _StartLoading {
     required TResult Function(
       String orderId,
       String transactionId,
-      String tableId,
       String bookingId,
       double amount,
       String prebookId,
       Map<String, dynamic> bookingRequest,
     )
     paymentDone,
-    required TResult Function(String orderId, String tableId, String bookingId)
+    required TResult Function(
+      String orderId,
+      String prebookId,
+      String bookingId,
+    )
     paymentFail,
     required TResult Function(
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     initiateRefund,
@@ -1080,20 +1085,19 @@ class _$StartLoadingImpl implements _StartLoading {
     TResult? Function(
       String orderId,
       String transactionId,
-      String tableId,
       String bookingId,
       double amount,
       String prebookId,
       Map<String, dynamic> bookingRequest,
     )?
     paymentDone,
-    TResult? Function(String orderId, String tableId, String bookingId)?
+    TResult? Function(String orderId, String prebookId, String bookingId)?
     paymentFail,
     TResult? Function(
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     initiateRefund,
@@ -1109,20 +1113,19 @@ class _$StartLoadingImpl implements _StartLoading {
     TResult Function(
       String orderId,
       String transactionId,
-      String tableId,
       String bookingId,
       double amount,
       String prebookId,
       Map<String, dynamic> bookingRequest,
     )?
     paymentDone,
-    TResult Function(String orderId, String tableId, String bookingId)?
+    TResult Function(String orderId, String prebookId, String bookingId)?
     paymentFail,
     TResult Function(
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     initiateRefund,
@@ -1227,20 +1230,23 @@ class _$StopLoadingImpl implements _StopLoading {
     required TResult Function(
       String orderId,
       String transactionId,
-      String tableId,
       String bookingId,
       double amount,
       String prebookId,
       Map<String, dynamic> bookingRequest,
     )
     paymentDone,
-    required TResult Function(String orderId, String tableId, String bookingId)
+    required TResult Function(
+      String orderId,
+      String prebookId,
+      String bookingId,
+    )
     paymentFail,
     required TResult Function(
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     initiateRefund,
@@ -1256,20 +1262,19 @@ class _$StopLoadingImpl implements _StopLoading {
     TResult? Function(
       String orderId,
       String transactionId,
-      String tableId,
       String bookingId,
       double amount,
       String prebookId,
       Map<String, dynamic> bookingRequest,
     )?
     paymentDone,
-    TResult? Function(String orderId, String tableId, String bookingId)?
+    TResult? Function(String orderId, String prebookId, String bookingId)?
     paymentFail,
     TResult? Function(
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     initiateRefund,
@@ -1285,20 +1290,19 @@ class _$StopLoadingImpl implements _StopLoading {
     TResult Function(
       String orderId,
       String transactionId,
-      String tableId,
       String bookingId,
       double amount,
       String prebookId,
       Map<String, dynamic> bookingRequest,
     )?
     paymentDone,
-    TResult Function(String orderId, String tableId, String bookingId)?
+    TResult Function(String orderId, String prebookId, String bookingId)?
     paymentFail,
     TResult Function(
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     initiateRefund,
@@ -1368,21 +1372,16 @@ mixin _$HotelBookingConfirmState {
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )
     success,
-    required TResult Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )
+    required TResult Function(String message, String orderId, String bookingId)
     paymentFailed,
     required TResult Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )
@@ -1393,7 +1392,7 @@ mixin _$HotelBookingConfirmState {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     error,
@@ -1401,7 +1400,7 @@ mixin _$HotelBookingConfirmState {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     refundProcessing,
@@ -1410,7 +1409,7 @@ mixin _$HotelBookingConfirmState {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     refundInitiated,
@@ -1419,7 +1418,6 @@ mixin _$HotelBookingConfirmState {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )
     refundFailed,
@@ -1433,21 +1431,16 @@ mixin _$HotelBookingConfirmState {
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )?
     success,
-    TResult? Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )?
+    TResult? Function(String message, String orderId, String bookingId)?
     paymentFailed,
     TResult? Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )?
@@ -1458,7 +1451,7 @@ mixin _$HotelBookingConfirmState {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     error,
@@ -1466,7 +1459,7 @@ mixin _$HotelBookingConfirmState {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundProcessing,
@@ -1475,7 +1468,7 @@ mixin _$HotelBookingConfirmState {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundInitiated,
@@ -1484,7 +1477,6 @@ mixin _$HotelBookingConfirmState {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )?
     refundFailed,
@@ -1498,21 +1490,16 @@ mixin _$HotelBookingConfirmState {
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )?
     success,
-    TResult Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )?
+    TResult Function(String message, String orderId, String bookingId)?
     paymentFailed,
     TResult Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )?
@@ -1523,7 +1510,7 @@ mixin _$HotelBookingConfirmState {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     error,
@@ -1531,7 +1518,7 @@ mixin _$HotelBookingConfirmState {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundProcessing,
@@ -1540,7 +1527,7 @@ mixin _$HotelBookingConfirmState {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundInitiated,
@@ -1549,7 +1536,6 @@ mixin _$HotelBookingConfirmState {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )?
     refundFailed,
@@ -1684,21 +1670,16 @@ class _$HotelBookingConfirmInitialImpl implements HotelBookingConfirmInitial {
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )
     success,
-    required TResult Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )
+    required TResult Function(String message, String orderId, String bookingId)
     paymentFailed,
     required TResult Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )
@@ -1709,7 +1690,7 @@ class _$HotelBookingConfirmInitialImpl implements HotelBookingConfirmInitial {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     error,
@@ -1717,7 +1698,7 @@ class _$HotelBookingConfirmInitialImpl implements HotelBookingConfirmInitial {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     refundProcessing,
@@ -1726,7 +1707,7 @@ class _$HotelBookingConfirmInitialImpl implements HotelBookingConfirmInitial {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     refundInitiated,
@@ -1735,7 +1716,6 @@ class _$HotelBookingConfirmInitialImpl implements HotelBookingConfirmInitial {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )
     refundFailed,
@@ -1753,21 +1733,16 @@ class _$HotelBookingConfirmInitialImpl implements HotelBookingConfirmInitial {
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )?
     success,
-    TResult? Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )?
+    TResult? Function(String message, String orderId, String bookingId)?
     paymentFailed,
     TResult? Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )?
@@ -1778,7 +1753,7 @@ class _$HotelBookingConfirmInitialImpl implements HotelBookingConfirmInitial {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     error,
@@ -1786,7 +1761,7 @@ class _$HotelBookingConfirmInitialImpl implements HotelBookingConfirmInitial {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundProcessing,
@@ -1795,7 +1770,7 @@ class _$HotelBookingConfirmInitialImpl implements HotelBookingConfirmInitial {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundInitiated,
@@ -1804,7 +1779,6 @@ class _$HotelBookingConfirmInitialImpl implements HotelBookingConfirmInitial {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )?
     refundFailed,
@@ -1822,21 +1796,16 @@ class _$HotelBookingConfirmInitialImpl implements HotelBookingConfirmInitial {
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )?
     success,
-    TResult Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )?
+    TResult Function(String message, String orderId, String bookingId)?
     paymentFailed,
     TResult Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )?
@@ -1847,7 +1816,7 @@ class _$HotelBookingConfirmInitialImpl implements HotelBookingConfirmInitial {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     error,
@@ -1855,7 +1824,7 @@ class _$HotelBookingConfirmInitialImpl implements HotelBookingConfirmInitial {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundProcessing,
@@ -1864,7 +1833,7 @@ class _$HotelBookingConfirmInitialImpl implements HotelBookingConfirmInitial {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundInitiated,
@@ -1873,7 +1842,6 @@ class _$HotelBookingConfirmInitialImpl implements HotelBookingConfirmInitial {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )?
     refundFailed,
@@ -2055,21 +2023,16 @@ class _$HotelBookingConfirmLoadingImpl implements HotelBookingConfirmLoading {
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )
     success,
-    required TResult Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )
+    required TResult Function(String message, String orderId, String bookingId)
     paymentFailed,
     required TResult Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )
@@ -2080,7 +2043,7 @@ class _$HotelBookingConfirmLoadingImpl implements HotelBookingConfirmLoading {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     error,
@@ -2088,7 +2051,7 @@ class _$HotelBookingConfirmLoadingImpl implements HotelBookingConfirmLoading {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     refundProcessing,
@@ -2097,7 +2060,7 @@ class _$HotelBookingConfirmLoadingImpl implements HotelBookingConfirmLoading {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     refundInitiated,
@@ -2106,7 +2069,6 @@ class _$HotelBookingConfirmLoadingImpl implements HotelBookingConfirmLoading {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )
     refundFailed,
@@ -2124,21 +2086,16 @@ class _$HotelBookingConfirmLoadingImpl implements HotelBookingConfirmLoading {
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )?
     success,
-    TResult? Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )?
+    TResult? Function(String message, String orderId, String bookingId)?
     paymentFailed,
     TResult? Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )?
@@ -2149,7 +2106,7 @@ class _$HotelBookingConfirmLoadingImpl implements HotelBookingConfirmLoading {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     error,
@@ -2157,7 +2114,7 @@ class _$HotelBookingConfirmLoadingImpl implements HotelBookingConfirmLoading {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundProcessing,
@@ -2166,7 +2123,7 @@ class _$HotelBookingConfirmLoadingImpl implements HotelBookingConfirmLoading {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundInitiated,
@@ -2175,7 +2132,6 @@ class _$HotelBookingConfirmLoadingImpl implements HotelBookingConfirmLoading {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )?
     refundFailed,
@@ -2193,21 +2149,16 @@ class _$HotelBookingConfirmLoadingImpl implements HotelBookingConfirmLoading {
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )?
     success,
-    TResult Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )?
+    TResult Function(String message, String orderId, String bookingId)?
     paymentFailed,
     TResult Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )?
@@ -2218,7 +2169,7 @@ class _$HotelBookingConfirmLoadingImpl implements HotelBookingConfirmLoading {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     error,
@@ -2226,7 +2177,7 @@ class _$HotelBookingConfirmLoadingImpl implements HotelBookingConfirmLoading {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundProcessing,
@@ -2235,7 +2186,7 @@ class _$HotelBookingConfirmLoadingImpl implements HotelBookingConfirmLoading {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundInitiated,
@@ -2244,7 +2195,6 @@ class _$HotelBookingConfirmLoadingImpl implements HotelBookingConfirmLoading {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )?
     refundFailed,
@@ -2345,6 +2295,7 @@ abstract class _$$HotelBookingConfirmSuccessImplCopyWith<$Res> {
     String bookingId,
     String confirmationNo,
     String bookingRefNo,
+    String booktableId,
   });
 }
 
@@ -2370,6 +2321,7 @@ class __$$HotelBookingConfirmSuccessImplCopyWithImpl<$Res>
     Object? bookingId = null,
     Object? confirmationNo = null,
     Object? bookingRefNo = null,
+    Object? booktableId = null,
   }) {
     return _then(
       _$HotelBookingConfirmSuccessImpl(
@@ -2389,6 +2341,10 @@ class __$$HotelBookingConfirmSuccessImplCopyWithImpl<$Res>
             ? _value.bookingRefNo
             : bookingRefNo // ignore: cast_nullable_to_non_nullable
                   as String,
+        booktableId: null == booktableId
+            ? _value.booktableId
+            : booktableId // ignore: cast_nullable_to_non_nullable
+                  as String,
       ),
     );
   }
@@ -2402,6 +2358,7 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
     required this.bookingId,
     required this.confirmationNo,
     required this.bookingRefNo,
+    required this.booktableId,
   }) : _data = data;
 
   final Map<String, dynamic> _data;
@@ -2418,10 +2375,12 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
   final String confirmationNo;
   @override
   final String bookingRefNo;
+  @override
+  final String booktableId;
 
   @override
   String toString() {
-    return 'HotelBookingConfirmState.success(data: $data, bookingId: $bookingId, confirmationNo: $confirmationNo, bookingRefNo: $bookingRefNo)';
+    return 'HotelBookingConfirmState.success(data: $data, bookingId: $bookingId, confirmationNo: $confirmationNo, bookingRefNo: $bookingRefNo, booktableId: $booktableId)';
   }
 
   @override
@@ -2435,7 +2394,9 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
             (identical(other.confirmationNo, confirmationNo) ||
                 other.confirmationNo == confirmationNo) &&
             (identical(other.bookingRefNo, bookingRefNo) ||
-                other.bookingRefNo == bookingRefNo));
+                other.bookingRefNo == bookingRefNo) &&
+            (identical(other.booktableId, booktableId) ||
+                other.booktableId == booktableId));
   }
 
   @override
@@ -2445,6 +2406,7 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
     bookingId,
     confirmationNo,
     bookingRefNo,
+    booktableId,
   );
 
   /// Create a copy of HotelBookingConfirmState
@@ -2468,21 +2430,16 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )
     success,
-    required TResult Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )
+    required TResult Function(String message, String orderId, String bookingId)
     paymentFailed,
     required TResult Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )
@@ -2493,7 +2450,7 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     error,
@@ -2501,7 +2458,7 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     refundProcessing,
@@ -2510,7 +2467,7 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     refundInitiated,
@@ -2519,12 +2476,11 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )
     refundFailed,
   }) {
-    return success(data, bookingId, confirmationNo, bookingRefNo);
+    return success(data, bookingId, confirmationNo, bookingRefNo, booktableId);
   }
 
   @override
@@ -2537,21 +2493,16 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )?
     success,
-    TResult? Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )?
+    TResult? Function(String message, String orderId, String bookingId)?
     paymentFailed,
     TResult? Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )?
@@ -2562,7 +2513,7 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     error,
@@ -2570,7 +2521,7 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundProcessing,
@@ -2579,7 +2530,7 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundInitiated,
@@ -2588,12 +2539,17 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )?
     refundFailed,
   }) {
-    return success?.call(data, bookingId, confirmationNo, bookingRefNo);
+    return success?.call(
+      data,
+      bookingId,
+      confirmationNo,
+      bookingRefNo,
+      booktableId,
+    );
   }
 
   @override
@@ -2606,21 +2562,16 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )?
     success,
-    TResult Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )?
+    TResult Function(String message, String orderId, String bookingId)?
     paymentFailed,
     TResult Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )?
@@ -2631,7 +2582,7 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     error,
@@ -2639,7 +2590,7 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundProcessing,
@@ -2648,7 +2599,7 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundInitiated,
@@ -2657,14 +2608,19 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )?
     refundFailed,
     required TResult orElse(),
   }) {
     if (success != null) {
-      return success(data, bookingId, confirmationNo, bookingRefNo);
+      return success(
+        data,
+        bookingId,
+        confirmationNo,
+        bookingRefNo,
+        booktableId,
+      );
     }
     return orElse();
   }
@@ -2738,12 +2694,14 @@ abstract class HotelBookingConfirmSuccess implements HotelBookingConfirmState {
     required final String bookingId,
     required final String confirmationNo,
     required final String bookingRefNo,
+    required final String booktableId,
   }) = _$HotelBookingConfirmSuccessImpl;
 
   Map<String, dynamic> get data;
   String get bookingId;
   String get confirmationNo;
   String get bookingRefNo;
+  String get booktableId;
 
   /// Create a copy of HotelBookingConfirmState
   /// with the given fields replaced by the non-null parameter values.
@@ -2759,7 +2717,7 @@ abstract class _$$HotelBookingConfirmPaymentFailedImplCopyWith<$Res> {
     $Res Function(_$HotelBookingConfirmPaymentFailedImpl) then,
   ) = __$$HotelBookingConfirmPaymentFailedImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({String message, String orderId, String tableId, String bookingId});
+  $Res call({String message, String orderId, String bookingId});
 }
 
 /// @nodoc
@@ -2782,7 +2740,6 @@ class __$$HotelBookingConfirmPaymentFailedImplCopyWithImpl<$Res>
   $Res call({
     Object? message = null,
     Object? orderId = null,
-    Object? tableId = null,
     Object? bookingId = null,
   }) {
     return _then(
@@ -2794,10 +2751,6 @@ class __$$HotelBookingConfirmPaymentFailedImplCopyWithImpl<$Res>
         orderId: null == orderId
             ? _value.orderId
             : orderId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        tableId: null == tableId
-            ? _value.tableId
-            : tableId // ignore: cast_nullable_to_non_nullable
                   as String,
         bookingId: null == bookingId
             ? _value.bookingId
@@ -2815,7 +2768,6 @@ class _$HotelBookingConfirmPaymentFailedImpl
   const _$HotelBookingConfirmPaymentFailedImpl({
     required this.message,
     required this.orderId,
-    required this.tableId,
     required this.bookingId,
   });
 
@@ -2824,13 +2776,11 @@ class _$HotelBookingConfirmPaymentFailedImpl
   @override
   final String orderId;
   @override
-  final String tableId;
-  @override
   final String bookingId;
 
   @override
   String toString() {
-    return 'HotelBookingConfirmState.paymentFailed(message: $message, orderId: $orderId, tableId: $tableId, bookingId: $bookingId)';
+    return 'HotelBookingConfirmState.paymentFailed(message: $message, orderId: $orderId, bookingId: $bookingId)';
   }
 
   @override
@@ -2840,14 +2790,12 @@ class _$HotelBookingConfirmPaymentFailedImpl
             other is _$HotelBookingConfirmPaymentFailedImpl &&
             (identical(other.message, message) || other.message == message) &&
             (identical(other.orderId, orderId) || other.orderId == orderId) &&
-            (identical(other.tableId, tableId) || other.tableId == tableId) &&
             (identical(other.bookingId, bookingId) ||
                 other.bookingId == bookingId));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, message, orderId, tableId, bookingId);
+  int get hashCode => Object.hash(runtimeType, message, orderId, bookingId);
 
   /// Create a copy of HotelBookingConfirmState
   /// with the given fields replaced by the non-null parameter values.
@@ -2872,21 +2820,16 @@ class _$HotelBookingConfirmPaymentFailedImpl
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )
     success,
-    required TResult Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )
+    required TResult Function(String message, String orderId, String bookingId)
     paymentFailed,
     required TResult Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )
@@ -2897,7 +2840,7 @@ class _$HotelBookingConfirmPaymentFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     error,
@@ -2905,7 +2848,7 @@ class _$HotelBookingConfirmPaymentFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     refundProcessing,
@@ -2914,7 +2857,7 @@ class _$HotelBookingConfirmPaymentFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     refundInitiated,
@@ -2923,12 +2866,11 @@ class _$HotelBookingConfirmPaymentFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )
     refundFailed,
   }) {
-    return paymentFailed(message, orderId, tableId, bookingId);
+    return paymentFailed(message, orderId, bookingId);
   }
 
   @override
@@ -2941,21 +2883,16 @@ class _$HotelBookingConfirmPaymentFailedImpl
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )?
     success,
-    TResult? Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )?
+    TResult? Function(String message, String orderId, String bookingId)?
     paymentFailed,
     TResult? Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )?
@@ -2966,7 +2903,7 @@ class _$HotelBookingConfirmPaymentFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     error,
@@ -2974,7 +2911,7 @@ class _$HotelBookingConfirmPaymentFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundProcessing,
@@ -2983,7 +2920,7 @@ class _$HotelBookingConfirmPaymentFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundInitiated,
@@ -2992,12 +2929,11 @@ class _$HotelBookingConfirmPaymentFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )?
     refundFailed,
   }) {
-    return paymentFailed?.call(message, orderId, tableId, bookingId);
+    return paymentFailed?.call(message, orderId, bookingId);
   }
 
   @override
@@ -3010,21 +2946,16 @@ class _$HotelBookingConfirmPaymentFailedImpl
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )?
     success,
-    TResult Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )?
+    TResult Function(String message, String orderId, String bookingId)?
     paymentFailed,
     TResult Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )?
@@ -3035,7 +2966,7 @@ class _$HotelBookingConfirmPaymentFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     error,
@@ -3043,7 +2974,7 @@ class _$HotelBookingConfirmPaymentFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundProcessing,
@@ -3052,7 +2983,7 @@ class _$HotelBookingConfirmPaymentFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundInitiated,
@@ -3061,14 +2992,13 @@ class _$HotelBookingConfirmPaymentFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )?
     refundFailed,
     required TResult orElse(),
   }) {
     if (paymentFailed != null) {
-      return paymentFailed(message, orderId, tableId, bookingId);
+      return paymentFailed(message, orderId, bookingId);
     }
     return orElse();
   }
@@ -3141,13 +3071,11 @@ abstract class HotelBookingConfirmPaymentFailed
   const factory HotelBookingConfirmPaymentFailed({
     required final String message,
     required final String orderId,
-    required final String tableId,
     required final String bookingId,
   }) = _$HotelBookingConfirmPaymentFailedImpl;
 
   String get message;
   String get orderId;
-  String get tableId;
   String get bookingId;
 
   /// Create a copy of HotelBookingConfirmState
@@ -3171,7 +3099,6 @@ abstract class _$$HotelBookingConfirmPaymentSavedFailedImplCopyWith<$Res> {
     String orderId,
     String transactionId,
     double amount,
-    String tableId,
     String bookingId,
     bool shouldRefund,
   });
@@ -3199,7 +3126,6 @@ class __$$HotelBookingConfirmPaymentSavedFailedImplCopyWithImpl<$Res>
     Object? orderId = null,
     Object? transactionId = null,
     Object? amount = null,
-    Object? tableId = null,
     Object? bookingId = null,
     Object? shouldRefund = null,
   }) {
@@ -3221,10 +3147,6 @@ class __$$HotelBookingConfirmPaymentSavedFailedImplCopyWithImpl<$Res>
             ? _value.amount
             : amount // ignore: cast_nullable_to_non_nullable
                   as double,
-        tableId: null == tableId
-            ? _value.tableId
-            : tableId // ignore: cast_nullable_to_non_nullable
-                  as String,
         bookingId: null == bookingId
             ? _value.bookingId
             : bookingId // ignore: cast_nullable_to_non_nullable
@@ -3247,7 +3169,6 @@ class _$HotelBookingConfirmPaymentSavedFailedImpl
     required this.orderId,
     required this.transactionId,
     required this.amount,
-    required this.tableId,
     required this.bookingId,
     required this.shouldRefund,
   });
@@ -3261,15 +3182,13 @@ class _$HotelBookingConfirmPaymentSavedFailedImpl
   @override
   final double amount;
   @override
-  final String tableId;
-  @override
   final String bookingId;
   @override
   final bool shouldRefund;
 
   @override
   String toString() {
-    return 'HotelBookingConfirmState.paymentSavedFailed(message: $message, orderId: $orderId, transactionId: $transactionId, amount: $amount, tableId: $tableId, bookingId: $bookingId, shouldRefund: $shouldRefund)';
+    return 'HotelBookingConfirmState.paymentSavedFailed(message: $message, orderId: $orderId, transactionId: $transactionId, amount: $amount, bookingId: $bookingId, shouldRefund: $shouldRefund)';
   }
 
   @override
@@ -3282,7 +3201,6 @@ class _$HotelBookingConfirmPaymentSavedFailedImpl
             (identical(other.transactionId, transactionId) ||
                 other.transactionId == transactionId) &&
             (identical(other.amount, amount) || other.amount == amount) &&
-            (identical(other.tableId, tableId) || other.tableId == tableId) &&
             (identical(other.bookingId, bookingId) ||
                 other.bookingId == bookingId) &&
             (identical(other.shouldRefund, shouldRefund) ||
@@ -3296,7 +3214,6 @@ class _$HotelBookingConfirmPaymentSavedFailedImpl
     orderId,
     transactionId,
     amount,
-    tableId,
     bookingId,
     shouldRefund,
   );
@@ -3324,21 +3241,16 @@ class _$HotelBookingConfirmPaymentSavedFailedImpl
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )
     success,
-    required TResult Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )
+    required TResult Function(String message, String orderId, String bookingId)
     paymentFailed,
     required TResult Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )
@@ -3349,7 +3261,7 @@ class _$HotelBookingConfirmPaymentSavedFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     error,
@@ -3357,7 +3269,7 @@ class _$HotelBookingConfirmPaymentSavedFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     refundProcessing,
@@ -3366,7 +3278,7 @@ class _$HotelBookingConfirmPaymentSavedFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     refundInitiated,
@@ -3375,7 +3287,6 @@ class _$HotelBookingConfirmPaymentSavedFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )
     refundFailed,
@@ -3385,7 +3296,6 @@ class _$HotelBookingConfirmPaymentSavedFailedImpl
       orderId,
       transactionId,
       amount,
-      tableId,
       bookingId,
       shouldRefund,
     );
@@ -3401,21 +3311,16 @@ class _$HotelBookingConfirmPaymentSavedFailedImpl
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )?
     success,
-    TResult? Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )?
+    TResult? Function(String message, String orderId, String bookingId)?
     paymentFailed,
     TResult? Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )?
@@ -3426,7 +3331,7 @@ class _$HotelBookingConfirmPaymentSavedFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     error,
@@ -3434,7 +3339,7 @@ class _$HotelBookingConfirmPaymentSavedFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundProcessing,
@@ -3443,7 +3348,7 @@ class _$HotelBookingConfirmPaymentSavedFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundInitiated,
@@ -3452,7 +3357,6 @@ class _$HotelBookingConfirmPaymentSavedFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )?
     refundFailed,
@@ -3462,7 +3366,6 @@ class _$HotelBookingConfirmPaymentSavedFailedImpl
       orderId,
       transactionId,
       amount,
-      tableId,
       bookingId,
       shouldRefund,
     );
@@ -3478,21 +3381,16 @@ class _$HotelBookingConfirmPaymentSavedFailedImpl
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )?
     success,
-    TResult Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )?
+    TResult Function(String message, String orderId, String bookingId)?
     paymentFailed,
     TResult Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )?
@@ -3503,7 +3401,7 @@ class _$HotelBookingConfirmPaymentSavedFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     error,
@@ -3511,7 +3409,7 @@ class _$HotelBookingConfirmPaymentSavedFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundProcessing,
@@ -3520,7 +3418,7 @@ class _$HotelBookingConfirmPaymentSavedFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundInitiated,
@@ -3529,7 +3427,6 @@ class _$HotelBookingConfirmPaymentSavedFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )?
     refundFailed,
@@ -3541,7 +3438,6 @@ class _$HotelBookingConfirmPaymentSavedFailedImpl
         orderId,
         transactionId,
         amount,
-        tableId,
         bookingId,
         shouldRefund,
       );
@@ -3619,7 +3515,6 @@ abstract class HotelBookingConfirmPaymentSavedFailed
     required final String orderId,
     required final String transactionId,
     required final double amount,
-    required final String tableId,
     required final String bookingId,
     required final bool shouldRefund,
   }) = _$HotelBookingConfirmPaymentSavedFailedImpl;
@@ -3628,7 +3523,6 @@ abstract class HotelBookingConfirmPaymentSavedFailed
   String get orderId;
   String get transactionId;
   double get amount;
-  String get tableId;
   String get bookingId;
   bool get shouldRefund;
 
@@ -3654,7 +3548,7 @@ abstract class _$$HotelBookingConfirmErrorImplCopyWith<$Res> {
     String orderId,
     String transactionId,
     double amount,
-    String tableId,
+    String booktableId,
     String bookingId,
   });
 }
@@ -3682,7 +3576,7 @@ class __$$HotelBookingConfirmErrorImplCopyWithImpl<$Res>
     Object? orderId = null,
     Object? transactionId = null,
     Object? amount = null,
-    Object? tableId = null,
+    Object? booktableId = null,
     Object? bookingId = null,
   }) {
     return _then(
@@ -3707,9 +3601,9 @@ class __$$HotelBookingConfirmErrorImplCopyWithImpl<$Res>
             ? _value.amount
             : amount // ignore: cast_nullable_to_non_nullable
                   as double,
-        tableId: null == tableId
-            ? _value.tableId
-            : tableId // ignore: cast_nullable_to_non_nullable
+        booktableId: null == booktableId
+            ? _value.booktableId
+            : booktableId // ignore: cast_nullable_to_non_nullable
                   as String,
         bookingId: null == bookingId
             ? _value.bookingId
@@ -3729,7 +3623,7 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
     required this.orderId,
     required this.transactionId,
     required this.amount,
-    required this.tableId,
+    required this.booktableId,
     required this.bookingId,
   });
 
@@ -3744,13 +3638,13 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
   @override
   final double amount;
   @override
-  final String tableId;
+  final String booktableId;
   @override
   final String bookingId;
 
   @override
   String toString() {
-    return 'HotelBookingConfirmState.error(message: $message, shouldRefund: $shouldRefund, orderId: $orderId, transactionId: $transactionId, amount: $amount, tableId: $tableId, bookingId: $bookingId)';
+    return 'HotelBookingConfirmState.error(message: $message, shouldRefund: $shouldRefund, orderId: $orderId, transactionId: $transactionId, amount: $amount, booktableId: $booktableId, bookingId: $bookingId)';
   }
 
   @override
@@ -3765,7 +3659,8 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
             (identical(other.transactionId, transactionId) ||
                 other.transactionId == transactionId) &&
             (identical(other.amount, amount) || other.amount == amount) &&
-            (identical(other.tableId, tableId) || other.tableId == tableId) &&
+            (identical(other.booktableId, booktableId) ||
+                other.booktableId == booktableId) &&
             (identical(other.bookingId, bookingId) ||
                 other.bookingId == bookingId));
   }
@@ -3778,7 +3673,7 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
     orderId,
     transactionId,
     amount,
-    tableId,
+    booktableId,
     bookingId,
   );
 
@@ -3803,21 +3698,16 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )
     success,
-    required TResult Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )
+    required TResult Function(String message, String orderId, String bookingId)
     paymentFailed,
     required TResult Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )
@@ -3828,7 +3718,7 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     error,
@@ -3836,7 +3726,7 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     refundProcessing,
@@ -3845,7 +3735,7 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     refundInitiated,
@@ -3854,7 +3744,6 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )
     refundFailed,
@@ -3865,7 +3754,7 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
       orderId,
       transactionId,
       amount,
-      tableId,
+      booktableId,
       bookingId,
     );
   }
@@ -3880,21 +3769,16 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )?
     success,
-    TResult? Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )?
+    TResult? Function(String message, String orderId, String bookingId)?
     paymentFailed,
     TResult? Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )?
@@ -3905,7 +3789,7 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     error,
@@ -3913,7 +3797,7 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundProcessing,
@@ -3922,7 +3806,7 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundInitiated,
@@ -3931,7 +3815,6 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )?
     refundFailed,
@@ -3942,7 +3825,7 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
       orderId,
       transactionId,
       amount,
-      tableId,
+      booktableId,
       bookingId,
     );
   }
@@ -3957,21 +3840,16 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )?
     success,
-    TResult Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )?
+    TResult Function(String message, String orderId, String bookingId)?
     paymentFailed,
     TResult Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )?
@@ -3982,7 +3860,7 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     error,
@@ -3990,7 +3868,7 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundProcessing,
@@ -3999,7 +3877,7 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundInitiated,
@@ -4008,7 +3886,6 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )?
     refundFailed,
@@ -4021,7 +3898,7 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
         orderId,
         transactionId,
         amount,
-        tableId,
+        booktableId,
         bookingId,
       );
     }
@@ -4098,7 +3975,7 @@ abstract class HotelBookingConfirmError implements HotelBookingConfirmState {
     required final String orderId,
     required final String transactionId,
     required final double amount,
-    required final String tableId,
+    required final String booktableId,
     required final String bookingId,
   }) = _$HotelBookingConfirmErrorImpl;
 
@@ -4107,7 +3984,7 @@ abstract class HotelBookingConfirmError implements HotelBookingConfirmState {
   String get orderId;
   String get transactionId;
   double get amount;
-  String get tableId;
+  String get booktableId;
   String get bookingId;
 
   /// Create a copy of HotelBookingConfirmState
@@ -4128,7 +4005,7 @@ abstract class _$$HotelBookingConfirmRefundProcessingImplCopyWith<$Res> {
     String orderId,
     String transactionId,
     double amount,
-    String tableId,
+    String booktableId,
     String bookingId,
   });
 }
@@ -4154,7 +4031,7 @@ class __$$HotelBookingConfirmRefundProcessingImplCopyWithImpl<$Res>
     Object? orderId = null,
     Object? transactionId = null,
     Object? amount = null,
-    Object? tableId = null,
+    Object? booktableId = null,
     Object? bookingId = null,
   }) {
     return _then(
@@ -4171,9 +4048,9 @@ class __$$HotelBookingConfirmRefundProcessingImplCopyWithImpl<$Res>
             ? _value.amount
             : amount // ignore: cast_nullable_to_non_nullable
                   as double,
-        tableId: null == tableId
-            ? _value.tableId
-            : tableId // ignore: cast_nullable_to_non_nullable
+        booktableId: null == booktableId
+            ? _value.booktableId
+            : booktableId // ignore: cast_nullable_to_non_nullable
                   as String,
         bookingId: null == bookingId
             ? _value.bookingId
@@ -4192,7 +4069,7 @@ class _$HotelBookingConfirmRefundProcessingImpl
     required this.orderId,
     required this.transactionId,
     required this.amount,
-    required this.tableId,
+    required this.booktableId,
     required this.bookingId,
   });
 
@@ -4203,13 +4080,13 @@ class _$HotelBookingConfirmRefundProcessingImpl
   @override
   final double amount;
   @override
-  final String tableId;
+  final String booktableId;
   @override
   final String bookingId;
 
   @override
   String toString() {
-    return 'HotelBookingConfirmState.refundProcessing(orderId: $orderId, transactionId: $transactionId, amount: $amount, tableId: $tableId, bookingId: $bookingId)';
+    return 'HotelBookingConfirmState.refundProcessing(orderId: $orderId, transactionId: $transactionId, amount: $amount, booktableId: $booktableId, bookingId: $bookingId)';
   }
 
   @override
@@ -4221,7 +4098,8 @@ class _$HotelBookingConfirmRefundProcessingImpl
             (identical(other.transactionId, transactionId) ||
                 other.transactionId == transactionId) &&
             (identical(other.amount, amount) || other.amount == amount) &&
-            (identical(other.tableId, tableId) || other.tableId == tableId) &&
+            (identical(other.booktableId, booktableId) ||
+                other.booktableId == booktableId) &&
             (identical(other.bookingId, bookingId) ||
                 other.bookingId == bookingId));
   }
@@ -4232,7 +4110,7 @@ class _$HotelBookingConfirmRefundProcessingImpl
     orderId,
     transactionId,
     amount,
-    tableId,
+    booktableId,
     bookingId,
   );
 
@@ -4259,21 +4137,16 @@ class _$HotelBookingConfirmRefundProcessingImpl
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )
     success,
-    required TResult Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )
+    required TResult Function(String message, String orderId, String bookingId)
     paymentFailed,
     required TResult Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )
@@ -4284,7 +4157,7 @@ class _$HotelBookingConfirmRefundProcessingImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     error,
@@ -4292,7 +4165,7 @@ class _$HotelBookingConfirmRefundProcessingImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     refundProcessing,
@@ -4301,7 +4174,7 @@ class _$HotelBookingConfirmRefundProcessingImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     refundInitiated,
@@ -4310,12 +4183,17 @@ class _$HotelBookingConfirmRefundProcessingImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )
     refundFailed,
   }) {
-    return refundProcessing(orderId, transactionId, amount, tableId, bookingId);
+    return refundProcessing(
+      orderId,
+      transactionId,
+      amount,
+      booktableId,
+      bookingId,
+    );
   }
 
   @override
@@ -4328,21 +4206,16 @@ class _$HotelBookingConfirmRefundProcessingImpl
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )?
     success,
-    TResult? Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )?
+    TResult? Function(String message, String orderId, String bookingId)?
     paymentFailed,
     TResult? Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )?
@@ -4353,7 +4226,7 @@ class _$HotelBookingConfirmRefundProcessingImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     error,
@@ -4361,7 +4234,7 @@ class _$HotelBookingConfirmRefundProcessingImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundProcessing,
@@ -4370,7 +4243,7 @@ class _$HotelBookingConfirmRefundProcessingImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundInitiated,
@@ -4379,7 +4252,6 @@ class _$HotelBookingConfirmRefundProcessingImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )?
     refundFailed,
@@ -4388,7 +4260,7 @@ class _$HotelBookingConfirmRefundProcessingImpl
       orderId,
       transactionId,
       amount,
-      tableId,
+      booktableId,
       bookingId,
     );
   }
@@ -4403,21 +4275,16 @@ class _$HotelBookingConfirmRefundProcessingImpl
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )?
     success,
-    TResult Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )?
+    TResult Function(String message, String orderId, String bookingId)?
     paymentFailed,
     TResult Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )?
@@ -4428,7 +4295,7 @@ class _$HotelBookingConfirmRefundProcessingImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     error,
@@ -4436,7 +4303,7 @@ class _$HotelBookingConfirmRefundProcessingImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundProcessing,
@@ -4445,7 +4312,7 @@ class _$HotelBookingConfirmRefundProcessingImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundInitiated,
@@ -4454,7 +4321,6 @@ class _$HotelBookingConfirmRefundProcessingImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )?
     refundFailed,
@@ -4465,7 +4331,7 @@ class _$HotelBookingConfirmRefundProcessingImpl
         orderId,
         transactionId,
         amount,
-        tableId,
+        booktableId,
         bookingId,
       );
     }
@@ -4541,14 +4407,14 @@ abstract class HotelBookingConfirmRefundProcessing
     required final String orderId,
     required final String transactionId,
     required final double amount,
-    required final String tableId,
+    required final String booktableId,
     required final String bookingId,
   }) = _$HotelBookingConfirmRefundProcessingImpl;
 
   String get orderId;
   String get transactionId;
   double get amount;
-  String get tableId;
+  String get booktableId;
   String get bookingId;
 
   /// Create a copy of HotelBookingConfirmState
@@ -4572,7 +4438,7 @@ abstract class _$$HotelBookingConfirmRefundInitiatedImplCopyWith<$Res> {
     String orderId,
     String transactionId,
     double amount,
-    String tableId,
+    String booktableId,
     String bookingId,
   });
 }
@@ -4599,7 +4465,7 @@ class __$$HotelBookingConfirmRefundInitiatedImplCopyWithImpl<$Res>
     Object? orderId = null,
     Object? transactionId = null,
     Object? amount = null,
-    Object? tableId = null,
+    Object? booktableId = null,
     Object? bookingId = null,
   }) {
     return _then(
@@ -4620,9 +4486,9 @@ class __$$HotelBookingConfirmRefundInitiatedImplCopyWithImpl<$Res>
             ? _value.amount
             : amount // ignore: cast_nullable_to_non_nullable
                   as double,
-        tableId: null == tableId
-            ? _value.tableId
-            : tableId // ignore: cast_nullable_to_non_nullable
+        booktableId: null == booktableId
+            ? _value.booktableId
+            : booktableId // ignore: cast_nullable_to_non_nullable
                   as String,
         bookingId: null == bookingId
             ? _value.bookingId
@@ -4642,7 +4508,7 @@ class _$HotelBookingConfirmRefundInitiatedImpl
     required this.orderId,
     required this.transactionId,
     required this.amount,
-    required this.tableId,
+    required this.booktableId,
     required this.bookingId,
   });
 
@@ -4655,13 +4521,13 @@ class _$HotelBookingConfirmRefundInitiatedImpl
   @override
   final double amount;
   @override
-  final String tableId;
+  final String booktableId;
   @override
   final String bookingId;
 
   @override
   String toString() {
-    return 'HotelBookingConfirmState.refundInitiated(message: $message, orderId: $orderId, transactionId: $transactionId, amount: $amount, tableId: $tableId, bookingId: $bookingId)';
+    return 'HotelBookingConfirmState.refundInitiated(message: $message, orderId: $orderId, transactionId: $transactionId, amount: $amount, booktableId: $booktableId, bookingId: $bookingId)';
   }
 
   @override
@@ -4674,7 +4540,8 @@ class _$HotelBookingConfirmRefundInitiatedImpl
             (identical(other.transactionId, transactionId) ||
                 other.transactionId == transactionId) &&
             (identical(other.amount, amount) || other.amount == amount) &&
-            (identical(other.tableId, tableId) || other.tableId == tableId) &&
+            (identical(other.booktableId, booktableId) ||
+                other.booktableId == booktableId) &&
             (identical(other.bookingId, bookingId) ||
                 other.bookingId == bookingId));
   }
@@ -4686,7 +4553,7 @@ class _$HotelBookingConfirmRefundInitiatedImpl
     orderId,
     transactionId,
     amount,
-    tableId,
+    booktableId,
     bookingId,
   );
 
@@ -4713,21 +4580,16 @@ class _$HotelBookingConfirmRefundInitiatedImpl
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )
     success,
-    required TResult Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )
+    required TResult Function(String message, String orderId, String bookingId)
     paymentFailed,
     required TResult Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )
@@ -4738,7 +4600,7 @@ class _$HotelBookingConfirmRefundInitiatedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     error,
@@ -4746,7 +4608,7 @@ class _$HotelBookingConfirmRefundInitiatedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     refundProcessing,
@@ -4755,7 +4617,7 @@ class _$HotelBookingConfirmRefundInitiatedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     refundInitiated,
@@ -4764,7 +4626,6 @@ class _$HotelBookingConfirmRefundInitiatedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )
     refundFailed,
@@ -4774,7 +4635,7 @@ class _$HotelBookingConfirmRefundInitiatedImpl
       orderId,
       transactionId,
       amount,
-      tableId,
+      booktableId,
       bookingId,
     );
   }
@@ -4789,21 +4650,16 @@ class _$HotelBookingConfirmRefundInitiatedImpl
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )?
     success,
-    TResult? Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )?
+    TResult? Function(String message, String orderId, String bookingId)?
     paymentFailed,
     TResult? Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )?
@@ -4814,7 +4670,7 @@ class _$HotelBookingConfirmRefundInitiatedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     error,
@@ -4822,7 +4678,7 @@ class _$HotelBookingConfirmRefundInitiatedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundProcessing,
@@ -4831,7 +4687,7 @@ class _$HotelBookingConfirmRefundInitiatedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundInitiated,
@@ -4840,7 +4696,6 @@ class _$HotelBookingConfirmRefundInitiatedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )?
     refundFailed,
@@ -4850,7 +4705,7 @@ class _$HotelBookingConfirmRefundInitiatedImpl
       orderId,
       transactionId,
       amount,
-      tableId,
+      booktableId,
       bookingId,
     );
   }
@@ -4865,21 +4720,16 @@ class _$HotelBookingConfirmRefundInitiatedImpl
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )?
     success,
-    TResult Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )?
+    TResult Function(String message, String orderId, String bookingId)?
     paymentFailed,
     TResult Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )?
@@ -4890,7 +4740,7 @@ class _$HotelBookingConfirmRefundInitiatedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     error,
@@ -4898,7 +4748,7 @@ class _$HotelBookingConfirmRefundInitiatedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundProcessing,
@@ -4907,7 +4757,7 @@ class _$HotelBookingConfirmRefundInitiatedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundInitiated,
@@ -4916,7 +4766,6 @@ class _$HotelBookingConfirmRefundInitiatedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )?
     refundFailed,
@@ -4928,7 +4777,7 @@ class _$HotelBookingConfirmRefundInitiatedImpl
         orderId,
         transactionId,
         amount,
-        tableId,
+        booktableId,
         bookingId,
       );
     }
@@ -5005,7 +4854,7 @@ abstract class HotelBookingConfirmRefundInitiated
     required final String orderId,
     required final String transactionId,
     required final double amount,
-    required final String tableId,
+    required final String booktableId,
     required final String bookingId,
   }) = _$HotelBookingConfirmRefundInitiatedImpl;
 
@@ -5013,7 +4862,7 @@ abstract class HotelBookingConfirmRefundInitiated
   String get orderId;
   String get transactionId;
   double get amount;
-  String get tableId;
+  String get booktableId;
   String get bookingId;
 
   /// Create a copy of HotelBookingConfirmState
@@ -5037,7 +4886,6 @@ abstract class _$$HotelBookingConfirmRefundFailedImplCopyWith<$Res> {
     String orderId,
     String transactionId,
     double amount,
-    String tableId,
     String bookingId,
   });
 }
@@ -5064,7 +4912,6 @@ class __$$HotelBookingConfirmRefundFailedImplCopyWithImpl<$Res>
     Object? orderId = null,
     Object? transactionId = null,
     Object? amount = null,
-    Object? tableId = null,
     Object? bookingId = null,
   }) {
     return _then(
@@ -5085,10 +4932,6 @@ class __$$HotelBookingConfirmRefundFailedImplCopyWithImpl<$Res>
             ? _value.amount
             : amount // ignore: cast_nullable_to_non_nullable
                   as double,
-        tableId: null == tableId
-            ? _value.tableId
-            : tableId // ignore: cast_nullable_to_non_nullable
-                  as String,
         bookingId: null == bookingId
             ? _value.bookingId
             : bookingId // ignore: cast_nullable_to_non_nullable
@@ -5107,7 +4950,6 @@ class _$HotelBookingConfirmRefundFailedImpl
     required this.orderId,
     required this.transactionId,
     required this.amount,
-    required this.tableId,
     required this.bookingId,
   });
 
@@ -5119,14 +4961,13 @@ class _$HotelBookingConfirmRefundFailedImpl
   final String transactionId;
   @override
   final double amount;
-  @override
-  final String tableId;
+  // required String tableId,
   @override
   final String bookingId;
 
   @override
   String toString() {
-    return 'HotelBookingConfirmState.refundFailed(message: $message, orderId: $orderId, transactionId: $transactionId, amount: $amount, tableId: $tableId, bookingId: $bookingId)';
+    return 'HotelBookingConfirmState.refundFailed(message: $message, orderId: $orderId, transactionId: $transactionId, amount: $amount, bookingId: $bookingId)';
   }
 
   @override
@@ -5139,7 +4980,6 @@ class _$HotelBookingConfirmRefundFailedImpl
             (identical(other.transactionId, transactionId) ||
                 other.transactionId == transactionId) &&
             (identical(other.amount, amount) || other.amount == amount) &&
-            (identical(other.tableId, tableId) || other.tableId == tableId) &&
             (identical(other.bookingId, bookingId) ||
                 other.bookingId == bookingId));
   }
@@ -5151,7 +4991,6 @@ class _$HotelBookingConfirmRefundFailedImpl
     orderId,
     transactionId,
     amount,
-    tableId,
     bookingId,
   );
 
@@ -5178,21 +5017,16 @@ class _$HotelBookingConfirmRefundFailedImpl
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )
     success,
-    required TResult Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )
+    required TResult Function(String message, String orderId, String bookingId)
     paymentFailed,
     required TResult Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )
@@ -5203,7 +5037,7 @@ class _$HotelBookingConfirmRefundFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     error,
@@ -5211,7 +5045,7 @@ class _$HotelBookingConfirmRefundFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     refundProcessing,
@@ -5220,7 +5054,7 @@ class _$HotelBookingConfirmRefundFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )
     refundInitiated,
@@ -5229,19 +5063,11 @@ class _$HotelBookingConfirmRefundFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )
     refundFailed,
   }) {
-    return refundFailed(
-      message,
-      orderId,
-      transactionId,
-      amount,
-      tableId,
-      bookingId,
-    );
+    return refundFailed(message, orderId, transactionId, amount, bookingId);
   }
 
   @override
@@ -5254,21 +5080,16 @@ class _$HotelBookingConfirmRefundFailedImpl
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )?
     success,
-    TResult? Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )?
+    TResult? Function(String message, String orderId, String bookingId)?
     paymentFailed,
     TResult? Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )?
@@ -5279,7 +5100,7 @@ class _$HotelBookingConfirmRefundFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     error,
@@ -5287,7 +5108,7 @@ class _$HotelBookingConfirmRefundFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundProcessing,
@@ -5296,7 +5117,7 @@ class _$HotelBookingConfirmRefundFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundInitiated,
@@ -5305,7 +5126,6 @@ class _$HotelBookingConfirmRefundFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )?
     refundFailed,
@@ -5315,7 +5135,6 @@ class _$HotelBookingConfirmRefundFailedImpl
       orderId,
       transactionId,
       amount,
-      tableId,
       bookingId,
     );
   }
@@ -5330,21 +5149,16 @@ class _$HotelBookingConfirmRefundFailedImpl
       String bookingId,
       String confirmationNo,
       String bookingRefNo,
+      String booktableId,
     )?
     success,
-    TResult Function(
-      String message,
-      String orderId,
-      String tableId,
-      String bookingId,
-    )?
+    TResult Function(String message, String orderId, String bookingId)?
     paymentFailed,
     TResult Function(
       String message,
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
       bool shouldRefund,
     )?
@@ -5355,7 +5169,7 @@ class _$HotelBookingConfirmRefundFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     error,
@@ -5363,7 +5177,7 @@ class _$HotelBookingConfirmRefundFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundProcessing,
@@ -5372,7 +5186,7 @@ class _$HotelBookingConfirmRefundFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
+      String booktableId,
       String bookingId,
     )?
     refundInitiated,
@@ -5381,21 +5195,13 @@ class _$HotelBookingConfirmRefundFailedImpl
       String orderId,
       String transactionId,
       double amount,
-      String tableId,
       String bookingId,
     )?
     refundFailed,
     required TResult orElse(),
   }) {
     if (refundFailed != null) {
-      return refundFailed(
-        message,
-        orderId,
-        transactionId,
-        amount,
-        tableId,
-        bookingId,
-      );
+      return refundFailed(message, orderId, transactionId, amount, bookingId);
     }
     return orElse();
   }
@@ -5470,15 +5276,13 @@ abstract class HotelBookingConfirmRefundFailed
     required final String orderId,
     required final String transactionId,
     required final double amount,
-    required final String tableId,
     required final String bookingId,
   }) = _$HotelBookingConfirmRefundFailedImpl;
 
   String get message;
   String get orderId;
   String get transactionId;
-  double get amount;
-  String get tableId;
+  double get amount; // required String tableId,
   String get bookingId;
 
   /// Create a copy of HotelBookingConfirmState

@@ -129,7 +129,7 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
     final options = {
       'key': razorpaykey,
       'amount': (amount * 100).toInt(),
-      'name': 'Minna Travels',
+      'name': 'MT Trip',
       'description': 'Payment for ${widget.provider} Bill',
       'order_id': _currentOrderId,
       'prefill': {

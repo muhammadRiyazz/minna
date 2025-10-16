@@ -17,40 +17,46 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-// Update your HistoryPage services list
+  // White, Black, Gold theme
+  final Color _blackColor = Colors.black;
+  final Color _whiteColor = Colors.white;
+  final Color _goldColor = Color(0xFFD4AF37);
+  final Color _backgroundColor = Color(0xFFFAFAFA);
+  final Color _borderColor = Color(0xFFEEEEEE);
+  final Color _textSecondary = Color(0xFF666666);
 
-final List<Map<String, dynamic>> services = [
-  {
-    'name': 'Mobile', 
-    'icon': Icons.phone_android,
-    'page': const MobileReportPage(),
-  },
-  {
-    'name': 'DTH', 
-    'icon': Icons.live_tv,
-    'page': const DTHReportPage(),
-  },
-  {
-    'name': 'Electricity', 
-    'icon': Icons.bolt,
-    'page': const BillPaymentPage(
+  final List<Map<String, dynamic>> services = [
+    {
+      'name': 'Mobile', 
+      'icon': Icons.phone_android,
+      'page': const MobileReportPage(),
+    },
+    {
+      'name': 'DTH', 
+      'icon': Icons.live_tv,
+      'page': const DTHReportPage(),
+    },
+    {
+      'name': 'Electricity', 
+      'icon': Icons.bolt,
+      'page': const BillPaymentPage(
         title: 'Electricity Bill Payments',
         billerCategory: 'Electricity',
-      
-    ),
-  },
-  {
-    'name': 'Water', 
-    'icon': Icons.water_drop,
-    'page': BlocProvider(
-      create: (context) => BillPaymentBloc(BillPaymentRepository()),
-      child: const BillPaymentPage(
-        title: 'Water Bill Payments', 
-        billerCategory: 'Water',
       ),
-    ),
-  },
-];
+    },
+    {
+      'name': 'Water', 
+      'icon': Icons.water_drop,
+      'page': BlocProvider(
+        create: (context) => BillPaymentBloc(BillPaymentRepository()),
+        child: const BillPaymentPage(
+          title: 'Water Bill Payments', 
+          billerCategory: 'Water',
+        ),
+      ),
+    },
+  ];
+  
   int selectedIndex = 0;
 
   @override
@@ -62,30 +68,21 @@ final List<Map<String, dynamic>> services = [
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: _backgroundColor,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Transaction History',
           style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
+            color: _blackColor,
+            fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
         ),
         centerTitle: true,
-        backgroundColor: maincolor1,
+        backgroundColor: _whiteColor,
         elevation: 0,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh, color: Colors.white),
-            onPressed: () {
-              setState(() {});
-            },
-          ),
-        ],
+        foregroundColor: _blackColor,
+      
       ),
       body: BlocBuilder<LoginBloc, LoginState>(
         builder: (context, state) {
@@ -97,6 +94,7 @@ final List<Map<String, dynamic>> services = [
 
           return Column(
             children: [
+              SizedBox(height: 10),
               _buildServiceSelector(),
               Expanded(
                 child: services[selectedIndex]['page'],
@@ -110,18 +108,12 @@ final List<Map<String, dynamic>> services = [
 
   Widget _buildServiceSelector() {
     return Container(
-      margin: const EdgeInsets.only(top: 10,right: 12,left: 12,bottom: 5),
-      padding: const EdgeInsets.all(8),
+      margin: EdgeInsets.symmetric(horizontal: 12),
+      padding: EdgeInsets.all(5),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: const Color.fromARGB(31, 207, 206, 206),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: _whiteColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _borderColor),
       ),
       child: Row(
         children: List.generate(services.length, (index) {
@@ -136,28 +128,27 @@ final List<Map<String, dynamic>> services = [
                 });
               },
               child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 0),
                 decoration: BoxDecoration(
-                  color: isSelected ? maincolor1 : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
-                  border: isSelected ? null : Border.all(color: Colors.grey[300]!),
+                  color: isSelected ? _goldColor.withOpacity(0.1) : Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                  // border: isSelected ? Border.all(color: _goldColor) : null,
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
                       service['icon'],
-                      color: isSelected ? Colors.white : maincolor1,
-                      size: 20,
+                      color: isSelected ? _goldColor : _textSecondary,
+                      size: 15,
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 6),
                     Text(
                       service['name'],
                       style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.black87,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500,
+                        color: isSelected ? _goldColor : _textSecondary,
+                        fontSize: 12,
+                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -172,46 +163,49 @@ final List<Map<String, dynamic>> services = [
   }
 
   Widget _buildNotLoggedInSection() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                color: maincolor1!.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.history_outlined,
-                size: 50,
-                color: maincolor1,
-              ),
+    return Padding(
+      padding: EdgeInsets.all(32),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+              color: _whiteColor,
+              shape: BoxShape.circle,
+              border: Border.all(color: _borderColor),
             ),
-            const SizedBox(height: 24),
-             Text(
-              "Login to View History",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[800],
-              ),
+            child: Icon(
+              Icons.history_outlined,
+              size: 40,
+              color: _textSecondary,
             ),
-            const SizedBox(height: 12),
-             Text(
-              "Please log in to view your transaction history\nand manage your data",
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-                height: 1.4,
-              ),
-              textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 32),
+          Text(
+            'Login Required',
+            style: TextStyle(
+              fontSize: 22,
+              color: _blackColor,
+              fontWeight: FontWeight.w600,
             ),
-            const SizedBox(height: 32),
-            ElevatedButton(
+          ),
+          SizedBox(height: 16),
+          Text(
+            'Please login to view your transaction history\nand manage your payment records',
+            style: TextStyle(
+              fontSize: 16,
+              color: _textSecondary,
+              height: 1.4,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 32),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton(
               onPressed: () {
                 showModalBottomSheet(
                   context: context,
@@ -221,25 +215,24 @@ final List<Map<String, dynamic>> services = [
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: maincolor1,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+                backgroundColor: _blackColor,
+                foregroundColor: _whiteColor,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                elevation: 2,
               ),
-              child: const Text(
-                "Login Now",
+              child: Text(
+                'Login to Continue',
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
-            const SizedBox(height: 16),
-          ],
-        ),
+          ),
+          SizedBox(height: 16),
+       
+        ],
       ),
     );
   }
@@ -259,7 +252,6 @@ class MobileReportPage extends StatelessWidget {
     );
   }
 }
-
 
 class DTHReportPage extends StatelessWidget {
   const DTHReportPage({super.key});

@@ -42,7 +42,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
             slivers: [
               // App Bar
               SliverAppBar(
-                backgroundColor:_backgroundColor ,
+                backgroundColor:_primaryColor ,
                 expandedHeight: 120,
                 floating: false,
                 pinned: true,
@@ -54,7 +54,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
                     'My Account',
                     style: TextStyle(
                       color: 
-                      _primaryColor,
+                      Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
                     ),
@@ -71,13 +71,13 @@ class _MyAccountPageState extends State<MyAccountPage> {
                   if (!(state.isLoggedIn ?? false)) ...[
                     _buildLoginSection(context),
                   ] else ...[
-                    _buildUserProfileSection(state),
+                    // _buildUserProfileSection(state),
                   ],
                   
                   
                   // Account Management
-                  _buildSectionTitle('ACCOUNT MANAGEMENT'),
-                  _buildAccountOption(
+               state.isLoggedIn ?? false?   _buildSectionTitle('ACCOUNT MANAGEMENT'):SizedBox(),
+               state.isLoggedIn ?? false?    _buildAccountOption(
                     Icons.person_outline_rounded,
                     'Profile Information',
                     'Update your personal details',
@@ -87,61 +87,62 @@ class _MyAccountPageState extends State<MyAccountPage> {
                         MaterialPageRoute(builder: (context) => ProfilePage()),
                       );
                     },
-                  ),
-                  _buildAccountOption(
-                    Icons.credit_card_rounded,
-                    'Payment Methods',
-                    'Manage your payment options',
-                    () {
-                      _showComingSoonBottomSheet(context, "Payment Methods");
-                    },
-                  ),
-                  _buildAccountOption(
-                    Icons.location_on_outlined,
-                    'Saved Addresses',
-                    'Your frequently used addresses',
-                    () {
-                      _showComingSoonBottomSheet(context, "Saved Addresses");
-                    },
-                  ),
+                  ):SizedBox
+                  (),
+                  // _buildAccountOption(
+                  //   Icons.credit_card_rounded,
+                  //   'Payment Methods',
+                  //   'Manage your payment options',
+                  //   () {
+                  //     _showComingSoonBottomSheet(context, "Payment Methods");
+                  //   },
+                  // ),
+                  // _buildAccountOption(
+                  //   Icons.location_on_outlined,
+                  //   'Saved Addresses',
+                  //   'Your frequently used addresses',
+                  //   () {
+                  //     _showComingSoonBottomSheet(context, "Saved Addresses");
+                  //   },
+                  // ),
       
-                  // Booking & History
-                  _buildSectionTitle('BOOKINGS & HISTORY'),
-                  _buildAccountOption(
-                    Icons.bookmark_border_rounded,
-                    'My Bookings',
-                    'View all your bookings',
-                    () {
-                      _showComingSoonBottomSheet(context, "My Bookings");
-                    },
-                  ),
-                  _buildAccountOption(
-                    Icons.history_rounded,
-                    'Booking History',
-                    'Past travel history',
-                    () {
-                      _showComingSoonBottomSheet(context, "Booking History");
-                    },
-                  ),
-                  _buildAccountOption(
-                    Icons.favorite_border_rounded,
-                    'Wishlist',
-                    'Saved destinations & deals',
-                    () {
-                      _showComingSoonBottomSheet(context, "Wishlist");
-                    },
-                  ),
+                  // // Booking & History
+                  // _buildSectionTitle('BOOKINGS & HISTORY'),
+                  // _buildAccountOption(
+                  //   Icons.bookmark_border_rounded,
+                  //   'My Bookings',
+                  //   'View all your bookings',
+                  //   () {
+                  //     _showComingSoonBottomSheet(context, "My Bookings");
+                  //   },
+                  // ),
+                  // _buildAccountOption(
+                  //   Icons.history_rounded,
+                  //   'Booking History',
+                  //   'Past travel history',
+                  //   () {
+                  //     _showComingSoonBottomSheet(context, "Booking History");
+                  //   },
+                  // ),
+                  // _buildAccountOption(
+                  //   Icons.favorite_border_rounded,
+                  //   'Wishlist',
+                  //   'Saved destinations & deals',
+                  //   () {
+                  //     _showComingSoonBottomSheet(context, "Wishlist");
+                  //   },
+                  // ),
       
                   // Support & Information
                   _buildSectionTitle('SUPPORT & INFORMATION'),
-                  _buildAccountOption(
-                    Icons.help_outline_rounded,
-                    'Help Center',
-                    'Get help with your bookings',
-                    () {
-                      _showComingSoonBottomSheet(context, "Help Center");
-                    },
-                  ),
+                  // _buildAccountOption(
+                  //   Icons.help_outline_rounded,
+                  //   'Help Center',
+                  //   'Get help with your bookings',
+                  //   () {
+                  //     _showComingSoonBottomSheet(context, "Help Center");
+                  //   },
+                  // ),
                   _buildAccountOption(
                     Icons.email_outlined,
                     'Contact Us',
@@ -164,14 +165,14 @@ class _MyAccountPageState extends State<MyAccountPage> {
                       );
                     },
                   ),
-                  _buildAccountOption(
-                    Icons.star_border_rounded,
-                    'Rate Our App',
-                    'Share your experience',
-                    () {
-                      _showComingSoonBottomSheet(context, "Rate Our App");
-                    },
-                  ),
+                  // _buildAccountOption(
+                  //   Icons.star_border_rounded,
+                  //   'Rate Our App',
+                  //   'Share your experience',
+                  //   () {
+                  //     _showComingSoonBottomSheet(context, "Rate Our App");
+                  //   },
+                  // ),
                   _buildAccountOption(
                     Icons.share_outlined,
                     'Share App',
@@ -203,17 +204,17 @@ class _MyAccountPageState extends State<MyAccountPage> {
                   // Account Actions
                   if (state.isLoggedIn ?? false) ...[
                     _buildSectionTitle('ACCOUNT ACTIONS'),
-                    _buildAccountOption(
-                      Icons.settings_outlined,
-                      'Settings',
-                      'App preferences and settings',
-                      () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => AccountSettingsPage()),
-                        );
-                      },
-                    ),
+                    // _buildAccountOption(
+                    //   Icons.settings_outlined,
+                    //   'Settings',
+                    //   'App preferences and settings',
+                    //   () {
+                    //     Navigator.push(
+                    //       context,
+                    //       MaterialPageRoute(builder: (context) => AccountSettingsPage()),
+                    //     );
+                    //   },
+                    // ),
                     _buildAccountOption(
                       Icons.logout_rounded,
                       'Logout',

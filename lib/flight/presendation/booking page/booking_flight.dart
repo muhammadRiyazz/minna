@@ -633,109 +633,172 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
           color: _cardColor,
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 8),
-            child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade200, width: 1),
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: BlocBuilder<NationalityBloc, NationalityState>(
-                  builder: (context, state) {
-                    if (selectedNationalities[index] == null && state.nationalitList.isNotEmpty) {
-                      selectedNationalities[index] = state.nationalitList.firstWhere(
-                        (country) => country.countryCode == 'IN',
-                        orElse: () => state.nationalitList.first,
-                      );
-                    }
-                    if (selectedCountriesOfIssue[index] == null && state.nationalitList.isNotEmpty) {
-                      selectedCountriesOfIssue[index] = state.nationalitList.firstWhere(
-                        (country) => country.countryCode == 'IN',
-                        orElse: () => state.nationalitList.first,
-                      );
-                    }
-                    if (selectedTitles[index] == null) {
-                      selectedTitles[index] = isChild || isInfant ? 'Mstr' : 'Mr';
-                    }
-
-                    final ptc = isChild ? 'CHD' : isInfant ? 'INF' : 'ADT';
-                    final mealOptions = hasMeals
-                        ? flightResponse.ssrAvailability!.mealInfo![0].meals!.where((meal) => meal.ptc == ptc).toList()
-                        : [];
-                    final baggageOptions = hasBaggage
-                        ? flightResponse.ssrAvailability!.baggageInfo![0].baggages!.where((baggage) => baggage.ptc == ptc).toList()
-                        : [];
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Passenger Header
-                        Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
-                              colors: [
-                                _secondaryColor.withOpacity(0.1),
-                                _secondaryColor.withOpacity(0.05),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: BlocBuilder<NationalityBloc, NationalityState>(
+                builder: (context, state) {
+                  if (selectedNationalities[index] == null && state.nationalitList.isNotEmpty) {
+                    selectedNationalities[index] = state.nationalitList.firstWhere(
+                      (country) => country.countryCode == 'IN',
+                      orElse: () => state.nationalitList.first,
+                    );
+                  }
+                  if (selectedCountriesOfIssue[index] == null && state.nationalitList.isNotEmpty) {
+                    selectedCountriesOfIssue[index] = state.nationalitList.firstWhere(
+                      (country) => country.countryCode == 'IN',
+                      orElse: () => state.nationalitList.first,
+                    );
+                  }
+                  if (selectedTitles[index] == null) {
+                    selectedTitles[index] = isChild || isInfant ? 'Mstr' : 'Mr';
+                  }
+            
+                  final ptc = isChild ? 'CHD' : isInfant ? 'INF' : 'ADT';
+                  final mealOptions = hasMeals
+                      ? flightResponse.ssrAvailability!.mealInfo![0].meals!.where((meal) => meal.ptc == ptc).toList()
+                      : [];
+                  final baggageOptions = hasBaggage
+                      ? flightResponse.ssrAvailability!.baggageInfo![0].baggages!.where((baggage) => baggage.ptc == ptc).toList()
+                      : [];
+            
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Passenger Header
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: [
+                              _secondaryColor.withOpacity(0.1),
+                              _secondaryColor.withOpacity(0.05),
+                            ],
                           ),
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  color: _secondaryColor,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  isAdult ? Icons.person_rounded : 
-                                  isChild ? Icons.child_care_rounded : Icons.child_friendly_rounded,
-                                  size: 14,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                color: _secondaryColor,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                isAdult ? Icons.person_rounded : 
+                                isChild ? Icons.child_care_rounded : Icons.child_friendly_rounded,
+                                size: 14,
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(width: 12),
+                            Text(
+                              isAdult ? 'ADULT ${index + 1}' : isChild ? 'CHILD ${index + 1}' : 'INFANT ${index + 1}',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: _primaryColor,
+                              ),
+                            ),
+                            Spacer(),
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: _primaryColor,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                isAdult ? 'ADULT' : isChild ? 'CHILD' : 'INFANT',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
                                   color: Colors.white,
                                 ),
                               ),
-                              SizedBox(width: 12),
-                              Text(
-                                isAdult ? 'ADULT ${index + 1}' : isChild ? 'CHILD ${index + 1}' : 'INFANT ${index + 1}',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  color: _primaryColor,
-                                ),
-                              ),
-                              Spacer(),
-                              Container(
-                                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: _primaryColor,
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Text(
-                                  isAdult ? 'ADULT' : isChild ? 'CHILD' : 'INFANT',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 20),
-
-                        // Title Dropdown
-                        Column(
+                      ),
+                      SizedBox(height: 20),
+            
+                      // Title Dropdown
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Title',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: _textPrimary,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          DropdownButtonFormField<String>(
+                            decoration: InputDecoration(
+                              hintText: 'Select Title',
+                              hintStyle: TextStyle(color: _textLight, fontSize: 14),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(color: Colors.grey[300]!),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(color: Colors.grey[300]!),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(color: _secondaryColor, width: 2),
+                              ),
+                              filled: true,
+                              fillColor: _backgroundColor,
+                              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                            ),
+                            isExpanded: true,
+                            dropdownColor: _cardColor,
+                            icon: Icon(Icons.arrow_drop_down_rounded, color: _textSecondary, size: 24),
+                            items: [
+                              if (isChild || isInfant)
+                                DropdownMenuItem(
+                                  value: 'Mstr',
+                                  child: Text('Master', style: TextStyle(fontSize: 14, color: _textPrimary)),
+                                ),
+                              if (!isChild && !isInfant) ...[
+                                DropdownMenuItem(
+                                  value: 'Mr',
+                                  child: Text('Mr', style: TextStyle(fontSize: 14, color: _textPrimary)),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'Mrs',
+                                  child: Text('Mrs', style: TextStyle(fontSize: 14, color: _textPrimary)),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'Ms',
+                                  child: Text('Ms', style: TextStyle(fontSize: 14, color: _textPrimary)),
+                                ),
+                              ],
+                            ],
+                            onChanged: (value) {
+                              setState(() {
+                                selectedTitles[index] = value;
+                              });
+                            },
+                            value: selectedTitles[index],
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+            Row(children: [
+            
+              Expanded(
+                child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Title',
+                              'First Name',
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
@@ -743,9 +806,328 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
                               ),
                             ),
                             SizedBox(height: 8),
-                            DropdownButtonFormField<String>(
+                            TextFormField(
+                              controller: firstNameControllers[index],
                               decoration: InputDecoration(
-                                hintText: 'Select Title',
+                                hintText: 'Enter first name',
+                                hintStyle: TextStyle(color: _textLight, fontSize: 14),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: Colors.grey[300]!),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: Colors.grey[300]!),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: _secondaryColor, width: 2),
+                                ),
+                                filled: true,
+                                fillColor: _backgroundColor,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                              ),
+                              style: TextStyle(fontSize: 14, color: _textPrimary),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter first name';
+                                }
+                                if (!RegExp(r'^[a-zA-Z ]+$').hasMatch(value)) {
+                                  return 'Only alphabets are allowed';
+                                }
+                                if (value.length < 2) {
+                                  return 'Minimum 2 characters required';
+                                }
+                                return null;
+                              },
+                            ),
+                          ],
+                        ),
+              ),
+            SizedBox(width: 12,),
+                      // Last Name
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Last Name',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: _textPrimary,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            TextFormField(
+                              controller: lastNameControllers[index],
+                              decoration: InputDecoration(
+                                hintText: 'Enter last name',
+                                hintStyle: TextStyle(color: _textLight, fontSize: 14),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: Colors.grey[300]!),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: Colors.grey[300]!),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: _secondaryColor, width: 1),
+                                ),
+                                filled: true,
+                                fillColor: _backgroundColor,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                              ),
+                              style: TextStyle(fontSize: 14, color: _textPrimary),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter last name';
+                                }
+                                if (!RegExp(r'^[a-zA-Z ]+$').hasMatch(value)) {
+                                  return 'Only alphabets are allowed';
+                                }
+                                if (value.length < 2) {
+                                  return 'Minimum 2 characters required';
+                                }
+                                return null;
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+            
+            
+            ],),
+                      // First Name
+                    
+                      SizedBox(height: 20),
+            
+                      // Nationality
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Nationality',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: _textPrimary,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          DropdownButtonFormField<Country>(
+                            decoration: InputDecoration(
+                              hintText: 'Select Nationality',
+                              hintStyle: TextStyle(color: _textLight, fontSize: 14),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(color: Colors.grey[300]!),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(color: Colors.grey[300]!),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(color: _secondaryColor, width: 1),
+                              ),
+                              filled: true,
+                              fillColor: _backgroundColor,
+                              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                            ),
+                            isExpanded: true,
+                            dropdownColor: _cardColor,
+                            icon: Icon(Icons.arrow_drop_down_rounded, color: _textSecondary, size: 24),
+                            value: selectedNationalities[index],
+                            items: state.nationalitList.map((Country value) {
+                              return DropdownMenuItem<Country>(
+                                value: value,
+                                child: Text(value.countryName, style: TextStyle(fontSize: 14, color: _textPrimary)),
+                              );
+                            }).toList(),
+                            onChanged: (Country? newValue) {
+                              if (newValue != null) {
+                                setState(() {
+                                  selectedNationalities[index] = newValue;
+                                });
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+            
+                      // Date of Birth
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Date of Birth',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: _textPrimary,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          TextFormField(
+                            readOnly: true,
+                            controller: dobControllers[index],
+                            decoration: InputDecoration(
+                              hintText: 'Select date of birth',
+                              hintStyle: TextStyle(color: _textLight, fontSize: 14),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(color: Colors.grey[300]!),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(color: Colors.grey[300]!),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(color: _secondaryColor, width: 1),
+                              ),
+                              filled: true,
+                              fillColor: _backgroundColor,
+                              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                              suffixIcon: Icon(Icons.calendar_today_rounded, size: 20, color: _textSecondary),
+                            ),
+                            style: TextStyle(fontSize: 14, color: _textPrimary),
+                            onTap: () async {
+                              DateTime? pickedDate = await showDatePicker(
+                                context: context,
+                                initialDate: isInfant
+                                    ? DateTime.now().subtract(Duration(days: 365))
+                                    : isChild
+                                        ? DateTime.now().subtract(Duration(days: 365 * 5))
+                                        : DateTime.now().subtract(Duration(days: 365 * 18)),
+                                firstDate: DateTime(1900),
+                                lastDate: DateTime.now(),
+                              );
+                              if (pickedDate != null) {
+                                setState(() {
+                                  dobControllers[index].text = DateFormat('yyyy-MM-dd').format(pickedDate);
+                                });
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+            
+                      if (!isInfant) ...[
+                        SizedBox(height: 20),
+                        // Passport Number
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Passport Number',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: _textPrimary,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            TextFormField(
+                              controller: passportControllers[index],
+                              decoration: InputDecoration(
+                                hintText: 'Enter passport number',
+                                hintStyle: TextStyle(color: _textLight, fontSize: 14),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: Colors.grey[300]!),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: Colors.grey[300]!),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: _secondaryColor, width: 1),
+                                ),
+                                filled: true,
+                                fillColor: _backgroundColor,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                              ),
+                              style: TextStyle(fontSize: 14, color: _textPrimary),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                        // Passport Expiry
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Passport Expiry',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: _textPrimary,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            TextFormField(
+                              readOnly: true,
+                              controller: expiryControllers[index],
+                              decoration: InputDecoration(
+                                hintText: 'Select expiry date',
+                                hintStyle: TextStyle(color: _textLight, fontSize: 14),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: Colors.grey[300]!),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: Colors.grey[300]!),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: _secondaryColor, width: 2),
+                                ),
+                                filled: true,
+                                fillColor: _backgroundColor,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                                suffixIcon: Icon(Icons.calendar_today_rounded, size: 20, color: _textSecondary),
+                              ),
+                              style: TextStyle(fontSize: 14, color: _textPrimary),
+                              onTap: () async {
+                                DateTime? pickedDate = await showDatePicker(
+                                  context: context,
+                                  initialDate: DateTime.now().add(Duration(days: 365 * 5)),
+                                  firstDate: DateTime.now(),
+                                  lastDate: DateTime(2100),
+                                );
+                                if (pickedDate != null) {
+                                  setState(() {
+                                    expiryControllers[index].text = DateFormat('yyyy-MM-dd').format(pickedDate);
+                                  });
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                        // Country of Issue
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Country of Issue',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: _textPrimary,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            DropdownButtonFormField<Country>(
+                              decoration: InputDecoration(
+                                hintText: 'Select country',
                                 hintStyle: TextStyle(color: _textLight, fontSize: 14),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
@@ -766,187 +1148,7 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
                               isExpanded: true,
                               dropdownColor: _cardColor,
                               icon: Icon(Icons.arrow_drop_down_rounded, color: _textSecondary, size: 24),
-                              items: [
-                                if (isChild || isInfant)
-                                  DropdownMenuItem(
-                                    value: 'Mstr',
-                                    child: Text('Master', style: TextStyle(fontSize: 14, color: _textPrimary)),
-                                  ),
-                                if (!isChild && !isInfant) ...[
-                                  DropdownMenuItem(
-                                    value: 'Mr',
-                                    child: Text('Mr', style: TextStyle(fontSize: 14, color: _textPrimary)),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'Mrs',
-                                    child: Text('Mrs', style: TextStyle(fontSize: 14, color: _textPrimary)),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'Ms',
-                                    child: Text('Ms', style: TextStyle(fontSize: 14, color: _textPrimary)),
-                                  ),
-                                ],
-                              ],
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedTitles[index] = value;
-                                });
-                              },
-                              value: selectedTitles[index],
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 20),
-Row(children: [
-
-  Expanded(
-    child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'First Name',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: _textPrimary,
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              TextFormField(
-                                controller: firstNameControllers[index],
-                                decoration: InputDecoration(
-                                  hintText: 'Enter first name',
-                                  hintStyle: TextStyle(color: _textLight, fontSize: 14),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: Colors.grey[300]!),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: Colors.grey[300]!),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: _secondaryColor, width: 2),
-                                  ),
-                                  filled: true,
-                                  fillColor: _backgroundColor,
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                                ),
-                                style: TextStyle(fontSize: 14, color: _textPrimary),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter first name';
-                                  }
-                                  if (!RegExp(r'^[a-zA-Z ]+$').hasMatch(value)) {
-                                    return 'Only alphabets are allowed';
-                                  }
-                                  if (value.length < 2) {
-                                    return 'Minimum 2 characters required';
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ],
-                          ),
-  ),
-SizedBox(width: 12,),
-                        // Last Name
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Last Name',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: _textPrimary,
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              TextFormField(
-                                controller: lastNameControllers[index],
-                                decoration: InputDecoration(
-                                  hintText: 'Enter last name',
-                                  hintStyle: TextStyle(color: _textLight, fontSize: 14),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: Colors.grey[300]!),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: Colors.grey[300]!),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: _secondaryColor, width: 1),
-                                  ),
-                                  filled: true,
-                                  fillColor: _backgroundColor,
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                                ),
-                                style: TextStyle(fontSize: 14, color: _textPrimary),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter last name';
-                                  }
-                                  if (!RegExp(r'^[a-zA-Z ]+$').hasMatch(value)) {
-                                    return 'Only alphabets are allowed';
-                                  }
-                                  if (value.length < 2) {
-                                    return 'Minimum 2 characters required';
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-
-
-],),
-                        // First Name
-                      
-                        SizedBox(height: 20),
-
-                        // Nationality
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Nationality',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: _textPrimary,
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            DropdownButtonFormField<Country>(
-                              decoration: InputDecoration(
-                                hintText: 'Select Nationality',
-                                hintStyle: TextStyle(color: _textLight, fontSize: 14),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(color: Colors.grey[300]!),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(color: Colors.grey[300]!),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(color: _secondaryColor, width: 1),
-                                ),
-                                filled: true,
-                                fillColor: _backgroundColor,
-                                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                              ),
-                              isExpanded: true,
-                              dropdownColor: _cardColor,
-                              icon: Icon(Icons.arrow_drop_down_rounded, color: _textSecondary, size: 24),
-                              value: selectedNationalities[index],
+                              value: selectedCountriesOfIssue[index],
                               items: state.nationalitList.map((Country value) {
                                 return DropdownMenuItem<Country>(
                                   value: value,
@@ -956,21 +1158,74 @@ SizedBox(width: 12,),
                               onChanged: (Country? newValue) {
                                 if (newValue != null) {
                                   setState(() {
-                                    selectedNationalities[index] = newValue;
+                                    selectedCountriesOfIssue[index] = newValue;
                                   });
                                 }
                               },
                             ),
                           ],
                         ),
+                      ],
+            
+                      // Same as first passenger checkbox
+                      if (!isFirstPassenger) ...[
                         SizedBox(height: 20),
-
-                        // Date of Birth
+                        Container(
+                          padding: EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: _secondaryColor.withOpacity(0.05),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: _secondaryColor.withOpacity(0.2)),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 20,
+                                height: 20,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: Border.all(color: _secondaryColor, width: 2),
+                                ),
+                                child: Theme(
+                                  data: ThemeData(unselectedWidgetColor: Colors.transparent),
+                                  child: Checkbox(
+                                    value: sameAsFirstPassenger[index],
+                                    onChanged: (value) {
+                                      setState(() {
+                                        sameAsFirstPassenger[index] = value ?? false;
+                                      });
+                                    },
+                                    activeColor: _secondaryColor,
+                                    checkColor: Colors.white,
+                                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  'Use same details as first passenger',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: _textPrimary,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+            
+                      // Address fields (only if not same as first passenger)
+                      if (!sameAsFirstPassenger[index]) ...[
+                        SizedBox(height: 20),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Date of Birth',
+                              'Address',
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
@@ -979,10 +1234,9 @@ SizedBox(width: 12,),
                             ),
                             SizedBox(height: 8),
                             TextFormField(
-                              readOnly: true,
-                              controller: dobControllers[index],
+                              controller: addressControllers[index],
                               decoration: InputDecoration(
-                                hintText: 'Select date of birth',
+                                hintText: 'Enter your address',
                                 hintStyle: TextStyle(color: _textLight, fontSize: 14),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
@@ -994,495 +1248,234 @@ SizedBox(width: 12,),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(color: _secondaryColor, width: 1),
+                                  borderSide: BorderSide(color: _secondaryColor, width: 2),
                                 ),
                                 filled: true,
                                 fillColor: _backgroundColor,
                                 contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                                suffixIcon: Icon(Icons.calendar_today_rounded, size: 20, color: _textSecondary),
                               ),
+                              maxLines: 2,
                               style: TextStyle(fontSize: 14, color: _textPrimary),
-                              onTap: () async {
-                                DateTime? pickedDate = await showDatePicker(
-                                  context: context,
-                                  initialDate: isInfant
-                                      ? DateTime.now().subtract(Duration(days: 365))
-                                      : isChild
-                                          ? DateTime.now().subtract(Duration(days: 365 * 5))
-                                          : DateTime.now().subtract(Duration(days: 365 * 18)),
-                                  firstDate: DateTime(1900),
-                                  lastDate: DateTime.now(),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Pin Code',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: _textPrimary,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            TextFormField(
+                              controller: pincodeControllers[index],
+                              decoration: InputDecoration(
+                                hintText: 'Enter pin code',
+                                hintStyle: TextStyle(color: _textLight, fontSize: 14),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: Colors.grey[300]!),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: Colors.grey[300]!),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: _secondaryColor, width: 2),
+                                ),
+                                filled: true,
+                                fillColor: _backgroundColor,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                              ),
+                              keyboardType: TextInputType.number,
+                              style: TextStyle(fontSize: 14, color: _textPrimary),
+                            ),
+                          ],
+                        ),
+                      ],
+            
+                      // Meal selection
+                      if (hasMeals) ...[
+                        SizedBox(height: 20),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(Icons.restaurant_menu_rounded, size: 16, color: _secondaryColor),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Select Meal (Optional)',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: _textPrimary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 8),
+                            DropdownButtonFormField<Meal>(
+                              decoration: InputDecoration(
+                                hintText: 'Choose a meal option',
+                                hintStyle: TextStyle(color: _textLight, fontSize: 14),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: Colors.grey[300]!),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: Colors.grey[300]!),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: _secondaryColor, width: 2),
+                                ),
+                                filled: true,
+                                fillColor: _backgroundColor,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                              ),
+                              isExpanded: true,
+                              dropdownColor: _cardColor,
+                              icon: Icon(Icons.arrow_drop_down_rounded, color: _textSecondary, size: 24),
+                              hint: Text('No meal selected', style: TextStyle(fontSize: 14, color: _textLight)),
+                              value: selectedMeals[index],
+                              items: mealOptions.cast<Meal>().map<DropdownMenuItem<Meal>>((meal) {
+                                return DropdownMenuItem<Meal>(
+                                  value: meal,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        meal.name ?? 'Meal',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: _textPrimary,
+                                        ),
+                                      ),
+                                      SizedBox(height: 2),
+                                      Text(
+                                        '${meal.amount?.toStringAsFixed(2) ?? '0.00'} ${meal.currency ?? 'INR'}',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: _secondaryColor,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 );
-                                if (pickedDate != null) {
+                              }).toList(),
+                              onChanged: (Meal? newValue) {
+                                if (newValue != null) {
                                   setState(() {
-                                    dobControllers[index].text = DateFormat('yyyy-MM-dd').format(pickedDate);
+                                    selectedMeals[index] = newValue;
                                   });
                                 }
                               },
                             ),
                           ],
                         ),
-
-                        if (!isInfant) ...[
-                          SizedBox(height: 20),
-                          // Passport Number
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Passport Number',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: _textPrimary,
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              TextFormField(
-                                controller: passportControllers[index],
-                                decoration: InputDecoration(
-                                  hintText: 'Enter passport number',
-                                  hintStyle: TextStyle(color: _textLight, fontSize: 14),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: Colors.grey[300]!),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: Colors.grey[300]!),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: _secondaryColor, width: 1),
-                                  ),
-                                  filled: true,
-                                  fillColor: _backgroundColor,
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                                ),
-                                style: TextStyle(fontSize: 14, color: _textPrimary),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 20),
-                          // Passport Expiry
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Passport Expiry',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: _textPrimary,
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              TextFormField(
-                                readOnly: true,
-                                controller: expiryControllers[index],
-                                decoration: InputDecoration(
-                                  hintText: 'Select expiry date',
-                                  hintStyle: TextStyle(color: _textLight, fontSize: 14),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: Colors.grey[300]!),
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: Colors.grey[300]!),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: _secondaryColor, width: 2),
-                                  ),
-                                  filled: true,
-                                  fillColor: _backgroundColor,
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                                  suffixIcon: Icon(Icons.calendar_today_rounded, size: 20, color: _textSecondary),
-                                ),
-                                style: TextStyle(fontSize: 14, color: _textPrimary),
-                                onTap: () async {
-                                  DateTime? pickedDate = await showDatePicker(
-                                    context: context,
-                                    initialDate: DateTime.now().add(Duration(days: 365 * 5)),
-                                    firstDate: DateTime.now(),
-                                    lastDate: DateTime(2100),
-                                  );
-                                  if (pickedDate != null) {
-                                    setState(() {
-                                      expiryControllers[index].text = DateFormat('yyyy-MM-dd').format(pickedDate);
-                                    });
-                                  }
-                                },
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 20),
-                          // Country of Issue
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Country of Issue',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: _textPrimary,
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              DropdownButtonFormField<Country>(
-                                decoration: InputDecoration(
-                                  hintText: 'Select country',
-                                  hintStyle: TextStyle(color: _textLight, fontSize: 14),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: Colors.grey[300]!),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: Colors.grey[300]!),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: _secondaryColor, width: 2),
-                                  ),
-                                  filled: true,
-                                  fillColor: _backgroundColor,
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                                ),
-                                isExpanded: true,
-                                dropdownColor: _cardColor,
-                                icon: Icon(Icons.arrow_drop_down_rounded, color: _textSecondary, size: 24),
-                                value: selectedCountriesOfIssue[index],
-                                items: state.nationalitList.map((Country value) {
-                                  return DropdownMenuItem<Country>(
-                                    value: value,
-                                    child: Text(value.countryName, style: TextStyle(fontSize: 14, color: _textPrimary)),
-                                  );
-                                }).toList(),
-                                onChanged: (Country? newValue) {
-                                  if (newValue != null) {
-                                    setState(() {
-                                      selectedCountriesOfIssue[index] = newValue;
-                                    });
-                                  }
-                                },
-                              ),
-                            ],
-                          ),
-                        ],
-
-                        // Same as first passenger checkbox
-                        if (!isFirstPassenger) ...[
-                          SizedBox(height: 20),
-                          Container(
-                            padding: EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: _secondaryColor.withOpacity(0.05),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: _secondaryColor.withOpacity(0.2)),
-                            ),
-                            child: Row(
+                      ],
+            
+                      // Baggage selection
+                      if (hasBaggage) ...[
+                        SizedBox(height: 20),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
                               children: [
-                                Container(
-                                  width: 20,
-                                  height: 20,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(4),
-                                    border: Border.all(color: _secondaryColor, width: 2),
-                                  ),
-                                  child: Theme(
-                                    data: ThemeData(unselectedWidgetColor: Colors.transparent),
-                                    child: Checkbox(
-                                      value: sameAsFirstPassenger[index],
-                                      onChanged: (value) {
-                                        setState(() {
-                                          sameAsFirstPassenger[index] = value ?? false;
-                                        });
-                                      },
-                                      activeColor: _secondaryColor,
-                                      checkColor: Colors.white,
-                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    'Use same details as first passenger',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: _textPrimary,
-                                    ),
+                                Icon(Icons.work_outline_rounded, size: 16, color: _secondaryColor),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Add Baggage (Optional)',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: _textPrimary,
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                        ],
-
-                        // Address fields (only if not same as first passenger)
-                        if (!sameAsFirstPassenger[index]) ...[
-                          SizedBox(height: 20),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Address',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: _textPrimary,
+                            SizedBox(height: 8),
+                            DropdownButtonFormField<Baggage>(
+                              decoration: InputDecoration(
+                                hintText: 'Choose baggage option',
+                                hintStyle: TextStyle(color: _textLight, fontSize: 14),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: Colors.grey[300]!),
                                 ),
-                              ),
-                              SizedBox(height: 8),
-                              TextFormField(
-                                controller: addressControllers[index],
-                                decoration: InputDecoration(
-                                  hintText: 'Enter your address',
-                                  hintStyle: TextStyle(color: _textLight, fontSize: 14),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: Colors.grey[300]!),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: Colors.grey[300]!),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: _secondaryColor, width: 2),
-                                  ),
-                                  filled: true,
-                                  fillColor: _backgroundColor,
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: Colors.grey[300]!),
                                 ),
-                                maxLines: 2,
-                                style: TextStyle(fontSize: 14, color: _textPrimary),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 20),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Pin Code',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: _textPrimary,
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: _secondaryColor, width: 2),
                                 ),
+                                filled: true,
+                                fillColor: _backgroundColor,
                               ),
-                              SizedBox(height: 8),
-                              TextFormField(
-                                controller: pincodeControllers[index],
-                                decoration: InputDecoration(
-                                  hintText: 'Enter pin code',
-                                  hintStyle: TextStyle(color: _textLight, fontSize: 14),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: Colors.grey[300]!),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: Colors.grey[300]!),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: _secondaryColor, width: 2),
-                                  ),
-                                  filled: true,
-                                  fillColor: _backgroundColor,
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                                ),
-                                keyboardType: TextInputType.number,
-                                style: TextStyle(fontSize: 14, color: _textPrimary),
-                              ),
-                            ],
-                          ),
-                        ],
-
-                        // Meal selection
-                        if (hasMeals) ...[
-                          SizedBox(height: 20),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(Icons.restaurant_menu_rounded, size: 16, color: _secondaryColor),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'Select Meal (Optional)',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: _textPrimary,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 8),
-                              DropdownButtonFormField<Meal>(
-                                decoration: InputDecoration(
-                                  hintText: 'Choose a meal option',
-                                  hintStyle: TextStyle(color: _textLight, fontSize: 14),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: Colors.grey[300]!),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: Colors.grey[300]!),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: _secondaryColor, width: 2),
-                                  ),
-                                  filled: true,
-                                  fillColor: _backgroundColor,
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                                ),
-                                isExpanded: true,
-                                dropdownColor: _cardColor,
-                                icon: Icon(Icons.arrow_drop_down_rounded, color: _textSecondary, size: 24),
-                                hint: Text('No meal selected', style: TextStyle(fontSize: 14, color: _textLight)),
-                                value: selectedMeals[index],
-                                items: mealOptions.cast<Meal>().map<DropdownMenuItem<Meal>>((meal) {
-                                  return DropdownMenuItem<Meal>(
-                                    value: meal,
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          meal.name ?? 'Meal',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600,
-                                            color: _textPrimary,
-                                          ),
+                              isExpanded: true,
+                              dropdownColor: _cardColor,
+                              icon: Icon(Icons.arrow_drop_down_rounded, color: _textSecondary, size: 24),
+                              hint: Text('No baggage selected', style: TextStyle(fontSize: 14, color: _textLight)),
+                              value: selectedBaggages[index],
+                              items: baggageOptions.map((dynamic item) {
+                                final baggage = item as Baggage;
+                                return DropdownMenuItem<Baggage>(
+                                  value: baggage,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        baggage.name ?? baggage.code ?? 'Baggage',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: _textPrimary,
                                         ),
-                                        SizedBox(height: 2),
-                                        Text(
-                                          '${meal.amount?.toStringAsFixed(2) ?? '0.00'} ${meal.currency ?? 'INR'}',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: _secondaryColor,
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                                      ),
+                                      SizedBox(height: 2),
+                                      Text(
+                                        '${baggage.amount ?? ''} ${baggage.currency ?? 'INR'}',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: _secondaryColor,
+                                          fontWeight: FontWeight.w600,
                                         ),
-                                      ],
-                                    ),
-                                  );
-                                }).toList(),
-                                onChanged: (Meal? newValue) {
-                                  if (newValue != null) {
-                                    setState(() {
-                                      selectedMeals[index] = newValue;
-                                    });
-                                  }
-                                },
-                              ),
-                            ],
-                          ),
-                        ],
-
-                        // Baggage selection
-                        if (hasBaggage) ...[
-                          SizedBox(height: 20),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(Icons.work_outline_rounded, size: 16, color: _secondaryColor),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'Add Baggage (Optional)',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: _textPrimary,
-                                    ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                              SizedBox(height: 8),
-                              DropdownButtonFormField<Baggage>(
-                                decoration: InputDecoration(
-                                  hintText: 'Choose baggage option',
-                                  hintStyle: TextStyle(color: _textLight, fontSize: 14),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: Colors.grey[300]!),
-                                  ),
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: Colors.grey[300]!),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: _secondaryColor, width: 2),
-                                  ),
-                                  filled: true,
-                                  fillColor: _backgroundColor,
-                                ),
-                                isExpanded: true,
-                                dropdownColor: _cardColor,
-                                icon: Icon(Icons.arrow_drop_down_rounded, color: _textSecondary, size: 24),
-                                hint: Text('No baggage selected', style: TextStyle(fontSize: 14, color: _textLight)),
-                                value: selectedBaggages[index],
-                                items: baggageOptions.map((dynamic item) {
-                                  final baggage = item as Baggage;
-                                  return DropdownMenuItem<Baggage>(
-                                    value: baggage,
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          baggage.name ?? baggage.code ?? 'Baggage',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600,
-                                            color: _textPrimary,
-                                          ),
-                                        ),
-                                        SizedBox(height: 2),
-                                        Text(
-                                          '${baggage.amount ?? ''} ${baggage.currency ?? 'INR'}',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: _secondaryColor,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }).toList(),
-                                onChanged: (Baggage? newValue) {
-                                  if (newValue != null) {
-                                    setState(() {
-                                      selectedBaggages[index] = newValue;
-                                    });
-                                  }
-                                },
-                              ),
-                            ],
-                          ),
-                        ],
-                        SizedBox(height: 10),
+                                );
+                              }).toList(),
+                              onChanged: (Baggage? newValue) {
+                                if (newValue != null) {
+                                  setState(() {
+                                    selectedBaggages[index] = newValue;
+                                  });
+                                }
+                              },
+                            ),
+                          ],
+                        ),
                       ],
-                    );
-                  },
-                ),
+                      SizedBox(height: 10),
+                    ],
+                  );
+                },
               ),
             ),
           ));

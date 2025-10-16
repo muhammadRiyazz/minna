@@ -10,39 +10,48 @@ import 'package:minna/cab/domain/cab%20list%20model/cab_booked_details.dart';
 import 'package:minna/cab/function/commission_data.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/core/api.dart';
+import 'package:shimmer/shimmer.dart';
 
 class BookingDetailsPage extends StatefulWidget {
   final String bookingId;
-    final String tableID;
+  final String tableID;
 
-
-  const BookingDetailsPage({super.key, required this.bookingId,required this.tableID});
+  const BookingDetailsPage({super.key, required this.bookingId, required this.tableID});
 
   @override
   State<BookingDetailsPage> createState() => _BookingDetailsPageState();
 }
 
 class _BookingDetailsPageState extends State<BookingDetailsPage> {
-  bool _isCancelling = false; // loading when initiating fetch reasons
-  bool _isConfirmingCancellation = false; // loading when confirming cancel
+  bool _isCancelling = false;
+  bool _isConfirmingCancellation = false;
   final String _baseUrl = 'http://gozotech2.ddns.net:5192/api/cpapi/booking';
-  final String _authorization =
-      'Basic ZjA2MjljNTIxZjE2MjU0NTA2YmIyMDQzNWI4MTJmMmE=';
-        late CommissionProvider commissionProvider;
+  final String _authorization = 'Basic ZjA2MjljNTIxZjE2MjU0NTA2YmIyMDQzNWI4MTJmMmE=';
+  late CommissionProvider commissionProvider;
 
-@override
+  // New color scheme
+  final Color _primaryColor = Colors.black;
+  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
+  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
+  final Color _backgroundColor = Color(0xFFF8F9FA);
+  final Color _cardColor = Colors.white;
+  final Color _textPrimary = Colors.black;
+  final Color _textSecondary = Color(0xFF666666);
+  final Color _textLight = Color(0xFF999999);
+  final Color _errorColor = Color(0xFFE53935);
+  final Color _successColor = Color(0xFF4CAF50);
+  final Color _warningColor = Color(0xFFFF9800);
+
+  @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-          commissionProvider = context.read<CommissionProvider>();
-
- WidgetsBinding.instance.addPostFrameCallback((_) {
-    _preCalculateCommissions();
-  });  }
-
+    commissionProvider = context.read<CommissionProvider>();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _preCalculateCommissions();
+    });
+  }
 
   Future<void> _preCalculateCommissions() async {
-     commissionProvider = context.read<CommissionProvider>();
     try {
       await commissionProvider.getCommission();
     } catch (e) {
@@ -56,15 +65,11 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
       create: (context) =>
           BookedDetailsBloc()..add(BookedDetailsEvent.fetchDetails(widget.bookingId)),
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('Booking #${widget.bookingId}'),
-          backgroundColor: maincolor1,
-          foregroundColor: Colors.white,
-        ),
+        backgroundColor: _backgroundColor,
         body: BlocBuilder<BookedDetailsBloc, BookedDetailsState>(
           builder: (context, state) {
             return state.maybeWhen(
-              loading: () => _buildLoadingState(),
+              loading: () => _buildShimmerLoading(),
               success: (details) => _buildSuccessState(context, details),
               error: (message) => _buildErrorState(context, message),
               orElse: () => _buildInitialState(),
@@ -75,100 +80,1009 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     );
   }
 
-  Widget _buildLoadingState() {
-    return const Center(
-      child: CircularProgressIndicator(),
+  Widget _buildShimmerLoading() {
+    return CustomScrollView(
+      slivers: [
+        SliverAppBar(
+          backgroundColor: _primaryColor,
+          expandedHeight: 200.0,
+          pinned: true,
+          floating: true,
+          elevation: 0,
+          flexibleSpace: FlexibleSpaceBar(
+            background: Shimmer.fromColors(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+              child: Container(
+                color: _primaryColor,
+              ),
+            ),
+          ),
+        ),
+        SliverList(
+          delegate: SliverChildListDelegate([
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: _buildShimmerCard(
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildShimmerBox(width: 40, height: 14),
+                              const SizedBox(height: 12),
+                              _buildShimmerBox(width: double.infinity, height: 20),
+                              const SizedBox(height: 8),
+                              _buildShimmerBox(width: 200, height: 16),
+                            ],
+                          ),
+                        ),
+                        Column(
+                          children: [
+                            _buildShimmerBox(width: 40, height: 40, isCircle: true),
+                          ],
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              _buildShimmerBox(width: 40, height: 14),
+                              const SizedBox(height: 12),
+                              _buildShimmerBox(width: double.infinity, height: 20),
+                              const SizedBox(height: 8),
+                              _buildShimmerBox(width: 200, height: 16),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ]),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildShimmerCard({required Widget child}) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        decoration: BoxDecoration(
+          color: _cardColor,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        padding: const EdgeInsets.all(24),
+        child: child,
+      ),
+    );
+  }
+
+  Widget _buildShimmerBox({
+    required double width,
+    required double height,
+    bool isCircle = false,
+  }) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: isCircle
+            ? BorderRadius.circular(height / 2)
+            : BorderRadius.circular(4),
+      ),
     );
   }
 
   Widget _buildSuccessState(BuildContext context, BookingDetails details) {
-    return SingleChildScrollView(
+    final isCancelled = details.statusDesc.toLowerCase().contains('cancel');
+
+    return Stack(
+      children: [
+        CustomScrollView(
+          slivers: [
+            // Sliver App Bar
+            SliverAppBar(
+              backgroundColor: _primaryColor,
+              expandedHeight: 200.0,
+              pinned: true,
+              floating: true,
+              elevation: 0,
+              iconTheme: IconThemeData(color: Colors.white),
+              title: Text(
+                'Booking Details',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              centerTitle: true,
+              flexibleSpace: FlexibleSpaceBar(
+                background: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [_primaryColor, _primaryColor.withOpacity(0.8)],
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Booking ID',
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.8),
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  details.bookingId,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isCancelled
+                                    ? _errorColor.withOpacity(0.2)
+                                    : _successColor.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: isCancelled ? _errorColor : _successColor,
+                                  width: 1,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    isCancelled ? Icons.cancel : Icons.check_circle,
+                                    size: 12,
+                                    color: isCancelled ? _errorColor : _successColor,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    details.statusDesc,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: isCancelled ? _errorColor : _successColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            // Booking Content
+            SliverList(
+              delegate: SliverChildListDelegate([
+                // Journey Details Card
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: _buildJourneyCard(details),
+                ),
+
+                // Trip Information Card
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: _buildTripInfoCard(details),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Routes Information
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: _buildRoutesCard(details),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Traveller Information
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: _buildTravellerCard(details.traveller),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Cab & Fare Information
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: _buildCabFareCard(details.cabRate, isCancelled),
+                ),
+
+                const SizedBox(height: 100),
+              ]),
+            ),
+          ],
+        ),
+
+        // Cancel Button positioned at bottom
+        if (!isCancelled)
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: _buildCancelButton(details),
+          ),
+      ],
+    );
+  }
+
+Widget _buildJourneyCard(BookingDetails details) {
+  final firstRoute = details.routes.first;
+  final lastRoute = details.routes.last;
+
+  return Container(
+    decoration: BoxDecoration(
+      color: _cardColor,
+      borderRadius: BorderRadius.circular(20),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.08),
+          blurRadius: 20,
+          offset: const Offset(0, 8),
+        ),
+      ],
+    ),
+    padding: const EdgeInsets.all(16),
+    child: Column(
+      children: [
+        // Route Information
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'FROM',
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: _textSecondary,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    firstRoute.source.address,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Icon(Icons.access_time, size: 12, color: _secondaryColor),
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Text(
+                          '${_formatDate(firstRoute.startDate)} • ${_formatTimeTo12Hour(firstRoute.startTime)}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: _textSecondary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: _secondaryColor.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: _secondaryColor.withOpacity(0.3), width: 2),
+                    ),
+                    child: Icon(
+                      Icons.arrow_forward_rounded,
+                      color: _secondaryColor,
+                      size: 15,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    width: 2,
+                    height: 40,
+                    color: _secondaryColor.withOpacity(0.3),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    'TO',
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: _textSecondary,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    lastRoute.destination.address,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.end,
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Icon(Icons.access_time, size: 12, color: _secondaryColor),
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Text(
+                          '${_formatDate(lastRoute.startDate)} • ${_formatTimeTo12Hour(lastRoute.startTime)}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: _textSecondary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.end,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        
+        // Trip Information - Grid layout for better space management
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: _backgroundColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            children: [
+              // First row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: _buildCompactTripInfoItem('Distance', '${details.tripDistance} km'),
+                  ),
+                  Container(
+                    width: 1,
+                    height: 40,
+                    color: _textLight.withOpacity(0.3),
+                  ),
+                  Expanded(
+                    child: _buildCompactTripInfoItem('Trip Type', details.tripTypeName),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Container(
+                width: double.infinity,
+                height: 1,
+                color: _textLight.withOpacity(0.3),
+              ),
+              const SizedBox(height: 12),
+              // Second row - centered single item
+              _buildCompactTripInfoItem('Booked On', '${_formatDate(details.bookingDate)}'),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+// Compact version for the trip info items
+Widget _buildCompactTripInfoItem(String title, String value) {
+  return Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      Text(
+        title,
+        style: TextStyle(
+          fontSize: 10, 
+          color: _textSecondary,
+          fontWeight: FontWeight.w600,
+        ),
+        textAlign: TextAlign.center,
+      ),
+      const SizedBox(height: 4),
+      Text(
+        value,
+        style: const TextStyle(
+          fontSize: 12, 
+          fontWeight: FontWeight.w700,
+        ),
+        textAlign: TextAlign.center,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+    ],
+  );
+}
+ 
+
+  Widget _buildTripInfoCard(BookingDetails details) {
+    return Container(
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
       padding: const EdgeInsets.all(16),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Booking Status Card
-          _buildStatusCard(details),
-          const SizedBox(height: 16),
-
-          // Trip Information
-          _buildTripInfoCard(details),
-          const SizedBox(height: 16),
-
-          // Routes Information
-          _buildRoutesCard(details),
-          const SizedBox(height: 16),
-
-          // Traveller Information
-          _buildTravellerCard(details.traveller),
-          const SizedBox(height: 16),
-
-          // Cab & Fare Information
-          _buildCabFareCard(details.cabRate),
-          const SizedBox(height: 24),
-
-          // Cancel button section
-          _buildCancelSection(details),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: _secondaryColor.withOpacity(0.1),
+              shape: BoxShape.circle,
+              border: Border.all(color: _secondaryColor.withOpacity(0.3), width: 2),
+            ),
+            child: Icon(Icons.calendar_today_rounded, color: _secondaryColor, size: 20),
+          ),
+          const SizedBox(width: 20),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Pickup Schedule',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  '${_formatDate(details.pickupDate)} • ${_formatTimeTo12Hour(details.pickupTime)}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: _textSecondary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: _secondaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    'Confirmed Schedule',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: _secondaryColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildCancelSection(BookingDetails details) {
-    // If already cancelled, don't show button
-    final statusLower = details.statusDesc.toLowerCase();
-    final alreadyCancelled = statusLower.contains('cancel') || statusLower.contains('cancelled');
-
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Actions',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: maincolor1,
+  Widget _buildRoutesCard(BookingDetails details) {
+    return Container(
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: _secondaryColor.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.route_rounded, color: _secondaryColor, size: 12),
               ),
-            ),
-            const SizedBox(height: 12),
-            Divider(color: Colors.grey.shade300),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: alreadyCancelled || _isCancelling
-                        ? null
-                        : () => _onCancelPressed(details.bookingId),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red.shade600,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                    ),
-                    icon: _isCancelling
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                          )
-                        : const Icon(Icons.cancel),
-                    label: Text(_isCancelling ? 'Loading...' : (alreadyCancelled ? 'Already Cancelled' : 'Cancel Booking')),
+              const SizedBox(width: 12),
+              Text(
+                details.isMultiCity ? 'ROUTES' : 'ROUTE',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: _textSecondary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: _backgroundColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  '${details.routes.length}',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: _secondaryColor,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-              ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          ...details.routes.asMap().entries.map((entry) {
+            final index = entry.key;
+            final route = entry.value;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Container(
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: _backgroundColor,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.grey.shade200),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                      children: [
+                        Icon(Icons.location_on, color: _secondaryColor, size: 16),
+                        if (index < details.routes.length - 1)
+                          Container(
+                            width: 2,
+                            height: 40,
+                            color: _secondaryColor.withOpacity(0.3),
+                          ),
+                        if (index == details.routes.length - 1)
+                          Icon(Icons.flag, color: Colors.green, size: 16),
+                      ],
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'From: ${route.source.address}',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'To: ${route.destination.address}',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            '${_formatDate(route.startDate)} • ${_formatTimeTo12Hour(route.startTime)}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: _textSecondary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTravellerCard(BookedTraveller traveller) {
+    return Container(
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: _secondaryColor.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.person_rounded, color: _secondaryColor, size: 12),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'TRAVELLER INFORMATION',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: _textSecondary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          _buildTravellerInfoItem('Full Name', traveller.fullName),
+          _buildTravellerInfoItem('Email', traveller.email),
+          _buildTravellerInfoItem('Primary Contact', traveller.primaryContact.fullNumber),
+          if (traveller.alternateContact.number.isNotEmpty)
+            _buildTravellerInfoItem('Alternate Contact', traveller.alternateContact.fullNumber),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTravellerInfoItem(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 120,
+            child: Text(
+              label,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: _textSecondary,
+                fontSize: 13,
+              ),
             ),
-          ],
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 13,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCabFareCard(BookedCabRate cabRate, bool isCancelled) {
+    return Container(
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: _secondaryColor.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.directions_car_rounded, color: _secondaryColor, size: 12),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'CAB & FARE DETAILS',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: _textSecondary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          // Cab Details
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: _secondaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(Icons.directions_car_filled, color: _secondaryColor, size: 24),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      cabRate.cab.type,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        _buildCabSpecItem(Icons.people, '${cabRate.cab.seatingCapacity} Seats'),
+                        const SizedBox(width: 12),
+                        _buildCabSpecItem(Icons.luggage, '${cabRate.cab.bagCapacity} Bags'),
+                        if (cabRate.cab.isAssured) ...[
+                          const SizedBox(width: 12),
+                          _buildCabSpecItem(Icons.verified, 'Assured'),
+                        ],
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          // Fare Breakdown
+          Text(
+            'FARE BREAKUP',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: _textSecondary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          _buildFareItem('Base Fare', cabRate.fare.baseFare.toString()),
+          _buildFareItem('Driver Allowance', cabRate.fare.driverAllowance.toString()),
+          _buildFareItem('GST', cabRate.fare.gst.toString()),
+          if (cabRate.fare.tollTax > 0)
+            _buildFareItem('Toll Tax', cabRate.fare.tollTax.toString()),
+          if (cabRate.fare.stateTax > 0)
+            _buildFareItem('State Tax', cabRate.fare.stateTax.toString()),
+          if (cabRate.fare.airportFee > 0)
+            _buildFareItem('Airport Fee', cabRate.fare.airportFee.toString()),
+          if (cabRate.fare.additionalCharge > 0)
+            _buildFareItem('Additional Charges', cabRate.fare.additionalCharge.toString()),
+          
+          FutureBuilder<double>(
+            future: commissionProvider.calculateAmountWithCommission(cabRate.fare.totalAmount),
+            builder: (context, snapshot) {
+              if (commissionProvider.isLoading || snapshot.connectionState == ConnectionState.waiting) {
+                return SizedBox();
+              }
+
+              final amountWithCommission = snapshot.data ?? cabRate.fare.totalAmount;
+              final hasCommission = amountWithCommission > cabRate.fare.totalAmount;
+
+              return Column(
+                children: [
+                  if (hasCommission)
+                    _buildFareItem(
+                      "Service Charges & Other",
+                      (amountWithCommission - cabRate.fare.totalAmount).toStringAsFixed(0)),
+                  
+                  const SizedBox(height: 8),
+                  const Divider(height: 1),
+                  const SizedBox(height: 8),
+
+                  _buildFareItem(
+                    'Total Amount',
+                    amountWithCommission.toStringAsFixed(0),
+                    isTotal: true,
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCabSpecItem(IconData icon, String text) {
+    return Row(
+      children: [
+        Icon(icon, size: 14, color: _textSecondary),
+        const SizedBox(width: 4),
+        Text(
+          text,
+          style: TextStyle(fontSize: 12, color: _textSecondary),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFareItem(String label, String amount, {bool isTotal = false}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              color: isTotal ? _textPrimary : _textSecondary,
+              fontWeight: isTotal ? FontWeight.w600 : FontWeight.normal,
+            ),
+          ),
+          Text(
+            '₹$amount',
+            style: TextStyle(
+              fontSize: 14,
+              color: isTotal ? _secondaryColor : _textPrimary,
+              fontWeight: isTotal ? FontWeight.w700 : FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCancelButton(BookingDetails details) {
+    return Container(
+      padding: const EdgeInsets.only(bottom: 12, right: 10,left: 10),
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        color: _cardColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, -5),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _isCancelling ? _warningColor : _primaryColor,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 18),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 4,
+              shadowColor: _primaryColor.withOpacity(0.3),
+            ),
+            onPressed: _isCancelling ? null : () => _onCancelPressed(details.bookingId),
+            child: _isCancelling
+                ? SizedBox(
+                    height: 24,
+                    width: 24,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.cancel_rounded, size: 20),
+                      const SizedBox(width: 12),
+                      Text(
+                        'CANCEL BOOKING',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+          ),
         ),
       ),
     );
   }
 
-  // Triggered when Cancel button pressed
+  // ... Rest of your existing methods (_onCancelPressed, _showCancellationBottomSheet, 
+  // _confirmCancellation, _callCabStatusApi, _showError, etc.) remain the same
+  // Only the UI components have been updated above
+
   Future<void> _onCancelPressed(String bookingId) async {
     setState(() {
       _isCancelling = true;
@@ -180,7 +1094,6 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
         uri,
         headers: {
           'Authorization': _authorization,
-          // server curl had no content-type / empty body; we'll send an empty body
         },
         body: '',
       ).timeout(const Duration(seconds: 20));
@@ -189,7 +1102,6 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
           final List<dynamic> cancellationList = decoded['data']['cancellationList'] ?? [];
-          // Build model list
           final reasons = cancellationList.map((e) {
             return _CancellationReason(
               id: e['id']?.toString() ?? '',
@@ -202,7 +1114,6 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
             _isCancelling = false;
           });
 
-          // Show bottom sheet to select reason and confirm
           await _showCancellationBottomSheet(bookingId, reasons);
         } else {
           setState(() {
@@ -228,19 +1139,16 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     String selectedReasonId = reasons.isNotEmpty ? reasons.first.id : '';
     String additionalText = '';
     String placeholder = reasons.isNotEmpty ? reasons.first.placeholder : 'Additional details';
-    // Use StatefulBuilder inside showModalBottomSheet for local state
+
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: _cardColor,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
         return StatefulBuilder(builder: (context, setModalState) {
-          final selectedReason = reasons.firstWhere(
-              (r) => r.id == selectedReasonId,
-              orElse: () => reasons.isNotEmpty ? reasons[0] : _CancellationReason(id: '', text: '', placeholder: ''));
-
           return Padding(
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -267,12 +1175,12 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                       const Expanded(
                         child: Text(
                           'Cancel Booking',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       ),
                       IconButton(
                         onPressed: () => Navigator.of(context).pop(),
-                        icon: Icon(Icons.close, color: Colors.grey.shade600),
+                        icon: Icon(Icons.close, color: _textSecondary),
                       ),
                     ],
                   ),
@@ -287,7 +1195,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                           'Select a reason',
                           style: TextStyle(fontWeight: FontWeight.w600),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 12),
                         ...reasons.map((r) {
                           final isSelected = r.id == selectedReasonId;
                           return ListTile(
@@ -312,17 +1220,17 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                             },
                           );
                         }),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 16),
                         TextField(
                           minLines: 1,
                           maxLines: 5,
                           onChanged: (val) => additionalText = val,
                           decoration: InputDecoration(
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                             hintText: placeholder.isNotEmpty ? placeholder : 'Additional details (optional)',
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 20),
                         Row(
                           children: [
                             Expanded(
@@ -330,27 +1238,28 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                                 onPressed: _isConfirmingCancellation
                                     ? null
                                     : () {
-                                      log("ElevatedButton --Confirm Cancellation---");
-                                        // Confirm cancellation
-                                        Navigator.of(context).pop(); // close sheet
+                                        Navigator.of(context).pop();
                                         _confirmCancellation(
                                           bookingId: bookingId,
-                                          reasonText: additionalText.isNotEmpty ? additionalText : (selectedReason.text),
+                                          reasonText: additionalText.isNotEmpty ? additionalText : (reasons.firstWhere((r) => r.id == selectedReasonId).text),
                                           reasonId: selectedReasonId,
                                         );
                                       },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red.shade600,
+                                  backgroundColor: _errorColor,
                                   foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
                                 ),
                                 child: _isConfirmingCancellation
                                     ? const SizedBox(
-                                        width: 16,
-                                        height: 16,
+                                        width: 20,
+                                        height: 20,
                                         child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                                       )
-                                    : const Text('Confirm Cancellation'),
+                                    : Text('Confirm Cancellation'),
                               ),
                             ),
                           ],
@@ -367,669 +1276,231 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     );
   }
 
-Future<void> _confirmCancellation({
-  required String bookingId,
-  required String reasonText,
-  required String reasonId,
-}) async {
-
-
-
-  log("_confirmCancellation ---- call --function");
-  setState(() {
-    _isConfirmingCancellation = true;
-  });
-
-  try {
-    final uri = Uri.parse('$_baseUrl/cancelBooking');
-    final bodyMap = {
-      "bookingId": bookingId,
-      "reason": reasonText,
-      "reasonId": reasonId
-    };
-
-    final response = await http.post(
-      uri,
-      headers: {
-        'Authorization': _authorization,
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(bodyMap),
-    ).timeout(const Duration(seconds: 20));
-
+  Future<void> _confirmCancellation({
+    required String bookingId,
+    required String reasonText,
+    required String reasonId,
+  }) async {
     setState(() {
-      _isConfirmingCancellation = false;
+      _isConfirmingCancellation = true;
     });
-log(response.body.toString());
-    if (response.statusCode == 200) {
-      log("response.statusCode == 200");
-      final decoded = jsonDecode(response.body);
-      if (decoded['success'] == true && decoded['data'] != null) {
-log("success   :   true");
 
-        final data = decoded['data'];
-        final refundedAmount = data['refundAmount'] ?? 0;
-        final cancellationCharge = data['cancellationCharge'] ?? 0;
-        final message = data['message'] ?? 'Booking cancelled successfully';
-        final cancelledBookingId = data['bookingId'] ?? bookingId;
-log("call _callCabStatusApi");
-        // Call CAB Status API with cancel type
-        await _callCabStatusApi(
-          bookingId:widget. tableID,
-          type: 'cancel',
-          request: jsonEncode(bodyMap),
-          response: response.body,
-          refundAmount:   double.parse(refundedAmount.toString()) ,
-        );
+    try {
+      final uri = Uri.parse('$_baseUrl/cancelBooking');
+      final bodyMap = {
+        "bookingId": bookingId,
+        "reason": reasonText,
+        "reasonId": reasonId
+      };
 
-        // Show updated bottom sheet
-        await showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-          ),
-          builder: (context) {
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-              ),
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 50,
-                      height: 5,
-                      margin: const EdgeInsets.only(bottom: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    Icon(Icons.check_circle, color: Colors.green, size: 60),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Cancellation Successful',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: maincolor1,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      message,
-                      style: const TextStyle(fontSize: 14, color: Colors.black87),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
+      final response = await http.post(
+        uri,
+        headers: {
+          'Authorization': _authorization,
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(bodyMap),
+      ).timeout(const Duration(seconds: 20));
 
-                    // Booking info
-                    ListTile(
-                      leading: const Icon(Icons.confirmation_number_outlined),
-                      title: const Text('Booking ID'),
-                      subtitle: Text(cancelledBookingId),
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.currency_rupee),
-                      title: const Text('Refund Amount'),
-                      subtitle: Text('₹$refundedAmount'),
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.money_off_csred_outlined),
-                      title: const Text('Cancellation Charge'),
-                      subtitle: Text('₹$cancellationCharge'),
-                    ),
-                    const SizedBox(height: 10),
+      setState(() {
+        _isConfirmingCancellation = false;
+      });
 
-                    // Extra note
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.orange.shade50,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.orange.shade200),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.info_outline, color: Colors.orange),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'Refund will be credited within 5–7 working days.',
-                              style: const TextStyle(fontSize: 13, color: Colors.black87),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20),
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true && decoded['data'] != null) {
+          final data = decoded['data'];
+          final refundedAmount = data['refundAmount'] ?? 0;
+          final cancellationCharge = data['cancellationCharge'] ?? 0;
+          final message = data['message'] ?? 'Booking cancelled successfully';
+          final cancelledBookingId = data['bookingId'] ?? bookingId;
 
-                    ElevatedButton.icon(
-                      onPressed: () => Navigator.pop(context),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: maincolor1,
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size.fromHeight(48),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+          await _callCabStatusApi(
+            bookingId: widget.tableID,
+            type: 'cancel',
+            request: jsonEncode(bodyMap),
+            response: response.body,
+            refundAmount: double.parse(refundedAmount.toString()),
+          );
+
+          await showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: _cardColor,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            builder: (context) {
+              return Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                ),
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 50,
+                        height: 5,
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      icon: const Icon(Icons.done_all),
-                      label: const Text("OK, Got it"),
-                    ),
-                    const SizedBox(height: 10),
-                  ],
+                      Icon(Icons.check_circle, color: _successColor, size: 60),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Cancellation Successful',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: _primaryColor,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        message,
+                        style: const TextStyle(fontSize: 14, color: Colors.black87),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 20),
+                      _buildCancellationInfoItem('Booking ID', cancelledBookingId, Icons.confirmation_number_outlined),
+                      _buildCancellationInfoItem('Refund Amount', '₹$refundedAmount', Icons.currency_rupee),
+                      _buildCancellationInfoItem('Cancellation Charge', '₹$cancellationCharge', Icons.money_off_csred_outlined),
+                      const SizedBox(height: 16),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: _warningColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: _warningColor.withOpacity(0.3)),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.info_outline, color: _warningColor),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Refund will be credited within 5–7 working days.',
+                                style: const TextStyle(fontSize: 13, color: Colors.black87),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton.icon(
+                        onPressed: () => Navigator.pop(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _primaryColor,
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size.fromHeight(48),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        icon: const Icon(Icons.done_all),
+                        label: const Text("OK, Got it"),
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                  ),
                 ),
-              ),
-            );
-          },
-        );
+              );
+            },
+          );
+        } else {
+          _showError('Cancellation failed. Please try again.');
+        }
       } else {
-     
-        log('Cancellation failed. Please try again.');
+        _showError('Cancellation failed: ${response.statusCode}');
       }
-    } else {
-     
-      log('Cancellation failed: ${response.statusCode}');
+    } catch (e) {
+      setState(() {
+        _isConfirmingCancellation = false;
+      });
+      _showError('Failed to cancel booking. Please check your connection and try again.');
     }
-  } catch (e) {
-    log(e.toString());
-    setState(() {
-      _isConfirmingCancellation = false;
-    });
-    
-
-    
-    log('Failed to cancel booking. Please check your connection and try again.');
   }
-}
 
-
-Future<void> _callCabStatusApi({
-  required String bookingId,
-  required String type,
-  required String request,
-  required String response,
-  required double refundAmount,
-}) async {
-  log("_callCabStatusApi----");
-  try {
-    final cabStatusUri = Uri.parse('${baseUrl}cab-status');
-
-    final cabStatusBody = {
-      "booking_id": bookingId,
-      "type": type,
-      "request": request,
-      "response": response,
-      if (type == 'cancel') "refund_amount": refundAmount.toString(),
-    };
-
-    final cabStatusResponse = await http.post(
-      cabStatusUri,
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: cabStatusBody,
+  Widget _buildCancellationInfoItem(String title, String value, IconData icon) {
+    return ListTile(
+      leading: Icon(icon, color: _textSecondary),
+      title: Text(title),
+      subtitle: Text(value),
     );
-
-    log(cabStatusBody.toString());
-    log(cabStatusResponse.body);
-
-    if (cabStatusResponse.statusCode == 200) {
-      final cabStatusDecoded = jsonDecode(cabStatusResponse.body);
-      if (cabStatusDecoded['status'] == 'success') {
-        log('CAB Status updated successfully: $type');
-      } else {
-        log('CAB Status API returned error: ${cabStatusDecoded['message']}');
-      }
-    } else {
-      log('CAB Status API failed with status: ${cabStatusResponse.statusCode}');
-    }
-  } catch (e) {
-    log('Error calling CAB Status API: $e');
   }
-}
+
+  Future<void> _callCabStatusApi({
+    required String bookingId,
+    required String type,
+    required String request,
+    required String response,
+    required double refundAmount,
+  }) async {
+    try {
+      final cabStatusUri = Uri.parse('${baseUrl}cab-status');
+      final cabStatusBody = {
+        "booking_id": bookingId,
+        "type": type,
+        "request": request,
+        "response": response,
+        if (type == 'cancel') "refund_amount": refundAmount.toString(),
+      };
+
+      final cabStatusResponse = await http.post(
+        cabStatusUri,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: cabStatusBody,
+      );
+
+      if (cabStatusResponse.statusCode == 200) {
+        final cabStatusDecoded = jsonDecode(cabStatusResponse.body);
+        if (cabStatusDecoded['status'] == 'success') {
+          log('CAB Status updated successfully: $type');
+        } else {
+          log('CAB Status API returned error: ${cabStatusDecoded['message']}');
+        }
+      } else {
+        log('CAB Status API failed with status: ${cabStatusResponse.statusCode}');
+      }
+    } catch (e) {
+      log('Error calling CAB Status API: $e');
+    }
+  }
 
   void _showError(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red.shade600,
-      ),
-    );
-  }
-
-  Widget _buildStatusCard(BookingDetails details) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Booking Status',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: maincolor1,
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: _getStatusColor(details.statusDesc),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    details.statusDesc,
-                    style: const TextStyle(fontSize: 12,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Divider(color: Colors.grey.shade300),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildInfoItem(
-                  Icons.confirmation_number,
-                  'Booking ID',
-                  details.bookingId,
-                ),
-                _buildInfoItem(
-                  Icons.directions_car,
-                  'Trip Type',
-                  details.tripTypeName,
-                ),
-                _buildInfoItem(
-                  Icons.alt_route,
-                  'Distance',
-                  '${details.tripDistance} km',
-                ),
-              ],
-            ),
-          ],
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
         ),
-      ),
-    );
-  }
-
-  Widget _buildTripInfoCard(BookingDetails details) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        backgroundColor: _errorColor,
+        content: Row(
           children: [
-            Text(
-              'Trip Information',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: maincolor1,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Divider(color: Colors.grey.shade300),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildInfoItem(
-                  Icons.calendar_today,
-                  'Pickup Date',
-                  _formatDate(details.pickupDate),
-                ),
-                _buildInfoItem(
-                  Icons.access_time,
-                  'Pickup Time',
-                  _formatTimeTo12Hour(details.pickupTime),
-                ),
-                _buildInfoItem(
-                  Icons.event,
-                  'Booked On',
-                  '${_formatDate(details.bookingDate)} ${_formatTimeTo12Hour(details.bookingTime)}',
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRoutesCard(BookingDetails details) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              details.isMultiCity ? 'Routes' : 'Route',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: maincolor1,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Divider(color: Colors.grey.shade300),
-            const SizedBox(height: 12),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: details.routes.length,
-              itemBuilder: (context, index) {
-                final route = details.routes[index];
-                return _buildRouteItem(route, index, details.routes.length);
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRouteItem(BookedRoute route, int index, int totalRoutes) {
-    return Column(
-      children: [
-        if (index > 0) const SizedBox(height: 16),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              children: [
-                Icon(Icons.location_on, color: maincolor1, size: 20),
-                if (index < totalRoutes - 1)
-                  Container(
-                    width: 2,
-                    height: 40,
-                    color: Colors.grey.shade300,
-                  ),
-                if (index == totalRoutes - 1)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 12),
-                    child: Icon(Icons.flag, color: Colors.green, size: 20),
-                  ),
-              ],
-            ),
+            Icon(Icons.error, color: Colors.white),
             const SizedBox(width: 12),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'From: ${route.source.address}',
-                    style: const TextStyle(fontWeight: FontWeight.w500),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'To: ${route.destination.address}',
-                    style: const TextStyle(fontWeight: FontWeight.w500),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Date: ${_formatDate(route.startDate)} • Time: ${_formatTimeTo12Hour(route.startTime)}',
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTravellerCard(BookedTraveller traveller) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Traveller Information',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: maincolor1,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Divider(color: Colors.grey.shade300),
-            const SizedBox(height: 12),
-            _buildTravellerInfoItem('Name', traveller.fullName),
-            _buildTravellerInfoItem('Email', traveller.email),
-            _buildTravellerInfoItem(
-                'Primary Contact', traveller.primaryContact.fullNumber),
-            if (traveller.alternateContact.number.isNotEmpty)
-              _buildTravellerInfoItem(
-                  'Alternate Contact', traveller.alternateContact.fullNumber),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTravellerInfoItem(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 120,
-            child: Text(
-              label,
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: Colors.grey.shade700,
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(fontWeight: FontWeight.w400),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCabFareCard(BookedCabRate cabRate) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Cab & Fare Details',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: maincolor1,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Divider(color: Colors.grey.shade300),
-            const SizedBox(height: 12),
-            // Cab Details
-            Text(
-              cabRate.cab.type,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                _buildCabSpecItem(
-                  Icons.people,
-                  '${cabRate.cab.seatingCapacity} Seats',
+              child: Text(
+                message,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
                 ),
-                const SizedBox(width: 16),
-                _buildCabSpecItem(
-                  Icons.luggage,
-                  '${cabRate.cab.bagCapacity} Bags',
-                ),
-                if (cabRate.cab.isAssured) ...[
-                  const SizedBox(width: 16),
-                  _buildCabSpecItem(
-                    Icons.verified,
-                    'Assured',
-                  ),
-                ],
-              ],
-            ),
-            const SizedBox(height: 16),
-            // Fare Breakdown
-            Text(
-              'Fare Breakdown',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey.shade700,
               ),
             ),
-            const SizedBox(height: 8),
-            _buildFareItem('Base Fare', '₹${cabRate.fare.baseFare}'),
-            _buildFareItem('Driver Allowance', '₹${cabRate.fare.driverAllowance}'),
-            _buildFareItem('GST', '₹${cabRate.fare.gst}'),
-            if (cabRate.fare.tollTax > 0)
-              _buildFareItem('Toll Tax', '₹${cabRate.fare.tollTax}'),
-            if (cabRate.fare.stateTax > 0)
-              _buildFareItem('State Tax', '₹${cabRate.fare.stateTax}'),
-            if (cabRate.fare.airportFee > 0)
-              _buildFareItem('Airport Fee', '₹${cabRate.fare.airportFee}'),
-            if (cabRate.fare.additionalCharge > 0)
-              _buildFareItem('Additional Charges', '₹${cabRate.fare.additionalCharge}'),
-         
-            FutureBuilder<double>(
-                                future: commissionProvider.calculateAmountWithCommission(cabRate.fare.totalAmount),
-                                builder: (context, snapshot) {
-                                  if (commissionProvider.isLoading || snapshot.connectionState == ConnectionState.waiting) {
-                                    return SizedBox();
-                                  }
-            
-                                  final amountWithCommission = snapshot.data ??cabRate.fare.totalAmount;
-                                  final hasCommission = amountWithCommission > cabRate.fare.totalAmount;
-            
-                                  return Column(
-                                    children: [
-             _buildFareItem(
-                        "Service Charges & Other",
-                        "₹${(amountWithCommission - cabRate.fare.totalAmount).toStringAsFixed(0)}"),
-
-   const SizedBox(height: 8),
-            Divider(color: Colors.grey.shade300),
-            const SizedBox(height: 8),
-
-                                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [ Text(
-                                                        'Total Amount',
-                                                        style: TextStyle(
-                                                          fontSize: 16,
-                                                          fontWeight: FontWeight.bold,
-                                                          color: maincolor1,
-                                                        ),
-                                                      ),
-                                          Text(
-                                            "₹${amountWithCommission.toStringAsFixed(0)}",
-                                            style: TextStyle(
-                                                              fontSize: 18,
-                                                              fontWeight: FontWeight.bold,
-                                                              color: maincolor1,
-                                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  );
-                                },
-                              ),
           ],
         ),
+        duration: const Duration(seconds: 3),
       ),
-    );
-  }
-
-  Widget _buildCabSpecItem(IconData icon, String text) {
-    return Row(
-      children: [
-        Icon(icon, size: 16, color: Colors.grey.shade600),
-        const SizedBox(width: 4),
-        Text(
-          text,
-          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildFareItem(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-          ),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoItem(IconData icon, String label, String value) {
-    return Column(
-      children: [
-        Icon(icon, size: 20, color: maincolor1),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          value,
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-          textAlign: TextAlign.center,
-        ),
-      ],
     );
   }
 
@@ -1038,7 +1509,7 @@ Future<void> _callCabStatusApi({
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.error_outline, size: 64, color: Colors.red.shade300),
+          Icon(Icons.error_outline, size: 64, color: _errorColor),
           const SizedBox(height: 16),
           Text(
             message,
@@ -1053,7 +1524,7 @@ Future<void> _callCabStatusApi({
                   );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: maincolor1,
+              backgroundColor: _primaryColor,
               foregroundColor: Colors.white,
             ),
             child: const Text('Retry'),
@@ -1067,21 +1538,6 @@ Future<void> _callCabStatusApi({
     return const Center(
       child: Text('Loading booking details...'),
     );
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'confirmed':
-        return Colors.green.shade600;
-      case 'hold':
-        return Colors.orange.shade600;
-      case 'cancelled':
-        return Colors.red.shade600;
-      case 'completed':
-        return Colors.blue.shade600;
-      default:
-        return Colors.grey.shade600;
-    }
   }
 
   String _formatDate(String date) {
@@ -1113,7 +1569,6 @@ Future<void> _callCabStatusApi({
   }
 }
 
-// Small model for reasons
 class _CancellationReason {
   final String id;
   final String text;
@@ -1121,5 +1576,3 @@ class _CancellationReason {
 
   _CancellationReason({required this.id, required this.text, required this.placeholder});
 }
-
-

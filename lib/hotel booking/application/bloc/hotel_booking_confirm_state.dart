@@ -3,27 +3,22 @@ part of 'hotel_booking_confirm_bloc.dart';
 @freezed
 class HotelBookingConfirmState with _$HotelBookingConfirmState {
   const factory HotelBookingConfirmState.initial() = HotelBookingConfirmInitial;
-    const factory HotelBookingConfirmState.loading({
+  
+  const factory HotelBookingConfirmState.loading({
     HotelBookingConfirmState? previousState,
   }) = HotelBookingConfirmLoading;
-  
 
-
-
-    const factory HotelBookingConfirmState.success({
+  const factory HotelBookingConfirmState.success({
     required Map<String, dynamic> data,
     required String bookingId,
     required String confirmationNo,
     required String bookingRefNo,
+    required String booktableId,
   }) = HotelBookingConfirmSuccess;
-  
-
-
 
   const factory HotelBookingConfirmState.paymentFailed({
     required String message,
     required String orderId,
-    required String tableId,
     required String bookingId,
   }) = HotelBookingConfirmPaymentFailed;
   
@@ -32,7 +27,6 @@ class HotelBookingConfirmState with _$HotelBookingConfirmState {
     required String orderId,
     required String transactionId,
     required double amount,
-    required String tableId,
     required String bookingId,
     required bool shouldRefund,
   }) = HotelBookingConfirmPaymentSavedFailed;
@@ -43,7 +37,7 @@ class HotelBookingConfirmState with _$HotelBookingConfirmState {
     required String orderId,
     required String transactionId,
     required double amount,
-    required String tableId,
+    required String booktableId,
     required String bookingId,
   }) = HotelBookingConfirmError;
   
@@ -51,7 +45,7 @@ class HotelBookingConfirmState with _$HotelBookingConfirmState {
     required String orderId,
     required String transactionId,
     required double amount,
-    required String tableId,
+    required String booktableId,
     required String bookingId,
   }) = HotelBookingConfirmRefundProcessing;
   
@@ -60,7 +54,7 @@ class HotelBookingConfirmState with _$HotelBookingConfirmState {
     required String orderId,
     required String transactionId,
     required double amount,
-    required String tableId,
+    required String booktableId,
     required String bookingId,
   }) = HotelBookingConfirmRefundInitiated;
   
@@ -69,12 +63,7 @@ class HotelBookingConfirmState with _$HotelBookingConfirmState {
     required String orderId,
     required String transactionId,
     required double amount,
-    required String tableId,
+    // required String tableId,
     required String bookingId,
   }) = HotelBookingConfirmRefundFailed;
-
 }
-
-
-
-

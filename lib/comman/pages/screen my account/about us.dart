@@ -6,113 +6,83 @@ class AboutUsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Color Theme
+    final Color _primaryColor = Colors.black;
+    final Color _secondaryColor = Color(0xFFD4AF37);
+    final Color _accentColor = Color(0xFFC19B3C);
+    final Color _backgroundColor = Color(0xFFF8F9FA);
+    final Color _cardColor = Colors.white;
+    final Color _textPrimary = Colors.black;
+    final Color _textSecondary = Color(0xFF666666);
+    final Color _textLight = Color(0xFF999999);
+
     return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
-        title: Text(
-          'About Us',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: maincolor1,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          children: [
-            // Header Section
-            _buildHeaderSection(),
-            SizedBox(height: 24),
-
-            // Description Card
-            _buildDescriptionCard(),
-            SizedBox(height: 24),
-
-            // Services Grid
-            _buildServicesSection(),
-            SizedBox(height: 24),
-
-            // Why Choose Us
-            _buildWhyChooseUsSection(),
-            SizedBox(height: 24),
-
-            // Final Statement
-            _buildFinalStatement(),
-            SizedBox(height: 24),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeaderSection() {
-    return Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [maincolor1!, maincolor1!.withOpacity(0.8)],
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: maincolor1!.withOpacity(0.3),
-            blurRadius: 10,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          // Logo placeholder
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 8,
-                  offset: Offset(0, 2),
+      backgroundColor: _backgroundColor,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 200.0,
+            collapsedHeight: 70.0,
+            pinned: true,
+            snap: false,
+            floating: false,
+            backgroundColor: _primaryColor,
+            elevation: 4,
+            shadowColor: Colors.black.withOpacity(0.3),
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: true,
+              title: Text(
+                'MT Trip',
+                style: TextStyle(
+                  color: _cardColor,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
                 ),
-              ],
-            ),
-            child: Icon(
-              Icons.travel_explore,
-              color: maincolor1,
-              size: 40,
+              ),
+              background: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [_primaryColor, _primaryColor.withOpacity(0.9)],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Icon(
+                      Icons.travel_explore_rounded,
+                      size: 50,
+                      color: _secondaryColor,
+                    ),
+                   SizedBox(height: 60,)
+                  ],
+                ),
+              ),
             ),
           ),
-          SizedBox(height: 16),
-          Text(
-            "Minna Travels and Tourism",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          SizedBox(height: 8),
-          Text(
-            "Your Trusted Travel Companion",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.white.withOpacity(0.9),
-              fontWeight: FontWeight.w500,
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.all(13),
+              child: Column(
+                children: [
+                  // Description Card
+                  _buildDescriptionCard(_cardColor, _secondaryColor, _textPrimary, _textSecondary),
+                  SizedBox(height: 24),
+
+                  // Services Grid
+                  _buildServicesSection(_cardColor, _secondaryColor, _textPrimary, _textSecondary),
+                  SizedBox(height: 24),
+
+                  // Why Choose Us
+                  _buildWhyChooseUsSection(_cardColor, _secondaryColor, _textPrimary, _textSecondary),
+                  SizedBox(height: 24),
+
+                  // Final Statement
+                  _buildFinalStatement(_secondaryColor, _primaryColor, _cardColor),
+                  SizedBox(height: 24),
+                ],
+              ),
             ),
           ),
         ],
@@ -120,38 +90,55 @@ class AboutUsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildDescriptionCard() {
-    return Card(
-      elevation: 4,
-      margin: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+  Widget _buildDescriptionCard(Color cardColor, Color secondaryColor, Color textPrimary, Color textSecondary) {
+    return Container(
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(20),
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: Colors.black.withOpacity(0.08),
+        //     blurRadius: 12,
+        //     offset: const Offset(0, 4),
+        //   ),
+        // ],
+        // border: Border.all(
+        //   color: secondaryColor.withOpacity(0.1),
+        //   width: 1,
+        // ),
       ),
       child: Padding(
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.all(15),
         child: Column(
           children: [
             Row(
               children: [
-                Icon(Icons.flag, color: maincolor1, size: 24),
+                Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: secondaryColor.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.flag_rounded, color: secondaryColor, size: 24),
+                ),
                 SizedBox(width: 12),
                 Text(
-                  "About Minna Travels",
+                  "About MT Trip",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: maincolor1,
+                    color: textPrimary,
                   ),
                 ),
               ],
             ),
             SizedBox(height: 16),
             Text(
-              "Minna Travels and Tourism is your trusted companion for unforgettable journeys across India and beyond. Based in Kerala, we specialize in curated travel experiences that blend comfort, culture, and adventure.",
+              "MT Trip and Tourism is your trusted companion for unforgettable journeys across India and beyond. Based in Kerala, we specialize in curated travel experiences that blend comfort, culture, and adventure.",
               style: TextStyle(
                 fontSize: 16,
                 height: 1.6,
-                color: Colors.grey[700],
+                color: textSecondary,
               ),
             ),
             SizedBox(height: 12),
@@ -160,7 +147,7 @@ class AboutUsPage extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 height: 1.6,
-                color: Colors.grey[700],
+                color: textSecondary,
               ),
             ),
           ],
@@ -169,211 +156,236 @@ class AboutUsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildServicesSection() {
+  Widget _buildServicesSection(Color cardColor, Color secondaryColor, Color textPrimary, Color textSecondary) {
     final List<Map<String, dynamic>> services = [
       {
-        'icon': Icons.directions_bus,
+        'icon': Icons.directions_bus_rounded,
         'title': 'Bus Booking',
-        'color': Colors.blue,
         'description': 'AC & Non-AC buses across India'
       },
       {
-        'icon': Icons.flight,
+        'icon': Icons.flight_rounded,
         'title': 'Flight Booking',
-        'color': Colors.green,
         'description': 'Domestic & international flights'
       },
       {
-        'icon': Icons.hotel,
+        'icon': Icons.hotel_rounded,
         'title': 'Hotel Booking',
-        'color': Colors.orange,
         'description': 'Luxury to budget stays'
       },
       {
-        'icon': Icons.local_taxi,
+        'icon': Icons.local_taxi_rounded,
         'title': 'Cab Services',
-        'color': Colors.purple,
         'description': 'Outstation & local cabs'
       },
       {
-        'icon': Icons.train,
+        'icon': Icons.train_rounded,
         'title': 'Train Booking',
-        'color': Colors.red,
         'description': 'IRCTC & private trains'
       },
       {
-        'icon': Icons.receipt_long,
+        'icon': Icons.receipt_long_rounded,
         'title': 'Bill Payments',
-        'color': Colors.teal,
         'description': 'Utility bills & recharges'
       },
       {
-        'icon': Icons.phone_android,
+        'icon': Icons.phone_android_rounded,
         'title': 'Mobile Recharge',
-        'color': Colors.pink,
         'description': 'Prepaid & postpaid recharge'
       },
       {
-        'icon': Icons.card_travel,
+        'icon': Icons.card_travel_rounded,
         'title': 'Tour Packages',
-        'color': Colors.indigo,
         'description': 'Customized holiday packages'
       },
-      // {
-      //   'icon': Icons.verified_user,
-      //   'title': 'Travel Insurance',
-      //   'color': Colors.cyan,
-      //   'description': 'Comprehensive travel coverage'
-      // },
-      // {
-      //   'icon': Icons.v,
-      //   'title': 'Visa Services',
-      //   'color': Colors.brown,
-      //   'description': 'Visa assistance & documentation'
-      // },
       {
-        'icon': Icons.corporate_fare,
+        'icon': Icons.corporate_fare_rounded,
         'title': 'Corporate Travel',
-        'color': Colors.deepPurple,
         'description': 'Business travel solutions'
       },
       {
-        'icon': Icons.beach_access,
+        'icon': Icons.beach_access_rounded,
         'title': 'Holiday Packages',
-        'color': Colors.amber,
         'description': 'Domestic & international tours'
       },
     ];
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+    return Container(
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(20),
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: Colors.black.withOpacity(0.08),
+        //     blurRadius: 12,
+        //     offset: const Offset(0, 4),
+        //   ),
+        // ],
+        // border: Border.all(
+        //   color: secondaryColor.withOpacity(0.1),
+        //   width: 1,
+        // ),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(15),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.grid_view, color: maincolor1, size: 24),
-            SizedBox(width: 12),
-            Text(
-              "Our Services",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: maincolor1,
+            Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: secondaryColor.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.grid_view_rounded, color: secondaryColor, size: 24),
+                ),
+                SizedBox(width: 12),
+                Text(
+                  "Our Services",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: textPrimary,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 16),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 0.5,
               ),
+              itemCount: services.length,
+              itemBuilder: (context, index) {
+                final service = services[index];
+                return _buildServiceCard(
+                  service['icon'],
+                  service['title'],
+                  service['description'],
+                  cardColor,
+                  secondaryColor,
+                  textPrimary,
+                  textSecondary,
+                );
+              },
             ),
           ],
         ),
-        SizedBox(height: 16),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 0.6,
-          ),
-          itemCount: services.length,
-          itemBuilder: (context, index) {
-            final service = services[index];
-            return _buildServiceCard(
-              service['icon'],
-              service['title'],
-              service['color'],
-              service['description'],
-            );
-          },
-        ),
-      ],
+      ),
     );
   }
 
-  Widget _buildServiceCard(IconData icon, String title, Color color, String description) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
+  Widget _buildServiceCard(IconData icon, String title, String description, 
+      Color cardColor, Color secondaryColor, Color textPrimary, Color textSecondary) {
+    return Container(
+      decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: Colors.white,
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(12),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  icon,
-                  color: color,
-                  size: 20,
-                ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey[800],
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              SizedBox(height: 4),
-              Text(
-                description,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 8,
-                  color: Colors.grey[600],
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+        color: cardColor,
+        // border: Border.all(
+        //   color: secondaryColor.withOpacity(0.1),
+        //   width: 1,
+        // ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 6,
+            offset: Offset(0, 2),
           ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(12),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: secondaryColor.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                color: secondaryColor,
+                size: 20,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: textPrimary,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            SizedBox(height: 4),
+            Text(
+              description,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 8,
+                color: textSecondary,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildWhyChooseUsSection() {
+  Widget _buildWhyChooseUsSection(Color cardColor, Color secondaryColor, Color textPrimary, Color textSecondary) {
     final List<Map<String, dynamic>> features = [
       {
-        'icon': Icons.verified_user,
+        'icon': Icons.verified_user_rounded,
         'title': 'Trusted Service',
         'description': '10+ years of excellence in travel industry'
       },
       {
-        'icon': Icons.support_agent,
+        'icon': Icons.support_agent_rounded,
         'title': '24/7 Support',
         'description': 'Round the clock customer support'
       },
       {
-        'icon': Icons.savings,
+        'icon': Icons.savings_rounded,
         'title': 'Best Prices',
         'description': 'Guaranteed best deals and offers'
       },
       {
-        'icon': Icons.security,
+        'icon': Icons.security_rounded,
         'title': 'Secure Booking',
         'description': '100% secure and reliable bookings'
       },
     ];
 
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+    return Container(
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(
+          color: secondaryColor.withOpacity(0.1),
+          width: 1,
+        ),
       ),
       child: Padding(
         padding: EdgeInsets.all(20),
@@ -382,14 +394,21 @@ class AboutUsPage extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.star, color: Colors.amber, size: 24),
+                Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: secondaryColor.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.star_rounded, color: secondaryColor, size: 24),
+                ),
                 SizedBox(width: 12),
                 Text(
-                  "Why Choose Minna?",
+                  "Why Choose MT TRip?",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: maincolor1,
+                    color: textPrimary,
                   ),
                 ),
               ],
@@ -400,6 +419,9 @@ class AboutUsPage extends StatelessWidget {
                 feature['icon'],
                 feature['title'],
                 feature['description'],
+                secondaryColor,
+                textPrimary,
+                textSecondary,
               )).toList(),
             ),
           ],
@@ -408,9 +430,10 @@ class AboutUsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildFeatureItem(IconData icon, String title, String description) {
+  Widget _buildFeatureItem(IconData icon, String title, String description, 
+      Color secondaryColor, Color textPrimary, Color textSecondary) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8),
+      padding: EdgeInsets.symmetric(vertical: 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -418,12 +441,12 @@ class AboutUsPage extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: maincolor1!.withOpacity(0.1),
+              color: secondaryColor.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
               icon,
-              color: maincolor1,
+              color: secondaryColor,
               size: 20,
             ),
           ),
@@ -437,7 +460,7 @@ class AboutUsPage extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey[800],
+                    color: textPrimary,
                   ),
                 ),
                 SizedBox(height: 4),
@@ -445,7 +468,7 @@ class AboutUsPage extends StatelessWidget {
                   description,
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.grey[600],
+                    color: textSecondary,
                     height: 1.4,
                   ),
                 ),
@@ -457,20 +480,20 @@ class AboutUsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildFinalStatement() {
+  Widget _buildFinalStatement(Color secondaryColor, Color primaryColor, Color cardColor) {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [maincolor1!, maincolor1!.withOpacity(0.9)],
+          colors: [primaryColor, primaryColor.withOpacity(0.9)],
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: maincolor1!.withOpacity(0.3),
-            blurRadius: 10,
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 12,
             offset: Offset(0, 4),
           ),
         ],
@@ -478,8 +501,8 @@ class AboutUsPage extends StatelessWidget {
       child: Column(
         children: [
           Icon(
-            Icons.favorite,
-            color: Colors.white,
+            Icons.favorite_rounded,
+            color: secondaryColor,
             size: 32,
           ),
           SizedBox(height: 12),
@@ -488,36 +511,22 @@ class AboutUsPage extends StatelessWidget {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: cardColor,
             ),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 12),
           Text(
-            "At Minna Travels, we believe that every journey should be seamless and memorable. Let us take care of your travel needs while you focus on creating beautiful memories that last a lifetime.",
+            "At MT Trip, we believe that every journey should be seamless and memorable. Let us take care of your travel needs while you focus on creating beautiful memories that last a lifetime.",
             style: TextStyle(
               fontSize: 16,
-              color: Colors.white.withOpacity(0.9),
+              color: cardColor.withOpacity(0.9),
               height: 1.6,
             ),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 16),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              "Travel Smart. Travel Minna.",
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
+       
         ],
       ),
     );

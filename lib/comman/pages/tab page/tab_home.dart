@@ -33,7 +33,7 @@ class _CommonTabPageState extends State<CommonTabPage> {
             ),
             const SizedBox(height: 4),
             Text(
-              '  MINNA Tours & Travels',
+              '  MT TRIP',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 16,

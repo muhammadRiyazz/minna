@@ -5,7 +5,7 @@ import 'package:minna/DTH%20&%20Mobile/DTH/pages/dth%20home%20inputs/dht_input_p
 import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/application/oparator/operators_bloc.dart';
 import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/pages/home%20page/recharge_home.dart';
 import 'package:minna/Electyicity%20&%20Water/kseb/kseb%20home/electricity_home.dart';
-import 'package:minna/Electyicity%20&%20Water/water%20bill/water%20bill%20home/water_input.dart';
+import 'package:minna/Electyicity%20&%20Water/water%20bill/water%20bill%20home/water_input.dart' hide ElectricityBillInputPage;
 import 'package:minna/bus/application/location%20fetch/bus_location_fetch_bloc.dart';
 import 'package:minna/bus/pages/screen%20bus%20home%20/bus_home.dart';
 import 'package:minna/cab/pages/TripSelectionPage/TripSelectionPage.dart';
@@ -407,7 +407,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     
     
     
-    ( isTablet ? 180 : isSmallScreen ? 150 : 280): isTablet ? 130 : isSmallScreen ? 100 : 180,
+    ( isTablet ? 170 : isSmallScreen ? 150 : 280):  150,
      floating: false,
     pinned: true,
     elevation: 0,
@@ -559,45 +559,46 @@ class _HomeContentPageState extends State<HomeContentPage> {
                           ),
                         ] else ...[
                           // Login Button with Alert Functionality
-                          GestureDetector(
-                            onTap: () {
- showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (context) => LoginBottomSheet(login: 2),
-                );                            },
-                            child: Container(
-                              height: isSmallScreen ? 36 : 40,
-                              padding: EdgeInsets.symmetric(horizontal: 16),
-                              decoration: BoxDecoration(
-                              color: _primaryColor,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
+                  //         GestureDetector(
+                  //           onTap: () {
+                  // showModalBottomSheet(
+                  // context: context,
+                  // isScrollControlled: true,
+                  // backgroundColor: Colors.transparent,
+                  // builder: (context) => LoginBottomSheet(login: 2),
+                  // );
+                  // },
+                  //           child: Container(
+                  //             height: isSmallScreen ? 36 : 40,
+                  //             padding: EdgeInsets.symmetric(horizontal: 16),
+                  //             decoration: BoxDecoration(
+                  //             color: _primaryColor,
+                  //               borderRadius: BorderRadius.circular(20),
+                  //               boxShadow: [
                                  
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.login,
-                                    color: Colors.white,
-                                    size: isSmallScreen ? 16 : 18,
-                                  ),
-                                  SizedBox(width: 6),
-                                  Text(
-                                    'Login',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: isSmallScreen ? 12 : 14,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                  //               ],
+                  //             ),
+                  //             child: Row(
+                  //               mainAxisSize: MainAxisSize.min,
+                  //               children: [
+                  //                 Icon(
+                  //                   Icons.login,
+                  //                   color: Colors.white,
+                  //                   size: 13,
+                  //                 ),
+                  //                 SizedBox(width: 6),
+                  //                 Text(
+                  //                   'Login',
+                  //                   style: TextStyle(
+                  //                     color: Colors.white,
+                  //                     fontSize: isSmallScreen ? 12 : 12,
+                  //                     fontWeight: FontWeight.w600,
+                  //                   ),
+                  //                 ),
+                  //               ],
+                  //             ),
+                  //           ),
+                  //         ),
                         ],
                       ],
                     ),
@@ -664,8 +665,12 @@ class _HomeContentPageState extends State<HomeContentPage> {
 Widget _buildLoginAlertBanner(bool isSmallScreen) {
   return GestureDetector(
     onTap: () {
-      // _showLoginAlert(context);
-    },
+  showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => LoginBottomSheet(login: 2),
+                  );    },
     child: Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(
@@ -688,20 +693,20 @@ Widget _buildLoginAlertBanner(bool isSmallScreen) {
       ),
       child: Row(
         children: [
-          // Alert Icon
-          Container(
-            padding: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: _secondaryColor.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.info_outline,
-              color: _secondaryColor,
-              size: isSmallScreen ? 18 : 20,
-            ),
-          ),
-          SizedBox(width: isSmallScreen ? 12 : 16),
+          // // Alert Icon
+          // Container(
+          //   padding: EdgeInsets.all(8),
+          //   decoration: BoxDecoration(
+          //     color: _secondaryColor.withOpacity(0.1),
+          //     shape: BoxShape.circle,
+          //   ),
+          //   child: Icon(
+          //     Icons.info_outline,
+          //     color: _secondaryColor,
+          //     size: isSmallScreen ? 18 : 20,
+          //   ),
+          // ),
+          // SizedBox(width: isSmallScreen ? 12 : 16),
           
           // Alert Message
           Expanded(
@@ -712,7 +717,7 @@ Widget _buildLoginAlertBanner(bool isSmallScreen) {
                   'Login Required!',
                   style: TextStyle(
                     color: _primaryColor,
-                    fontSize: isSmallScreen ? 14 : 16,
+                    fontSize:14,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -721,7 +726,7 @@ Widget _buildLoginAlertBanner(bool isSmallScreen) {
                   'login to manage trips, explore offers & more',
                   style: TextStyle(
                     color: _textSecondary,
-                    fontSize: isSmallScreen ? 12 : 13,
+                    fontSize: 10,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -731,33 +736,37 @@ Widget _buildLoginAlertBanner(bool isSmallScreen) {
           ),
           
           // // Quick Login Button
-          // Container(
-          //   height: isSmallScreen ? 32 : 36,
-          //   padding: EdgeInsets.symmetric(horizontal: 12),
-          //   decoration: BoxDecoration(
-          //     color: _primaryColor,
-          //     borderRadius: BorderRadius.circular(12),
-          //   ),
-          //   child: TextButton(
-          //     onPressed: () {
-          //       // _showLoginAlert(context);
-          //     },
-          //     style: TextButton.styleFrom(
-          //       padding: EdgeInsets.zero,
-          //       shape: RoundedRectangleBorder(
-          //         borderRadius: BorderRadius.circular(12),
-          //       ),
-          //     ),
-          //     child: Text(
-          //       'Login Now',
-          //       style: TextStyle(
-          //         color: Colors.white,
-          //         fontSize: isSmallScreen ? 11 : 12,
-          //         fontWeight: FontWeight.w600,
-          //       ),
-          //     ),
-          //   ),
-          // ),
+          Container(
+            height: isSmallScreen ? 32 : 36,
+            padding: EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              color: _primaryColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: TextButton(
+              onPressed: () {
+  showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => LoginBottomSheet(login: 2),
+                  );              },
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Text(
+                'Login Now',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: isSmallScreen ? 11 : 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     ),

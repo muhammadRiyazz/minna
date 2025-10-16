@@ -14,65 +14,61 @@ class ScreenBooking extends StatefulWidget {
 }
 
 class _ScreenBookingState extends State<ScreenBooking> {
-  int _selectedTab = 0; // 0 = Bus, 1 = Flight, 2 = Cab, 3 = Hotel
+  int _selectedTab = 0;
+
+  // White, Black, Gold theme
+  final Color _blackColor = Colors.black;
+  final Color _whiteColor = Colors.white;
+  final Color _goldColor = Color(0xFFD4AF37);
+  final Color _backgroundColor = Color(0xFFFAFAFA);
+  final Color _borderColor = Color(0xFFEEEEEE);
+  final Color _textSecondary = Color(0xFF666666);
 
   final List<Map<String, dynamic>> bookingTypes = [
     {
       'name': 'Bus',
       'icon': Icons.directions_bus,
-      'color': maincolor1,
-      'gradient': [maincolor1!, maincolor1!.withOpacity(0.8)]
     },
     {
       'name': 'Flight',
       'icon': Icons.flight,
-      'color': maincolor1,
-      'gradient': [maincolor1!, maincolor1!.withOpacity(0.8)]
     },
     {
       'name': 'Cab',
       'icon': Icons.local_taxi,
-      'color': maincolor1,
-      'gradient': [maincolor1!, maincolor1!.withOpacity(0.8)]
     },
     {
       'name': 'Hotel',
       'icon': Icons.hotel,
-      'color': maincolor1,
-      'gradient': [maincolor1!, maincolor1!.withOpacity(0.8)]
     },
   ];
 
   @override
   void initState() {
     super.initState();
-    // Load login info from bloc
     context.read<LoginBloc>().add(const LoginEvent.loginInfo());
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: _backgroundColor,
       appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.white),
-        title: const Text(
+        title: Text(
           'My Bookings',
           style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
+            color: _blackColor,
+            fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
         ),
         centerTitle: true,
-        backgroundColor: maincolor1,
+        backgroundColor: _whiteColor,
         elevation: 0,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
-        ),
+        foregroundColor: _blackColor,
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh, color: Colors.white),
+            icon: Icon(Icons.refresh, color: _blackColor),
             onPressed: () {
               setState(() {});
             },
@@ -89,10 +85,9 @@ class _ScreenBookingState extends State<ScreenBooking> {
 
           return Column(
             children: [
-              // Booking Type Selector
-              _buildBookingTypeSelector(),
-              
-              // Content Area
+              SizedBox(height: 10),
+              _buildTabSelector(),
+              SizedBox(height: 10),
               Expanded(child: _buildSelectedContent()),
             ],
           );
@@ -101,87 +96,57 @@ class _ScreenBookingState extends State<ScreenBooking> {
     );
   }
 
-  /// Enhanced Tab Selector
-  Widget _buildBookingTypeSelector() {
+  Widget _buildTabSelector() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-      padding: EdgeInsets.all(8),
+      margin: EdgeInsets.symmetric(horizontal: 12),
+      padding: EdgeInsets.all(5),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        // boxShadow: [
-        //   BoxShadow(
-        //     color: Colors.black12,
-        //     blurRadius: 8,
-        //     offset: Offset(0, 2),
-        //   ),
-        // ],
+        color: _whiteColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _borderColor),
       ),
       child: Row(
         children: List.generate(bookingTypes.length, (index) {
-          final type = bookingTypes[index];
           final isSelected = _selectedTab == index;
           
           return Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: _bookingTypeButton(
-                type,
-                isSelected,
-                () {
-                  setState(() {
-                    _selectedTab = index;
-                  });
-                },
-              ),
-            ),
+            child: _tabButton(index, isSelected, () {
+              setState(() {
+                _selectedTab = index;
+              });
+            }),
           );
         }),
       ),
     );
   }
 
-  /// Enhanced Booking Type Button
-  Widget _bookingTypeButton(Map<String, dynamic> type, bool isSelected, VoidCallback onTap) {
+  Widget _tabButton(int index, bool isSelected, VoidCallback onTap) {
+    final type = bookingTypes[index];
+    
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 0),
         decoration: BoxDecoration(
-          gradient: isSelected 
-              ? LinearGradient(
-                  colors: type['gradient'],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                )
-              : null,
-          color: isSelected ? null : Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: maincolor1!.withOpacity(0.3),
-                    blurRadius: 6,
-                    offset: Offset(0, 2),
-                  ),
-                ]
-              : null,
+          color: isSelected ? _goldColor.withOpacity(0.1) : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+          // border: isSelected ? Border.all(color: _goldColor) : null,
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               type['icon'],
-              color: isSelected ? Colors.white : maincolor1,
-              size: 20,
+              color: isSelected ? _goldColor : _textSecondary,
+              size: 15,
             ),
             SizedBox(height: 6),
             Text(
               type['name'],
               style: TextStyle(
                 fontSize: 12,
-                color: isSelected ? Colors.white : Colors.black87,
-                fontWeight: FontWeight.w500,
+                color: isSelected ? _goldColor : _textSecondary,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
               ),
             ),
           ],
@@ -190,155 +155,109 @@ class _ScreenBookingState extends State<ScreenBooking> {
     );
   }
 
-  /// Content Based on Selected Tab
   Widget _buildSelectedContent() {
     switch (_selectedTab) {
       case 0:
-        return const ScreenReport(); // Bus
+        return ScreenReport(); // Bus
       case 1:
-        return _buildFlightContent(); // Flight
+        return _buildEmptyContent('Flight', Icons.flight);
       case 2:
         return CabBookingList(); // Cab
       case 3:
-        return _buildHotelContent(); // Hotel
+        return _buildEmptyContent('Hotel', Icons.hotel);
       default:
-        return const SizedBox();
+        return SizedBox();
     }
   }
 
-  /// Enhanced Flight Section
-  Widget _buildFlightContent() {
-    return _emptySection(
-      icon: Icons.flight,
-      title: "No Flight Trips Yet",
-      subtitle: "You haven't booked any flight trips yet\nPlan your next journey and explore new destinations",
-      buttonText: "Book Flight",
-      onButtonPressed: () {
-        // Navigate to flight booking
-      },
-    );
-  }
-
-  /// Enhanced Hotel Section
-  Widget _buildHotelContent() {
-    return _emptySection(
-      icon: Icons.hotel,
-      title: "No Hotel Bookings Yet",
-      subtitle: "You haven't booked any hotels yet\nFind the perfect stay for your next trip",
-      buttonText: "Book Hotel",
-      onButtonPressed: () {
-        // Navigate to hotel booking
-      },
-    );
-  }
-
-  /// Enhanced Reusable Empty Section Widget
-  Widget _emptySection({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    String? buttonText,
-    VoidCallback? onButtonPressed,
-  }) {
+  Widget _buildEmptyContent(String type, IconData icon) {
     return Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: EdgeInsets.all(32),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 120,
-            height: 120,
+            width: 80,
+            height: 80,
             decoration: BoxDecoration(
-              color: maincolor1!.withOpacity(0.1),
+              color: _whiteColor,
               shape: BoxShape.circle,
+              border: Border.all(color: _borderColor),
             ),
-            child: Icon(icon, size: 50, color: maincolor1),
+            child: Icon(
+              icon,
+              size: 32,
+              color: _textSecondary,
+            ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           Text(
-            title,
+            'No $type Bookings',
             style: TextStyle(
-              fontSize: 20,
-              color: Colors.grey[800],
+              fontSize: 18,
+              color: _blackColor,
               fontWeight: FontWeight.w600,
             ),
-            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Text(
-            subtitle,
+            'Your $type bookings will appear here\nwhen you make a reservation',
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey[600],
-              height: 1.4,
+              color: _textSecondary,
+              height: 1.5,
             ),
             textAlign: TextAlign.center,
           ),
-          if (buttonText != null && onButtonPressed != null) ...[
-            const SizedBox(height: 24),
-            // ElevatedButton(
-            //   onPressed: onButtonPressed,
-            //   style: ElevatedButton.styleFrom(
-            //     backgroundColor: maincolor1,
-            //     foregroundColor: Colors.white,
-            //     padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-            //     shape: RoundedRectangleBorder(
-            //       borderRadius: BorderRadius.circular(12),
-            //     ),
-            //     elevation: 2,
-            //   ),
-            //   child: Text(
-            //     buttonText,
-            //     style: TextStyle(
-            //       fontSize: 14,
-            //       fontWeight: FontWeight.w500,
-            //     ),
-            //   ),
-            // ),
-          ],
         ],
       ),
     );
   }
 
-  /// Enhanced Not Logged In Section
   Widget _buildNotLoggedInSection() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                color: maincolor1!.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(Icons.lock_outline, size: 50, color: maincolor1),
+    return Padding(
+      padding: EdgeInsets.all(32),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+              color: _whiteColor,
+              shape: BoxShape.circle,
+              border: Border.all(color: _borderColor),
             ),
-            const SizedBox(height: 24),
-            Text(
-              "Login to View Bookings",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[800],
-              ),
+            child: Icon(
+              Icons.lock_outline,
+              size: 40,
+              color: _textSecondary,
             ),
-            const SizedBox(height: 12),
-            Text(
-              "Please log in to view and manage your bookings,\ncheck upcoming trips, and access your travel history",
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-                height: 1.4,
-              ),
-              textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 32),
+          Text(
+            'Login Required',
+            style: TextStyle(
+              fontSize: 22,
+              color: _blackColor,
+              fontWeight: FontWeight.w600,
             ),
-            const SizedBox(height: 32),
-            ElevatedButton(
+          ),
+          SizedBox(height: 16),
+          Text(
+            'Please login to view your bookings\nand manage your trips',
+            style: TextStyle(
+              fontSize: 16,
+              color: _textSecondary,
+              height: 1.4,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 32),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton(
               onPressed: () {
                 showModalBottomSheet(
                   context: context,
@@ -348,25 +267,24 @@ class _ScreenBookingState extends State<ScreenBooking> {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: maincolor1,
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+                backgroundColor: _blackColor,
+                foregroundColor: _whiteColor,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                elevation: 2,
               ),
               child: Text(
-                "Login Now",
+                'Login to Continue',
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
-            const SizedBox(height: 16),
-          ],
-        ),
+          ),
+          SizedBox(height: 16),
+        
+        ],
       ),
     );
   }
