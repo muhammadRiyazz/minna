@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/core/api.dart';
+import 'package:minna/comman/functions/create_order_id.dart';
 import 'package:minna/comman/pages/main%20home/home.dart';
 import 'package:minna/flight/application/booking/booking_bloc.dart';
 import 'package:minna/flight/domain/booking%20request%20/booking_request.dart';
@@ -15,10 +16,9 @@ import 'package:minna/flight/presendation/widgets.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class BookingConfirmationScreen extends StatefulWidget {
-  const BookingConfirmationScreen({super.key, required this.flightinfo});
+  const BookingConfirmationScreen({super.key, required this.flightinfo,});
 
   final FFlightOption flightinfo;
-
   @override
   State<BookingConfirmationScreen> createState() =>
       _BookingConfirmationScreenState();
@@ -43,7 +43,8 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
   bool _isTimeExpired = false;
   Set<int> expandedIndexes = {};
   late Razorpay _razorpay;
-  bool _isProcessingPayment = false;
+  bool _isPaymentButtonLoading = false;
+  String? _lastRefundState;
 
   @override
   void initState() {
@@ -87,45 +88,70 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
     log("Payment Success: ${response.paymentId}");
-    setState(() => _isProcessingPayment = false);
-    context.read<BookingBloc>().add(const BookingEvent.confirmBooking());
+    
+    setState(() {
+      _isPaymentButtonLoading = false;
+    });
+    
+    context.read<BookingBloc>().add(
+      BookingEvent.confirmFlightBooking(
+        paymentId: response.paymentId!,
+        orderId: response.orderId!,
+        signature: response.signature!,
+      )
+    );
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
     log("Payment Error: ${response.code} - ${response.message}");
-    setState(() => _isProcessingPayment = false);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("Payment failed: ${response.message ?? 'Unknown error'}"),
-        backgroundColor: _errorColor,
-      ),
-    );
+    
+    setState(() {
+      _isPaymentButtonLoading = false;
+    });
+    
+    // Show error message to user
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(
+    //     content: Text('Payment failed: ${response.message ?? 'Unknown error'}'),
+    //     backgroundColor: Colors.red,
+    //   ),
+    // );
   }
 
   void _handleExternalWallet(ExternalWalletResponse response) {
     log("External Wallet: ${response.walletName}");
-    setState(() => _isProcessingPayment = false);
   }
 
-  Future<void> _initiatePayment(BookingState state) async {
-    if (state.bookingdata == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Booking data not available")),
-      );
-      return;
+  void _openRazorpayPayment(BookingState state) async {
+    if (_isPaymentButtonLoading) {
+      return; // Prevent multiple clicks
     }
 
-    setState(() => _isProcessingPayment = true);
+    setState(() {
+      _isPaymentButtonLoading = true;
+    });
 
     try {
-      final passenger = state.bookingdata!.passengers.isNotEmpty
-          ? state.bookingdata!.passengers.first
+      final amount = state.bookingdata!.journey.flightOption.flightFares.first.totalAmount;
+      final orderId = await createOrder(amount);
+
+      final bookingData = state.bookingdata;
+      if (bookingData == null) {
+        setState(() {
+          _isPaymentButtonLoading = false;
+        });
+        return;
+      }
+
+      final passenger = bookingData.passengers.isNotEmpty
+          ? bookingData.passengers.first
           : null;
 
       final options = {
         'key': razorpaykey,
-        'amount': (state.bookingdata!.journey.flightOption.flightFares.first.totalAmount * 100).toInt(),
+        'amount': (amount * 100).toInt(),
         'name': 'Flight Booking',
+        'order_id': orderId,
         'description': 'Flight Ticket Payment',
         'prefill': {
           'contact': passenger?.contact ?? '0000000000',
@@ -136,57 +162,128 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
 
       _razorpay.open(options);
     } catch (e) {
-      setState(() => _isProcessingPayment = false);
-      log("Razorpay Error: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Error initiating payment")),
-      );
+      log('Error opening Razorpay: $e');
+      setState(() {
+        _isPaymentButtonLoading = false;
+      });
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text('Failed to initiate payment: $e'),
+      //     backgroundColor: Colors.red,
+      //   ),
+      // );
     }
+  }
+
+  void _showRefundInitiatedDialog(BuildContext context) {
+    // Prevent multiple dialogs by checking if one is already shown
+    if (ModalRoute.of(context)?.isCurrent != true) return;
+    
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.check_circle, color: _successColor),
+            SizedBox(width: 8),
+            Text("Refund Initiated"),
+          ],
+        ),
+        content: Text("Your payment has been refunded due to booking failure. The amount will be credited to your account within 3-7 working days."),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              // Navigate to home after dialog is closed
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => HomePage()),
+                (route) => false,
+              );
+            },
+            child: Text("OK", style: TextStyle(color: _primaryColor)),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        await _showBottomSheetbooking(
-          context: context,
-          state: context.read<BookingBloc>().state,
-        );
-        return false;
+    return BlocListener<BookingBloc, BookingState>(
+      listener: (context, state) {
+        final currentRefundState = '${state.refundInitiated}_${state.refundFailed}';
+        
+        // Only trigger if refund state actually changed
+        if (currentRefundState != _lastRefundState) {
+          _lastRefundState = currentRefundState;
+          
+          if (state.refundInitiated == true) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _showRefundInitiatedDialog(context);
+            });
+          }
+
+          if (state.refundFailed == true) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              // ScaffoldMessenger.of(context).showSnackBar(
+              //   SnackBar(
+              //     content: Text('Refund failed. Please contact support.'),
+              //     backgroundColor: Colors.red,
+              //     duration: Duration(seconds: 5),
+              //   ),
+              // );
+            });
+          }
+        }
+
+        // Reset when booking completes
+        if (state.isBookingCompleted == true || state.isBookingConfirmed == true) {
+          _lastRefundState = null;
+        }
       },
-      child: Scaffold(
-        backgroundColor: _backgroundColor,
-        body: BlocConsumer<BookingBloc, BookingState>(
-          listener: (context, state) {
-            if (state.bookingError != null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.bookingError!),
-                  backgroundColor: _errorColor,
-                ),
-              );
-            }
-          },
-          builder: (context, state) {
-            if (state.isLoading) {
-              return _buildLoadingScreen();
-            }
+      child: WillPopScope(
+        onWillPop: () async {
+          await _showBottomSheetbooking(
+            context: context,
+            state: context.read<BookingBloc>().state,
+          );
+          return false;
+        },
+        child: Scaffold(
+          backgroundColor: _backgroundColor,
+          body: BlocBuilder<BookingBloc, BookingState>(
+            builder: (context, state) {
+              // Reset loading state when booking is completed or failed
+              if ((state.isBookingCompleted == true || state.bookingFailed == true) && _isPaymentButtonLoading) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isPaymentButtonLoading = false;
+                  });
+                });
+              }
 
-            if (state.isBookingConfirmed != null && state.isBookingConfirmed!) {
-              return _buildSuccessUI(state);
-            }
+              if (state.isLoading) {
+                return _buildLoadingScreen();
+              }
 
-            if (state.bookingError != null) {
-              return _buildErrorUI(state);
-            }
+              if (state.isBookingCompleted == true || state.isBookingConfirmed == true) {
+                return _buildSuccessUI(state);
+              }
 
-            final bookingData = state.bookingdata;
+              if (state.bookingError != null && state.bookingFailed == true) {
+                return _buildErrorUI(state);
+              }
+
+              final bookingData = state.bookingdata;
             if (bookingData == null) {
               return _buildNoDataScreen();
             }
 
-            return _buildBookingConfirmationUI(state, bookingData);
-          },
+              return _buildBookingConfirmationUI(state, bookingData!);
+            },
+          ),
         ),
       ),
     );
@@ -313,106 +410,81 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
   }
 
   Widget _buildBookingConfirmationUI(BookingState state, BBBookingRequest bookingData) {
+    final isProcessing = state.isCreatingOrder == true || 
+                         state.isPaymentProcessing == true ||
+                         state.isConfirmingBooking == true ||
+                         state.isSavingFinalBooking == true ||
+                         state.isRefundProcessing == true;
+
     return CustomScrollView(
       slivers: [
         // Enhanced SliverAppBar with Timer
-     SliverAppBar(
-  backgroundColor: _primaryColor,
-  expandedHeight: 140,
-  floating: false,
-  pinned: true,
-  elevation: 4,
-  leading: IconButton(
-    icon: Icon(Icons.arrow_back_rounded, color: Colors.white),
-    onPressed: () => _showBottomSheetbooking(
-      context: context,
-      state: state,
-    ),
-  ),
-  actions: [
-    // Timer in actions (top-right corner)
-    Container(
-      margin: EdgeInsets.only(right: 16, top: 12),
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: _isTimeExpired ? _errorColor : _secondaryColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: _isTimeExpired ? _errorColor.withOpacity(0.3) : _secondaryColor.withOpacity(0.3),
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            _isTimeExpired ? Icons.timer_off_rounded : Icons.timer_rounded,
-            color: Colors.white,
-            size: 16,
-          ),
-          SizedBox(width: 6),
-          Text(
-            _isTimeExpired ? 'Expired' : _formatTime(_remainingSeconds),
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
+        SliverAppBar(
+          backgroundColor: _primaryColor,
+          expandedHeight: 140,
+          floating: false,
+          pinned: true,
+          elevation: 4,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_rounded, color: Colors.white),
+            onPressed: () => _showBottomSheetbooking(
+              context: context,
+              state: state,
             ),
           ),
-        ],
-      ),
-    ),
-  ],
-  flexibleSpace: FlexibleSpaceBar(
-    title: Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
-      child: Text(
-        'Confirm Booking',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
+          actions: [
+            // Timer in actions (top-right corner)
+            Container(
+              margin: EdgeInsets.only(right: 16, top: 12),
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: _isTimeExpired ? _errorColor : _secondaryColor,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: _isTimeExpired ? _errorColor.withOpacity(0.3) : _secondaryColor.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    _isTimeExpired ? Icons.timer_off_rounded : Icons.timer_rounded,
+                    color: Colors.white,
+                    size: 16,
+                  ),
+                  SizedBox(width: 6),
+                  Text(
+                    _isTimeExpired ? 'Expired' : _formatTime(_remainingSeconds),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+          flexibleSpace: FlexibleSpaceBar(
+            title: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                'Confirm Booking',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            centerTitle: true,
+          ),
         ),
-      ),
-    ),
-    centerTitle: true,
-    // background: Container(
-    //   decoration: BoxDecoration(
-    //     gradient: LinearGradient(
-    //       begin: Alignment.topLeft,
-    //       end: Alignment.bottomRight,
-    //       colors: [
-    //         _primaryColor,
-    //         Color(0xFF2D2D2D),
-    //       ],
-    //     ),
-    //   ),
-    //   child: Column(
-    //     mainAxisAlignment: MainAxisAlignment.end,
-    //     children: [
-    //       // Additional timer display in expanded area (optional)
-    //       if (!_isTimeExpired)
-    //         Container(
-    //           margin: EdgeInsets.only(bottom: 20),
-    //           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-    //           child: Text(
-    //             'Complete your booking within ${_formatTime(_remainingSeconds)}',
-    //             style: TextStyle(
-    //               color: Colors.white.withOpacity(0.9),
-    //               fontSize: 14,
-    //               fontWeight: FontWeight.w500,
-    //             ),
-    //             textAlign: TextAlign.center,
-    //           ),
-    //         ),
-    //     ],
-    //   ),
-    // ),
-  ),
-),
+
         // Time Expired Warning
         if (_isTimeExpired)
           SliverToBoxAdapter(
@@ -432,6 +504,42 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                       'Booking session has expired. Please start over to book your flight.',
                       style: TextStyle(
                         color: _errorColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+        // Processing Indicator
+        if (isProcessing)
+          SliverToBoxAdapter(
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: _secondaryColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: _secondaryColor,
+                    ),
+                  ),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      _getProcessingText(state),
+                      style: TextStyle(
+                        color: _textPrimary,
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
@@ -521,16 +629,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                     child: Text('Start New Booking'),
                   ),
                 ] else ...[
-                  state.isLoading || _isProcessingPayment
-                      ? LinearProgressIndicator(
-                          color: _secondaryColor,
-                          backgroundColor: _secondaryColor.withOpacity(0.2),
-                        )
-                      : _buildPaymentButton(
-                          context,
-                          'Pay & Confirm Booking',
-                          () => _initiatePayment(state),
-                        ),
+                  _buildPaymentButton(state, isProcessing),
                 ],
                 SizedBox(height: 8),
               ],
@@ -538,6 +637,55 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  String _getProcessingText(BookingState state) {
+    if (state.isCreatingOrder == true) return 'Creating payment order...';
+    if (state.isPaymentProcessing == true) return 'Processing payment...';
+    if (state.isConfirmingBooking == true) return 'Confirming your booking...';
+    if (state.isSavingFinalBooking == true) return 'Saving booking details...';
+    if (state.isRefundProcessing == true) return 'Processing refund...';
+    return 'Processing...';
+  }
+
+  Widget _buildPaymentButton(BookingState state, bool isProcessing) {
+    final bool shouldShowLoading = _isPaymentButtonLoading || isProcessing;
+    
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: _primaryColor,
+        foregroundColor: Colors.white,
+        minimumSize: Size.fromHeight(56),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        elevation: 2,
+      ),
+      onPressed: shouldShowLoading ? null : () => _openRazorpayPayment(state),
+      child: shouldShowLoading 
+          ? SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.lock_rounded, size: 20),
+                SizedBox(width: 12),
+                Text(
+                  'Pay & Confirm Booking',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
     );
   }
 
@@ -551,13 +699,13 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
           floating: false,
           pinned: true,
           elevation: 0,
-          leading:IconButton(
-    icon: Icon(Icons.arrow_back_rounded, color: Colors.white),
-    onPressed: () => _showBottomSheetbooking(
-      context: context,
-      state: state,
-    ),
-  ),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_rounded, color: Colors.white),
+            onPressed: () => _showBottomSheetbooking(
+              context: context,
+              state: state,
+            ),
+          ),
           flexibleSpace: FlexibleSpaceBar(
             title: Text(
               'Booking Confirmed!',
@@ -653,7 +801,6 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                 Container(
                   margin: EdgeInsets.symmetric(horizontal: 10),
                   child: FlightbookingCard(flightOption: widget.flightinfo),
-
                 ),
 
                 _buildPassengerExpansionSection(bookingData.passengers),
@@ -715,10 +862,358 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
     );
   }
 
-  // ... (Keep all the existing _buildPassengerExpansionSection, _buildPassengerExpansionTile, 
-  // _buildPassengerDetailRow, _buildEnhancedFareBreakdown, _buildErrorUI, _fareRow methods 
-  // but update them to use the theme colors and maintain the same structure)
 
+
+Widget _buildErrorUI(BookingState state) {
+  return Scaffold(
+    backgroundColor: _backgroundColor,
+    body: CustomScrollView(
+      slivers: [
+        // Simple App Bar
+        SliverAppBar(
+          backgroundColor: _primaryColor,
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_rounded, color: Colors.white),
+            onPressed: () => _showBottomSheetbooking(context:  context,state:  state),
+          ),
+          title: Text(
+            'Booking Failed',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          centerTitle: true,
+          pinned: true,
+        ),
+
+        // Error Content
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: Container(
+            padding: EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                                SizedBox(height: 32),
+
+                // Error Icon
+                Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: _secondaryColor.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                    // border: Border.all(
+                    //   color: _errorColor.withOpacity(0.3),
+                    //   width: 2,
+                    // ),
+                  ),
+                  child: Icon(
+                    Icons.error_outline_rounded,
+                    color: _secondaryColor,
+                    size: 50,
+                  ),
+                ),
+                
+                SizedBox(height: 20),
+                
+                // Error Title
+                Text(
+                  'Booking Failed',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w700,
+                    color: _primaryColor,
+                  ),
+                ),
+                
+                SizedBox(height: 10),
+                
+                // // Error Message
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+'Sorry, there is an issue on booking.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: _textSecondary,
+                      fontWeight: FontWeight.w500,
+                      height: 1.5,
+                    ),
+                  ),
+                ),
+                
+                SizedBox(height: 32),
+                
+                // Status Information
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: _secondaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(16),
+                
+                  ),
+                  child: Column(
+                    children: [
+                      if (state.refundInitiated == true) ...[
+                        Icon(
+                          Icons.check_circle_rounded,
+                          color: _successColor,
+                          size: 40,
+                        ),
+                        SizedBox(height: 12),
+                        Text(
+                          'Refund Initiated',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: _successColor,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Your payment is being refunded and will be processed within 3-7 working days.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: _textSecondary,
+                          ),
+                        ),
+                      ] else if (state.refundFailed == true) ...[
+                        Icon(
+                          Icons.warning_rounded,
+                          color: _warningColor,
+                          size: 40,
+                        ),
+                        SizedBox(height: 12),
+                        Text(
+                          'Refund Issue',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: _warningColor,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Please contact support for assistance with your refund.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: _textSecondary,
+                          ),
+                        ),
+                      ] else ...[
+                        Icon(
+                          Icons.security_rounded,
+                          color: _secondaryColor,
+                          size: 40,
+                        ),
+                        SizedBox(height: 12),
+                        Text(
+                          'Payment Protected',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: _secondaryColor,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Your payment is secure and will be automatically refunded if deducted.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: _textSecondary,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                
+                Spacer(),
+                
+                // Action Buttons
+              
+                    // Home Button (Black)
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _primaryColor,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (_) => HomePage()),
+                            (route) => false,
+                          );
+                        },
+                        child: Text(
+                          'Go to Home',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                 
+              ],
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+// Bottom Sheet for Back Button
+void _showErrorBottomSheet(BookingState state) {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.white,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+    ),
+    builder: (context) {
+      return Container(
+        height: 300,
+        padding: EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+        child: Column(
+          children: [
+            Container(
+              height: 5,
+              width: 50,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(5),
+              ),
+            ),
+            SizedBox(height: 24),
+
+            // Status Icon
+            Container(
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: _errorColor.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.error_outline_rounded,
+                color: _errorColor,
+                size: 40,
+              ),
+            ),
+            SizedBox(height: 16),
+
+            Text(
+              'Booking Failed',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 18,
+                color: _primaryColor,
+              ),
+            ),
+            SizedBox(height: 6),
+
+            if (state.refundInitiated == true)
+              Text(
+                'Your refund has been initiated.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: _textSecondary,
+                ),
+              )
+            else
+              Text(
+                'Are you sure you want to leave? ',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: _textSecondary,
+                ),
+              ),
+
+            SizedBox(height: 12),
+
+            // Bottom Sheet Buttons
+            Row(
+              children: [
+                // Cancel Button (Black)
+                Expanded(
+                  child: SizedBox(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: _primaryColor,
+                        side: BorderSide(color: _primaryColor),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        'Stay Here',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 12),
+
+                // Confirm Button (Gold)
+                Expanded(
+                  child: SizedBox(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _secondaryColor,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context); // Close bottom sheet
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (_) => HomePage()),
+                          (route) => false,
+                        );
+                      },
+                      child: Text(
+                        'Go Home',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
   Widget _buildPassengerExpansionSection(List<RePassenger> passengers) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -740,7 +1235,6 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
             width: double.infinity,
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              // color: _primaryColor,
               borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
             ),
             child: Row(
@@ -785,13 +1279,13 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
               ],
             ),
           ),
-          ...passengers.map(_buildPassengerExpansionTile),
+          ...passengers.asMap().entries.map((entry) => _buildPassengerExpansionTile(entry.value, entry.key)),
         ],
       ),
     );
   }
 
-  Widget _buildPassengerExpansionTile(RePassenger passenger) {
+  Widget _buildPassengerExpansionTile(RePassenger passenger, int index) {
     return Container(
       decoration: BoxDecoration(
         border: Border(
@@ -939,7 +1433,6 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
             width: double.infinity,
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              // color: _primaryColor,
               borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
             ),
             child: Row(
@@ -1080,180 +1573,6 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
     );
   }
 
-  Widget _buildErrorUI(BookingState state) {
-    return Scaffold(
-      backgroundColor: _backgroundColor,
-      appBar: AppBar(
-        backgroundColor: _primaryColor,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_rounded, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Padding(
-          padding: EdgeInsets.all(24),
-          child: Column(
-            children: [
-              Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      _errorColor.withOpacity(0.8),
-                      _errorColor,
-                    ],
-                  ),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: _errorColor.withOpacity(0.3),
-                      blurRadius: 15,
-                      spreadRadius: 3,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Icon(
-                  Icons.close_rounded,
-                  color: Colors.white,
-                  size: 60,
-                ),
-              ),
-              SizedBox(height: 32),
-              Text(
-                'Booking Failed',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w800,
-                  color: _errorColor,
-                  letterSpacing: -0.5,
-                ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'We encountered an issue with your booking',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: _textSecondary,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              SizedBox(height: 24),
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      _secondaryColor.withOpacity(0.05),
-                      _secondaryColor.withOpacity(0.1),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: _secondaryColor.withOpacity(0.2)),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: _secondaryColor,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.security_rounded,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Refund Protection',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: _primaryColor,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          RichText(
-                            text: TextSpan(
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: _textSecondary,
-                                height: 1.4,
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: 'Your money is safe! ',
-                                  style: TextStyle(fontWeight: FontWeight.w700, color: _primaryColor),
-                                ),
-                                TextSpan(
-                                  text: 'If any amount was deducted, it will be automatically refunded to your account within ',
-                                ),
-                                TextSpan(
-                                  text: '3-7 working days',
-                                  style: TextStyle(fontWeight: FontWeight.w700, color: _primaryColor),
-                                ),
-                                TextSpan(text: '.'),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 40),
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _primaryColor,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (_) => HomePage()),
-                      (route) => false,
-                    );
-                  },
-                  child: Text(
-                    'Go to Home',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _fareRow(
     String label,
     String symbol,
@@ -1296,48 +1615,18 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
       ),
     );
   }
-
-  Widget _buildPaymentButton(BuildContext context, String text, VoidCallback onPressed) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: _primaryColor,
-        foregroundColor: Colors.white,
-        minimumSize: Size.fromHeight(56),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        elevation: 2,
-      ),
-      onPressed: onPressed,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.lock_rounded, size: 20),
-          SizedBox(width: 12),
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
-// ... (Keep the existing _showBottomSheetbooking and convertMsDateToFormattedDate functions)
 Future<dynamic> _showBottomSheetbooking({
   required BuildContext context,
-  BookingState? state,
+  required BookingState state,
 }) {
   final _primaryColor = Colors.black;
   final _secondaryColor = Color(0xFFD4AF37);
   final _errorColor = Color(0xFFE53935);
 
-  final isSuccess = state?.isBookingConfirmed ?? false;
-  final isError = state?.bookingError != null;
+  final isSuccess = state.isBookingConfirmed ?? false;
+  final isError = state.bookingError != null;
 
   return showModalBottomSheet(
     context: context,
@@ -1347,7 +1636,7 @@ Future<dynamic> _showBottomSheetbooking({
     ),
     builder: (context) {
       return Container(
-        height: isSuccess ? 350 : 380,
+        height: isSuccess ? 350 : 340,
         padding: EdgeInsets.symmetric(vertical: 24, horizontal: 20),
         child: Column(
           children: [
@@ -1383,7 +1672,7 @@ Future<dynamic> _showBottomSheetbooking({
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  'PNR: ${state?.alhindPnr ?? ''}',
+                  'PNR: ${state.alhindPnr ?? ''}',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
@@ -1415,9 +1704,9 @@ Future<dynamic> _showBottomSheetbooking({
               ),
             ] else if (isError) ...[
               Container(
-                padding: EdgeInsets.all(16),
+                padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: _errorColor.withOpacity(0.1),
+                  color: _secondaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(Icons.error_outline_rounded, color: _errorColor, size: 40),
@@ -1432,10 +1721,13 @@ Future<dynamic> _showBottomSheetbooking({
                 ),
               ),
               SizedBox(height: 12),
-              Text(
-                state?.bookingError ?? 'An error occurred',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+               Text(
+                'Are you sure you want to go back?',textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 13,
+                  color: _errorColor,
+                ),
               ),
               Spacer(),
               SizedBox(
@@ -1473,18 +1765,18 @@ Future<dynamic> _showBottomSheetbooking({
               ),
               SizedBox(height: 16),
               Text(
-                'Are you sure you want to go back?',
+                'Are you sure you want to go back?',textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
-                  fontSize: 18,
+                  fontSize: 15,
                   color: _primaryColor,
                 ),
               ),
-              SizedBox(height: 12),
+              SizedBox(height: 8),
               Text(
                 'This flight seems popular! Hurry, book before all the seats get filled',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
               ),
               Spacer(),
               ElevatedButton(

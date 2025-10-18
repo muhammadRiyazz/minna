@@ -407,7 +407,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     
     
     
-    ( isTablet ? 170 : isSmallScreen ? 150 : 280):  150,
+    ( isTablet ? 170 : isSmallScreen ? 150 : 255):  150,
      floating: false,
     pinned: true,
     elevation: 0,

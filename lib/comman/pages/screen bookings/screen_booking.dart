@@ -5,6 +5,7 @@ import 'package:minna/comman/application/login/login_bloc.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/bus/pages/bus%20report/screen_reports.dart';
 import 'package:minna/comman/pages/log%20in/login_page.dart';
+import 'package:minna/flight/presendation/report_list/report_list.dart';
 
 class ScreenBooking extends StatefulWidget {
   const ScreenBooking({super.key});
@@ -160,7 +161,7 @@ class _ScreenBookingState extends State<ScreenBooking> {
       case 0:
         return ScreenReport(); // Bus
       case 1:
-        return _buildEmptyContent('Flight', Icons.flight);
+        return ReportListScreen();
       case 2:
         return CabBookingList(); // Cab
       case 3:

@@ -1,28 +1,26 @@
-import 'dart:convert';
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:minna/bus/pages/Screen%20Ticket%20Details/TicketDetails.dart';
-import 'package:minna/bus/pages/bus%20report/view_more.dart';
-import 'package:minna/comman/const/const.dart';
-import 'package:minna/comman/pages/widget/loading.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:minna/bus/domain/report%20modal/report_Modal.dart';
-import 'package:minna/bus/infrastructure/fetch%20reports/fetch_reports.dart';
+import 'package:minna/bus/pages/Screen%20Ticket%20Details/TicketDetails.dart';
 
-// Import the All Bookings Page
+class BusAllBookingsPage extends StatefulWidget {
+  final List<BusTicketReport> allBookings;
 
-class ScreenReport extends StatefulWidget {
-  const ScreenReport({super.key});
+  const BusAllBookingsPage({
+    Key? key,
+    required this.allBookings,
+  }) : super(key: key);
 
   @override
-  State<ScreenReport> createState() => _ScreenReportState();
+  State<BusAllBookingsPage> createState() => _BusAllBookingsPageState();
 }
 
-class _ScreenReportState extends State<ScreenReport> {
-  // Updated Theme Colors matching flight and cab reports
+class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
+  // Theme Colors
   final Color _primaryColor = Colors.black;
-  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
-  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
+  final Color _secondaryColor = Color(0xFFD4AF37);
+  final Color _accentColor = Color(0xFFC19B3C);
   final Color _backgroundColor = Color(0xFFF8F9FA);
   final Color _cardColor = Colors.white;
   final Color _textPrimary = Colors.black;
@@ -32,278 +30,191 @@ class _ScreenReportState extends State<ScreenReport> {
   final Color _successColor = Color(0xFF4CAF50);
   final Color _warningColor = Color(0xFFFF9800);
 
-  bool _isLoading = false;
-  bool _isError = false;
-  List<BusTicketReport> _reportData = [];
+  final TextEditingController _searchController = TextEditingController();
+  String _startDate = '';
+  String _endDate = '';
+  List<BusTicketReport> _filteredBookings = [];
 
   @override
   void initState() {
     super.initState();
-    _fetchReports();
+    final now = DateTime.now();
+    _startDate = DateFormat('yyyy-MM-dd').format(now.subtract(Duration(days: 30)));
+    _endDate = DateFormat('yyyy-MM-dd').format(now);
+    _filteredBookings = _getValidBookings();
   }
 
-  Future<void> _fetchReports() async {
-    setState(() {
-      _isLoading = true;
-      _isError = false;
-    });
-
-    try {
-      final now = DateTime.now();
-      final startDate = '2000-01-01';
-      final endDate = DateFormat('yyyy-MM-dd').format(now);
-      
-      final resp = await fetchReport(fromdate: startDate, todate: endDate);
-      final data = busTicketReportFromJson(resp.body);
-
-      setState(() {
-        _reportData = data;
-        _isLoading = false;
-      });
-    } catch (e) {
-      log("Fetch error: $e");
-      setState(() {
-        _isError = true;
-        _isLoading = false;
-      });
-    }
-  }
-
-  // Get last 5 valid bookings
-  List<BusTicketReport> get _lastFiveBookings {
-    final validReports = _reportData.where((report) => 
+  List<BusTicketReport> _getValidBookings() {
+    return widget.allBookings.where((report) => 
         report.status != 'Pending' && report.status != 'Failure').toList();
-    
-    // Sort by date descending to get latest first
-    validReports.sort((a, b) => b.date.compareTo(a.date));
-    
-    // Take only last 5 bookings
-    return validReports.take(1).toList();
   }
 
-  // Get total valid bookings count
-  int get _totalValidBookings {
-    return _reportData.where((report) => 
-        report.status != 'Pending' && report.status != 'Failure').length;
+  void _onSearchChanged(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        _filteredBookings = _getValidBookings();
+      } else {
+        _filteredBookings = _getValidBookings().where((report) => 
+            report.blockKey.toLowerCase().contains(query.toLowerCase()) ||
+            report.ticketNo.toLowerCase().contains(query.toLowerCase()) ||
+            report.source.toLowerCase().contains(query.toLowerCase()) ||
+            report.destination.toLowerCase().contains(query.toLowerCase()) ||
+            report.status.toLowerCase().contains(query.toLowerCase())
+        ).toList();
+      }
+    });
   }
 
-  Widget _buildShimmerLoading() {
-    return ListView.builder(
-      padding: EdgeInsets.symmetric(horizontal: 16),
-      itemCount: 5, // Show 5 shimmer cards
-      itemBuilder: (context, index) {
-        return Container(
-          margin: EdgeInsets.only(bottom: 16),
-          decoration: BoxDecoration(
-            color: _cardColor,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.08),
-                blurRadius: 20,
-                offset: Offset(0, 8),
+  void _showDatePickerDialog() {
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        elevation: 8,
+        backgroundColor: _cardColor,
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(color: _backgroundColor, width: 1),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.calendar_month_rounded, color: _secondaryColor, size: 24),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Select Date Range',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: _primaryColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              
+              SizedBox(
+                height: 350,
+                child: SfDateRangePicker(
+                  selectionMode: DateRangePickerSelectionMode.range,
+                  onSelectionChanged: (args) {
+                    if (args.value is PickerDateRange) {
+                      final start = args.value.startDate;
+                      final end = args.value.endDate ?? args.value.startDate;
+                      setState(() {
+                        _startDate = DateFormat('yyyy-MM-dd').format(start);
+                        _endDate = DateFormat('yyyy-MM-dd').format(end);
+                      });
+                    }
+                  },
+                  initialSelectedRange: PickerDateRange(
+                    DateTime.parse(_startDate),
+                    DateTime.parse(_endDate),
+                  ),
+                  selectionColor: _secondaryColor.withOpacity(0.3),
+                  startRangeSelectionColor: _secondaryColor,
+                  endRangeSelectionColor: _secondaryColor,
+                  rangeSelectionColor: _secondaryColor.withOpacity(0.1),
+                  todayHighlightColor: _secondaryColor,
+                  monthViewSettings: const DateRangePickerMonthViewSettings(
+                    showTrailingAndLeadingDates: true,
+                  ),
+                  headerStyle: DateRangePickerHeaderStyle(
+                    textAlign: TextAlign.center,
+                    textStyle: TextStyle(
+                      color: _primaryColor,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: TextButton.styleFrom(
+                      foregroundColor: _textSecondary,
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    ),
+                    child: const Text('Cancel'),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: _secondaryColor,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _filterByDateRange();
+                      },
+                      child: const Text(
+                        'Apply Dates',
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-          child: Padding(
-            padding: EdgeInsets.all(20),
-            child: Column(
-              children: [
-                // Shimmer for header row
-                Row(
-                  children: [
-                    Container(
-                      width: 120,
-                      height: 16,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                    Spacer(),
-                    Container(
-                      width: 80,
-                      height: 24,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 16),
-                // Shimmer for route
-                Row(
-                  children: [
-                    Container(
-                      width: 60,
-                      height: 12,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                    Spacer(),
-                    Container(
-                      width: 60,
-                      height: 12,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 8),
-                // Shimmer for details
-                Row(
-                  children: [
-                    Container(
-                      width: 100,
-                      height: 12,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                    Spacer(),
-                    Container(
-                      width: 80,
-                      height: 12,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: _secondaryColor.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.directions_bus_rounded,
-                color: _secondaryColor,
-                size: 64,
-              ),
-            ),
-            SizedBox(height: 20),
-            Text(
-              'No Trips Found',
-              style: TextStyle(
-                color: _textPrimary,
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            SizedBox(height: 12),
-            Text(
-              'We couldn\'t find any trips in your booking history.',
-              style: TextStyle(
-                color: _textSecondary,
-                fontSize: 14,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: _fetchReports,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _primaryColor,
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 2,
-              ),
-              icon: Icon(Icons.refresh_rounded, size: 20),
-              label: Text(
-                'Refresh',
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
-            ),
-          ],
         ),
       ),
     );
   }
 
-  Widget _buildErrorState() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: _errorColor.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.error_outline_rounded,
-                color: _errorColor,
-                size: 64,
-              ),
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Failed to Load Data',
-              style: TextStyle(
-                color: _textPrimary,
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            SizedBox(height: 12),
-            Text(
-              'There was an issue fetching your reports.\n'
-              'Please check your connection and try again.',
-              style: TextStyle(
-                color: _textSecondary,
-                fontSize: 14,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: _fetchReports,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _primaryColor,
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 2,
-              ),
-              icon: Icon(Icons.refresh_rounded, size: 20),
-              label: Text(
-                'Try Again',
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
-            ),
-          ],
-        ),
+  void _filterByDateRange() {
+    setState(() {
+      final startDateTime = DateTime.parse(_startDate);
+      final endDateTime = DateTime.parse(_endDate);
+      
+      _filteredBookings = _getValidBookings().where((report) {
+        final reportDate = DateTime.parse(report.date);
+        return reportDate.isAfter(startDateTime.subtract(Duration(days: 1))) &&
+               reportDate.isBefore(endDateTime.add(Duration(days: 1)));
+      }).toList();
+    });
+  }
+
+  Widget _buildDateRangeText() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: _secondaryColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: _secondaryColor.withOpacity(0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.calendar_today_rounded, size: 16, color: _secondaryColor),
+          const SizedBox(width: 8),
+          Text(
+            '${DateFormat('MMM dd, yyyy').format(DateTime.parse(_startDate))} - '
+            '${DateFormat('MMM dd, yyyy').format(DateTime.parse(_endDate))}',
+            style: TextStyle(fontSize: 14, color: _textPrimary, fontWeight: FontWeight.w500),
+          ),
+        ],
       ),
     );
   }
@@ -314,7 +225,7 @@ class _ScreenReportState extends State<ScreenReport> {
       backgroundColor: _backgroundColor,
       appBar: AppBar(
         title: Text(
-          'Bus Reports',
+          'All Bus Bookings',
           style: TextStyle(
             color: Colors.white,
             fontSize: 18,
@@ -325,110 +236,118 @@ class _ScreenReportState extends State<ScreenReport> {
         iconTheme: IconThemeData(color: Colors.white),
         centerTitle: true,
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.refresh_rounded, size: 22),
-            onPressed: _fetchReports,
-            tooltip: 'Refresh',
+      ),
+      body: Column(
+        children: [
+          // Search and Filter Section
+          Container(
+            margin: EdgeInsets.all(16),
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: _cardColor,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 20,
+                  offset: Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                // Search Bar
+                Container(
+                  decoration: BoxDecoration(
+                    color: _backgroundColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: _onSearchChanged,
+                    decoration: InputDecoration(
+                      hintText: 'Search by Ticket, Route, or Status...',
+                      hintStyle: TextStyle(color: _textLight, fontSize: 14),
+                      prefixIcon: Icon(Icons.search_rounded, color: _secondaryColor, size: 20),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    ),
+                    style: TextStyle(color: _textPrimary, fontSize: 14),
+                  ),
+                ),
+                SizedBox(height: 12),
+                
+                // Date Filter Row
+                Row(
+                  children: [
+                    Expanded(child: _buildDateRangeText()),
+                    SizedBox(width: 12),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: _secondaryColor,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: IconButton(
+                        onPressed: _showDatePickerDialog,
+                        icon: Icon(Icons.calendar_today_rounded, size: 20, color: _cardColor),
+                        tooltip: 'Select Date Range',
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          // Results Count
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'All Bookings',
+                  style: TextStyle(
+                    color: _textPrimary,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: _backgroundColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${_filteredBookings.length} bookings',
+                    style: TextStyle(
+                      color: _secondaryColor,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 16),
+
+          // Bookings List
+          Expanded(
+            child: _filteredBookings.isEmpty
+                ? _buildEmptyState()
+                : ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: _filteredBookings.length,
+                    itemBuilder: (context, index) {
+                      final item = _filteredBookings[index];
+                      return _buildBusTripCard(item);
+                    },
+                  ),
           ),
         ],
       ),
-      body: RefreshIndicator(
-        color: _secondaryColor,
-        backgroundColor: _cardColor,
-        onRefresh: _fetchReports,
-        child: _isLoading && _reportData.isEmpty
-            ? _buildShimmerLoading()
-            : _isError
-                ? _buildErrorState()
-                : _lastFiveBookings.isEmpty
-                    ? _buildEmptyState()
-                    : _buildSuccessState(),
-      ),
-    );
-  }
-
-  Widget _buildSuccessState() {
-    final lastFiveBookings = _lastFiveBookings;
-    final totalBookings = _totalValidBookings;
-
-    return Column(
-      children: [
-        // Header Section
-        Container(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Recent Bus Trips',
-                style: TextStyle(
-                  color: _textPrimary,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Showing ${lastFiveBookings.length} of $totalBookings trips',
-                    style: TextStyle(
-                      color: _textSecondary,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  if (totalBookings > 1)
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BusAllBookingsPage(
-                              allBookings: _reportData,
-                            ),
-                          ),
-                        );
-                      },
-                      style: TextButton.styleFrom(
-                        foregroundColor: _secondaryColor,
-                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'View More',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
-                          ),
-                          SizedBox(width: 4),
-                          Icon(Icons.arrow_forward_rounded, size: 16),
-                        ],
-                      ),
-                    ),
-                ],
-              ),
-            ],
-          ),
-        ),
-
-        // Bookings List
-        Expanded(
-          child: ListView.builder(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            itemCount: lastFiveBookings.length,
-            itemBuilder: (context, index) {
-              final item = lastFiveBookings[index];
-              return _buildBusTripCard(item);
-            },
-          ),
-        ),
-      ],
     );
   }
 
@@ -702,6 +621,50 @@ class _ScreenReportState extends State<ScreenReport> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: _secondaryColor.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.directions_bus_rounded,
+                color: _secondaryColor,
+                size: 64,
+              ),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'No Bookings Found',
+              style: TextStyle(
+                color: _textPrimary,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            SizedBox(height: 12),
+            Text(
+              'No bookings match your search criteria.\n'
+              'Try adjusting your search terms or date range.',
+              style: TextStyle(
+                color: _textSecondary,
+                fontSize: 14,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );
