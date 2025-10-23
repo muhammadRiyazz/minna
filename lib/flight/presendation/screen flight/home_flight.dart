@@ -1,29 +1,74 @@
+import 'dart:developer';
+
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/flight/application/search%20data/search_data_bloc.dart';
 import 'package:minna/flight/application/trip%20request/trip_request_bloc.dart';
 import 'package:minna/flight/domain/triplist%20request/search_request.dart';
+import 'package:minna/flight/infrastracture/commission/commission_service.dart';
 import 'package:minna/flight/presendation/screen%20flight/widget/airport_bottom.dart';
 import 'package:minna/flight/presendation/trip%20list/trip_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
-class FlightBookingTab extends StatelessWidget {
+class FlightBookingTab extends StatefulWidget {
    FlightBookingTab({super.key});
 
+  @override
+  State<FlightBookingTab> createState() => _FlightBookingTabState();
+}
+
+class _FlightBookingTabState extends State<FlightBookingTab> {
   // Color Theme - Consistent with hotel booking
   final Color _primaryColor = Colors.black;
-  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
-  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
+
+  final Color _secondaryColor = Color(0xFFD4AF37); 
+ // Gold
+  final Color _accentColor = Color(0xFFC19B3C); 
+ // Darker Gold
   final Color _backgroundColor = Color(0xFFF8F9FA);
+
   final Color _cardColor = Colors.white;
+
   final Color _textPrimary = Colors.black;
+
   final Color _textSecondary = Color(0xFF666666);
+
   final Color _textLight = Color(0xFF999999);
+
   final Color _errorColor = Color(0xFFE53935);
 
+
+
+
+
+   final FlightCommissionService _commissionService = FlightCommissionService();
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeCommissionData();
+  }
+
+  Future<void> _initializeCommissionData() async {
+   
+    try {
+      await _commissionService.fetchCommissionRules();
+     
+      log('Commission data initialized successfully');
+    } catch (e) {
+   log(e.toString());
+   _retryCommissionInitialization();
+    }
+  }
+
+  Future<void> _retryCommissionInitialization() async {
+    await _initializeCommissionData();
+  }
   @override
   Widget build(BuildContext context) {
+
+    
     return Scaffold(
       backgroundColor: _backgroundColor,
       body: BlocBuilder<SearchDataBloc, SearchDataState>(
@@ -633,7 +678,12 @@ class FlightBookingTab extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => FlightSearchPage(),
+                    builder: (context) => FlightSearchPage( 
+
+                      tripType:  state.from!.countryCode == state.to!.countryCode
+                          ? 'Domestic'
+                          : 'International',
+                    ),
                   ),
                 );
               }
@@ -658,7 +708,7 @@ class FlightBookingTab extends StatelessWidget {
             Text(
               "Search Flights",
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 15,
                 fontWeight: FontWeight.w600,
               ),
             ),

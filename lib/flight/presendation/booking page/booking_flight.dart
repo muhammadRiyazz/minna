@@ -15,7 +15,10 @@ import 'package:minna/flight/presendation/confirm%20booking/confirm_booking.dart
 import 'package:minna/flight/presendation/widgets.dart';
 
 class FlightBookingPage extends StatefulWidget {
-  const FlightBookingPage({super.key});
+  final String triptype;
+
+  const FlightBookingPage({super.key,      required this.triptype,
+});
 
   @override
   State<FlightBookingPage> createState() => _FlightBookingPageState();
@@ -172,13 +175,16 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
     );
   }
 
-  void _navigateToConfirmationScreen(FFlightOption flightOption) {
+  void _navigateToConfirmationScreen(FFlightOption flightOption ,     String       triptype
+,
+) {
     if (!mounted) return;
     
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => BookingConfirmationScreen(
+          triptype: triptype,
           flightinfo: flightOption,
         ),
       ),
@@ -194,10 +200,10 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
     });
   }
 
-  void _handleRepriceCompletion(BookingState bookingState, FFlightOption flightOption) {
+  void _handleRepriceCompletion(BookingState bookingState, FFlightOption flightOption,String tripType) {
     if (bookingState.isRepriceCompleted && _waitingForReprice) {
       _showSuccessMessage('Flight details updated successfully!');
-      _navigateToConfirmationScreen(flightOption);
+      _navigateToConfirmationScreen(flightOption,tripType);
     } else if (bookingState.bookingError != null && _waitingForReprice) {
       setState(() {
         _isSubmitting = false;
@@ -302,7 +308,7 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
           final fareState = context.read<FareRequestBloc>().state;
           if (fareState.respo != null) {
             final flightOption = fareState.respo!.journey!.flightOption!;
-            _handleRepriceCompletion(bookingState, flightOption);
+            _handleRepriceCompletion(bookingState, flightOption ,widget.triptype);
           }
         },
         child: BlocBuilder<FareRequestBloc, FareRequestState>(

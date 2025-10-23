@@ -29,20 +29,12 @@ class _CabBookingListState extends State<CabBookingList> {
   final Color _successColor = Color(0xFF4CAF50);
   final Color _warningColor = Color(0xFFFF9800);
 
-  final TextEditingController _searchController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
     context.read<BookedInfoBloc>().add(
           BookedInfoEvent.fetchList(),
         );
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
   }
 
   @override
@@ -54,11 +46,11 @@ class _CabBookingListState extends State<CabBookingList> {
           'Cab Bookings',
           style: TextStyle(
             color: Colors.white,
-            fontSize: 18,
+            fontSize: 14,
             fontWeight: FontWeight.w600,
           ),
         ),
-        backgroundColor: _primaryColor,
+        backgroundColor: _secondaryColor.withOpacity(0.4),
         iconTheme: IconThemeData(color: Colors.white),
         centerTitle: true,
         elevation: 0,
@@ -84,15 +76,11 @@ class _CabBookingListState extends State<CabBookingList> {
         builder: (context, state) {
           return Column(
             children: [
-              _buildSearchAndFilter(context, state),
-              SizedBox(height: 8),
               Expanded(
                 child: state.maybeWhen(
                   loading: () => _buildShimmerLoading(),
                   success: (allBookings, filteredBookings, searchQuery, selectedDate, statusFilter) =>
-                      filteredBookings.isEmpty
-                          ? _buildEmptyState()
-                          : _buildSuccessState(filteredBookings),
+                      _buildSuccessState(allBookings, filteredBookings),
                   error: (message) => _buildErrorState(),
                   orElse: () => _buildInitialState(),
                 ),
@@ -104,128 +92,10 @@ class _CabBookingListState extends State<CabBookingList> {
     );
   }
 
-  Widget _buildSearchAndFilter(BuildContext context, BookedInfoState state) {
-    DateTime? selectedDate;
-    String? statusFilter;
-
-    state.maybeWhen(
-      success: (allBookings, filteredBookings, searchQuery, date, filter) {
-        selectedDate = date;
-        statusFilter = filter;
-      },
-      orElse: () {},
-    );
-
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: _cardColor,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // Search Bar
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: _backgroundColor,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: TextField(
-                controller: _searchController,
-                onChanged: (value) {
-                  context.read<BookedInfoBloc>().add(
-                        BookedInfoEvent.searchChanged(value),
-                      );
-                },
-                decoration: InputDecoration(
-                  hintText: 'Search by Booking ID or Name...',
-                  hintStyle: TextStyle(color: _textLight, fontSize: 14),
-                  prefixIcon: Icon(Icons.search_rounded, color: _secondaryColor, size: 20),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                ),
-                style: TextStyle(color: _textPrimary, fontSize: 14),
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          // Date Filter Button
-          Container(
-            decoration: BoxDecoration(
-              color: _secondaryColor,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: IconButton(
-              onPressed: () async {
-                DateTime? pickedDate = await showDatePicker(
-                  context: context,
-                  initialDate: selectedDate ?? DateTime.now(),
-                  firstDate: DateTime(2020),
-                  lastDate: DateTime(2030),
-                );
-                if (pickedDate != null) {
-                  context.read<BookedInfoBloc>().add(
-                        BookedInfoEvent.dateFilterChanged(pickedDate),
-                      );
-                }
-              },
-              icon: Icon(Icons.calendar_today_rounded, size: 20, color: _cardColor),
-              tooltip: "Filter by date",
-            ),
-          ),
-          const SizedBox(width: 8),
-          // Status Filter Button
-          Container(
-            decoration: BoxDecoration(
-              color: _secondaryColor,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: PopupMenuButton<String>(
-              icon: Icon(Icons.filter_list_rounded, color: _cardColor, size: 20),
-              onSelected: (String? newValue) {
-                context.read<BookedInfoBloc>().add(
-                      BookedInfoEvent.statusFilterChanged(newValue),
-                    );
-              },
-              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                PopupMenuItem<String>(
-                  value: "All",
-                  child: Text("All Statuses", style: TextStyle(color: _textPrimary)),
-                ),
-                PopupMenuItem<String>(
-                  value: "Confirmed",
-                  child: Text("Confirmed", style: TextStyle(color: _textPrimary)),
-                ),
-                PopupMenuItem<String>(
-                  value: "Hold",
-                  child: Text("Hold", style: TextStyle(color: _textPrimary)),
-                ),
-                PopupMenuItem<String>(
-                  value: "Cancelled",
-                  child: Text("Cancelled", style: TextStyle(color: _textPrimary)),
-                ),
-              ],
-              tooltip: "Filter by status",
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildShimmerLoading() {
     return ListView.builder(
       padding: EdgeInsets.symmetric(horizontal: 16),
-      itemCount: 6,
+      itemCount: 4, // Show only 4 shimmer cards
       itemBuilder: (context, index) {
         return Container(
           margin: EdgeInsets.only(bottom: 16),
@@ -320,45 +190,64 @@ class _CabBookingListState extends State<CabBookingList> {
     );
   }
 
-  Widget _buildSuccessState(List<CabBooking> bookings) {
+  Widget _buildSuccessState(List<CabBooking> allBookings, List<CabBooking> filteredBookings) {
+    // Get only the first 4 bookings
+    final displayBookings = allBookings.take(4).toList();
+    final totalBookings = allBookings.length;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Cab Bookings',
-                  style: TextStyle(
-                    color: _textPrimary,
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                  ),
+        
+          SizedBox(height: 10),
+          // View More Button - Only show if there are more than 4 bookings
+          if (totalBookings > 4)
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () {
+                  // TODO: Navigate to All Cab Bookings page
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => CabAllBookingsPage(
+                  //       allBookings: allBookings,
+                  //     ),
+                  //   ),
+                  // );
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor: _secondaryColor,
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                 ),
-                SizedBox(height: 4),
-                Text(
-                  '${bookings.length} booking${bookings.length > 1 ? 's' : ''} found',
-                  style: TextStyle(
-                    color: _textSecondary,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'View More',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                      ),
+                    ),
+                    SizedBox(width: 4),
+                    Icon(Icons.arrow_forward_rounded, size: 12),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
-          SizedBox(height: 20),
+          SizedBox(height: 10),
           Expanded(
-            child: ListView.builder(
-              itemCount: bookings.length,
-              itemBuilder: (context, index) {
-                return _buildCabBookingCard(bookings[index]);
-              },
-            ),
+            child: displayBookings.isEmpty
+                ? _buildEmptyState()
+                : ListView.builder(
+                    itemCount: displayBookings.length,
+                    itemBuilder: (context, index) {
+                      return _buildCabBookingCard(displayBookings[index]);
+                    },
+                  ),
           ),
         ],
       ),
@@ -397,7 +286,7 @@ class _CabBookingListState extends State<CabBookingList> {
           },
           borderRadius: BorderRadius.circular(20),
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(15.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -418,12 +307,12 @@ class _CabBookingListState extends State<CabBookingList> {
                               letterSpacing: 1.0,
                             ),
                           ),
-                          SizedBox(height: 4),
+                          SizedBox(height: 2),
                           Text(
                             booking.bookingId,
                             style: TextStyle(
                               color: _textPrimary,
-                              fontSize: 16,
+                              fontSize: 14,
                               fontWeight: FontWeight.w700,
                             ),
                             overflow: TextOverflow.ellipsis,
@@ -441,7 +330,7 @@ class _CabBookingListState extends State<CabBookingList> {
                         '₹${booking.total}',
                         style: TextStyle(
                           color: _secondaryColor,
-                          fontSize: 16,
+                          fontSize: 14,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -452,7 +341,7 @@ class _CabBookingListState extends State<CabBookingList> {
 
                 // Route Information Card
                 Container(
-                  padding: EdgeInsets.all(16),
+                  padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: _backgroundColor,
                     borderRadius: BorderRadius.circular(16),
@@ -474,11 +363,11 @@ class _CabBookingListState extends State<CabBookingList> {
                                 letterSpacing: 1.0,
                               ),
                             ),
-                            SizedBox(height: 4),
+                            SizedBox(height: 2),
                             Text(
                               "${booking.firstName} ${booking.lastName}",
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: 12,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
@@ -504,19 +393,21 @@ class _CabBookingListState extends State<CabBookingList> {
                         padding: EdgeInsets.symmetric(horizontal: 8),
                         child: Column(
                           children: [
-                            Container(
-                              padding: EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: _secondaryColor.withOpacity(0.1),
-                                shape: BoxShape.circle,
-                                border: Border.all(color: _secondaryColor.withOpacity(0.3), width: 2),
-                              ),
-                              child: Icon(
-                                Icons.person_rounded,
-                                color: _secondaryColor,
-                                size: 16,
-                              ),
-                            ),
+
+                            Container(width: 1,height: 50, color: _secondaryColor.withOpacity(0.4),)
+                            // Container(
+                            //   padding: EdgeInsets.all(6),
+                            //   decoration: BoxDecoration(
+                            //     color: _secondaryColor.withOpacity(0.1),
+                            //     shape: BoxShape.circle,
+                            //     border: Border.all(color: _secondaryColor.withOpacity(0.3), width: 2),
+                            //   ),
+                            //   child: Icon(
+                            //     Icons.person_rounded,
+                            //     color: _secondaryColor,
+                            //     size: 16,
+                            //   ),
+                            // ),
                           ],
                         ),
                       ),
@@ -534,11 +425,11 @@ class _CabBookingListState extends State<CabBookingList> {
                                 letterSpacing: 1.0,
                               ),
                             ),
-                            SizedBox(height: 4),
+                            SizedBox(height: 2),
                             Text(
                               booking.tripType,
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: 12,
                                 fontWeight: FontWeight.w700,
                               ),
                               textAlign: TextAlign.end,
@@ -582,21 +473,21 @@ class _CabBookingListState extends State<CabBookingList> {
                           child: Icon(
                             Icons.local_taxi_rounded,
                             color: _secondaryColor,
-                            size: 14,
+                            size: 12,
                           ),
                         ),
                         SizedBox(width: 6),
                         Text(
                           booking.cabType,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 10,
                             color: _textSecondary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(width: 16),
+                    SizedBox(width: 10),
                     // Time
                     Row(
                       children: [
@@ -609,14 +500,14 @@ class _CabBookingListState extends State<CabBookingList> {
                           child: Icon(
                             Icons.access_time_rounded,
                             color: _secondaryColor,
-                            size: 14,
+                            size: 12,
                           ),
                         ),
                         SizedBox(width: 6),
                         Text(
                           bloc.formatTimeTo12Hour(booking.time),
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 10,
                             color: _textSecondary,
                             fontWeight: FontWeight.w600,
                           ),
@@ -647,7 +538,7 @@ class _CabBookingListState extends State<CabBookingList> {
                           Text(
                             booking.status.toUpperCase(),
                             style: TextStyle(
-                              fontSize: 11,
+                              fontSize: 8,
                               color: _getStatusColor(booking.status),
                               fontWeight: FontWeight.w700,
                             ),
@@ -655,12 +546,7 @@ class _CabBookingListState extends State<CabBookingList> {
                         ],
                       ),
                     ),
-                    SizedBox(width: 8),
-                    Icon(
-                      Icons.chevron_right_rounded,
-                      color: _textLight,
-                      size: 20,
-                    ),
+                   
                   ],
                 ),
               ],
@@ -674,7 +560,7 @@ class _CabBookingListState extends State<CabBookingList> {
   Widget _buildEmptyState() {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 30),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -687,47 +573,32 @@ class _CabBookingListState extends State<CabBookingList> {
               child: Icon(
                 Icons.local_taxi_rounded,
                 color: _secondaryColor,
-                size: 64,
+                size: 40,
               ),
             ),
             SizedBox(height: 20),
-            Text(
-              'No Bookings Found',
-              style: TextStyle(
-                color: _textPrimary,
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            SizedBox(height: 12),
-            Text(
-              'Try adjusting your search or filter criteria',
-              style: TextStyle(
-                color: _textSecondary,
-                fontSize: 14,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: () {
-                context.read<BookedInfoBloc>().add(BookedInfoEvent.fetchList());
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _primaryColor,
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 2,
-              ),
-              icon: Icon(Icons.refresh_rounded, size: 20),
-              label: Text(
-                'Refresh',
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
-            ),
+     
+    Text(
+      'No Bookings Found',
+      style: TextStyle(
+        color: _textPrimary,
+        fontSize: 18,
+        fontWeight: FontWeight.w700,
+      ),
+    ),
+    SizedBox(height: 8),
+    Text(
+      'You have no bookings at the moment',
+      style: TextStyle(
+        color: _textSecondary,
+        fontSize: 14,
+      ),
+      textAlign: TextAlign.center,
+    ),
+     SizedBox(height: 15),
+
+
+            
           ],
         ),
       ),

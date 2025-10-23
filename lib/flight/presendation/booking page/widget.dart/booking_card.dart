@@ -123,20 +123,19 @@ class FlightbookingCard extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Divider(),
           ),
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(12),
             child: Column(
               children: [
                 // Airline header
                 Container(
                   padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: _secondaryColor.withOpacity(0.05),
+                    color: _secondaryColor.withOpacity(0.04),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: _secondaryColor.withOpacity(0.2)),
                   ),
                   child: Row(
                     children: [
@@ -147,19 +146,13 @@ class FlightbookingCard extends StatelessWidget {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
                           color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 4,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
+                      
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: Image.network(
                             flightOption.flightimg ?? "",
-                            fit: BoxFit.cover,
+                            fit: BoxFit.contain,
                             errorBuilder: (context, error, stackTrace) =>
                                 Container(
                               color: _backgroundColor,
@@ -181,7 +174,7 @@ class FlightbookingCard extends StatelessWidget {
                             Text(
                               flightOption.flightName ?? 'Airline',
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 13,
                                 fontWeight: FontWeight.w700,
                                 color: _primaryColor,
                               ),
@@ -209,7 +202,7 @@ class FlightbookingCard extends StatelessWidget {
                         child: Text(
                           returnLegs.isNotEmpty ? 'Round Trip' : 'One Way',
                           style: TextStyle(
-                            fontSize: 10,
+                            fontSize: 8,
                             fontWeight: FontWeight.w600,
                             color: _secondaryColor,
                           ),
@@ -298,7 +291,7 @@ class FlightbookingCard extends StatelessWidget {
                       ),
                       children: [
                         Padding(
-                          padding: EdgeInsets.all(16),
+                          padding: EdgeInsets.all(12),
                           child: Column(
                             children: [
                               // Onward Legs
@@ -348,7 +341,7 @@ class FlightbookingCard extends StatelessWidget {
     required Color textSecondary,
   }) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.all(13),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -399,7 +392,7 @@ class FlightbookingCard extends StatelessWidget {
                 ),
             ],
           ),
-          SizedBox(height: 12),
+          SizedBox(height: 16),
           
           // Flight route and timing
           Row(
@@ -413,7 +406,7 @@ class FlightbookingCard extends StatelessWidget {
                     Text(
                       DateFormat('HH:mm').format(departureTime),
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 12,
                         fontWeight: FontWeight.w700,
                         color: primaryColor,
                       ),
@@ -498,7 +491,7 @@ class FlightbookingCard extends StatelessWidget {
                     Text(
                       DateFormat('HH:mm').format(arrivalTime),
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 12,
                         fontWeight: FontWeight.w700,
                         color: primaryColor,
                       ),
@@ -617,19 +610,12 @@ class FlightbookingCard extends StatelessWidget {
     final duration = arrivalTime.difference(departureTime);
 
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.all(12),
       margin: EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
-        ],
+       
       ),
       child: Column(
         children: [
@@ -641,13 +627,14 @@ class FlightbookingCard extends StatelessWidget {
                 height: 32,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(6),
-                  color: secondaryColor.withOpacity(0.1),
+                  color:Colors.white,
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(6),
                   child: Image.network(
+                    
                     flightOption.flightimg ?? "",
-                    fit: BoxFit.cover,
+                    fit: BoxFit.contain,
                     errorBuilder: (context, error, stackTrace) =>
                         Icon(Icons.airlines_rounded, size: 16, color: secondaryColor),
                   ),
@@ -660,7 +647,7 @@ class FlightbookingCard extends StatelessWidget {
                   Text(
                     leg.flightName ?? '--',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: primaryColor,
                     ),
@@ -706,7 +693,7 @@ class FlightbookingCard extends StatelessWidget {
                     Text(
                       DateFormat('HH:mm').format(departureTime),
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 12,
                         fontWeight: FontWeight.w700,
                         color: primaryColor,
                       ),
@@ -758,7 +745,7 @@ class FlightbookingCard extends StatelessWidget {
                     Text(
                       DateFormat('HH:mm').format(arrivalTime),
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 12,
                         fontWeight: FontWeight.w700,
                         color: primaryColor,
                       ),

@@ -1,18 +1,26 @@
+import 'dart:developer';
+
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/flight/application/fare%20request/fare_request_bloc.dart';
 import 'package:minna/flight/application/nationality/nationality_bloc.dart';
 import 'package:minna/flight/application/search%20data/search_data_bloc.dart';
 import 'package:minna/flight/application/trip%20request/trip_request_bloc.dart';
 import 'package:minna/flight/domain/trip%20resp/trip_respo.dart';
+import 'package:minna/flight/infrastracture/commission/commission_service.dart';
 import 'package:minna/flight/presendation/booking%20page/booking_flight.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:dotted_line/dotted_line.dart';
+import 'package:minna/cab/function/commission_data.dart'; // Import your commission service
 
 class FlightSearchPage extends StatelessWidget {
-   FlightSearchPage({super.key});
+
+  final String tripType;
+   FlightSearchPage({super.key ,
+   required this.tripType
+   });
 
   // Color Theme - Consistent with home page
   final Color _primaryColor = Colors.black;
@@ -91,7 +99,7 @@ class FlightSearchPage extends StatelessWidget {
             return state.isLoading
                 ? _buildLoadingPage()
                 : flightOptions.isNotEmpty
-                    ? _buildFlightList(context, flightOptions, state)
+                    ? _buildFlightList(context, flightOptions, state ,tripType)
                     : _buildNoFlightsWidget(context);
           },
         ),
@@ -99,7 +107,7 @@ class FlightSearchPage extends StatelessWidget {
     );
   }
 
-  Widget _buildFlightList(BuildContext context, List<FlightOptionElement> flights, TripRequestState state) {
+  Widget _buildFlightList(BuildContext context, List<FlightOptionElement> flights, TripRequestState state ,String tripType) {
     return Column(
       children: [
         // Results Header
@@ -145,6 +153,7 @@ class FlightSearchPage extends StatelessWidget {
             itemBuilder: (context, index) {
               final option = flights[index];
               return FlightCard(
+tripType:tripType,
                 flightOption: option,
                 isLoading: state.isflightLoading,
                 primaryColor: _primaryColor,
@@ -444,10 +453,12 @@ class FlightCard extends StatelessWidget {
   final Color backgroundColor;
   final Color cardColor;
   final Color textPrimary;
+  final String tripType;
   final Color textSecondary;
 
   const FlightCard({
     super.key,
+    required this.tripType,
     required this.flightOption,
     required this.isLoading,
     required this.primaryColor,
@@ -457,6 +468,16 @@ class FlightCard extends StatelessWidget {
     required this.textPrimary,
     required this.textSecondary,
   });
+
+  // Helper method to determine travel type (Domestic/International)
+  String _getTravelType(String tripType){
+
+    
+    // You can determine this based on your business logic
+    // For example, check if origin and destination are in the same country
+    // For now, I'll assume you have a way to determine this
+    return tripType; // or 'International'
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -496,6 +517,7 @@ class FlightCard extends StatelessWidget {
     }
 
     final price = flightOption.selectedFare?.aprxTotalAmount ?? 0;
+    final travelType = _getTravelType(tripType);
 
     return Container(
       decoration: BoxDecoration(
@@ -514,7 +536,7 @@ class FlightCard extends StatelessWidget {
         child: Column(
           children: [
             // Airline header with price
-            _buildAirlineHeader(context, price),
+            _buildAirlineHeader(context, price, travelType),
             const SizedBox(height: 20),
             
             // Flight route
@@ -551,7 +573,32 @@ class FlightCard extends StatelessWidget {
     );
   }
 
-  Widget _buildAirlineHeader(BuildContext context, double price) {
+  Widget _buildAirlineHeader(BuildContext context, double price, String travelType) {
+    // Calculate commission and total amount
+    final commissionService = FlightCommissionService();
+    double commission = 0;
+    double totalWithCommission = price;
+
+    try {
+      commission = commissionService.calculateCommission(
+        actualAmount: price,
+        travelType: travelType,
+      );
+      totalWithCommission = commissionService.getTotalAmountWithCommission(
+        actualAmount: price,
+        travelType: travelType,
+      );
+    } catch (e) {
+
+
+
+
+     log('Error calculating commission: $e');
+      // Use fallback values if commission calculation fails
+      commission = 0;
+      totalWithCommission = price;
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -582,14 +629,17 @@ class FlightCard extends StatelessWidget {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      flightOption.flightimg ?? "",
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          Container(
-                            color: backgroundColor,
-                            child: Icon(Icons.airlines_rounded, color: textSecondary),
-                          ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Image.network(
+                        flightOption.flightimg ?? "",
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) =>
+                            Container(
+                              color: backgroundColor,
+                              child: Icon(Icons.airlines_rounded, color: textSecondary),
+                            ),
+                      ),
                     ),
                   ),
                 ),
@@ -688,13 +738,29 @@ class FlightCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                '₹${price.toStringAsFixed(0)}',
+                '₹${totalWithCommission.toStringAsFixed(0)}',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                   color: primaryColor,
                 ),
               ),
+              const SizedBox(height: 2),
+              // Text(
+              //   'incl. ₹${commission.toStringAsFixed(0)} service charge',
+              //   style: TextStyle(
+              //     fontSize: 10,
+              //     color: textSecondary,
+              //   ),
+              // ),
+                Text(
+  'Incl. taxes',
+  style: TextStyle(
+    fontSize: 10,
+    color: textSecondary,
+  ),
+),
+
               const SizedBox(height: 6),
               if (flightOption.flightFares != null && flightOption.flightFares!.isNotEmpty)
                 InkWell(
@@ -711,7 +777,7 @@ class FlightCard extends StatelessWidget {
                     child: Text(
                       'More Fares',
                       style: TextStyle(
-                        fontSize: 10,
+                        fontSize: 8,
                         color: secondaryColor,
                         fontWeight: FontWeight.w600,
                       ),
@@ -994,12 +1060,13 @@ class FlightCard extends StatelessWidget {
 
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => FlightBookingPage()),
+      MaterialPageRoute(builder: (context) => FlightBookingPage( triptype: tripType,)),
     );
   }
 
   void _showFareOptionsBottomSheet(BuildContext context, FlightOptionElement flight) {
     final List<FreeBaggage> baggageList = flight.flightLegs?.firstOrNull?.freeBaggages ?? [];
+    final travelType = _getTravelType(tripType);
 
     showModalBottomSheet(
       context: context,
@@ -1072,7 +1139,7 @@ class FlightCard extends StatelessWidget {
                       orElse: () => FreeBaggage(),
                     );
 
-                    return _buildFareOptionCard(context, fare, baggageInfo, flight);
+                    return _buildFareOptionCard(context, fare, baggageInfo, flight, travelType);
                   },
                 ),
               ),
@@ -1083,8 +1150,27 @@ class FlightCard extends StatelessWidget {
     );
   }
 
-  Widget _buildFareOptionCard(BuildContext context, FlightFare? fare, FreeBaggage baggageInfo, FlightOptionElement flight) {
+  Widget _buildFareOptionCard(BuildContext context, FlightFare? fare, FreeBaggage baggageInfo, FlightOptionElement flight, String travelType) {
     final isSelected = flight.selectedFare == fare;
+    final commissionService = FlightCommissionService();
+    
+    // Calculate commission and total for this fare
+    double actualAmount = fare?.totalAmount ?? 0;
+    double commission = 0;
+    double totalWithCommission = actualAmount;
+
+    try {
+      commission = commissionService.calculateCommission(
+        actualAmount: actualAmount,
+        travelType: travelType,
+      );
+      totalWithCommission = commissionService.getTotalAmountWithCommission(
+        actualAmount: actualAmount,
+        travelType: travelType,
+      );
+    } catch (e) {
+      print('Error calculating commission for fare: $e');
+    }
     
     return GestureDetector(
       onTap: () {
@@ -1105,7 +1191,7 @@ class FlightCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? secondaryColor : Colors.grey.shade200,
-            width: isSelected ? 2 : 1,
+            width: 1,
           ),
         ),
         child: Column(
@@ -1117,29 +1203,64 @@ class FlightCard extends StatelessWidget {
                 Text(
                   fare?.fareName ?? 'Standard',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
                     color: textPrimary,
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: isSelected ? secondaryColor : Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    '₹${fare?.totalAmount ?? '0'}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: isSelected ? Colors.white : textPrimary,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      '₹${totalWithCommission.toStringAsFixed(0)}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: isSelected ? secondaryColor : textPrimary,
+                      ),
                     ),
-                  ),
+                    // Text(
+                    //   'Base: ₹${actualAmount.toStringAsFixed(0)}',
+                    //   style: TextStyle(
+                    //     fontSize: 12,
+                    //     color: textSecondary,
+                    //   ),
+                    // ),
+                  ],
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            // const SizedBox(height: 8),
+            
+            // // Commission info
+            // Container(
+            //   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            //   decoration: BoxDecoration(
+            //     color: Colors.grey[50],
+            //     borderRadius: BorderRadius.circular(6),
+            //   ),
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //     children: [
+            //       Text(
+            //         'Service Charge',
+            //         style: TextStyle(
+            //           fontSize: 12,
+            //           color: textSecondary,
+            //         ),
+            //       ),
+            //       Text(
+            //         '₹${commission.toStringAsFixed(0)}',
+            //         style: TextStyle(
+            //           fontSize: 12,
+            //           fontWeight: FontWeight.w600,
+            //           color: textPrimary,
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
+            // const SizedBox(height: 12),
             
             // Baggage info
             if (_formatBaggage(baggageInfo.adtBaggage).isNotEmpty)
@@ -1192,6 +1313,7 @@ class FlightCard extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (context) {
         return FlightDetailsBottomSheet(
+          tripType:tripType,
           flightOption: option,
           primaryColor: primaryColor,
           secondaryColor: secondaryColor,
@@ -1213,7 +1335,7 @@ class FlightDetailsBottomSheet extends StatelessWidget {
   final Color cardColor;
   final Color textPrimary;
   final Color textSecondary;
-
+final String tripType;
   const FlightDetailsBottomSheet({
     super.key,
     required this.flightOption,
@@ -1222,11 +1344,39 @@ class FlightDetailsBottomSheet extends StatelessWidget {
     required this.backgroundColor,
     required this.cardColor,
     required this.textPrimary,
+    required this. tripType,
     required this.textSecondary,
   });
 
+  // Helper method to determine travel type
+  String _getTravelType(String travelType) {
+    // Implement your logic to determine domestic/international
+    return travelType; // or 'International'
+  }
+
   @override
   Widget build(BuildContext context) {
+    final travelType = _getTravelType( tripType);
+    final commissionService = FlightCommissionService();
+    
+    // Calculate commission and total
+    double actualAmount = flightOption.selectedFare?.aprxTotalAmount ?? 0;
+    double commission = 0;
+    double totalWithCommission = actualAmount;
+
+    try {
+      commission = commissionService.calculateCommission(
+        actualAmount: actualAmount,
+        travelType: travelType,
+      );
+      totalWithCommission = commissionService.getTotalAmountWithCommission(
+        actualAmount: actualAmount,
+        travelType: travelType,
+      );
+    } catch (e) {
+      log('Error calculating commission in details: $e');
+    }
+
     return Container(
       height: MediaQuery.of(context).size.height * 0.9,
       decoration: BoxDecoration(
@@ -1255,7 +1405,7 @@ class FlightDetailsBottomSheet extends StatelessWidget {
                 Text(
                   'Flight Details',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: textPrimary,
                   ),
@@ -1275,7 +1425,7 @@ class FlightDetailsBottomSheet extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Flight Summary
-                  _buildFlightSummary(),
+                  _buildFlightSummary(actualAmount,commission,totalWithCommission),
                   const SizedBox(height: 24),
                   
                   // Flight Legs
@@ -1283,53 +1433,53 @@ class FlightDetailsBottomSheet extends StatelessWidget {
                   const SizedBox(height: 24),
                   
                   // Fare Breakdown
-                  _buildFareBreakdown(),
+                  // _buildFareBreakdownWithCommission(actualAmount,commission,totalWithCommission),
                 ],
               ),
             ),
           ),
           
           // Book Button
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: cardColor,
-              border: Border(
-                top: BorderSide(color: Colors.grey.shade200),
-              ),
-            ),
-            child: SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  // Handle booking
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryColor,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 2,
-                ),
-                child: Text(
-                  'Book This Flight',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-          ),
+          // Container(
+          //   padding: const EdgeInsets.all(20),
+          //   decoration: BoxDecoration(
+          //     color: cardColor,
+          //     border: Border(
+          //       top: BorderSide(color: Colors.grey.shade200),
+          //     ),
+          //   ),
+          //   child: SizedBox(
+          //     width: double.infinity,
+          //     height: 50,
+          //     child: ElevatedButton(
+          //       onPressed: () {
+          //         Navigator.pop(context);
+          //         // Handle booking
+          //       },
+          //       style: ElevatedButton.styleFrom(
+          //         backgroundColor: primaryColor,
+          //         foregroundColor: Colors.white,
+          //         shape: RoundedRectangleBorder(
+          //           borderRadius: BorderRadius.circular(12),
+          //         ),
+          //         elevation: 2,
+          //       ),
+          //       child: Text(
+          //         'Book This Flight',
+          //         style: TextStyle(
+          //           fontSize: 16,
+          //           fontWeight: FontWeight.w600,
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );
   }
 
-  Widget _buildFlightSummary() {
+  Widget _buildFlightSummary(double actualAmount, double commission, double totalWithCommission) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -1349,7 +1499,7 @@ class FlightDetailsBottomSheet extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
               child: Image.network(
                 flightOption.flightimg ?? "",
-                fit: BoxFit.cover,
+                fit: BoxFit.contain,
                 errorBuilder: (context, error, stackTrace) =>
                     Container(
                       color: backgroundColor,
@@ -1366,7 +1516,7 @@ class FlightDetailsBottomSheet extends StatelessWidget {
                 Text(
                   flightOption.flightName ?? '---',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 13,
                     fontWeight: FontWeight.bold,
                     color: textPrimary,
                   ),
@@ -1375,20 +1525,39 @@ class FlightDetailsBottomSheet extends StatelessWidget {
                 Text(
                   flightOption.ticketingCarrier ?? '---',
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 12,
                     color: textSecondary,
                   ),
                 ),
               ],
             ),
           ),
-          Text(
-            '₹${flightOption.selectedFare?.aprxTotalAmount?.toStringAsFixed(0) ?? '0'}',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: primaryColor,
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '₹${totalWithCommission.toStringAsFixed(0)}',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: primaryColor,
+                ),
+              ),
+                   Text(
+  'Incl. taxes',
+  style: TextStyle(
+    fontSize: 10,
+    color: textSecondary,
+  ),
+),
+              // Text(
+              //   'incl. ₹${commission.toStringAsFixed(0)} service',
+              //   style: TextStyle(
+              //     fontSize: 10,
+              //     color: textSecondary,
+              //   ),
+              // ),
+            ],
           ),
         ],
       ),
@@ -1552,7 +1721,7 @@ class FlightDetailsBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildFareBreakdown() {
+  Widget _buildFareBreakdownWithCommission(double actualAmount, double commission, double totalWithCommission) {
     final selectedFare = flightOption.selectedFare;
     
     return Container(
@@ -1573,11 +1742,20 @@ class FlightDetailsBottomSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
+          
+          // Base fare breakdown
           if (selectedFare?.fares != null)
             ...selectedFare!.fares!.map((fare) => _buildFareRow(fare)).toList(),
+          
+          
+          // Commission row
+          _buildCommissionRow(commission+selectedFare!.aprxTotalTax!),
+          
           const SizedBox(height: 12),
           Divider(color: Colors.grey.shade400),
           const SizedBox(height: 12),
+          
+          // Total amount
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -1590,7 +1768,7 @@ class FlightDetailsBottomSheet extends StatelessWidget {
                 ),
               ),
               Text(
-                '₹${selectedFare?.aprxTotalAmount?.toStringAsFixed(0) ?? '0'}',
+                '₹${totalWithCommission.toStringAsFixed(0)}',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -1619,6 +1797,36 @@ class FlightDetailsBottomSheet extends StatelessWidget {
           ),
           Text(
             '₹${fare.baseFare?.toStringAsFixed(0) ?? '0'}',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: textPrimary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCommissionRow(double totalTax) {
+    return Container(
+      // padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+           'Tax & Fees',
+            style: TextStyle(
+              fontSize: 14,
+              color: textPrimary,
+            ),
+          ),
+          Text(
+            '₹${totalTax.toStringAsFixed(0)}',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,

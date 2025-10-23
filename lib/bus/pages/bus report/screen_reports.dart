@@ -317,11 +317,11 @@ class _ScreenReportState extends State<ScreenReport> {
           'Bus Reports',
           style: TextStyle(
             color: Colors.white,
-            fontSize: 18,
+            fontSize: 14,
             fontWeight: FontWeight.w600,
           ),
         ),
-        backgroundColor: _primaryColor,
+        backgroundColor: _secondaryColor.withOpacity(0.4),
         iconTheme: IconThemeData(color: Colors.white),
         centerTitle: true,
         elevation: 0,
@@ -354,73 +354,49 @@ class _ScreenReportState extends State<ScreenReport> {
 
     return Column(
       children: [
-        // Header Section
-        Container(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Recent Bus Trips',
-                style: TextStyle(
-                  color: _textPrimary,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Showing ${lastFiveBookings.length} of $totalBookings trips',
-                    style: TextStyle(
-                      color: _textSecondary,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  if (totalBookings > 1)
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BusAllBookingsPage(
-                              allBookings: _reportData,
-                            ),
-                          ),
-                        );
-                      },
-                      style: TextButton.styleFrom(
-                        foregroundColor: _secondaryColor,
-                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'View More',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
-                          ),
-                          SizedBox(width: 4),
-                          Icon(Icons.arrow_forward_rounded, size: 16),
-                        ],
-                      ),
-                    ),
-                ],
-              ),
-            ],
-          ),
-        ),
+       
 
+                   SizedBox(height: 10,),
+                   if(totalBookings>1)
+                   
+                     Align(alignment: AlignmentGeometry.topRight,
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BusAllBookingsPage(
+                                allBookings: _reportData,
+                              ),
+                            ),
+                          );
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: _secondaryColor,
+                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'View More',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                              ),
+                            ),
+                            SizedBox(width: 4),
+                            Icon(Icons.arrow_forward_rounded, size: 12),
+                          ],
+                        ),
+                      ),
+                    ),
+             
+       
         // Bookings List
         Expanded(
           child: ListView.builder(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.symmetric(horizontal: 10),
             itemCount: lastFiveBookings.length,
             itemBuilder: (context, index) {
               final item = lastFiveBookings[index];
@@ -437,7 +413,7 @@ class _ScreenReportState extends State<ScreenReport> {
     final formattedDate = DateFormat('MMM dd, yyyy').format(DateTime.parse(item.date));
 
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: _cardColor,
         borderRadius: BorderRadius.circular(20),
@@ -466,7 +442,7 @@ class _ScreenReportState extends State<ScreenReport> {
           },
           borderRadius: BorderRadius.circular(20),
           child: Padding(
-            padding: EdgeInsets.all(20.0),
+            padding: EdgeInsets.all(14.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -492,7 +468,7 @@ class _ScreenReportState extends State<ScreenReport> {
                             item.ticketNo,
                             style: TextStyle(
                               color: _textPrimary,
-                              fontSize: 16,
+                              fontSize: 13,
                               fontWeight: FontWeight.w700,
                             ),
                             overflow: TextOverflow.ellipsis,
@@ -510,18 +486,18 @@ class _ScreenReportState extends State<ScreenReport> {
                         formattedDate,
                         style: TextStyle(
                           color: _secondaryColor,
-                          fontSize: 14,
+                          fontSize: 12,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 16),
+                SizedBox(height: 15),
 
                 // Route Information Card
                 Container(
-                  padding: EdgeInsets.all(16),
+                  padding: EdgeInsets.all(13),
                   decoration: BoxDecoration(
                     color: _backgroundColor,
                     borderRadius: BorderRadius.circular(16),
@@ -546,7 +522,7 @@ class _ScreenReportState extends State<ScreenReport> {
                             Text(
                               item.source,
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: 12,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
@@ -590,7 +566,7 @@ class _ScreenReportState extends State<ScreenReport> {
                             Text(
                               item.destination,
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: 12,
                                 fontWeight: FontWeight.w700,
                               ),
                               textAlign: TextAlign.end,
@@ -601,7 +577,7 @@ class _ScreenReportState extends State<ScreenReport> {
                     ],
                   ),
                 ),
-                SizedBox(height: 16),
+                SizedBox(height: 12),
 
                 // Footer Information
                 Row(
@@ -683,7 +659,7 @@ class _ScreenReportState extends State<ScreenReport> {
                           Text(
                             item.status.toUpperCase(),
                             style: TextStyle(
-                              fontSize: 11,
+                              fontSize: 8,
                               color: statusColor,
                               fontWeight: FontWeight.w700,
                             ),
@@ -691,12 +667,7 @@ class _ScreenReportState extends State<ScreenReport> {
                         ],
                       ),
                     ),
-                    SizedBox(width: 8),
-                    Icon(
-                      Icons.chevron_right_rounded,
-                      color: _textLight,
-                      size: 20,
-                    ),
+                   
                   ],
                 ),
               ],

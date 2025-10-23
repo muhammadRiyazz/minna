@@ -14,11 +14,18 @@ import 'package:minna/flight/domain/reprice%20/reprice_respo.dart';
 import 'package:minna/flight/presendation/booking%20page/widget.dart/booking_card.dart';
 import 'package:minna/flight/presendation/widgets.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:minna/flight/infrastracture/commission/commission_service.dart';
 
 class BookingConfirmationScreen extends StatefulWidget {
-  const BookingConfirmationScreen({super.key, required this.flightinfo,});
+  const BookingConfirmationScreen({
+    super.key, 
+    required this.flightinfo,
+    required this.triptype,
+  });
 
   final FFlightOption flightinfo;
+  final String triptype;
+  
   @override
   State<BookingConfirmationScreen> createState() =>
       _BookingConfirmationScreenState();
@@ -46,11 +53,39 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
   bool _isPaymentButtonLoading = false;
   String? _lastRefundState;
 
+  // Commission service
+  final FlightCommissionService _commissionService = FlightCommissionService();
+  double _commissionAmount = 0;
+  double _totalWithCommission = 0;
+
   @override
   void initState() {
     super.initState();
     _startTimer();
     _initializeRazorpay();
+    _calculateCommission();
+  }
+
+  void _calculateCommission() {
+    try {
+      final baseAmount = widget.flightinfo.flightFares!.first.totalAmount;
+      final travelType = widget.triptype ;
+      
+      _commissionAmount = _commissionService.calculateCommission(
+        actualAmount: baseAmount??0,
+        travelType: travelType,
+      );
+      
+      _totalWithCommission = _commissionService.getTotalAmountWithCommission(
+        actualAmount: baseAmount??0,
+        travelType: travelType,
+      );
+    } catch (e) {
+      log('Error calculating commission: $e');
+      // Fallback: use base amount if commission calculation fails
+      _commissionAmount = 0;
+    _totalWithCommission = widget.flightinfo.flightFares!.first.totalAmount??0;
+    }
   }
 
   void _initializeRazorpay() {
@@ -108,14 +143,6 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
     setState(() {
       _isPaymentButtonLoading = false;
     });
-    
-    // Show error message to user
-    // ScaffoldMessenger.of(context).showSnackBar(
-    //   SnackBar(
-    //     content: Text('Payment failed: ${response.message ?? 'Unknown error'}'),
-    //     backgroundColor: Colors.red,
-    //   ),
-    // );
   }
 
   void _handleExternalWallet(ExternalWalletResponse response) {
@@ -132,7 +159,8 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
     });
 
     try {
-      final amount = state.bookingdata!.journey.flightOption.flightFares.first.totalAmount;
+      // Use total amount with commission for payment
+      final amount = _totalWithCommission;
       final orderId = await createOrder(amount);
 
       final bookingData = state.bookingdata;
@@ -166,17 +194,10 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
       setState(() {
         _isPaymentButtonLoading = false;
       });
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   SnackBar(
-      //     content: Text('Failed to initiate payment: $e'),
-      //     backgroundColor: Colors.red,
-      //   ),
-      // );
     }
   }
 
   void _showRefundInitiatedDialog(BuildContext context) {
-    // Prevent multiple dialogs by checking if one is already shown
     if (ModalRoute.of(context)?.isCurrent != true) return;
     
     showDialog(
@@ -195,7 +216,6 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              // Navigate to home after dialog is closed
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (_) => HomePage()),
@@ -215,7 +235,6 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
       listener: (context, state) {
         final currentRefundState = '${state.refundInitiated}_${state.refundFailed}';
         
-        // Only trigger if refund state actually changed
         if (currentRefundState != _lastRefundState) {
           _lastRefundState = currentRefundState;
           
@@ -224,21 +243,8 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
               _showRefundInitiatedDialog(context);
             });
           }
-
-          if (state.refundFailed == true) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              // ScaffoldMessenger.of(context).showSnackBar(
-              //   SnackBar(
-              //     content: Text('Refund failed. Please contact support.'),
-              //     backgroundColor: Colors.red,
-              //     duration: Duration(seconds: 5),
-              //   ),
-              // );
-            });
-          }
         }
 
-        // Reset when booking completes
         if (state.isBookingCompleted == true || state.isBookingConfirmed == true) {
           _lastRefundState = null;
         }
@@ -255,7 +261,6 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
           backgroundColor: _backgroundColor,
           body: BlocBuilder<BookingBloc, BookingState>(
             builder: (context, state) {
-              // Reset loading state when booking is completed or failed
               if ((state.isBookingCompleted == true || state.bookingFailed == true) && _isPaymentButtonLoading) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   setState(() {
@@ -277,11 +282,11 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
               }
 
               final bookingData = state.bookingdata;
-            if (bookingData == null) {
-              return _buildNoDataScreen();
-            }
+              if (bookingData == null) {
+                return _buildNoDataScreen();
+              }
 
-              return _buildBookingConfirmationUI(state, bookingData!);
+              return _buildBookingConfirmationUI(state, bookingData);
             },
           ),
         ),
@@ -489,8 +494,8 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
         if (_isTimeExpired)
           SliverToBoxAdapter(
             child: Container(
-              margin: EdgeInsets.all(16),
-              padding: EdgeInsets.all(16),
+              margin: EdgeInsets.all(12),
+              padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: _secondaryColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
@@ -563,9 +568,9 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
           child: _buildPassengerExpansionSection(bookingData.passengers),
         ),
 
-        // Fare Breakdown
+        // Fare Breakdown with Commission
         SliverToBoxAdapter(
-          child: _buildEnhancedFareBreakdown(bookingData.journey.flightOption),
+          child: _buildEnhancedFareBreakdownWithCommission(bookingData),
         ),
 
         // Payment Button Section
@@ -678,7 +683,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                 Icon(Icons.lock_rounded, size: 20),
                 SizedBox(width: 12),
                 Text(
-                  'Pay & Confirm Booking',
+                  'Pay ₹${_totalWithCommission.toStringAsFixed(0)}',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -766,7 +771,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
               SizedBox(height: 20),
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 12),
-                padding: EdgeInsets.all(20),
+                padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: _successColor.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(16),
@@ -807,7 +812,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
 
                 SizedBox(height: 16),
 
-                _buildEnhancedFareBreakdown(bookingData.journey.flightOption),
+                _buildEnhancedFareBreakdownWithCommission(bookingData),
               ],
               SizedBox(height: 32),
             ],
@@ -862,334 +867,182 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
     );
   }
 
-
-
-Widget _buildErrorUI(BookingState state) {
-  return Scaffold(
-    backgroundColor: _backgroundColor,
-    body: CustomScrollView(
-      slivers: [
-        // Simple App Bar
-        SliverAppBar(
-          backgroundColor: _primaryColor,
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back_rounded, color: Colors.white),
-            onPressed: () => _showBottomSheetbooking(context:  context,state:  state),
-          ),
-          title: Text(
-            'Booking Failed',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
+  Widget _buildErrorUI(BookingState state) {
+    return Scaffold(
+      backgroundColor: _backgroundColor,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            backgroundColor: _primaryColor,
+            elevation: 0,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back_rounded, color: Colors.white),
+              onPressed: () => _showBottomSheetbooking(context:  context,state:  state),
             ),
-          ),
-          centerTitle: true,
-          pinned: true,
-        ),
-
-        // Error Content
-        SliverFillRemaining(
-          hasScrollBody: false,
-          child: Container(
-            padding: EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                                SizedBox(height: 32),
-
-                // Error Icon
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color: _secondaryColor.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                    // border: Border.all(
-                    //   color: _errorColor.withOpacity(0.3),
-                    //   width: 2,
-                    // ),
-                  ),
-                  child: Icon(
-                    Icons.error_outline_rounded,
-                    color: _secondaryColor,
-                    size: 50,
-                  ),
-                ),
-                
-                SizedBox(height: 20),
-                
-                // Error Title
-                Text(
-                  'Booking Failed',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
-                    color: _primaryColor,
-                  ),
-                ),
-                
-                SizedBox(height: 10),
-                
-                // // Error Message
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-'Sorry, there is an issue on booking.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: _textSecondary,
-                      fontWeight: FontWeight.w500,
-                      height: 1.5,
-                    ),
-                  ),
-                ),
-                
-                SizedBox(height: 32),
-                
-                // Status Information
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: _secondaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(16),
-                
-                  ),
-                  child: Column(
-                    children: [
-                      if (state.refundInitiated == true) ...[
-                        Icon(
-                          Icons.check_circle_rounded,
-                          color: _successColor,
-                          size: 40,
-                        ),
-                        SizedBox(height: 12),
-                        Text(
-                          'Refund Initiated',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            color: _successColor,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          'Your payment is being refunded and will be processed within 3-7 working days.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: _textSecondary,
-                          ),
-                        ),
-                      ] else if (state.refundFailed == true) ...[
-                        Icon(
-                          Icons.warning_rounded,
-                          color: _warningColor,
-                          size: 40,
-                        ),
-                        SizedBox(height: 12),
-                        Text(
-                          'Refund Issue',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            color: _warningColor,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          'Please contact support for assistance with your refund.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: _textSecondary,
-                          ),
-                        ),
-                      ] else ...[
-                        Icon(
-                          Icons.security_rounded,
-                          color: _secondaryColor,
-                          size: 40,
-                        ),
-                        SizedBox(height: 12),
-                        Text(
-                          'Payment Protected',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            color: _secondaryColor,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          'Your payment is secure and will be automatically refunded if deducted.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: _textSecondary,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                
-                Spacer(),
-                
-                // Action Buttons
-              
-                    // Home Button (Black)
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _primaryColor,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(builder: (_) => HomePage()),
-                            (route) => false,
-                          );
-                        },
-                        child: Text(
-                          'Go to Home',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                 
-              ],
-            ),
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-// Bottom Sheet for Back Button
-void _showErrorBottomSheet(BookingState state) {
-  showModalBottomSheet(
-    context: context,
-    backgroundColor: Colors.white,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-    ),
-    builder: (context) {
-      return Container(
-        height: 300,
-        padding: EdgeInsets.symmetric(vertical: 24, horizontal: 20),
-        child: Column(
-          children: [
-            Container(
-              height: 5,
-              width: 50,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(5),
-              ),
-            ),
-            SizedBox(height: 24),
-
-            // Status Icon
-            Container(
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: _errorColor.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.error_outline_rounded,
-                color: _errorColor,
-                size: 40,
-              ),
-            ),
-            SizedBox(height: 16),
-
-            Text(
+            title: Text(
               'Booking Failed',
               style: TextStyle(
-                fontWeight: FontWeight.w700,
+                color: Colors.white,
                 fontSize: 18,
-                color: _primaryColor,
+                fontWeight: FontWeight.w600,
               ),
             ),
-            SizedBox(height: 6),
+            centerTitle: true,
+            pinned: true,
+          ),
 
-            if (state.refundInitiated == true)
-              Text(
-                'Your refund has been initiated.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: _textSecondary,
-                ),
-              )
-            else
-              Text(
-                'Are you sure you want to leave? ',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: _textSecondary,
-                ),
-              ),
-
-            SizedBox(height: 12),
-
-            // Bottom Sheet Buttons
-            Row(
-              children: [
-                // Cancel Button (Black)
-                Expanded(
-                  child: SizedBox(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: _primaryColor,
-                        side: BorderSide(color: _primaryColor),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      onPressed: () => Navigator.pop(context),
-                      child: Text(
-                        'Stay Here',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Container(
+              padding: EdgeInsets.all(24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(height: 32),
+                  Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      color: _secondaryColor.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.error_outline_rounded,
+                      color: _secondaryColor,
+                      size: 50,
+                    ),
+                  ),
+                  
+                  SizedBox(height: 20),
+                  
+                  Text(
+                    'Booking Failed',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w700,
+                      color: _primaryColor,
+                    ),
+                  ),
+                  
+                  SizedBox(height: 10),
+                  
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      'Sorry, there is an issue on booking.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: _textSecondary,
+                        fontWeight: FontWeight.w500,
+                        height: 1.5,
                       ),
                     ),
                   ),
-                ),
-                SizedBox(width: 12),
-
-                // Confirm Button (Gold)
-                Expanded(
-                  child: SizedBox(
+                  
+                  SizedBox(height: 32),
+                  
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: _secondaryColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Column(
+                      children: [
+                        if (state.refundInitiated == true) ...[
+                          Icon(
+                            Icons.check_circle_rounded,
+                            color: _successColor,
+                            size: 40,
+                          ),
+                          SizedBox(height: 12),
+                          Text(
+                            'Refund Initiated',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: _successColor,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Your payment is being refunded and will be processed within 3-7 working days.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: _textSecondary,
+                            ),
+                          ),
+                        ] else if (state.refundFailed == true) ...[
+                          Icon(
+                            Icons.warning_rounded,
+                            color: _warningColor,
+                            size: 40,
+                          ),
+                          SizedBox(height: 12),
+                          Text(
+                            'Refund Issue',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: _warningColor,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Please contact support for assistance with your refund.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: _textSecondary,
+                            ),
+                          ),
+                        ] else ...[
+                          Icon(
+                            Icons.security_rounded,
+                            color: _secondaryColor,
+                            size: 40,
+                          ),
+                          SizedBox(height: 12),
+                          Text(
+                            'Payment Protected',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: _secondaryColor,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Your payment is secure and will be automatically refunded if deducted.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: _textSecondary,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  
+                  Spacer(),
+                  
+                  SizedBox(
+                    width: double.infinity,
+                    height: 56,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: _secondaryColor,
+                        backgroundColor: _primaryColor,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
                       ),
                       onPressed: () {
-                        Navigator.pop(context); // Close bottom sheet
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (_) => HomePage()),
@@ -1197,26 +1050,26 @@ void _showErrorBottomSheet(BookingState state) {
                         );
                       },
                       child: Text(
-                        'Go Home',
+                        'Go to Home',
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ],
-        ),
-      );
-    },
-  );
-}
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildPassengerExpansionSection(List<RePassenger> passengers) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: _cardColor,
         borderRadius: BorderRadius.circular(16),
@@ -1412,209 +1265,427 @@ void _showErrorBottomSheet(BookingState state) {
     );
   }
 
-  Widget _buildEnhancedFareBreakdown(BBFlightOption flightOption) {
-    final fare = flightOption.flightFares.first;
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: _cardColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: _secondaryColor,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.receipt_rounded,
-                    size: 18,
-                    color: Colors.white,
-                  ),
-                ),
-                SizedBox(width: 12),
-                Text(
-                  'Fare Breakdown',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: _primaryColor,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Divider(height: 1,),
-          Padding(
-            padding: EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ...fare.fares.asMap().entries.map((entry) {
-                  int index = entry.key;
-                  var f = entry.value;
-
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(vertical: 8),
-                        child: Text(
-                          '${f.ptc} Passenger',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15,
-                            color: _primaryColor,
-                          ),
-                        ),
-                      ),
-                      _fareRow('Base Fare', '₹', f.baseFare),
-                      InkWell(
-                        onTap: () {
-                          setState(() {
-                            if (expandedIndexes.contains(index)) {
-                              expandedIndexes.remove(index);
-                            } else {
-                              expandedIndexes.add(index);
-                            }
-                          });
-                        },
-                        child: _fareRow(
-                          'Taxes & Fees',
-                          '₹',
-                          f.tax,
-                          trailing: Padding(
-                            padding: EdgeInsets.only(left: 8),
-                            child: Icon(
-                              expandedIndexes.contains(index)
-                                  ? Icons.expand_less_rounded
-                                  : Icons.expand_more_rounded,
-                              size: 20,
-                              color: _secondaryColor,
-                            ),
-                          ),
-                        ),
-                      ),
-                      if ((f.discount ?? 0) > 0)
-                        _fareRow(
-                          'Discount',
-                          '₹',
-                          f.discount,
-                          isDiscount: true,
-                        ),
-                      SizedBox(height: 12),
-                      if (expandedIndexes.contains(index) && f.splitup != null && f.splitup!.isNotEmpty)
-                        ...f.splitup!.map(
-                          (s) => _fareRow(
-                            '${s.category}',
-                            '₹',
-                            s.amount,
-                            isSub: true,
-                          ),
-                        ),
-                      Divider(height: 24, color: Colors.grey.shade300),
-                    ],
-                  );
-                }),
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                    color: _secondaryColor.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: _secondaryColor.withOpacity(0.2)),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Total Payable',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            color: _primaryColor,
-                          ),
-                        ),
-                        Text(
-                          NumberFormat.currency(symbol: '₹').format(fare.totalAmount),
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                            color: _secondaryColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+ Widget _buildEnhancedFareBreakdownWithCommission(BBBookingRequest bookingData) {
+  final fare = bookingData.journey.flightOption.flightFares.first;
+  final passengers = bookingData.passengers;
+  
+  // Calculate passenger counts by type
+  final adultCount = passengers.where((p) => p.paxType == 'ADT').length;
+  final childCount = passengers.where((p) => p.paxType == 'CHD').length;
+  final infantCount = passengers.where((p) => p.paxType == 'INF').length;
+  
+  // Calculate totals
+  double totalBaseFare = 0;
+  double totalTax = 0;
+  double totalDiscount = 0;
+  
+  // Calculate commission based on total amount
+  final baseAmount = fare.totalAmount;
+  final travelType = widget.triptype == 'D' ? 'Domestic' : 'International';
+  double commissionAmount = 0;
+  double totalWithCommission = baseAmount;
+  
+  try {
+    commissionAmount = _commissionService.calculateCommission(
+      actualAmount: baseAmount,
+      travelType: travelType,
     );
+    totalWithCommission = _commissionService.getTotalAmountWithCommission(
+      actualAmount: baseAmount,
+      travelType: travelType,
+    );
+  } catch (e) {
+    log('Error calculating commission: $e');
+    commissionAmount = 0;
+    totalWithCommission = baseAmount;
   }
 
-  Widget _fareRow(
-    String label,
-    String symbol,
-    double? amount, {
-    bool isDiscount = false,
-    bool isSub = false,
-    Widget? trailing,
-  }) {
-    if (amount == null || amount == 0) return SizedBox.shrink();
-
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4, horizontal: isSub ? 12 : 0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 14,
-                color: isDiscount ? _successColor : _textPrimary,
-                fontWeight: isSub ? FontWeight.normal : FontWeight.w500,
-              ),
-            ),
+  return Container(
+    margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    decoration: BoxDecoration(
+      color: _cardColor,
+      borderRadius: BorderRadius.circular(16),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.05),
+          blurRadius: 10,
+          offset: Offset(0, 4),
+        ),
+      ],
+    ),
+    child: Column(
+      children: [
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
           ),
-          Row(
+          child: Row(
             children: [
-              Text(
-                (isDiscount ? '-' : '') + NumberFormat.currency(symbol: symbol).format(amount),
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: isSub ? FontWeight.normal : FontWeight.w600,
-                  color: isDiscount ? _successColor : _textPrimary,
+              Container(
+                padding: EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: _secondaryColor,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.receipt_rounded,
+                  size: 18,
+                  color: Colors.white,
                 ),
               ),
-              if (trailing != null) trailing,
+              SizedBox(width: 12),
+              Text(
+                'Fare Breakdown',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: _primaryColor,
+                ),
+              ),
+              SizedBox(width: 8),
+           
             ],
           ),
-        ],
-      ),
-    );
+        ),
+        Divider(height: 1),
+        Padding(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // // Passenger Summary
+              // if (adultCount > 0 || childCount > 0 || infantCount > 0)
+              //   Container(
+              //     padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+              //     decoration: BoxDecoration(
+              //       color: _backgroundColor,
+              //       borderRadius: BorderRadius.circular(8),
+              //     ),
+              //     child: Row(
+              //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //       children: [
+              //         Text(
+              //           'Passengers',
+              //           style: TextStyle(
+              //             fontSize: 12,
+              //             fontWeight: FontWeight.w600,
+              //             color: _textPrimary,
+              //           ),
+              //         ),
+              //         Text(
+              //           '${adultCount > 0 ? '$adultCount Adult${adultCount > 1 ? 's' : ''}' : ''}'
+              //           '${childCount > 0 ? '${adultCount > 0 ? ', ' : ''}$childCount Child${childCount > 1 ? 'ren' : ''}' : ''}'
+              //           '${infantCount > 0 ? '${(adultCount > 0 || childCount > 0) ? ', ' : ''}$infantCount Infant${infantCount > 1 ? 's' : ''}' : ''}',
+              //           style: TextStyle(
+              //             fontSize: 12,
+              //             color: _textSecondary,
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // SizedBox(height: 16),
+
+              // Base Fare Breakdown by Passenger Type
+              ...fare.fares.map((fareType) {
+                final passengerType = fareType.ptc;
+                int passengerCount = 0;
+                
+                switch (passengerType) {
+                  case 'ADT':
+                    passengerCount = adultCount;
+                    break;
+                  case 'CHD':
+                    passengerCount = childCount;
+                    break;
+                  case 'INF':
+                    passengerCount = infantCount;
+                    break;
+                }
+                
+                if (passengerCount == 0) return SizedBox.shrink();
+
+                final baseFare = fareType.baseFare ?? 0;
+                final tax = fareType.tax ?? 0;
+                final discount = fareType.discount ?? 0;
+                
+                // Add to totals
+                totalBaseFare += baseFare * passengerCount;
+                totalTax += tax * passengerCount;
+                totalDiscount += discount * passengerCount;
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Passenger Type Header
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '${_getPassengerTypeName(passengerType!)}'
+                            '${passengerCount > 1 ? ' ($passengerCount)' : ''}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                              color: _primaryColor,
+                            ),
+                          ),
+                          if (passengerCount > 1)
+                            Text(
+                              '× $passengerCount',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: _textSecondary,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    
+                    // Base Fare
+                    _fareRow(
+                      'Base Fare',
+                      '₹',
+                      baseFare,
+                      passengerCount: passengerCount,
+                    ),
+                    
+                    // Taxes & Fees
+                    _fareRow(
+                      'Taxes',
+                      '₹',
+                      tax,
+                      passengerCount: passengerCount,
+                    ),
+                    
+                    // Discount
+                    // if (discount > 0)
+                    //   _fareRow(
+                    //     'Discount',
+                    //     '₹',
+                    //     discount,
+                    //     passengerCount: passengerCount,
+                    //     isDiscount: true,
+                    //   ),
+                    
+                    // Passenger Type Total
+                    // if (passengerCount > 1)
+                    //   Container(
+                    //     margin: EdgeInsets.symmetric(vertical: 8),
+                    //     padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                    //     decoration: BoxDecoration(
+                    //       color: _backgroundColor,
+                    //       borderRadius: BorderRadius.circular(8),
+                    //     ),
+                    //     child: Row(
+                    //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //       children: [
+                    //         Text(
+                    //           '${_getPassengerTypeName(passengerType)} Total',
+                    //           style: TextStyle(
+                    //             fontSize: 13,
+                    //             fontWeight: FontWeight.w600,
+                    //             color: _textPrimary,
+                    //           ),
+                    //         ),
+                    //         Text(
+                    //           '₹${((baseFare + tax - discount) * passengerCount).toStringAsFixed(0)}',
+                    //           style: TextStyle(
+                    //             fontSize: 13,
+                    //             fontWeight: FontWeight.w700,
+                    //             color: _secondaryColor,
+                    //           ),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    
+                    Divider(height: 24, color: Colors.grey.shade300),
+                  ],
+                );
+              }).toList(),
+
+              // Commission Section
+              // Container(
+              //   padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              //   decoration: BoxDecoration(
+              //     color: _secondaryColor.withOpacity(0.05),
+              //     borderRadius: BorderRadius.circular(12),
+              //     border: Border.all(color: _secondaryColor.withOpacity(0.2)),
+              //   ),
+              //   child: Column(
+              //     children: [
+              //       _fareRow(
+              //         'Service Charge',
+              //         '₹',
+              //         commissionAmount,
+              //         isCommission: true,
+              //       ),
+              //       SizedBox(height: 8),
+              //       Text(
+              //         'Applicable for $travelType flights',
+              //         style: TextStyle(
+              //           fontSize: 11,
+              //           color: _textSecondary,
+              //           fontStyle: FontStyle.italic,
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
+
+              // SizedBox(height: 16),
+
+              // Summary Section
+              Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: _backgroundColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  children: [
+                    _summaryRow('Total Base Fare', '₹', totalBaseFare),
+                    _summaryRow('Total Taxes', '₹', totalTax),
+                                        _summaryRow('Service Charge', '₹', commissionAmount, isCommission: true),
+
+                    if (totalDiscount > 0)
+                      _summaryRow('Discount', '₹', totalDiscount, isDiscount: true),
+                    Divider(height: 16, color: Colors.grey.shade400),
+                    _summaryRow(
+                      'Total Payable',
+                      '₹',
+                      totalWithCommission,
+                      isTotal: true,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+String _getPassengerTypeName(String paxType) {
+  switch (paxType) {
+    case 'ADT':
+      return 'Adult';
+    case 'CHD':
+      return 'Child';
+    case 'INF':
+      return 'Infant';
+    default:
+      return paxType;
   }
+}
+
+Widget _fareRow(
+  String label,
+  String symbol,
+  double amount, {
+  int passengerCount = 1,
+  bool isDiscount = false,
+  bool isCommission = false,
+}) {
+  if (amount == 0) return SizedBox.shrink();
+
+  final totalAmount = amount * passengerCount;
+
+  return Padding(
+    padding: EdgeInsets.symmetric(vertical: 4),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              color: isDiscount ? _successColor : (isCommission ? _secondaryColor : _textPrimary),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        Row(
+          children: [
+
+            
+            if (passengerCount > 1 && label=='Base Fare') ...[
+              Text(
+                '${NumberFormat.currency(symbol: symbol).format(amount)}',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: _textSecondary,
+                ),
+              ),
+              Text(
+                ' × $passengerCount',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: _textSecondary,
+                ),
+              ),
+              SizedBox(width: 8),
+            ],
+            Text(
+              (isDiscount ? '-' : '') + NumberFormat.currency(symbol: symbol).format(totalAmount),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: isDiscount ? _successColor : (isCommission ? _secondaryColor : _textPrimary),
+              ),
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _summaryRow(
+  String label,
+  String symbol,
+  double amount, {
+  bool isDiscount = false,
+  bool isCommission = false,
+  bool isTotal = false,
+}) {
+  return Padding(
+    padding: EdgeInsets.symmetric(vertical: 3),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: isTotal ? 15 : 14,
+            fontWeight: isTotal ? FontWeight.w700 : FontWeight.w500,
+            color: isDiscount ? _successColor : 
+                  (isCommission ? _secondaryColor : 
+                  (isTotal ? _primaryColor : _textPrimary)),
+          ),
+        ),
+        Text(
+          (isDiscount ? '-' : '') + NumberFormat.currency(symbol: symbol).format(amount),
+          style: TextStyle(
+            fontSize: isTotal ? 16 : 14,
+            fontWeight: isTotal ? FontWeight.w800 : FontWeight.w600,
+            color: isDiscount ? _successColor : 
+                  (isCommission ? _secondaryColor : 
+                  (isTotal ? _secondaryColor : _textPrimary)),
+          ),
+        ),
+      ],
+    ),
+  );
+}
 }
 
 Future<dynamic> _showBottomSheetbooking({
@@ -1636,7 +1707,7 @@ Future<dynamic> _showBottomSheetbooking({
     ),
     builder: (context) {
       return Container(
-        height: isSuccess ? 350 : 340,
+        height: isSuccess ? 350 : 360,
         padding: EdgeInsets.symmetric(vertical: 24, horizontal: 20),
         child: Column(
           children: [
@@ -1791,10 +1862,10 @@ Future<dynamic> _showBottomSheetbooking({
                 onPressed: () => Navigator.pop(context),
                 child: Text(
                   'Continue Booking',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                 ),
               ),
-              SizedBox(height: 12),
+              SizedBox(height: 5),
               TextButton(
                 onPressed: () {
                   Navigator.pushAndRemoveUntil(
