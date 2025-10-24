@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:minna/cab/application/booked%20info%20list/booked_info_bloc.dart';
 import 'package:minna/cab/domain/cab%20report/cab_booked_list.dart';
 import 'package:minna/cab/pages/booked%20cab%20details/booked_cab_details.dart';
+import 'package:minna/cab/pages/booked%20list/cab_view_more.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/pages/widget/loading.dart';
 
@@ -41,7 +42,7 @@ class _CabBookingListState extends State<CabBookingList> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _backgroundColor,
-      appBar: AppBar(
+      appBar: AppBar(toolbarHeight: 40,
         title: Text(
           'Cab Bookings',
           style: TextStyle(
@@ -201,22 +202,23 @@ class _CabBookingListState extends State<CabBookingList> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
         
-          SizedBox(height: 10),
           // View More Button - Only show if there are more than 4 bookings
           if (totalBookings > 4)
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
                 onPressed: () {
-                  // TODO: Navigate to All Cab Bookings page
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder: (context) => CabAllBookingsPage(
-                  //       allBookings: allBookings,
-                  //     ),
-                  //   ),
-                  // );
+                // Replace the TODO section in CabBookingList:
+
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => CabAllBookingsPage(
+        allBookings: allBookings,
+      ),
+    ),
+  );
+
                 },
                 style: TextButton.styleFrom(
                   foregroundColor: _secondaryColor,
@@ -238,7 +240,6 @@ class _CabBookingListState extends State<CabBookingList> {
                 ),
               ),
             ),
-          SizedBox(height: 10),
           Expanded(
             child: displayBookings.isEmpty
                 ? _buildEmptyState()

@@ -635,10 +635,18 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
   }
 
   Future<void> callApi() async {
+
+
+
     final isLoggedIn = context.read<LoginBloc>().state.isLoggedIn ?? false;
 
     if (!isLoggedIn) {
-      await _showLoginBottomSheet();
+      showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const LoginBottomSheet(login: 1),
+    );
       final newLoginState = context.read<LoginBloc>().state;
       if (newLoginState.isLoggedIn != true) {
         _showCustomSnackbar('Please login to continue', isError: true);

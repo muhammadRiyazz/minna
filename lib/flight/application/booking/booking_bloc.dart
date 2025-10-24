@@ -11,6 +11,7 @@ import 'package:minna/flight/domain/fare%20request%20and%20respo/fare_respo.dart
 import 'package:minna/flight/domain/reprice%20/re_price.dart';
 import 'package:minna/flight/domain/reprice%20/reprice_respo.dart';
 import 'package:minna/flight/infrastracture/booking%20confirm/booking.dart';
+import 'package:minna/flight/infrastracture/commission/commission_service.dart';
 import 'package:minna/flight/infrastracture/reprice/call_reprice_api.dart';
 import 'package:minna/comman/core/api.dart';
 import 'package:minna/comman/functions/refund_payment.dart';
@@ -42,6 +43,10 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     ));
 
     try {
+          final commissionService = FlightCommissionService();
+
+      double totalCommission = 0.0;
+    double totalAmountWithCommission = 0.0;
       final List<Map<String, dynamic>> passengerDataList = event.passengerDataList;
 
       final List<RePassenger> passengers = passengerDataList.map((passengerData) {
@@ -354,31 +359,51 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
         apiResponseData = event.lastRespo;
       }
 
-      // Calculate total amount from booking data
-      double totalAmount = 0.0;
-      double totalCom = 0.0;
-      
-      if (bookingRequestData != null) {
-        // Calculate total amount from flight fares
-        for (var fare in bookingRequestData.journey.flightOption.flightFares) {
-          totalAmount += fare.totalAmount;
-          // You might need to adjust how commission is calculated based on your business logic
-          totalCom += fare.totalDiscount; // Using discount as commission for example
-        }
-      }
+    // Calculate total amount and commission from booking data
+double totalBaseAmount = 0.0;
 
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final String? userId = prefs.getString('userId');
+if (bookingRequestData != null) {
+  // Calculate total base amount from flight fares
+  for (var fare in bookingRequestData.journey.flightOption.flightFares) {
+    totalBaseAmount += fare.totalAmount;
+  }
 
-      // Make API call to flight booking preview
-      final Map<String, dynamic> apiParams = {
-        'token': event.token,
-        'userId': userId ,
-        'totalCom': '0',
-        'totalAmount': totalAmount.toString(),
-        'responseArray': jsonEncode(apiResponseData.toJson()) 
-      };
+  // Calculate commission based on total base amount and travel type
+  try {
+    totalCommission = commissionService.calculateCommission(
+      actualAmount: totalBaseAmount,
+      travelType:event. triptype,
+    );
+    
+    totalAmountWithCommission = commissionService.getTotalAmountWithCommission(
+      actualAmount: totalBaseAmount,
+      travelType:event. triptype,
+    );
+    
+    log('Commission calculated: Base Amount: ₹$totalBaseAmount, '
+        'Commission: ₹$totalCommission, '
+        'Total with Commission: ₹$totalAmountWithCommission, '
+        'Travel Type: ${event. triptype}');
+        
+  } catch (e) {
+    log('Error calculating commission: $e');
+    // Fallback: use base amount if commission calculation fails
+    totalCommission = 0.0;
+    totalAmountWithCommission = totalBaseAmount;
+  }
+}
 
+final SharedPreferences prefs = await SharedPreferences.getInstance();
+final String? userId = prefs.getString('userId');
+
+// Make API call to flight booking preview with commission data
+final Map<String, dynamic> apiParams = {
+  'token': event.token,
+  'userId': userId ?? 'INCCJ029000000',
+  'totalCom': totalCommission.toStringAsFixed(2), // Send commission amount as string
+  'totalAmount': totalAmountWithCommission.toStringAsFixed(2), // Send total amount with commission as string
+  'responseArray': jsonEncode(apiResponseData.toJson()) 
+};
       log('Making flight booking preview API call with params: $apiParams');
 
       final bookingPreviewResponse = await _makeBookingPreviewApiCall(apiParams);

@@ -17,6 +17,8 @@ import 'package:minna/comman/pages/screen%20bookings/screen_booking.dart';
 import 'package:minna/comman/pages/screen%20my%20account/my_account_page.dart';
 import 'package:minna/flight/presendation/screen%20flight/home_flight.dart';
 import 'package:minna/hotel%20booking/pages/holel%20home%20page/home_page_hotel.dart' hide FlightBookingTab;
+import 'package:minna/train/pages/webView.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -235,7 +237,13 @@ class _HomeContentPageState extends State<HomeContentPage> {
       'icon': FontAwesomeIcons.train,
       'color': Color(0xFFD4AF37), // Gold
       'onTap': (BuildContext context) {
-        _showComingSoonBottomSheet(context, "Train");
+         Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => IrctcInAppWebView(
+        ),
+      ),
+    );
       },
     },
     {

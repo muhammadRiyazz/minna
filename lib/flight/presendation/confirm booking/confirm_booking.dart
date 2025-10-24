@@ -1281,7 +1281,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
   
   // Calculate commission based on total amount
   final baseAmount = fare.totalAmount;
-  final travelType = widget.triptype == 'D' ? 'Domestic' : 'International';
+  final travelType = widget.triptype ;
   double commissionAmount = 0;
   double totalWithCommission = baseAmount;
   
@@ -1615,11 +1615,9 @@ Widget _fareRow(
         ),
         Row(
           children: [
-
-            
             if (passengerCount > 1 && label=='Base Fare') ...[
               Text(
-                '${NumberFormat.currency(symbol: symbol).format(amount)}',
+                NumberFormat.currency(symbol: symbol).format(amount),
                 style: TextStyle(
                   fontSize: 10,
                   color: _textSecondary,

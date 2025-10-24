@@ -2,7 +2,9 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:minna/comman/application/login/login_bloc.dart';
 import 'package:minna/comman/const/const.dart';
+import 'package:minna/comman/pages/log%20in/login_page.dart';
 import 'package:minna/flight/application/booking/booking_bloc.dart';
 import 'package:minna/flight/application/fare%20request/fare_request_bloc.dart';
 import 'package:minna/flight/application/nationality/nationality_bloc.dart';
@@ -125,6 +127,8 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
   void initState() {
     super.initState();
     _setupBookingListener();
+ context.read<LoginBloc>().add(const LoginEvent.loginInfo());
+
   }
 
   void _setupBookingListener() {
@@ -212,9 +216,93 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
       _showValidationError(bookingState.bookingError!);
     }
   }
+ void _showCustomSnackbar(String message, {bool isError = false}) {
+    final color = isError ? _errorColor : _successColor;
+    final icon = isError ? Icons.error_outline_rounded : Icons.check_circle_rounded;
 
-  void _submitForm(BuildContext context, FareRequestState state, FFlightOption flightOption, SearchDataState searchState) {
+    final snackBar = SnackBar(
+      margin: EdgeInsets.all(16),
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: color,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: color.withOpacity(0.2), width: 1),
+      ),
+      duration: Duration(seconds: 4),
+      content: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color, size: 20),
+          ),
+          SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  isError ? 'Error' : 'Success',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  message,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      action: SnackBarAction(
+        label: 'OK',
+        textColor: Colors.white,
+        onPressed: () {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        },
+      ),
+    );
+
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  void _submitForm(BuildContext context, FareRequestState state, FFlightOption flightOption, SearchDataState searchState) async{
     if (_formKey.currentState!.validate()) {
+
+ final isLoggedIn = context.read<LoginBloc>().state.isLoggedIn ?? false;
+
+    if (!isLoggedIn) {
+     showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const LoginBottomSheet(login: 1),
+    );
+      final newLoginState = context.read<LoginBloc>().state;
+      if (newLoginState.isLoggedIn != true) {
+        _showCustomSnackbar('Please login to continue', isError: true);
+        return;
+      }
+    }
+
+
+
+
+
+
       setState(() {
         _isSubmitting = true;
         _waitingForReprice = true;
@@ -281,6 +369,7 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
       // Dispatch the reprice event
       context.read<BookingBloc>().add(
         BookingEvent.getRePrice(
+          triptype: widget.triptype,
           reprice: hasReprice || hasBaggage || hasMeals,
           tripMode: searchData.oneWay ? 'O' : 'S',
           fareReData: flightOption,
@@ -1488,178 +1577,205 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
                         ),
                       ],
             
-                      // Meal selection
-                      if (hasMeals) ...[
-                        SizedBox(height: 20),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(Icons.restaurant_menu_rounded, size: 16, color: _secondaryColor),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Select Meal (Optional)',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                    color: _textPrimary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 8),
-                            DropdownButtonFormField<Meal>(
-                              decoration: InputDecoration(
-                                hintText: 'Choose a meal option',
-                                hintStyle: TextStyle(color: _textLight, fontSize: 14),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(color: Colors.grey[300]!),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(color: Colors.grey[300]!),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(color: _secondaryColor, width: 2),
-                                ),
-                                filled: true,
-                                fillColor: _backgroundColor,
-                                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                              ),
-                              isExpanded: true,
-                              dropdownColor: _cardColor,
-                              icon: Icon(Icons.arrow_drop_down_rounded, color: _textSecondary, size: 24),
-                              hint: Text('No meal selected', style: TextStyle(fontSize: 14, color: _textLight)),
-                              value: selectedMeals[index],
-                              items: mealOptions.cast<Meal>().map<DropdownMenuItem<Meal>>((meal) {
-                                return DropdownMenuItem<Meal>(
-                                  value: meal,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        meal.name ?? 'Meal',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: _textPrimary,
-                                        ),
-                                      ),
-                                      SizedBox(height: 2),
-                                      Text(
-                                        '${meal.amount?.toStringAsFixed(2) ?? '0.00'} ${meal.currency ?? 'INR'}',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: _secondaryColor,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }).toList(),
-                              onChanged: (Meal? newValue) {
-                                if (newValue != null) {
-                                  setState(() {
-                                    selectedMeals[index] = newValue;
-                                  });
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-            
-                      // Baggage selection
-                      if (hasBaggage) ...[
-                        SizedBox(height: 20),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(Icons.work_outline_rounded, size: 16, color: _secondaryColor),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Add Baggage (Optional)',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                    color: _textPrimary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 8),
-                            DropdownButtonFormField<Baggage>(
-                              decoration: InputDecoration(
-                                hintText: 'Choose baggage option',
-                                hintStyle: TextStyle(color: _textLight, fontSize: 14),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(color: Colors.grey[300]!),
-                                ),
-                                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(color: Colors.grey[300]!),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(color: _secondaryColor, width: 2),
-                                ),
-                                filled: true,
-                                fillColor: _backgroundColor,
-                              ),
-                              isExpanded: true,
-                              dropdownColor: _cardColor,
-                              icon: Icon(Icons.arrow_drop_down_rounded, color: _textSecondary, size: 24),
-                              hint: Text('No baggage selected', style: TextStyle(fontSize: 14, color: _textLight)),
-                              value: selectedBaggages[index],
-                              items: baggageOptions.map((dynamic item) {
-                                final baggage = item as Baggage;
-                                return DropdownMenuItem<Baggage>(
-                                  value: baggage,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        baggage.name ?? baggage.code ?? 'Baggage',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: _textPrimary,
-                                        ),
-                                      ),
-                                      SizedBox(height: 2),
-                                      Text(
-                                        '${baggage.amount ?? ''} ${baggage.currency ?? 'INR'}',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: _secondaryColor,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }).toList(),
-                              onChanged: (Baggage? newValue) {
-                                if (newValue != null) {
-                                  setState(() {
-                                    selectedBaggages[index] = newValue;
-                                  });
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
+                    // Meal selection
+if (hasMeals) ...[
+  SizedBox(height: 20),
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        children: [
+          Icon(Icons.restaurant_menu_rounded, size: 16, color: _secondaryColor),
+          SizedBox(width: 8),
+          Text(
+            'Select Meal (Optional)',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: _textPrimary,
+            ),
+          ),
+        ],
+      ),
+      SizedBox(height: 8),
+      DropdownButtonFormField<Meal>(
+        decoration: InputDecoration(
+          hintText: 'Choose a meal option',
+          hintStyle: TextStyle(color: _textLight, fontSize: 14),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.grey[300]!),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.grey[300]!),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: _secondaryColor, width: 2),
+          ),
+          filled: true,
+          fillColor: _backgroundColor,
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        ),
+        isExpanded: true,
+        dropdownColor: _cardColor,
+        icon: Icon(Icons.arrow_drop_down_rounded, color: _textSecondary, size: 24),
+        hint: Text('No meal selected', style: TextStyle(fontSize: 14, color: _textLight)),
+        value: selectedMeals[index],
+        items: mealOptions.cast<Meal>().map<DropdownMenuItem<Meal>>((meal) {
+          return DropdownMenuItem<Meal>(
+            value: meal,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  meal.name ?? 'Meal',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: _textPrimary,
+                  ),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  '${meal.amount?.toStringAsFixed(2) ?? '0.00'} ${meal.currency ?? 'INR'}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: _secondaryColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+        onChanged: (Meal? newValue) {
+          if (newValue != null) {
+            setState(() {
+              selectedMeals[index] = newValue;
+            });
+          }
+        },
+        // Show only name when selected
+        selectedItemBuilder: (BuildContext context) {
+          return mealOptions.cast<Meal>().map<Widget>((Meal meal) {
+            return Text(
+              meal.name ?? 'Meal',
+              style: TextStyle(
+                fontSize: 14,
+                color: _textPrimary,
+                fontWeight: FontWeight.w500,
+              ),
+            );
+          }).toList();
+        },
+      ),
+    ],
+  ),
+],
+
+// Baggage selection
+if (hasBaggage) ...[
+  SizedBox(height: 20),
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        children: [
+          Icon(Icons.work_outline_rounded, size: 16, color: _secondaryColor),
+          SizedBox(width: 8),
+          Text(
+            'Add Baggage (Optional)',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: _textPrimary,
+            ),
+          ),
+        ],
+      ),
+      SizedBox(height: 8),
+      DropdownButtonFormField<Baggage>(
+        decoration: InputDecoration(
+          hintText: 'Choose baggage option',
+          hintStyle: TextStyle(color: _textLight, fontSize: 14),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.grey[300]!),
+          ),
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.grey[300]!),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: _secondaryColor, width: 2),
+          ),
+          filled: true,
+          fillColor: _backgroundColor,
+        ),
+        isExpanded: true,
+        dropdownColor: _cardColor,
+        icon: Icon(Icons.arrow_drop_down_rounded, color: _textSecondary, size: 24),
+        hint: Text('No baggage selected', style: TextStyle(fontSize: 14, color: _textLight)),
+        value: selectedBaggages[index],
+        items: baggageOptions.map((dynamic item) {
+          final baggage = item as Baggage;
+          return DropdownMenuItem<Baggage>(
+            value: baggage,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  baggage.name ?? baggage.code ?? 'Baggage',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: _textPrimary,
+                  ),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  '${baggage.amount ?? ''} ${baggage.currency ?? 'INR'}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: _secondaryColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+        onChanged: (Baggage? newValue) {
+          if (newValue != null) {
+            setState(() {
+              selectedBaggages[index] = newValue;
+            });
+          }
+        },
+        // Show only name when selected
+        selectedItemBuilder: (BuildContext context) {
+          return baggageOptions.map<Widget>((dynamic item) {
+            final baggage = item as Baggage;
+            return Text(
+              baggage.name ?? baggage.code ?? 'Baggage',
+              style: TextStyle(
+                fontSize: 14,
+                color: _textPrimary,
+                fontWeight: FontWeight.w500,
+              ),
+            );
+          }).toList();
+        },
+      ),
+    ],
+  ),
+],
                       SizedBox(height: 10),
                     ],
                   );

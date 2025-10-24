@@ -471,11 +471,6 @@ class FlightCard extends StatelessWidget {
 
   // Helper method to determine travel type (Domestic/International)
   String _getTravelType(String tripType){
-
-    
-    // You can determine this based on your business logic
-    // For example, check if origin and destination are in the same country
-    // For now, I'll assume you have a way to determine this
     return tripType; // or 'International'
   }
 
@@ -1060,7 +1055,9 @@ class FlightCard extends StatelessWidget {
 
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => FlightBookingPage( triptype: tripType,)),
+      MaterialPageRoute(builder: (context) => FlightBookingPage( triptype: tripType,
+      
+      )),
     );
   }
 

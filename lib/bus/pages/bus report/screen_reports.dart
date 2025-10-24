@@ -78,7 +78,7 @@ class _ScreenReportState extends State<ScreenReport> {
     validReports.sort((a, b) => b.date.compareTo(a.date));
     
     // Take only last 5 bookings
-    return validReports.take(1).toList();
+    return validReports.take(5).toList();
   }
 
   // Get total valid bookings count
@@ -312,12 +312,12 @@ class _ScreenReportState extends State<ScreenReport> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _backgroundColor,
-      appBar: AppBar(
+      appBar: AppBar(toolbarHeight: 40,
         title: Text(
           'Bus Reports',
           style: TextStyle(
             color: Colors.white,
-            fontSize: 14,
+            fontSize: 12,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -352,15 +352,17 @@ class _ScreenReportState extends State<ScreenReport> {
     final lastFiveBookings = _lastFiveBookings;
     final totalBookings = _totalValidBookings;
 
-    return Column(
+    return ListView(
       children: [
        
-
+                  if(totalBookings<2)
                    SizedBox(height: 10,),
-                   if(totalBookings>1)
+                   if(totalBookings>2)
                    
                      Align(alignment: AlignmentGeometry.topRight,
                       child: TextButton(
+
+
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -382,28 +384,38 @@ class _ScreenReportState extends State<ScreenReport> {
                               'View More',
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
-                                fontSize: 12,
+                                fontSize: 10,
                               ),
                             ),
                             SizedBox(width: 4),
-                            Icon(Icons.arrow_forward_rounded, size: 12),
+                            Icon(Icons.arrow_forward_rounded, size: 10),
                           ],
                         ),
                       ),
                     ),
              
-       
+       Expanded(
+         child: Padding(
+ padding: EdgeInsets.symmetric(horizontal: 10),           child: Column(
+            
+            children:List.generate( lastFiveBookings.length, (index) {
+             
+            final item = lastFiveBookings[index];
+                  return _buildBusTripCard(item);
+           
+           },),),
+         ),
+       )
         // Bookings List
-        Expanded(
-          child: ListView.builder(
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            itemCount: lastFiveBookings.length,
-            itemBuilder: (context, index) {
-              final item = lastFiveBookings[index];
-              return _buildBusTripCard(item);
-            },
-          ),
-        ),
+        // Expanded(
+        //   child: ListView.builder(
+        //     padding: EdgeInsets.symmetric(horizontal: 10),
+        //     itemCount:,
+        //     itemBuilder: (context, index) {
+             
+        //     },
+        //   ),
+        // ),
       ],
     );
   }

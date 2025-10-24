@@ -8,7 +8,7 @@ class BookingEvent with _$BookingEvent {
     required FFlightOption fareReData,
     required List<Map<String, dynamic>> passengerDataList,
     required String token,
-
+    required String triptype,
     required FFlightResponse lastRespo,
   }) = _GetRePrice;
   // Booking confirmation events

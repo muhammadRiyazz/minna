@@ -1,28 +1,23 @@
-import 'dart:developer';
-
+// screens/flight_all_reports_page.dart
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-import 'package:minna/bus/domain/report%20modal/report_Modal.dart';
-import 'package:minna/bus/pages/Screen%20Ticket%20Details/TicketDetails.dart';
+import 'package:minna/flight/domain/report/report_model.dart';
+import 'package:minna/flight/presendation/report%20details/report_details.dart';
 
-// Add these imports for your API calls
-// import 'package:minna/bus/domain/api_services.dart'; // Your API service file
-// import 'package:minna/bus/domain/report%20modal/report_Modal.dart'; // Your model
+class FlightAllReportsPage extends StatefulWidget {
+  final List<ReportData> allReports;
 
-class BusAllBookingsPage extends StatefulWidget {
-  final List<BusTicketReport> allBookings;
-
-  const BusAllBookingsPage({
+  const FlightAllReportsPage({
     Key? key,
-    required this.allBookings,
+    required this.allReports,
   }) : super(key: key);
 
   @override
-  State<BusAllBookingsPage> createState() => _BusAllBookingsPageState();
+  State<FlightAllReportsPage> createState() => _FlightAllReportsPageState();
 }
 
-class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
+class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
   // Theme Colors
   final Color _primaryColor = Colors.black;
   final Color _secondaryColor = Color(0xFFD4AF37);
@@ -39,13 +34,11 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
   final TextEditingController _searchController = TextEditingController();
   String _startDate = '';
   String _endDate = '';
-  List<BusTicketReport> _filteredBookings = [];
-  List<BusTicketReport> _originalBookings = [];
+  List<ReportData> _filteredReports = [];
+  List<ReportData> _originalReports = [];
   bool _isFilterActive = false;
   bool _isDateFilterActive = false;
   bool _isSearchActive = false;
-  bool _isLoading = false;
-  bool _isInitialLoading = false;
 
   @override
   void initState() {
@@ -53,73 +46,12 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
     final now = DateTime.now();
     _startDate = DateFormat('yyyy-MM-dd').format(now.subtract(Duration(days: 30)));
     _endDate = DateFormat('yyyy-MM-dd').format(now);
-    _originalBookings = _getValidBookings();
-    _filteredBookings = _originalBookings;
-    _isInitialLoading = false;
+    _originalReports = _getValidReports();
+    _filteredReports = _originalReports;
   }
 
-  List<BusTicketReport> _getValidBookings() {
-    return widget.allBookings.where((report) => 
-        report.status != 'Pending' && report.status != 'Failure').toList();
-  }
-
-  Future<void> _fetchReportsByDate(String fromDate, String toDate) async {
-    if (!mounted) return;
-    
-    setState(() {
-      log(
-        'loading.  --- true'
-      );
-      _isLoading = true;
-    });
-
-    try {
-      // Uncomment and use your actual API call
-      // final resp = await fetchReport(fromdate: fromDate, todate: toDate);
-      // final data = busTicketReportFromJson(resp.body);
-      
-      // For demo, simulate API delay and use filtered data from existing bookings
-      await Future.delayed(Duration(milliseconds: 800));
-      
-      // Filter existing bookings by date range for demo
-      // In real app, replace this with actual API response
-      final startDateTime = DateTime.parse(fromDate);
-      final endDateTime = DateTime.parse(toDate);
-      
-      final filteredData = widget.allBookings.where((report) {
-        try {
-          final reportDate = DateTime.parse(report.date);
-          return (reportDate.isAtSameMomentAs(startDateTime) || reportDate.isAfter(startDateTime)) &&
-                 (reportDate.isAtSameMomentAs(endDateTime) || reportDate.isBefore(endDateTime)) &&
-                 report.status != 'Pending' && report.status != 'Failure';
-        } catch (e) {
-          return false;
-        }
-      }).toList();
-
-      if (mounted) {
-        setState(() {
-          _originalBookings = filteredData;
-          _filteredBookings = filteredData;
-          _isLoading = false;
-          _isDateFilterActive = true;
-          _isFilterActive = _isDateFilterActive || _isSearchActive;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-      // Handle error - show snackbar or dialog
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to fetch bookings: $e'),
-          backgroundColor: _errorColor,
-        ),
-      );
-    }
+  List<ReportData> _getValidReports() {
+    return widget.allReports.where((report) => report.response != null).toList();
   }
 
   void _onSearchChanged(String query) {
@@ -143,28 +75,30 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
       _startDate = DateFormat('yyyy-MM-dd').format(now.subtract(Duration(days: 30)));
       _endDate = DateFormat('yyyy-MM-dd').format(now);
       _isDateFilterActive = false;
-      _originalBookings = _getValidBookings();
+      _originalReports = _getValidReports();
       _applySearchFilter();
     });
   }
 
   void _applySearchFilter() {
-    List<BusTicketReport> filteredList = List.from(_originalBookings);
+    List<ReportData> filteredList = List.from(_originalReports);
 
     // Apply search filter if active
     if (_isSearchActive && _searchController.text.isNotEmpty) {
       final query = _searchController.text.toLowerCase();
       filteredList = filteredList.where((report) => 
-          (report.blockKey?.toLowerCase().contains(query) ?? false) ||
-          (report.ticketNo?.toLowerCase().contains(query) ?? false) ||
-          (report.source?.toLowerCase().contains(query) ?? false) ||
-          (report.destination?.toLowerCase().contains(query) ?? false) ||
-          (report.status?.toLowerCase().contains(query) ?? false)
+          (report.alhindPnr?.toLowerCase().contains(query) ?? false) ||
+          (report.response?.journey.flightOption.flightLegs.any((leg) => 
+            leg.origin.toLowerCase().contains(query) || 
+            leg.destination.toLowerCase().contains(query)) ?? false) ||
+          (report.response?.passengers.any((passenger) => 
+            passenger.firstName.toLowerCase().contains(query) || 
+            passenger.lastName.toLowerCase().contains(query)) ?? false)
       ).toList();
     }
 
     setState(() {
-      _filteredBookings = filteredList;
+      _filteredReports = filteredList;
       _isFilterActive = _isDateFilterActive || _isSearchActive;
     });
   }
@@ -251,80 +185,52 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Clear Button
-                  // TextButton(
-                  //   onPressed: () {
-                  //     Navigator.pop(context);
-                  //     _clearDateFilter();
-                  //   },
-                  //   style: TextButton.styleFrom(
-                  //     foregroundColor: _errorColor,
-                  //     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  //   ),
-                  //   child: Row(
-                  //     mainAxisSize: MainAxisSize.min,
-                  //     children: [
-                  //       Icon(Icons.clear, size: 16),
-                  //       SizedBox(width: 4),
-                  //       Text('Clear'),
-                  //     ],
-                  //   ),
-                  // ),
-                  
                   // Action Buttons Row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      // Cancel Button
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        style: TextButton.styleFrom(
-                          foregroundColor: _textSecondary,
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        ),
-                        child: Text('Cancel'),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: TextButton.styleFrom(
+                      foregroundColor: _textSecondary,
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    ),
+                    child: Text('Cancel'),
+                  ),
+                  SizedBox(width: 8),
+                  
+                  // Apply Button
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [_secondaryColor, _accentColor],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                      
-                      // Apply Button
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [_secondaryColor, _accentColor],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: _secondaryColor.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
-                        
                         ),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                          ),
-                          onPressed: () {
-                            Navigator.pop(context);
-                            _fetchReportsByDate(_startDate, _endDate);
-                          },
-                          child: _isLoading 
-                              ? SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                  ),
-                                )
-                              : Text(
-                                  'Apply Dates',
-                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600,fontSize: 10),
-                                ),
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
                       ),
-                    ],
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _filterByDateRange();
+                      },
+                      child: Text(
+                        'Apply Dates',
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -333,6 +239,25 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
         ),
       ),
     );
+  }
+
+  void _filterByDateRange() {
+    setState(() {
+      final startDateTime = DateTime.parse(_startDate);
+      final endDateTime = DateTime.parse(_endDate);
+      
+      _filteredReports = _originalReports.where((report) {
+        try {
+          final reportDate = DateTime.parse(report.createdDate);
+          return (reportDate.isAtSameMomentAs(startDateTime) || reportDate.isAfter(startDateTime)) &&
+                 (reportDate.isAtSameMomentAs(endDateTime) || reportDate.isBefore(endDateTime));
+        } catch (e) {
+          return false;
+        }
+      }).toList();
+      _isDateFilterActive = true;
+      _isFilterActive = _isDateFilterActive || _isSearchActive;
+    });
   }
 
   Widget _buildDateRangeText() {
@@ -375,7 +300,6 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
     );
   }
 
- 
   Widget _buildFilterChip({required String label, required VoidCallback onClear, bool isClearAll = false}) {
     return Container(
       decoration: BoxDecoration(
@@ -632,7 +556,7 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
                             controller: _searchController,
                             onChanged: _onSearchChanged,
                             decoration: InputDecoration(
-                              hintText: 'Search by Ticket, Route, or Status...',
+                              hintText: 'Search by PNR, Route, or Passenger...',
                               hintStyle: TextStyle(color: _textLight, fontSize: 14),
                               prefixIcon: Icon(Icons.search_rounded, color: _secondaryColor, size: 20),
                               suffixIcon: _searchController.text.isNotEmpty
@@ -655,17 +579,8 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: IconButton(
-                          onPressed: _isLoading ? null : _showDatePickerDialog,
-                          icon: _isLoading 
-                              ? SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(_cardColor),
-                                  ),
-                                )
-                              : Icon(Icons.calendar_today_rounded, size: 20, color: _cardColor),
+                          onPressed: _showDatePickerDialog,
+                          icon: Icon(Icons.calendar_today_rounded, size: 20, color: _cardColor),
                           tooltip: 'Select Date Range',
                         ),
                       ),
@@ -677,7 +592,6 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
               ),
             ),
 
-          
             // Results Count
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
@@ -685,7 +599,7 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'All Bookings',
+                    'All Flight Reports',
                     style: TextStyle(
                       color: _textPrimary,
                       fontSize: 15,
@@ -704,7 +618,7 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
                         Icon(Icons.confirmation_number_rounded, size: 12, color: _secondaryColor),
                         SizedBox(width: 6),
                         Text(
-                          '${_filteredBookings.length} ${_filteredBookings.length == 1 ? 'booking' : 'bookings'}',
+                          '${_filteredReports.length} ${_filteredReports.length == 1 ? 'report' : 'reports'}',
                           style: TextStyle(
                             color: _secondaryColor,
                             fontSize: 12,
@@ -719,26 +633,20 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
             ),
             SizedBox(height: 10),
 
-            // Bookings List
+            // Reports List
             Expanded(
-              child: _isLoading
-                  ? ListView.builder(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: 6, // Show 6 shimmer cards
-                      itemBuilder: (context, index) => _buildShimmerCard(),
-                    )
-                  : _filteredBookings.isEmpty
-                      ? _buildEmptyState()
-                      : KeyboardDismisser(
-                          child: ListView.builder(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                            itemCount: _filteredBookings.length,
-                            itemBuilder: (context, index) {
-                              final item = _filteredBookings[index];
-                              return _buildBusTripCard(item);
-                            },
-                          ),
-                        ),
+              child: _filteredReports.isEmpty
+                  ? _buildEmptyState()
+                  : KeyboardDismisser(
+                      child: ListView.builder(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: _filteredReports.length,
+                        itemBuilder: (context, index) {
+                          final item = _filteredReports[index];
+                          return _buildReportCard(item);
+                        },
+                      ),
+                    ),
             ),
           ],
         ),
@@ -746,18 +654,11 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
     );
   }
 
-  Widget _buildBusTripCard(BusTicketReport item) {
-    final statusColor = _getStatusColor(item.status);
-    String formattedDate = 'N/A';
-    String formattedTime = 'N/A';
-
-    try {
-      final dateTime = DateTime.parse(item.date);
-      formattedDate = DateFormat('MMM dd, yyyy').format(dateTime);
-      formattedTime = DateFormat('hh:mm a').format(dateTime);
-    } catch (e) {
-      print('Error parsing date: ${item.date}');
-    }
+  Widget _buildReportCard(ReportData report) {
+    final response = report.response!;
+    final flightLegs = response.journey.flightOption.flightLegs;
+    final firstLeg = flightLegs.isNotEmpty ? flightLegs.first : null;
+    final lastLeg = flightLegs.isNotEmpty ? flightLegs.last : null;
 
     return Container(
       margin: EdgeInsets.only(bottom: 16),
@@ -779,11 +680,7 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => TicketDetails(
-                  count: item.seatDetails.length,
-                  tin: item.ticketNo,
-                  blocid: item.slNo,
-                ),
+                builder: (context) => ReportDetailScreen(report: report),
               ),
             );
           },
@@ -793,7 +690,7 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header Row with Ticket ID and Date
+                // Header Row with PNR and Amount
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -802,7 +699,7 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'TICKET REFERENCE',
+                            'BOOKING REFERENCE',
                             style: TextStyle(
                               fontSize: 8,
                               color: _textSecondary,
@@ -812,7 +709,7 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
                           ),
                           SizedBox(height: 4),
                           Text(
-                            item.ticketNo ?? 'N/A',
+                            report.alhindPnr ?? 'N/A',
                             style: TextStyle(
                               color: _textPrimary,
                               fontSize: 13,
@@ -833,12 +730,21 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            formattedDate,
+                            '₹${report.amount}',
                             style: TextStyle(
                               color: _secondaryColor,
-                              fontSize: 10,
+                              fontSize: 12,
                               fontWeight: FontWeight.w700,
                             ),
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          _formatDate(report.createdDate),
+                          style: TextStyle(
+                            color: _textLight,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
@@ -872,11 +778,26 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
                             ),
                             SizedBox(height: 4),
                             Text(
-                              item.source ?? 'N/A',
+                              firstLeg?.origin ?? 'N/A',
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
                               ),
+                            ),
+                            SizedBox(height: 6),
+                            Row(
+                              children: [
+                                Icon(Icons.calendar_today, size: 12, color: _secondaryColor),
+                                SizedBox(width: 4),
+                                Text(
+                                  firstLeg != null ? _formatDate(firstLeg.departureTime) : 'N/A',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: _textSecondary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -916,12 +837,28 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
                             ),
                             SizedBox(height: 4),
                             Text(
-                              item.destination ?? 'N/A',
+                              lastLeg?.destination ?? 'N/A',
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
                               ),
                               textAlign: TextAlign.end,
+                            ),
+                            SizedBox(height: 6),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Icon(Icons.calendar_today, size: 12, color: _secondaryColor),
+                                SizedBox(width: 4),
+                                Text(
+                                  lastLeg != null ? _formatDate(lastLeg.arrivalTime) : 'N/A',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: _textSecondary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -934,7 +871,7 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
                 // Footer Information
                 Row(
                   children: [
-                    // Seats Info
+                    // Flight count
                     Row(
                       children: [
                         Container(
@@ -944,14 +881,41 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
-                            Icons.event_seat_rounded,
+                            Icons.flight_takeoff_rounded,
                             color: _secondaryColor,
                             size: 12,
                           ),
                         ),
                         SizedBox(width: 6),
                         Text(
-                          '${item.seatDetails.length} seat${item.seatDetails.length > 1 ? 's' : ''}',
+                          '${flightLegs.length} flight${flightLegs.length > 1 ? 's' : ''}',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: _textSecondary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(width: 16),
+                    // Passenger count
+                    Row(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: _secondaryColor.withOpacity(0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.people_rounded,
+                            color: _secondaryColor,
+                            size: 12,
+                          ),
+                        ),
+                        SizedBox(width: 6),
+                        Text(
+                          '${response.passengers.length} passenger${response.passengers.length > 1 ? 's' : ''}',
                           style: TextStyle(
                             fontSize: 10,
                             color: _textSecondary,
@@ -965,9 +929,9 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: statusColor.withOpacity(0.1),
+                        color: _successColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: statusColor.withOpacity(0.3)),
+                        border: Border.all(color: _successColor.withOpacity(0.3)),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -976,16 +940,16 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
                             width: 6,
                             height: 6,
                             decoration: BoxDecoration(
-                              color: statusColor,
+                              color: _successColor,
                               shape: BoxShape.circle,
                             ),
                           ),
                           SizedBox(width: 6),
                           Text(
-                            (item.status ?? 'Unknown').toUpperCase(),
+                            'CONFIRMED',
                             style: TextStyle(
                               fontSize: 8,
-                              color: statusColor,
+                              color: _successColor,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -1004,98 +968,104 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
 
   Widget _buildEmptyState() {
     return SingleChildScrollView(
+      physics: AlwaysScrollableScrollPhysics(),
       padding: EdgeInsets.all(20),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [_secondaryColor.withOpacity(0.1), _accentColor.withOpacity(0.1)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.directions_bus_rounded,
-              color: _secondaryColor,
-              size: 64,
-            ),
-          ),
-          SizedBox(height: 20),
-          Text(
-            _isFilterActive ? 'No Matching Bookings' : 'No Bookings Found',
-            style: TextStyle(
-              color: _textPrimary,
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 12),
-          Text(
-            _isFilterActive 
-                ? 'No bookings match your current filters.\nTry adjusting your search criteria.'
-                : 'You don\'t have any bus bookings yet.\nStart by booking your first trip!',
-            style: TextStyle(
-              color: _textSecondary,
-              fontSize: 14,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 20),
-          if (_isFilterActive)
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          minHeight: MediaQuery.of(context).size.height * 0.6,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
             Container(
+              padding: EdgeInsets.all(24),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [_secondaryColor, _accentColor],
+                  colors: [_secondaryColor.withOpacity(0.1), _accentColor.withOpacity(0.1)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: _secondaryColor.withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: Offset(0, 4),
-                  ),
-                ],
+                shape: BoxShape.circle,
               ),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                ),
-                onPressed: _clearAllFilters,
-                child: Text(
-                  'Clear All Filters',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-                ),
+              child: Icon(
+                Icons.airplane_ticket_rounded,
+                color: _secondaryColor,
+                size: 64,
               ),
             ),
-        ],
+            SizedBox(height: 20),
+            Text(
+              _isFilterActive ? 'No Matching Reports' : 'No Reports Found',
+              style: TextStyle(
+                color: _textPrimary,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                _isFilterActive 
+                    ? 'No reports match your current filters.\nTry adjusting your search criteria.'
+                    : 'You don\'t have any flight reports yet.\nStart by booking your first flight!',
+                style: TextStyle(
+                  color: _textSecondary,
+                  fontSize: 14,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            SizedBox(height: 20),
+            if (_isFilterActive)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [_secondaryColor, _accentColor],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: _secondaryColor.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    ),
+                    onPressed: _clearAllFilters,
+                    child: Text(
+                      'Clear All Filters',
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
 
-  Color _getStatusColor(String status) {
-    if (status == null) return _secondaryColor;
-    
-    switch (status.toLowerCase()) {
-      case 'confirmed':
-        return _successColor;
-      case 'cancelled':
-        return _errorColor;
-      case 'pending':
-        return _warningColor;
-      default:
-        return _secondaryColor;
+  String _formatDate(String date) {
+    try {
+      final parsedDate = DateTime.parse(date);
+      return DateFormat('dd MMM yyyy').format(parsedDate);
+    } catch (e) {
+      return date;
     }
   }
 }

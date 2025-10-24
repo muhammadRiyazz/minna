@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:minna/flight/domain/report/report_model.dart';
 import 'package:minna/flight/infrastracture/report/report.dart';
 import 'package:minna/flight/presendation/report%20details/report_details.dart';
+import 'package:minna/flight/presendation/report_list/view_more.dart';
 
 class ReportListScreen extends StatefulWidget {
   const ReportListScreen({Key? key}) : super(key: key);
@@ -45,12 +46,12 @@ class _ReportListScreenState extends State<ReportListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _backgroundColor,
-      appBar: AppBar(
+      appBar: AppBar(toolbarHeight: 40,
         title: Text(
           'Flight Reports',
           style: TextStyle(
             color: Colors.white,
-            fontSize: 14,
+            fontSize: 12,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -363,7 +364,8 @@ class _ReportListScreenState extends State<ReportListScreen> {
       return _buildEmptyState();
     }
 
-    // Get only the first 4 bookings
+    // Sort by created date (newest first) and take only last 4 bookings
+    validReports.sort((a, b) => b.createdDate.compareTo(a.createdDate));
     final displayBookings = validReports.take(4).toList();
     final totalBookings = validReports.length;
 
@@ -372,22 +374,20 @@ class _ReportListScreenState extends State<ReportListScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 10),
           // View More Button - Only show if there are more than 4 bookings
           if (totalBookings > 4)
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
                 onPressed: () {
-                  // TODO: Navigate to All Flight Reports page
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder: (context) => FlightAllReportsPage(
-                  //       allReports: validReports,
-                  //     ),
-                  //   ),
-                  // );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FlightAllReportsPage(
+                        allReports: validReports,
+                      ),
+                    ),
+                  );
                 },
                 style: TextButton.styleFrom(
                   foregroundColor: _secondaryColor,
@@ -409,7 +409,6 @@ class _ReportListScreenState extends State<ReportListScreen> {
                 ),
               ),
             ),
-          SizedBox(height: 10),
           Expanded(
             child: ListView.builder(
               itemCount: displayBookings.length,
@@ -563,19 +562,19 @@ class _ReportListScreenState extends State<ReportListScreen> {
                           padding: EdgeInsets.symmetric(horizontal: 8),
                           child: Column(
                             children: [
-                               Container(
-                              padding: EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: _secondaryColor.withOpacity(0.1),
-                                shape: BoxShape.circle,
-                                border: Border.all(color: _secondaryColor.withOpacity(0.3), width: 2),
+                              Container(
+                                padding: EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: _secondaryColor.withOpacity(0.1),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: _secondaryColor.withOpacity(0.3), width: 2),
+                                ),
+                                child: Icon(
+                                  Icons.arrow_forward_rounded,
+                                  color: _secondaryColor,
+                                  size: 16,
+                                ),
                               ),
-                              child: Icon(
-                                Icons.arrow_forward_rounded,
-                                color: _secondaryColor,
-                                size: 16,
-                              ),
-                            ),
                             ],
                           ),
                         ),

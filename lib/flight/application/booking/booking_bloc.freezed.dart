@@ -25,6 +25,7 @@ mixin _$BookingEvent {
       FFlightOption fareReData,
       List<Map<String, dynamic>> passengerDataList,
       String token,
+      String triptype,
       FFlightResponse lastRespo,
     )
     getRePrice,
@@ -62,6 +63,7 @@ mixin _$BookingEvent {
       FFlightOption fareReData,
       List<Map<String, dynamic>> passengerDataList,
       String token,
+      String triptype,
       FFlightResponse lastRespo,
     )?
     getRePrice,
@@ -95,6 +97,7 @@ mixin _$BookingEvent {
       FFlightOption fareReData,
       List<Map<String, dynamic>> passengerDataList,
       String token,
+      String triptype,
       FFlightResponse lastRespo,
     )?
     getRePrice,
@@ -183,6 +186,7 @@ abstract class _$$GetRePriceImplCopyWith<$Res> {
     FFlightOption fareReData,
     List<Map<String, dynamic>> passengerDataList,
     String token,
+    String triptype,
     FFlightResponse lastRespo,
   });
 }
@@ -206,6 +210,7 @@ class __$$GetRePriceImplCopyWithImpl<$Res>
     Object? fareReData = null,
     Object? passengerDataList = null,
     Object? token = null,
+    Object? triptype = null,
     Object? lastRespo = null,
   }) {
     return _then(
@@ -230,6 +235,10 @@ class __$$GetRePriceImplCopyWithImpl<$Res>
             ? _value.token
             : token // ignore: cast_nullable_to_non_nullable
                   as String,
+        triptype: null == triptype
+            ? _value.triptype
+            : triptype // ignore: cast_nullable_to_non_nullable
+                  as String,
         lastRespo: null == lastRespo
             ? _value.lastRespo
             : lastRespo // ignore: cast_nullable_to_non_nullable
@@ -248,6 +257,7 @@ class _$GetRePriceImpl implements _GetRePrice {
     required this.fareReData,
     required final List<Map<String, dynamic>> passengerDataList,
     required this.token,
+    required this.triptype,
     required this.lastRespo,
   }) : _passengerDataList = passengerDataList;
 
@@ -269,11 +279,13 @@ class _$GetRePriceImpl implements _GetRePrice {
   @override
   final String token;
   @override
+  final String triptype;
+  @override
   final FFlightResponse lastRespo;
 
   @override
   String toString() {
-    return 'BookingEvent.getRePrice(reprice: $reprice, tripMode: $tripMode, fareReData: $fareReData, passengerDataList: $passengerDataList, token: $token, lastRespo: $lastRespo)';
+    return 'BookingEvent.getRePrice(reprice: $reprice, tripMode: $tripMode, fareReData: $fareReData, passengerDataList: $passengerDataList, token: $token, triptype: $triptype, lastRespo: $lastRespo)';
   }
 
   @override
@@ -291,6 +303,8 @@ class _$GetRePriceImpl implements _GetRePrice {
               _passengerDataList,
             ) &&
             (identical(other.token, token) || other.token == token) &&
+            (identical(other.triptype, triptype) ||
+                other.triptype == triptype) &&
             (identical(other.lastRespo, lastRespo) ||
                 other.lastRespo == lastRespo));
   }
@@ -303,6 +317,7 @@ class _$GetRePriceImpl implements _GetRePrice {
     fareReData,
     const DeepCollectionEquality().hash(_passengerDataList),
     token,
+    triptype,
     lastRespo,
   );
 
@@ -323,6 +338,7 @@ class _$GetRePriceImpl implements _GetRePrice {
       FFlightOption fareReData,
       List<Map<String, dynamic>> passengerDataList,
       String token,
+      String triptype,
       FFlightResponse lastRespo,
     )
     getRePrice,
@@ -358,6 +374,7 @@ class _$GetRePriceImpl implements _GetRePrice {
       fareReData,
       passengerDataList,
       token,
+      triptype,
       lastRespo,
     );
   }
@@ -371,6 +388,7 @@ class _$GetRePriceImpl implements _GetRePrice {
       FFlightOption fareReData,
       List<Map<String, dynamic>> passengerDataList,
       String token,
+      String triptype,
       FFlightResponse lastRespo,
     )?
     getRePrice,
@@ -402,6 +420,7 @@ class _$GetRePriceImpl implements _GetRePrice {
       fareReData,
       passengerDataList,
       token,
+      triptype,
       lastRespo,
     );
   }
@@ -415,6 +434,7 @@ class _$GetRePriceImpl implements _GetRePrice {
       FFlightOption fareReData,
       List<Map<String, dynamic>> passengerDataList,
       String token,
+      String triptype,
       FFlightResponse lastRespo,
     )?
     getRePrice,
@@ -448,6 +468,7 @@ class _$GetRePriceImpl implements _GetRePrice {
         fareReData,
         passengerDataList,
         token,
+        triptype,
         lastRespo,
       );
     }
@@ -502,6 +523,7 @@ abstract class _GetRePrice implements BookingEvent {
     required final FFlightOption fareReData,
     required final List<Map<String, dynamic>> passengerDataList,
     required final String token,
+    required final String triptype,
     required final FFlightResponse lastRespo,
   }) = _$GetRePriceImpl;
 
@@ -510,6 +532,7 @@ abstract class _GetRePrice implements BookingEvent {
   FFlightOption get fareReData;
   List<Map<String, dynamic>> get passengerDataList;
   String get token;
+  String get triptype;
   FFlightResponse get lastRespo;
 
   /// Create a copy of BookingEvent
@@ -623,6 +646,7 @@ class _$ConfirmFlightBookingImpl implements _ConfirmFlightBooking {
       FFlightOption fareReData,
       List<Map<String, dynamic>> passengerDataList,
       String token,
+      String triptype,
       FFlightResponse lastRespo,
     )
     getRePrice,
@@ -664,6 +688,7 @@ class _$ConfirmFlightBookingImpl implements _ConfirmFlightBooking {
       FFlightOption fareReData,
       List<Map<String, dynamic>> passengerDataList,
       String token,
+      String triptype,
       FFlightResponse lastRespo,
     )?
     getRePrice,
@@ -701,6 +726,7 @@ class _$ConfirmFlightBookingImpl implements _ConfirmFlightBooking {
       FFlightOption fareReData,
       List<Map<String, dynamic>> passengerDataList,
       String token,
+      String triptype,
       FFlightResponse lastRespo,
     )?
     getRePrice,
@@ -967,6 +993,7 @@ class _$SaveFinalBookingImpl implements _SaveFinalBooking {
       FFlightOption fareReData,
       List<Map<String, dynamic>> passengerDataList,
       String token,
+      String triptype,
       FFlightResponse lastRespo,
     )
     getRePrice,
@@ -1016,6 +1043,7 @@ class _$SaveFinalBookingImpl implements _SaveFinalBooking {
       FFlightOption fareReData,
       List<Map<String, dynamic>> passengerDataList,
       String token,
+      String triptype,
       FFlightResponse lastRespo,
     )?
     getRePrice,
@@ -1061,6 +1089,7 @@ class _$SaveFinalBookingImpl implements _SaveFinalBooking {
       FFlightOption fareReData,
       List<Map<String, dynamic>> passengerDataList,
       String token,
+      String triptype,
       FFlightResponse lastRespo,
     )?
     getRePrice,
@@ -1295,6 +1324,7 @@ class _$InitiateRefundImpl implements _InitiateRefund {
       FFlightOption fareReData,
       List<Map<String, dynamic>> passengerDataList,
       String token,
+      String triptype,
       FFlightResponse lastRespo,
     )
     getRePrice,
@@ -1336,6 +1366,7 @@ class _$InitiateRefundImpl implements _InitiateRefund {
       FFlightOption fareReData,
       List<Map<String, dynamic>> passengerDataList,
       String token,
+      String triptype,
       FFlightResponse lastRespo,
     )?
     getRePrice,
@@ -1373,6 +1404,7 @@ class _$InitiateRefundImpl implements _InitiateRefund {
       FFlightOption fareReData,
       List<Map<String, dynamic>> passengerDataList,
       String token,
+      String triptype,
       FFlightResponse lastRespo,
     )?
     getRePrice,
@@ -1517,6 +1549,7 @@ class _$ResetBookingImpl implements _ResetBooking {
       FFlightOption fareReData,
       List<Map<String, dynamic>> passengerDataList,
       String token,
+      String triptype,
       FFlightResponse lastRespo,
     )
     getRePrice,
@@ -1558,6 +1591,7 @@ class _$ResetBookingImpl implements _ResetBooking {
       FFlightOption fareReData,
       List<Map<String, dynamic>> passengerDataList,
       String token,
+      String triptype,
       FFlightResponse lastRespo,
     )?
     getRePrice,
@@ -1595,6 +1629,7 @@ class _$ResetBookingImpl implements _ResetBooking {
       FFlightOption fareReData,
       List<Map<String, dynamic>> passengerDataList,
       String token,
+      String triptype,
       FFlightResponse lastRespo,
     )?
     getRePrice,
@@ -1675,9 +1710,9 @@ abstract class _ResetBooking implements BookingEvent {
 /// @nodoc
 mixin _$BookingState {
   bool get isLoading => throw _privateConstructorUsedError;
-  bool get isRepriceLoading => throw _privateConstructorUsedError; // Add this
-  bool get isRepriceCompleted => throw _privateConstructorUsedError; // Add this
-  // Booking Data
+  bool get isRepriceLoading => throw _privateConstructorUsedError;
+  bool get isRepriceCompleted =>
+      throw _privateConstructorUsedError; // Booking Data
   BBBookingRequest? get bookingdata => throw _privateConstructorUsedError;
   String? get bookingError => throw _privateConstructorUsedError;
   bool? get isBookingConfirmed => throw _privateConstructorUsedError;
@@ -2102,10 +2137,8 @@ class _$BookingStateImpl implements _BookingState {
   final bool isLoading;
   @override
   final bool isRepriceLoading;
-  // Add this
   @override
   final bool isRepriceCompleted;
-  // Add this
   // Booking Data
   @override
   final BBBookingRequest? bookingdata;
@@ -2282,10 +2315,9 @@ abstract class _BookingState implements BookingState {
   @override
   bool get isLoading;
   @override
-  bool get isRepriceLoading; // Add this
+  bool get isRepriceLoading;
   @override
-  bool get isRepriceCompleted; // Add this
-  // Booking Data
+  bool get isRepriceCompleted; // Booking Data
   @override
   BBBookingRequest? get bookingdata;
   @override
