@@ -95,11 +95,8 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
       SnackBar(
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(
-            color: _secondaryColor.withOpacity(0.3),
-            width: 1,
-          ),
+          borderRadius: BorderRadius.circular(12),
+       
         ),
         margin: EdgeInsets.only(
           bottom: MediaQuery.of(context).size.height - 180,
@@ -108,7 +105,6 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
         ),
         duration: const Duration(seconds: 3),
         backgroundColor: _cardColor,
-        elevation: 8,
         content: Container(
           padding: const EdgeInsets.symmetric(vertical: 4),
           child: Row(
@@ -116,26 +112,13 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      _primaryColor.withOpacity(0.9),
-                      _primaryColor.withOpacity(0.7),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                 color: _secondaryColor,
                   shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: _primaryColor.withOpacity(0.3),
-                      blurRadius: 8,
-                      spreadRadius: 1,
-                    ),
-                  ],
+                
                 ),
                 child: Icon(
                   Icons.airline_seat_recline_normal_rounded,
-                  color: _secondaryColor,
+                  color: Colors.white,
                   size: 28,
                 ),
               ),
@@ -271,7 +254,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                   'Okay',
                   style: TextStyle(
                     fontSize: 16,
-                    color: _secondaryColor,
+                    color: Colors.white,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -550,12 +533,12 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                 ],
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 5),
           ],
           
           // Continue button
           Container(
-            margin: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+            margin: const EdgeInsets.fromLTRB(20, 8, 20, 10),
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: newselectedseats.isEmpty ? _textLight.withOpacity(0.6) : _primaryColor,
@@ -595,8 +578,8 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                       ? 'Select Seats to Continue'
                       : 'Continue with ${newselectedseats.length} ${newselectedseats.length == 1 ? 'Seat' : 'Seats'}',
                     style: TextStyle(
-                      color: newselectedseats.isEmpty ? _textSecondary : _cardColor,
-                      fontSize: 15,
+                      color: newselectedseats.isEmpty ? Colors.white : _cardColor,
+                      fontSize: 13,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

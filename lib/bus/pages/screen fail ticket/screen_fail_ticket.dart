@@ -3,7 +3,20 @@ import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/pages/main%20home/home.dart';
 
 class ScreenFailTicket extends StatelessWidget {
-  const ScreenFailTicket({super.key});
+   ScreenFailTicket({super.key});
+
+  // Updated Theme Colors
+  final Color _primaryColor = Colors.black;
+  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
+  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
+  final Color _backgroundColor = Color(0xFFF8F9FA);
+  final Color _cardColor = Colors.white;
+  final Color _textPrimary = Colors.black;
+  final Color _textSecondary = Color(0xFF666666);
+  final Color _textLight = Color(0xFF999999);
+  final Color _errorColor = Color(0xFFE53935);
+  final Color _successColor = Color(0xFF388E3C);
+  final Color _warningColor = Color(0xFFF57C00);
 
   @override
   Widget build(BuildContext context) {
@@ -11,13 +24,13 @@ class ScreenFailTicket extends StatelessWidget {
       onWillPop: () async {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) =>  HomePage()),
+          MaterialPageRoute(builder: (context) => HomePage()),
           (route) => false,
         );
         return false;
       },
       child: Scaffold(
-        backgroundColor: Colors.grey[50],
+        backgroundColor: _backgroundColor,
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(24.0),
@@ -25,190 +38,172 @@ class ScreenFailTicket extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-              
-                const SizedBox(height: 32),
-Icon(Icons.cancel, color: Colors.red, size: 80) , // Cancel circle
+                // Error Icon with Background
+                Container(
+                  width: 110,
+                  height: 110,
+                  decoration: BoxDecoration(
+                    color: _secondaryColor.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                   
+                  ),
+                  child: Icon(
+                    Icons.cancel_rounded,
+                    color:_secondaryColor ,
+                    size: 70,
+                  ),
+                ),
+                
+                const SizedBox(height: 20),
+                
                 // Title
-                                const SizedBox(height: 15),
-
                 Text(
                   'Booking Failed',
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: Colors.red[700],
+                    color: _errorColor,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 
-                const SizedBox(height: 16),
+                const SizedBox(height: 5),
                 
                 // Subtitle
                 Text(
                   'Sorry, your ticket booking was unsuccessful',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.grey[700],
+                    color: _textSecondary,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 
-                const SizedBox(height: 24),
+                const SizedBox(height: 22),
                 
-                // Important message about refund
+                // Important message card
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    // color:  maincolor1,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color:  maincolor1!),
+                    color: _cardColor,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.08),
+                        blurRadius: 20,
+                        offset: Offset(0, 8),
+                      ),
+                    ],
+                  
                   ),
                   child: Column(
                     children: [
-                      Icon(
-                        Icons.warning_amber_rounded,
-                        color:  maincolor1,
-                        size: 32,
+                      Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: _warningColor.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.warning_amber_rounded,
+                          color: _warningColor,
+                          size: 24,
+                        ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                       Text(
                         'Payment Status',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 18,
                           fontWeight: FontWeight.w600,
-                                                  color:  Colors.grey,
-
+                          color: _textPrimary,
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 12),
                       Text(
-                        'If your amount was deducted but booking failed,\nplease contact our support team for assistance.\nWe\'ll help you with the refund process.',
+                        'If your amount was deducted but booking failed, '
+                        'please contact our support team for assistance. '
+                        'We\'ll help you with the refund process.',
                         style: TextStyle(
                           fontSize: 14,
-                          color:  Colors.grey,
+                          color: _textSecondary,
+                          height: 1.5,
                         ),
                         textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _secondaryColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20),
+                         
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.support_agent_rounded,
+                              color: _secondaryColor,
+                              size: 16,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              'Contact Support',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: _secondaryColor,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ),
                 
-                const SizedBox(height: 32),
-                
-             
-                
-                const SizedBox(height: 32),
+                const SizedBox(height: 20),
                 
                 // Action buttons
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(builder: (context) =>  HomePage()),
-                            (route) => false,
-                          );
-                        },
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          side: BorderSide(color: Colors.blue[700]!),
-                        ),
-                        child: Text(
-                          'Go Home',
-                          style: TextStyle(
-                            color: Colors.blue[700],
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomePage()),
+                        (route) => false,
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _primaryColor,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 2,
+                    ),
+                    child: Text(
+                      'Back to Home',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // Add functionality to retry booking or contact support
-                          // For example: Navigator.pop(context); to go back and retry
-                          _showSupportOptions(context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue[700],
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                        ),
-                        child: const Text(
-                          'Get Help',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
+                
+            
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  void _showSupportOptions(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Need Help?',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue[800],
-              ),
-            ),
-            const SizedBox(height: 16),
-            ListTile(
-              leading: const Icon(Icons.phone, color: Colors.green),
-              title: const Text('Call Support'),
-              subtitle: const Text('+91-XXXXX-XXXXX'),
-              onTap: () {
-                Navigator.pop(context);
-                // Implement phone call functionality
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.email, color: Colors.blue),
-              title: const Text('Email Support'),
-              subtitle: const Text('support@minna.com'),
-              onTap: () {
-                Navigator.pop(context);
-                // Implement email functionality
-              },
-            ),
-            ListTile(
-              leading:  Icon(Icons.chat, color:  maincolor1),
-              title: const Text('Live Chat'),
-              subtitle: const Text('Available 24/7'),
-              onTap: () {
-                Navigator.pop(context);
-                // Implement chat functionality
-              },
-            ),
-            const SizedBox(height: 16),
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-          ],
         ),
       ),
     );

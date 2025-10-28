@@ -13,7 +13,10 @@ class BookingState with _$BookingState {
     bool? isBookingConfirmed,
     String? alhindPnr,
     String? tableID,
-    
+
+        double? totalCommission,
+        double? totalAmountWithCommission,
+
     // Razorpay Data
     String? razorpayOrderId,
     String? razorpayPaymentId,
@@ -47,6 +50,8 @@ class BookingState with _$BookingState {
     bookingError: null,
     isBookingConfirmed: false,
     alhindPnr: null,
+    totalAmountWithCommission: 0,
+    totalCommission: 0,
     razorpayOrderId: null,
     razorpayPaymentId: null,
     razorpaySignature: null,

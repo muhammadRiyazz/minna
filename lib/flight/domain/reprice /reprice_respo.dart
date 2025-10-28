@@ -340,7 +340,7 @@ class RePassenger {
   String? email;
   String? address;
   String? nationality;
-String? countryCode;
+  String? countryCode;
   dynamic passportNo;
   String? countryOfIssue;
   String? dateOfExpiry;

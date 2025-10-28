@@ -1717,7 +1717,10 @@ mixin _$BookingState {
   String? get bookingError => throw _privateConstructorUsedError;
   bool? get isBookingConfirmed => throw _privateConstructorUsedError;
   String? get alhindPnr => throw _privateConstructorUsedError;
-  String? get tableID => throw _privateConstructorUsedError; // Razorpay Data
+  String? get tableID => throw _privateConstructorUsedError;
+  double? get totalCommission => throw _privateConstructorUsedError;
+  double? get totalAmountWithCommission =>
+      throw _privateConstructorUsedError; // Razorpay Data
   String? get razorpayOrderId => throw _privateConstructorUsedError;
   String? get razorpayPaymentId => throw _privateConstructorUsedError;
   String? get razorpaySignature =>
@@ -1761,6 +1764,8 @@ abstract class $BookingStateCopyWith<$Res> {
     bool? isBookingConfirmed,
     String? alhindPnr,
     String? tableID,
+    double? totalCommission,
+    double? totalAmountWithCommission,
     String? razorpayOrderId,
     String? razorpayPaymentId,
     String? razorpaySignature,
@@ -1803,6 +1808,8 @@ class _$BookingStateCopyWithImpl<$Res, $Val extends BookingState>
     Object? isBookingConfirmed = freezed,
     Object? alhindPnr = freezed,
     Object? tableID = freezed,
+    Object? totalCommission = freezed,
+    Object? totalAmountWithCommission = freezed,
     Object? razorpayOrderId = freezed,
     Object? razorpayPaymentId = freezed,
     Object? razorpaySignature = freezed,
@@ -1854,6 +1861,14 @@ class _$BookingStateCopyWithImpl<$Res, $Val extends BookingState>
                 ? _value.tableID
                 : tableID // ignore: cast_nullable_to_non_nullable
                       as String?,
+            totalCommission: freezed == totalCommission
+                ? _value.totalCommission
+                : totalCommission // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            totalAmountWithCommission: freezed == totalAmountWithCommission
+                ? _value.totalAmountWithCommission
+                : totalAmountWithCommission // ignore: cast_nullable_to_non_nullable
+                      as double?,
             razorpayOrderId: freezed == razorpayOrderId
                 ? _value.razorpayOrderId
                 : razorpayOrderId // ignore: cast_nullable_to_non_nullable
@@ -1942,6 +1957,8 @@ abstract class _$$BookingStateImplCopyWith<$Res>
     bool? isBookingConfirmed,
     String? alhindPnr,
     String? tableID,
+    double? totalCommission,
+    double? totalAmountWithCommission,
     String? razorpayOrderId,
     String? razorpayPaymentId,
     String? razorpaySignature,
@@ -1983,6 +2000,8 @@ class __$$BookingStateImplCopyWithImpl<$Res>
     Object? isBookingConfirmed = freezed,
     Object? alhindPnr = freezed,
     Object? tableID = freezed,
+    Object? totalCommission = freezed,
+    Object? totalAmountWithCommission = freezed,
     Object? razorpayOrderId = freezed,
     Object? razorpayPaymentId = freezed,
     Object? razorpaySignature = freezed,
@@ -2034,6 +2053,14 @@ class __$$BookingStateImplCopyWithImpl<$Res>
             ? _value.tableID
             : tableID // ignore: cast_nullable_to_non_nullable
                   as String?,
+        totalCommission: freezed == totalCommission
+            ? _value.totalCommission
+            : totalCommission // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        totalAmountWithCommission: freezed == totalAmountWithCommission
+            ? _value.totalAmountWithCommission
+            : totalAmountWithCommission // ignore: cast_nullable_to_non_nullable
+                  as double?,
         razorpayOrderId: freezed == razorpayOrderId
             ? _value.razorpayOrderId
             : razorpayOrderId // ignore: cast_nullable_to_non_nullable
@@ -2115,6 +2142,8 @@ class _$BookingStateImpl implements _BookingState {
     this.isBookingConfirmed,
     this.alhindPnr,
     this.tableID,
+    this.totalCommission,
+    this.totalAmountWithCommission,
     this.razorpayOrderId,
     this.razorpayPaymentId,
     this.razorpaySignature,
@@ -2150,6 +2179,10 @@ class _$BookingStateImpl implements _BookingState {
   final String? alhindPnr;
   @override
   final String? tableID;
+  @override
+  final double? totalCommission;
+  @override
+  final double? totalAmountWithCommission;
   // Razorpay Data
   @override
   final String? razorpayOrderId;
@@ -2189,7 +2222,7 @@ class _$BookingStateImpl implements _BookingState {
 
   @override
   String toString() {
-    return 'BookingState(isLoading: $isLoading, isRepriceLoading: $isRepriceLoading, isRepriceCompleted: $isRepriceCompleted, bookingdata: $bookingdata, bookingError: $bookingError, isBookingConfirmed: $isBookingConfirmed, alhindPnr: $alhindPnr, tableID: $tableID, razorpayOrderId: $razorpayOrderId, razorpayPaymentId: $razorpayPaymentId, razorpaySignature: $razorpaySignature, isCreatingOrder: $isCreatingOrder, isPaymentProcessing: $isPaymentProcessing, isConfirmingBooking: $isConfirmingBooking, isSavingFinalBooking: $isSavingFinalBooking, isRefundProcessing: $isRefundProcessing, paymentFailed: $paymentFailed, bookingFailed: $bookingFailed, refundRequired: $refundRequired, refundInitiated: $refundInitiated, refundFailed: $refundFailed, isBookingCompleted: $isBookingCompleted, tempBookingId: $tempBookingId, tempAmount: $tempAmount)';
+    return 'BookingState(isLoading: $isLoading, isRepriceLoading: $isRepriceLoading, isRepriceCompleted: $isRepriceCompleted, bookingdata: $bookingdata, bookingError: $bookingError, isBookingConfirmed: $isBookingConfirmed, alhindPnr: $alhindPnr, tableID: $tableID, totalCommission: $totalCommission, totalAmountWithCommission: $totalAmountWithCommission, razorpayOrderId: $razorpayOrderId, razorpayPaymentId: $razorpayPaymentId, razorpaySignature: $razorpaySignature, isCreatingOrder: $isCreatingOrder, isPaymentProcessing: $isPaymentProcessing, isConfirmingBooking: $isConfirmingBooking, isSavingFinalBooking: $isSavingFinalBooking, isRefundProcessing: $isRefundProcessing, paymentFailed: $paymentFailed, bookingFailed: $bookingFailed, refundRequired: $refundRequired, refundInitiated: $refundInitiated, refundFailed: $refundFailed, isBookingCompleted: $isBookingCompleted, tempBookingId: $tempBookingId, tempAmount: $tempAmount)';
   }
 
   @override
@@ -2212,6 +2245,13 @@ class _$BookingStateImpl implements _BookingState {
             (identical(other.alhindPnr, alhindPnr) ||
                 other.alhindPnr == alhindPnr) &&
             (identical(other.tableID, tableID) || other.tableID == tableID) &&
+            (identical(other.totalCommission, totalCommission) ||
+                other.totalCommission == totalCommission) &&
+            (identical(
+                  other.totalAmountWithCommission,
+                  totalAmountWithCommission,
+                ) ||
+                other.totalAmountWithCommission == totalAmountWithCommission) &&
             (identical(other.razorpayOrderId, razorpayOrderId) ||
                 other.razorpayOrderId == razorpayOrderId) &&
             (identical(other.razorpayPaymentId, razorpayPaymentId) ||
@@ -2257,6 +2297,8 @@ class _$BookingStateImpl implements _BookingState {
     isBookingConfirmed,
     alhindPnr,
     tableID,
+    totalCommission,
+    totalAmountWithCommission,
     razorpayOrderId,
     razorpayPaymentId,
     razorpaySignature,
@@ -2294,6 +2336,8 @@ abstract class _BookingState implements BookingState {
     final bool? isBookingConfirmed,
     final String? alhindPnr,
     final String? tableID,
+    final double? totalCommission,
+    final double? totalAmountWithCommission,
     final String? razorpayOrderId,
     final String? razorpayPaymentId,
     final String? razorpaySignature,
@@ -2327,7 +2371,11 @@ abstract class _BookingState implements BookingState {
   @override
   String? get alhindPnr;
   @override
-  String? get tableID; // Razorpay Data
+  String? get tableID;
+  @override
+  double? get totalCommission;
+  @override
+  double? get totalAmountWithCommission; // Razorpay Data
   @override
   String? get razorpayOrderId;
   @override

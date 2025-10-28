@@ -598,149 +598,157 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
             ),
         ],
       ),
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            // Search and Filter Section
-            Container(
-              margin: EdgeInsets.all(12),
-              padding: EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: _cardColor,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
-                    blurRadius: 20,
-                    offset: Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  // Search Bar with Clear Button
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
+      body: RefreshIndicator(
+           color: _secondaryColor,
+        backgroundColor: _cardColor,
+        onRefresh:() async{
+   await _fetchReportsByDate(_startDate, _endDate);
+
+        },
+        child: SafeArea(
+          bottom: false,
+          child: Column(
+            children: [
+              // Search and Filter Section
+              Container(
+                margin: EdgeInsets.all(12),
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: _cardColor,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 20,
+                      offset: Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    // Search Bar with Clear Button
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: _backgroundColor,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: TextField(
+                              controller: _searchController,
+                              onChanged: _onSearchChanged,
+                              decoration: InputDecoration(
+                                hintText: 'Search by Ticket, Route, or Status...',
+                                hintStyle: TextStyle(color: _textLight, fontSize: 14),
+                                prefixIcon: Icon(Icons.search_rounded, color: _secondaryColor, size: 20),
+                                suffixIcon: _searchController.text.isNotEmpty
+                                    ? IconButton(
+                                        icon: Icon(Icons.clear_rounded, color: _textLight, size: 18),
+                                        onPressed: _clearSearch,
+                                      )
+                                    : null,
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                              ),
+                              style: TextStyle(color: _textPrimary, fontSize: 14),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 5),
+                        Container(
                           decoration: BoxDecoration(
-                            color: _backgroundColor,
+                           color: _secondaryColor,
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: TextField(
-                            controller: _searchController,
-                            onChanged: _onSearchChanged,
-                            decoration: InputDecoration(
-                              hintText: 'Search by Ticket, Route, or Status...',
-                              hintStyle: TextStyle(color: _textLight, fontSize: 14),
-                              prefixIcon: Icon(Icons.search_rounded, color: _secondaryColor, size: 20),
-                              suffixIcon: _searchController.text.isNotEmpty
-                                  ? IconButton(
-                                      icon: Icon(Icons.clear_rounded, color: _textLight, size: 18),
-                                      onPressed: _clearSearch,
-                                    )
-                                  : null,
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                            ),
-                            style: TextStyle(color: _textPrimary, fontSize: 14),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 5),
-                      Container(
-                        decoration: BoxDecoration(
-                         color: _secondaryColor,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: IconButton(
-                          onPressed: _isLoading ? null : _showDatePickerDialog,
-                          icon: _isLoading 
-                              ? SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(_cardColor),
-                                  ),
-                                )
-                              : Icon(Icons.calendar_today_rounded, size: 20, color: _cardColor),
-                          tooltip: 'Select Date Range',
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  _buildDateRangeText()
-                ],
-              ),
-            ),
-
-          
-            // Results Count
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'All Bookings',
-                    style: TextStyle(
-                      color: _textPrimary,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: _backgroundColor,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.confirmation_number_rounded, size: 12, color: _secondaryColor),
-                        SizedBox(width: 6),
-                        Text(
-                          '${_filteredBookings.length} ${_filteredBookings.length == 1 ? 'booking' : 'bookings'}',
-                          style: TextStyle(
-                            color: _secondaryColor,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
+                          child: IconButton(
+                            onPressed: _isLoading ? null : _showDatePickerDialog,
+                            icon: _isLoading 
+                                ? SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(_cardColor),
+                                    ),
+                                  )
+                                : Icon(Icons.calendar_today_rounded, size: 20, color: _cardColor),
+                            tooltip: 'Select Date Range',
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ],
+                    SizedBox(height: 10),
+                    _buildDateRangeText()
+                  ],
+                ),
               ),
-            ),
-            SizedBox(height: 10),
-
-            // Bookings List
-            Expanded(
-              child: _isLoading
-                  ? ListView.builder(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: 6, // Show 6 shimmer cards
-                      itemBuilder: (context, index) => _buildShimmerCard(),
-                    )
-                  : _filteredBookings.isEmpty
-                      ? _buildEmptyState()
-                      : KeyboardDismisser(
-                          child: ListView.builder(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                            itemCount: _filteredBookings.length,
-                            itemBuilder: (context, index) {
-                              final item = _filteredBookings[index];
-                              return _buildBusTripCard(item);
-                            },
+        
+            
+              // Results Count
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'All Bookings',
+                      style: TextStyle(
+                        color: _textPrimary,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: _backgroundColor,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.confirmation_number_rounded, size: 12, color: _secondaryColor),
+                          SizedBox(width: 6),
+                          Text(
+                            '${_filteredBookings.length} ${_filteredBookings.length == 1 ? 'booking' : 'bookings'}',
+                            style: TextStyle(
+                              color: _secondaryColor,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-            ),
-          ],
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 10),
+        
+              // Bookings List
+              Expanded(
+                child: _isLoading
+                    ? ListView.builder(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: 6, // Show 6 shimmer cards
+                        itemBuilder: (context, index) => _buildShimmerCard(),
+                      )
+                    : _filteredBookings.isEmpty
+                        ? _buildEmptyState()
+                        : KeyboardDismisser(
+                            child: ListView.builder(
+                              padding: EdgeInsets.symmetric(horizontal: 16),
+                              itemCount: _filteredBookings.length,
+                              itemBuilder: (context, index) {
+                                final item = _filteredBookings[index];
+                                return _buildBusTripCard(item);
+                              },
+                            ),
+                          ),
+              ),
+            ],
+          ),
         ),
       ),
     );

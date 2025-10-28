@@ -206,8 +206,12 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
 
   void _handleRepriceCompletion(BookingState bookingState, FFlightOption flightOption,String tripType) {
     if (bookingState.isRepriceCompleted && _waitingForReprice) {
-      _showSuccessMessage('Flight details updated successfully!');
+      // _showSuccessMessage('Flight details updated successfully!');
       _navigateToConfirmationScreen(flightOption,tripType);
+log(' flightOption ------------------------ _handleRepriceCompletion ========== ${ flightOption.toJson().toString()}');
+
+
+
     } else if (bookingState.bookingError != null && _waitingForReprice) {
       setState(() {
         _isSubmitting = false;
@@ -397,7 +401,7 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
           final fareState = context.read<FareRequestBloc>().state;
           if (fareState.respo != null) {
             final flightOption = fareState.respo!.journey!.flightOption!;
-            _handleRepriceCompletion(bookingState, flightOption ,widget.triptype);
+           _handleRepriceCompletion(bookingState, flightOption ,widget.triptype);
           }
         },
         child: BlocBuilder<FareRequestBloc, FareRequestState>(

@@ -57,7 +57,7 @@ class _ScreenReportState extends State<ScreenReport> {
       final data = busTicketReportFromJson(resp.body);
 
       setState(() {
-        _reportData = data;
+        _reportData = data.reversed.toList();
         _isLoading = false;
       });
     } catch (e) {
@@ -355,9 +355,9 @@ class _ScreenReportState extends State<ScreenReport> {
     return ListView(
       children: [
        
-                  if(totalBookings<2)
+                  if(totalBookings<4)
                    SizedBox(height: 10,),
-                   if(totalBookings>2)
+                   if(totalBookings>4)
                    
                      Align(alignment: AlignmentGeometry.topRight,
                       child: TextButton(

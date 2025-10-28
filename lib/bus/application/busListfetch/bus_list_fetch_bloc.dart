@@ -8,14 +8,15 @@ import 'package:minna/bus/application/busListfetch/bus_list_fetch_state.dart';
 import 'package:minna/bus/domain/location/location_modal.dart';
 import 'package:minna/bus/domain/trips%20list%20modal/trip_list_modal.dart';
 import 'package:minna/bus/infrastructure/fetch%20tripslist/fetch_triplist.dart';
+
 part 'bus_list_fetch_event.dart';
 part 'bus_list_fetch_bloc.freezed.dart';
 
 class BusListFetchBloc extends Bloc<BusListFetchEvent, BusListFetchState> {
   BusListFetchBloc() : super(BusListFetchState.initial()) {
-     List<AvailableTrip> totalTripList = [];
+    List<AvailableTrip> _totalTripList = [];
+    
     on<FetchTrip>((event, emit) async {
-      // Set loading state
       emit(
         state.copyWith(
           isLoading: true,
@@ -34,29 +35,25 @@ class BusListFetchBloc extends Bloc<BusListFetchEvent, BusListFetchState> {
 
         log('API Response: ${resp.statusCode} - ${resp.body}');
 
-        // Case 1: No trips available (specific empty response)
         if (resp.body ==
             '{"agentMappedToCp":"false","agentMappedToEarning":"false"}') {
           emit(state.copyWith(isLoading: false, notripp: true));
           return;
         }
 
-        // Case 2: Authorization error
         if (resp.body ==
             'Error: Authorization failed please send valid consumer key and secret in the api request.') {
           emit(state.copyWith(isLoading: false, isError: true));
           return;
         }
 
-        // Case 3: Successful response with trips
         if (resp.statusCode == 200) {
           try {
             final List<AvailableTrip> availableTriplist =
                 busLogFromJson(resp.body).availableTrips
                   ..sort((a, b) => a.departureTime.compareTo(b.departureTime));
 
-            totalTripList =
-                availableTriplist; // Update the master list for filtering
+            _totalTripList = availableTriplist;
 
             emit(
               state.copyWith(
@@ -72,7 +69,6 @@ class BusListFetchBloc extends Bloc<BusListFetchEvent, BusListFetchState> {
           return;
         }
 
-        // Case 4: Other error responses
         emit(state.copyWith(isLoading: false, isError: true));
       } catch (e) {
         log('Unexpected error: $e');
@@ -81,82 +77,48 @@ class BusListFetchBloc extends Bloc<BusListFetchEvent, BusListFetchState> {
     });
 
     on<FilterConform>((event, emit) {
-      emit(BusListFetchState(isLoading: true, isError: false));
+      emit(state.copyWith(isLoading: true, isError: false));
 
-      List<AvailableTrip> filterTripp = [];
+      List<AvailableTrip> filteredTrips = _totalTripList;
 
-      List<AvailableTrip> useList = filterTripp.isEmpty
-          ? totalTripList
-          : filterTripp;
-
-      if (event.sleeper) {
-        filterTripp = useList.where((trip) => trip.sleeper == 'true').toList();
+      // Apply bus type filters
+      if (event.sleeper || event.seater || event.ac || event.nonAC) {
+        filteredTrips = filteredTrips.where((trip) {
+          if (event.sleeper && trip.sleeper == 'true') return true;
+          if (event.seater && trip.seater == 'true') return true;
+          if (event.ac && trip.ac == 'true') return true;
+          if (event.nonAC && trip.nonAc == 'true') return true;
+          return false;
+        }).toList();
       }
 
-      if (event.seater) {
-        filterTripp = useList.where((trip) => trip.seater == 'true').toList();
+      // Apply departure time filters
+      if (event.departureCase1 || event.departureCase2 || event.departureCase3 || event.departureCase4) {
+        filteredTrips = filteredTrips.where((trip) {
+          if (event.departureCase1 && _isBefore6AM(trip.departureTime)) return true;
+          if (event.departureCase2 && _is6AMTo12PM(trip.departureTime)) return true;
+          if (event.departureCase3 && _is12PMTo6PM(trip.departureTime)) return true;
+          if (event.departureCase4 && _isAfter6PM(trip.departureTime)) return true;
+          return false;
+        }).toList();
       }
 
-      if (event.ac) {
-        filterTripp = useList.where((trip) => trip.ac == 'true').toList();
+      // Apply arrival time filters
+      if (event.arrivalCase1 || event.arrivalCase2 || event.arrivalCase3 || event.arrivalCase4) {
+        filteredTrips = filteredTrips.where((trip) {
+          if (event.arrivalCase1 && _isBefore6AM(trip.arrivalTime)) return true;
+          if (event.arrivalCase2 && _is6AMTo12PM(trip.arrivalTime)) return true;
+          if (event.arrivalCase3 && _is12PMTo6PM(trip.arrivalTime)) return true;
+          if (event.arrivalCase4 && _isAfter6PM(trip.arrivalTime)) return true;
+          return false;
+        }).toList();
       }
 
-      if (event.nonAC) {
-        filterTripp = useList.where((trip) => trip.nonAc == 'true').toList();
-      }
-
-      if (event.departureCase1) {
-        filterTripp = useList
-            .where((trip) => case1(time: trip.departureTime))
-            .toList();
-      }
-
-      if (event.departureCase2) {
-        filterTripp = useList
-            .where((trip) => case2(time: trip.departureTime))
-            .toList();
-      }
-
-      if (event.departureCase3) {
-        filterTripp = useList
-            .where((trip) => case3(time: trip.departureTime))
-            .toList();
-      }
-
-      if (event.departureCase4) {
-        filterTripp = useList
-            .where((trip) => case4(time: trip.departureTime))
-            .toList();
-      }
-
-      if (event.arrivalCase1) {
-        filterTripp = useList
-            .where((trip) => case1(time: trip.arrivalTime))
-            .toList();
-      }
-
-      if (event.arrivalCase2) {
-        filterTripp = useList
-            .where((trip) => case2(time: trip.arrivalTime))
-            .toList();
-      }
-
-      if (event.arrivalCase3) {
-        filterTripp = useList
-            .where((trip) => case3(time: trip.arrivalTime))
-            .toList();
-      }
-
-      if (event.arrivalCase4) {
-        filterTripp = useList
-            .where((trip) => case4(time: trip.arrivalTime))
-            .toList();
-      }
-
-      if (!event.ac &&
-          !event.nonAC &&
+      // If no filters are selected, show all trips
+      final bool noFiltersSelected = !event.sleeper &&
           !event.seater &&
-          !event.sleeper &&
+          !event.ac &&
+          !event.nonAC &&
           !event.departureCase1 &&
           !event.departureCase2 &&
           !event.departureCase3 &&
@@ -164,76 +126,56 @@ class BusListFetchBloc extends Bloc<BusListFetchEvent, BusListFetchState> {
           !event.arrivalCase1 &&
           !event.arrivalCase2 &&
           !event.arrivalCase3 &&
-          !event.arrivalCase4) {
-        log('message');
-        emit(
-          BusListFetchState(
-            isLoading: false,
-            isError: false,
-            notripp: false,
-            availableTrips: totalTripList,
-          ),
-        );
-      } else {
-        emit(
-          BusListFetchState(
-            isLoading: false,
-            isError: false,
-            notripp: false,
-            availableTrips: filterTripp,
-          ),
-        );
+          !event.arrivalCase4;
+
+      if (noFiltersSelected) {
+        filteredTrips = _totalTripList;
       }
 
-      log(filterTripp.length.toString());
+      log('Filtered trips: ${filteredTrips.length}');
+
+      emit(
+        state.copyWith(
+          isLoading: false,
+          isError: false,
+          notripp: filteredTrips.isEmpty,
+          availableTrips: filteredTrips,
+        ),
+      );
+    });
+
+    on<SelectTrip>((event, emit) {
+      emit(state.copyWith(selectTrip: event.trip));
     });
   }
-}
-bool case1({required String time}) {
-  final currentHour = changetimeFilter(time: time);
 
-  if (currentHour < 6) {
-    return true;
-  } else {
-    return false;
+  bool _isBefore6AM(String time) {
+    final hour = _getHourFromTime(time);
+    return hour < 6;
   }
-}
 
-bool case2({required String time}) {
-  final currentHour = changetimeFilter(time: time);
-
-  if (currentHour >= 6 && currentHour < 12) {
-    return true;
-  } else {
-    return false;
+  bool _is6AMTo12PM(String time) {
+    final hour = _getHourFromTime(time);
+    return hour >= 6 && hour < 12;
   }
-}
 
-bool case3({required String time}) {
-  final currentHour = changetimeFilter(time: time);
-
-  if (currentHour >= 12 && currentHour < 18) {
-    return true;
-  } else {
-    return false;
+  bool _is12PMTo6PM(String time) {
+    final hour = _getHourFromTime(time);
+    return hour >= 12 && hour < 18;
   }
-}
 
-bool case4({required String time}) {
-  final currentHour = changetimeFilter(time: time);
-
-  if (currentHour >= 18) {
-    return true;
-  } else {
-    return false;
+  bool _isAfter6PM(String time) {
+    final hour = _getHourFromTime(time);
+    return hour >= 18;
   }
-}
 
-int changetimeFilter({required String time}) {
-  final double count = int.parse(time) / 60;
-  int decimalPart = ((count - count.floor()) * 100).toInt();
-
-  final hour = count.toInt() % 24;
-
-  return hour;
+  int _getHourFromTime(String time) {
+    try {
+      final timeInt = int.parse(time);
+      final hours = (timeInt / 60).floor();
+      return hours % 24;
+    } catch (e) {
+      return 0;
+    }
+  }
 }

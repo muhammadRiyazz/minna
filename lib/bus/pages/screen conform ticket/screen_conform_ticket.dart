@@ -768,11 +768,11 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
     final currentFare = _getCurrentFare();
 
     return ListView(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       children: [
         // Trip Summary Card
         _buildTripSummaryCard(),
-        SizedBox(height: 16),
+        SizedBox(height: 10),
         
         // Booking Details Card
         Card(
@@ -792,15 +792,15 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
               ],
             ),
             child: Padding(
-              padding: EdgeInsets.all(20),
+              padding: EdgeInsets.all(15),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Passenger details section
                   _buildPassengerSection(),
-                  SizedBox(height: 24),
+                  SizedBox(height: 20),
                   Divider(height: 1, color: _textLight.withOpacity(0.3)),
-                  SizedBox(height: 24),
+                  SizedBox(height: 20),
                   
                   // Fare update warning (if applicable)
                   if (_hasFareChanged()) ...[
@@ -1020,7 +1020,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
         ),
         SizedBox(height: 16),
         Container(
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: _backgroundColor,
             borderRadius: BorderRadius.circular(12),

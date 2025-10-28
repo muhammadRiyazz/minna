@@ -5,7 +5,6 @@ import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:minna/comman/functions/create_order_id.dart';
 import 'package:minna/flight/domain/booking%20request%20/booking_request.dart';
 import 'package:minna/flight/domain/fare%20request%20and%20respo/fare_respo.dart';
 import 'package:minna/flight/domain/reprice%20/re_price.dart';
@@ -15,7 +14,6 @@ import 'package:minna/flight/infrastracture/commission/commission_service.dart';
 import 'package:minna/flight/infrastracture/reprice/call_reprice_api.dart';
 import 'package:minna/comman/core/api.dart';
 import 'package:minna/comman/functions/refund_payment.dart';
-import 'package:minna/comman/functions/save_payment.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'booking_event.dart';
@@ -31,86 +29,181 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     on<_ResetBooking>(_onResetBooking);
   }
 
-  Future<void> _onGetRePrice(
-    _GetRePrice event,
-    Emitter<BookingState> emit,
-  ) async {
-    emit(state.copyWith(
-      isLoading: true,
-      isRepriceLoading: true,
-      isRepriceCompleted: false,
-      bookingError: null
-    ));
+ Future<void> _onGetRePrice(
+  _GetRePrice event,
+  Emitter<BookingState> emit,
+) async {
+  emit(state.copyWith(
+    isLoading: true,
+    isRepriceLoading: true,
+    isRepriceCompleted: false,
+    bookingError: null,
+  ));
 
-    try {
-          final commissionService = FlightCommissionService();
-
-      double totalCommission = 0.0;
+  try {
+    final commissionService = FlightCommissionService();
+    double totalCommission = 0.0;
     double totalAmountWithCommission = 0.0;
-      final List<Map<String, dynamic>> passengerDataList = event.passengerDataList;
+    final List<Map<String, dynamic>> passengerDataList = event.passengerDataList;
 
-      final List<RePassenger> passengers = passengerDataList.map((passengerData) {
-        final mealInfoList = <ReMealInfo>[];
-        final baggageInfoList = <ReBaggageInfo>[];
-        final seatInfoList = <ReSeatInfo>[];
+    // Helper function to safely convert amount to double
+    double safeToDouble(dynamic value) {
+      if (value == null) return 0.0;
+      if (value is double) return value;
+      if (value is int) return value.toDouble();
+      if (value is String) return double.tryParse(value) ?? 0.0;
+      return 0.0;
+    }
 
-        // Handle meal data
-        final mealData = passengerData['meal'];
-        if (mealData != null && mealData is Map) {
+    final List<RePassenger> passengers = passengerDataList.map((passengerData) {
+      final mealInfoList = <ReMealInfo>[];
+      final baggageInfoList = <ReBaggageInfo>[];
+      final seatInfoList = <ReSeatInfo>[];
+
+      // Handle meal data with safe type conversion
+      final mealData = passengerData['meal'];
+      if (mealData != null && mealData is Map) {
+        mealInfoList.add(
+          ReMealInfo(
+            meals: [
+              ReMeal(
+                code: mealData['code']?.toString() ?? '',
+                name: mealData['name']?.toString() ?? '',
+                amount: safeToDouble(mealData['amount']),
+                currency: mealData['currency']?.toString() ?? 'INR',
+                legKey: mealData['legKey']?.toString() ?? '',
+              ),
+            ],
+          ),
+        );
+      }
+
+      // Handle baggage data with safe type conversion
+      final baggageData = passengerData['baggage'];
+      if (baggageData != null && baggageData is Map) {
+        baggageInfoList.add(
+          ReBaggageInfo(
+            baggages: [
+              ReBaggage(
+                code: baggageData['code']?.toString() ?? '',
+                name: baggageData['name']?.toString() ?? '',
+                amount: safeToDouble(baggageData['amount']),
+                currency: baggageData['currency']?.toString() ?? 'INR',
+                legKey: baggageData['legKey']?.toString() ?? '',
+              ),
+            ],
+          ),
+        );
+      }
+
+      return RePassenger(
+        frequentFlyerNo: '',
+        ticketNo: '',
+        ticketNoReturn: '',
+        paxNo: passengerData['paxNo']?.toString() ?? '',
+        paxKey: passengerData['paxKey']?.toString() ?? '',
+        paxType: passengerData['passengerType']?.toString() ?? '',
+        title: passengerData['title']?.toString() ?? '',
+        firstName: passengerData['firstName']?.toString() ?? '',
+        countryCode: passengerData['CountryCode']?.toString() ?? "0091",
+        lastName: passengerData['lastName']?.toString() ?? '',
+        dob: formatDateForApi(passengerData['dob']),
+        contact: passengerData['contact']?.toString() ?? '',
+        email: passengerData['email']?.toString() ?? '',
+        address: passengerData['address']?.toString() ?? '',
+        nationality: passengerData['nationality']?.toString() ?? '',
+        passportNo: passengerData['passportNumber']?.toString(),
+        countryOfIssue: passengerData['countryOfIssue']?.toString(),
+        dateOfExpiry: formatDateForApi(passengerData['passportExpiry']),
+        pinCode: passengerData['pincode']?.toString(),
+        ssrAvailability: ReSsrAvailability(
+          mealInfo: mealInfoList,
+          baggageInfo: baggageInfoList,
+          seatInfo: seatInfoList,
+        ),
+      );
+    }).toList();
+
+    // Variables to store data for API call
+    dynamic apiResponseData;
+    BBBookingRequest? bookingRequestData;
+
+    if (event.reprice) {
+      log('Reprice call initiated');
+      final FFlightOption fareRequestData = event.fareReData;
+
+      final List<PFlightLeg> flightLegs = fareRequestData.flightLegs?.map((element) {
+        return PFlightLeg(
+          type: element.type ?? '',
+          key: element.key ?? '',
+          origin: element.origin ?? '',
+          destination: element.destination ?? '',
+          departureTime: element.departureTime ?? '',
+          arrivalTime: element.arrivalTime ?? '',
+          flightNo: element.flightNo ?? '',
+          airlineCode: element.airlineCode ?? '',
+        );
+      }).toList() ?? [];
+
+      final List<Passenger> passengerss = passengerDataList.map((passengerData) {
+        final mealInfoList = <PMealInfo>[];
+        final baggageInfoList = <PBaggageInfo>[];
+        final seatInfoList = <PSeatInfo>[];
+
+        // Handle meal data with safe type conversion
+        if (passengerData['meal'] != null && passengerData['meal'] is Map) {
+          final meal = passengerData['meal'];
           mealInfoList.add(
-            ReMealInfo(
+            PMealInfo(
               meals: [
-                ReMeal(
-                  code: mealData['code'],
-                  name: mealData['name'],
-                  amount: (mealData['amount'] as num).toDouble(),
-                  currency: mealData['currency'],
-                  legKey: mealData['legKey'],
+                PMeal(
+                  code: meal['code']?.toString() ?? '',
+                  name: meal['name']?.toString() ?? '',
+                  amount: safeToDouble(meal['amount']),
+                  currency: meal['currency']?.toString() ?? 'INR',
+                  legKey: meal['legKey']?.toString() ?? '',
                 ),
               ],
             ),
           );
         }
 
-        // Handle baggage data
-        final baggageData = passengerData['baggage'];
-        if (baggageData != null && baggageData is Map) {
+        // Handle baggage data with safe type conversion
+        if (passengerData['baggage'] != null && passengerData['baggage'] is Map) {
+          final baggage = passengerData['baggage'];
           baggageInfoList.add(
-            ReBaggageInfo(
+            PBaggageInfo(
               baggages: [
-                ReBaggage(
-                  code: baggageData['code'],
-                  name: baggageData['name'],
-                  amount: (baggageData['amount'] as num).toDouble(),
-                  currency: baggageData['currency'],
-                  legKey: baggageData['legKey'],
+                PBaggage(
+                  code: baggage['code']?.toString() ?? '',
+                  name: baggage['name']?.toString() ?? '',
+                  amount: safeToDouble(baggage['amount']),
+                  currency: baggage['currency']?.toString() ?? 'INR',
+                  legKey: baggage['legKey']?.toString() ?? '',
                 ),
               ],
             ),
           );
         }
 
-        return RePassenger(
-          frequentFlyerNo: '',
-          ticketNo: '',
-          ticketNoReturn: '',
-          paxNo: passengerData['paxNo'] ?? '',
-          paxKey: passengerData['paxKey'] ?? '',
-          paxType: passengerData['passengerType'] ?? '',
-          title: passengerData['title'] ?? '',
-          firstName: passengerData['firstName']?? '',
-          countryCode: passengerData['CountryCode']??"0091",
-          lastName: passengerData['lastName'] ?? '',
-          dob: formatDateForApi(passengerData['dob']),
-          contact: passengerData['contact'] ?? '',
-          email: passengerData['email'] ?? '',
-          address: passengerData['address'] ?? '',
-          nationality: passengerData['nationality'] ?? '',
-          passportNo: passengerData['passportNumber'],
-          countryOfIssue: passengerData['countryOfIssue'],
-          dateOfExpiry: formatDateForApi(passengerData['passportExpiry']),
-          pinCode: passengerData['pincode'],
-          ssrAvailability: ReSsrAvailability(
+        return Passenger(
+         paxNo: passengerData['paxNo']?.toString() ?? '',
+        paxKey: passengerData['paxKey']?.toString() ?? '',
+        paxType: passengerData['passengerType']?.toString() ?? '',
+        title: passengerData['title']?.toString() ?? '',
+        firstName: passengerData['firstName']?.toString() ?? '',
+        countryCode: passengerData['CountryCode']?.toString() ?? "0091",
+        lastName: passengerData['lastName']?.toString() ?? '',
+        dob: formatDateForApi(passengerData['dob']),
+        contact: passengerData['contact']?.toString() ?? '',
+        email: passengerData['email']?.toString() ?? '',
+        address: passengerData['address']?.toString() ?? '',
+        nationality: passengerData['nationality']?.toString() ?? '',
+        passportNo: passengerData['passportNumber']?.toString(),
+        countryOfIssue: passengerData['countryOfIssue']?.toString(),
+        dateOfExpiry: formatDateForApi(passengerData['passportExpiry']),
+        pinCode: passengerData['pincode']?.toString(),
+          ssrAvailability: PSSRAvailability(
             mealInfo: mealInfoList,
             baggageInfo: baggageInfoList,
             seatInfo: seatInfoList,
@@ -118,188 +211,39 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
         );
       }).toList();
 
-      // Variables to store data for API call
-      dynamic apiResponseData;
-      BBBookingRequest? bookingRequestData;
-
-      if (event.reprice) {
-        log('Reprice call initiated');
-        final FFlightOption fareRequestData = event.fareReData;
-
-        final List<PFlightLeg> flightLegs =
-            fareRequestData.flightLegs?.map((element) {
-              return PFlightLeg(
-                type: element.type ?? '',
-                key: element.key ?? '',
-                origin: element.origin ?? '',
-                destination: element.destination ?? '',
-                departureTime: element.departureTime ?? '',
-                arrivalTime: element.arrivalTime ?? '',
-                flightNo: element.flightNo ?? '',
-                airlineCode: element.airlineCode ?? '',
-              );
-            }).toList() ??
-            [];
-
-        final List<Passenger> passengerss = passengerDataList.map((passengerData) {
-          final mealInfoList = <PMealInfo>[];
-          final baggageInfoList = <PBaggageInfo>[];
-          final seatInfoList = <PSeatInfo>[];
-
-          if (passengerData['meal'] != null && passengerData['meal'] is Map) {
-            mealInfoList.add(
-              PMealInfo(
-                meals: [
-                  PMeal(
-                    code: passengerData['meal']['code'],
-                    name: passengerData['meal']['name'],
-                    amount: passengerData['meal']['amount'].toDouble(),
-                    currency: passengerData['meal']['currency'],
-                    legKey: passengerData['meal']['legKey'],
-                  ),
-                ],
-              ),
-            );
-          }
-
-          if (passengerData['baggage'] != null && passengerData['baggage'] is Map) {
-            baggageInfoList.add(
-              PBaggageInfo(
-                baggages: [
-                  PBaggage(
-                    code: passengerData['baggage']['code'],
-                    name: passengerData['baggage']['name'],
-                    amount: (passengerData['baggage']['amount'] as num).toDouble(),
-                    currency: passengerData['baggage']['currency'],
-                    legKey: passengerData['baggage']['legKey'],
-                  ),
-                ],
-              ),
-            );
-          }
-
-          return Passenger(
-            paxType: passengerData['passengerType'] ?? '',
-            title: passengerData['title'] ?? '',
-            firstName: passengerData['firstName'] ?? '',
-            lastName: passengerData['lastName'] ?? '',
-            dob: formatDateForApi(passengerData['dob']),
-            contact: passengerData['contact'] ?? '',
-            email: passengerData['email'] ?? '',
-            nationality: passengerData['nationality'] ?? '',
-            ssrAvailability: PSSRAvailability(
-              mealInfo: mealInfoList,
-              baggageInfo: baggageInfoList,
-              seatInfo: seatInfoList,
-            ),
-          );
-        }).toList();
-
-        final RepriceRequest rePrice = RepriceRequest(
-          token: event.token,
-          userId: 'INCCJ029000000',
-          tripMode: event.tripMode,
-          journy: Journey(
-            flightOptions: [],
-            flightOption: RFlightOption(
-              key: fareRequestData.key ?? '',
-              ticketingCarrier: fareRequestData.ticketingCarrier ?? '',
-              apiType: fareRequestData.apiType ?? '',
-              seatEnabled: false,
-              reprice: fareRequestData.reprice ?? false,
-              ffNoEnabled: fareRequestData.ffNoEnabled ?? false,
-              availableSeat: fareRequestData.availableSeat ?? 0,
-              flightFares: fareRequestData.flightFares ?? [],
-              flightLegs: flightLegs,
-            ),
-            hostTokens: [],
-            errors: [],
+      final RepriceRequest rePrice = RepriceRequest(
+        token: event.token,
+        userId: 'INCCJ029000000',
+        tripMode: event.tripMode,
+        journy: Journey(
+          flightOptions: [],
+          flightOption: RFlightOption(
+            key: fareRequestData.key ?? '',
+            ticketingCarrier: fareRequestData.ticketingCarrier ?? '',
+            apiType: fareRequestData.apiType ?? '',
+            seatEnabled: false,
+            reprice: fareRequestData.reprice ?? false,
+            ffNoEnabled: fareRequestData.ffNoEnabled ?? false,
+            availableSeat: fareRequestData.availableSeat ?? 0,
+            flightFares: fareRequestData.flightFares ?? [],
+            flightLegs: flightLegs,
           ),
-          passengers: passengerss,
-        );
+          hostTokens: [],
+          errors: [],
+        ),
+        passengers: passengerss,
+      );
 
-        log('Reprice request payload: ${rePrice.toJson()}');
+      log('Reprice request payload: ${rePrice.toJson()}');
 
-        final RePriceResponse respo = await repriceRequestApi(rePrice);
+      final RePriceResponse respo = await repriceRequestApi(rePrice);
 
-        List<BBFlightLeg> bbflightLegs = [];
-        List<BBFlightFare> bbflightFares = [];
+      List<BBFlightLeg> bbflightLegs = [];
+      List<BBFlightFare> bbflightFares = [];
 
-        final rflightLegs = respo.journy?.flightOption?.flightLegs;
-        if (rflightLegs != null) {
-          for (var element in rflightLegs) {
-            bbflightLegs.add(
-              BBFlightLeg(
-                type: element.type ?? '',
-                key: element.key ?? '',
-                origin: element.origin ?? '',
-                destination: element.destination ?? '',
-                departureTime: element.departureTime ?? '',
-                arrivalTime: element.arrivalTime ?? '',
-                flightNo: element.flightNo ?? '',
-                airlineCode: element.airlineCode ?? '',
-                distance: element.distance ?? 0,
-                freeBaggages: element.freeBaggages ?? [],
-              ),
-            );
-          }
-        }
-
-        final flightFares = respo.journy?.flightOption?.flightFares;
-        if (flightFares != null) {
-          for (var element in flightFares) {
-            bbflightFares.add(
-              BBFlightFare(
-                fares: element.fares ?? [],
-                fid: element.fid ?? '',
-                fareKey: element.fareKey ?? "",
-                aprxTotalBaseFare: (element.aprxTotalBaseFare as num?)?.toDouble() ?? 0.0,
-                aprxTotalTax: (element.aprxTotalTax as num?)?.toDouble() ?? 0.0,
-                totalDiscount: (element.totalDiscount as num?)?.toDouble() ?? 0.0,
-                aprxTotalAmount: (element.aprxTotalAmount as num?)?.toDouble() ?? 0.0,
-                totalAmount: (element.totalAmount as num?)?.toDouble() ?? 0.0,
-              ),
-            );
-          }
-        }
-
-        bookingRequestData = BBBookingRequest(
-          journey: BBJourney(
-            flightOptions: [],
-            flightOption: BBFlightOption(
-              key: respo.journy?.flightOption?.key ?? '',
-              ticketingCarrier: respo.journy?.flightOption?.ticketingCarrier ?? '',
-              apiType: respo.journy?.flightOption?.apiType ?? '',
-              seatEnabled: false,
-              reprice: respo.journy?.flightOption?.reprice ?? false,
-              ffNoEnabled: respo.journy?.flightOption?.ffNoEnabled ?? false,
-              availableSeat: respo.journy?.flightOption?.availableSeat ?? 0,
-              flightFares: bbflightFares,
-              flightLegs: bbflightLegs,
-            ),
-            hostTokens: [],
-            errors: [],
-          ),
-          errors: null,
-          token: event.token,
-          userId: 'INCCJ029000000',
-          tripMode: event.tripMode,
-          passengers: passengers,
-        );
-
-        // Use reprice response for API call
-        apiResponseData = respo;
-        log('Booking request created with reprice data');
-
-      } else {
-        log('No reprice needed, creating booking directly');
-
-        final FFlightOption fFlightOption = event.fareReData;
-
-        List<BBFlightLeg> bbflightLegs = [];
-        List<BBFlightFare> bbflightFares = [];
-
-        for (var element in fFlightOption.flightLegs!) {
+      final rflightLegs = respo.journy?.flightOption?.flightLegs;
+      if (rflightLegs != null) {
+        for (var element in rflightLegs) {
           bbflightLegs.add(
             BBFlightLeg(
               type: element.type ?? '',
@@ -315,146 +259,223 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
             ),
           );
         }
+      }
 
-        for (var element in fFlightOption.flightFares!) {
+      final flightFares = respo.journy?.flightOption?.flightFares;
+      if (flightFares != null) {
+        for (var element in flightFares) {
           bbflightFares.add(
             BBFlightFare(
               fares: element.fares ?? [],
               fid: element.fid ?? '',
               fareKey: element.fareKey ?? "",
-              aprxTotalBaseFare: (element.aprxTotalBaseFare as num?)?.toDouble() ?? 0.0,
-              aprxTotalTax: (element.aprxTotalTax as num?)?.toDouble() ?? 0.0,
-              totalDiscount: (element.totalDiscount as num?)?.toDouble() ?? 0.0,
-              aprxTotalAmount: (element.aprxTotalAmount as num?)?.toDouble() ?? 0.0,
-              totalAmount: (element.totalAmount as num?)?.toDouble() ?? 0.0,
+              aprxTotalBaseFare: safeToDouble(element.aprxTotalBaseFare),
+              aprxTotalTax: safeToDouble(element.aprxTotalTax),
+              totalDiscount: safeToDouble(element.totalDiscount),
+              aprxTotalAmount: safeToDouble(element.aprxTotalAmount),
+              totalAmount: safeToDouble(element.totalAmount),
             ),
           );
         }
-
-        bookingRequestData = BBBookingRequest(
-          journey: BBJourney(
-            flightOptions: [],
-            flightOption: BBFlightOption(
-              key: fFlightOption.key ?? '',
-              ticketingCarrier: fFlightOption.ticketingCarrier ?? '',
-              apiType: fFlightOption.apiType ?? '',
-              availableSeat: fFlightOption.availableSeat ?? 0,
-              flightFares: bbflightFares,
-              flightLegs: bbflightLegs,
-              seatEnabled: false,
-              reprice: fFlightOption.reprice ?? false,
-              ffNoEnabled: fFlightOption.ffNoEnabled ?? false,
-            ),
-            hostTokens: [],
-            errors: [],
-          ),
-          errors: null,
-          token: event.token,
-          userId: 'INCCJ029000000',
-          tripMode: event.tripMode,
-          passengers: passengers,
-        );
-
-        // Use last response for API call when not reprice
-        apiResponseData = event.lastRespo;
       }
+
+      bookingRequestData = BBBookingRequest(
+        journey: BBJourney(
+          flightOptions: [],
+          flightOption: BBFlightOption(
+            key: respo.journy?.flightOption?.key ?? '',
+            ticketingCarrier: respo.journy?.flightOption?.ticketingCarrier ?? '',
+            apiType: respo.journy?.flightOption?.apiType ?? '',
+            seatEnabled: false,
+            reprice: respo.journy?.flightOption?.reprice ?? false,
+            ffNoEnabled: respo.journy?.flightOption?.ffNoEnabled ?? false,
+            availableSeat: respo.journy?.flightOption?.availableSeat ?? 0,
+            flightFares: bbflightFares,
+            flightLegs: bbflightLegs,
+          ),
+          hostTokens: [],
+          errors: [],
+        ),
+        errors: null,
+        token: event.token,
+        userId: 'INCCJ029000000',
+        tripMode: event.tripMode,
+        passengers: passengers,
+      );
+
+      // Use reprice response for API call
+      apiResponseData = respo;
+      log('Booking request created with reprice data');
+
+    } 
+    
+    
+    else {
+      log('No reprice needed, creating booking directly');
+
+      final FFlightOption fFlightOption = event.fareReData;
+
+      List<BBFlightLeg> bbflightLegs = [];
+      List<BBFlightFare> bbflightFares = [];
+
+      for (var element in fFlightOption.flightLegs!) {
+        bbflightLegs.add(
+          BBFlightLeg(
+            type: element.type ?? '',
+            key: element.key ?? '',
+            origin: element.origin ?? '',
+            destination: element.destination ?? '',
+            departureTime: element.departureTime ?? '',
+            arrivalTime: element.arrivalTime ?? '',
+            flightNo: element.flightNo ?? '',
+            airlineCode: element.airlineCode ?? '',
+            distance: element.distance ?? 0,
+            freeBaggages: element.freeBaggages ?? [],
+          ),
+        );
+      }
+
+      for (var element in fFlightOption.flightFares!) {
+        bbflightFares.add(
+          BBFlightFare(
+            fares: element.fares ?? [],
+            fid: element.fid ?? '',
+            fareKey: element.fareKey ?? "",
+            aprxTotalBaseFare: safeToDouble(element.aprxTotalBaseFare),
+            aprxTotalTax: safeToDouble(element.aprxTotalTax),
+            totalDiscount: safeToDouble(element.totalDiscount),
+            aprxTotalAmount: safeToDouble(element.aprxTotalAmount),
+            totalAmount: safeToDouble(element.totalAmount),
+          ),
+        );
+      }
+
+      bookingRequestData = BBBookingRequest(
+        journey: BBJourney(
+          flightOptions: [],
+          flightOption: BBFlightOption(
+            key: fFlightOption.key ?? '',
+            ticketingCarrier: fFlightOption.ticketingCarrier ?? '',
+            apiType: fFlightOption.apiType ?? '',
+            availableSeat: fFlightOption.availableSeat ?? 0,
+            flightFares: bbflightFares,
+            flightLegs: bbflightLegs,
+            seatEnabled: false,
+            reprice: fFlightOption.reprice ?? false,
+            ffNoEnabled: fFlightOption.ffNoEnabled ?? false,
+          ),
+          hostTokens: [],
+          errors: [],
+        ),
+        errors: null,
+        token: event.token,
+        userId: 'INCCJ029000000',
+        tripMode: event.tripMode,
+        passengers: passengers,
+      );
+
+      // Use last response for API call when not reprice
+      apiResponseData = event.lastRespo;
+    }
 
     // Calculate total amount and commission from booking data
-double totalBaseAmount = 0.0;
+    double totalBaseAmount = 0.0;
 
-if (bookingRequestData != null) {
-  // Calculate total base amount from flight fares
-  for (var fare in bookingRequestData.journey.flightOption.flightFares) {
-    totalBaseAmount += fare.totalAmount;
-  }
-
-  // Calculate commission based on total base amount and travel type
-  try {
-    totalCommission = commissionService.calculateCommission(
-      actualAmount: totalBaseAmount,
-      travelType:event. triptype,
-    );
-    
-    totalAmountWithCommission = commissionService.getTotalAmountWithCommission(
-      actualAmount: totalBaseAmount,
-      travelType:event. triptype,
-    );
-    
-    log('Commission calculated: Base Amount: ₹$totalBaseAmount, '
-        'Commission: ₹$totalCommission, '
-        'Total with Commission: ₹$totalAmountWithCommission, '
-        'Travel Type: ${event. triptype}');
-        
-  } catch (e) {
-    log('Error calculating commission: $e');
-    // Fallback: use base amount if commission calculation fails
-    totalCommission = 0.0;
-    totalAmountWithCommission = totalBaseAmount;
-  }
-}
-
-final SharedPreferences prefs = await SharedPreferences.getInstance();
-final String? userId = prefs.getString('userId');
-
-// Make API call to flight booking preview with commission data
-final Map<String, dynamic> apiParams = {
-  'token': event.token,
-  'userId': userId ?? 'INCCJ029000000',
-  'totalCom': totalCommission.toStringAsFixed(2), // Send commission amount as string
-  'totalAmount': totalAmountWithCommission.toStringAsFixed(2), // Send total amount with commission as string
-  'responseArray': jsonEncode(apiResponseData.toJson()) 
-};
-      log('Making flight booking preview API call with params: $apiParams');
-
-      final bookingPreviewResponse = await _makeBookingPreviewApiCall(apiParams);
-
-      // ✅ CRITICAL FIX: Check if booking preview failed
-      if (bookingPreviewResponse['status'] == 'SUCCESS') {
-        log('Flight booking preview successful: ${bookingPreviewResponse['data']}');
-
-        // ✅ Only proceed with success state if booking preview was successful
-        emit(
-          state.copyWith(
-            tableID: bookingPreviewResponse['data']['bookingId'].toString(),
-            isLoading: false,
-            isRepriceLoading: false,
-            isRepriceCompleted: true, // Set completion flag ONLY on success
-            bookingdata: bookingRequestData,
-            bookingError: null,
-          ),
-        );
-
-      } else {
-        // ✅ Handle booking preview failure properly
-        final errorMessage = bookingPreviewResponse['statusDesc'] ?? 'Booking preview failed';
-        log('Flight booking preview failed: $errorMessage');
-        
-        emit(
-          state.copyWith(
-            isLoading: false,
-            isRepriceLoading: false,
-            isRepriceCompleted: false, // ❌ DO NOT set completion flag on failure
-            bookingError: 'Booking preview failed: $errorMessage', // Set the error message
-          ),
-        );
-        
-        // Don't proceed further - navigation will be blocked by the error state
-        return; // Exit early on failure
+    if (bookingRequestData != null) {
+      // Calculate total base amount from flight fares
+      for (var fare in bookingRequestData.journey.flightOption.flightFares) {
+        totalBaseAmount += fare.totalAmount;
       }
 
-    } catch (e) {
-      log('Booking error: ${e.toString()}');
+      // Calculate commission based on total base amount and travel type
+      try {
+        totalCommission = commissionService.calculateCommission(
+          actualAmount: totalBaseAmount,
+          travelType: event.triptype,
+        );
+
+        totalAmountWithCommission = commissionService.getTotalAmountWithCommission(
+          actualAmount: totalBaseAmount,
+          travelType: event.triptype,
+        );
+
+        log('Commission calculated: Base Amount: ₹$totalBaseAmount, '
+            'Commission: ₹$totalCommission, '
+            'Total with Commission: ₹$totalAmountWithCommission, '
+            'Travel Type: ${event.triptype}');
+
+      } catch (e) {
+        log('Error calculating commission: $e');
+        // Fallback: use base amount if commission calculation fails
+        totalCommission = 0.0;
+        totalAmountWithCommission = totalBaseAmount;
+      }
+    }
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? userId = prefs.getString('userId');
+
+    // Make API call to flight booking preview with commission data
+    final Map<String, dynamic> apiParams = {
+      'token': event.token,
+      'userId': userId ?? 'INCCJ029000000',
+      'totalCom': totalCommission.toStringAsFixed(2),
+      'totalAmount': totalAmountWithCommission.toStringAsFixed(2),
+      'responseArray': jsonEncode(apiResponseData.toJson())
+    };
+
+    log('Making flight booking preview API call with params: $apiParams');
+
+    final bookingPreviewResponse = await _makeBookingPreviewApiCall(apiParams);
+
+    // ✅ CRITICAL FIX: Check if booking preview failed
+    if (bookingPreviewResponse['status'] == 'SUCCESS') {
+      log('Flight booking preview successful: ${bookingPreviewResponse['data']}');
+
+      // ✅ Only proceed with success state if booking preview was successful
+      emit(
+        state.copyWith(
+          tableID: bookingPreviewResponse['data']['bookingId'].toString(),
+          isLoading: false,
+          isRepriceLoading: false,
+          isRepriceCompleted: true,
+          bookingdata: bookingRequestData,
+          totalCommission: totalCommission,
+          totalAmountWithCommission: totalAmountWithCommission,
+          bookingError: null,
+        ),
+      );
+
+    } else {
+      // ✅ Handle booking preview failure properly
+      final errorMessage = bookingPreviewResponse['statusDesc'] ?? 'Booking preview failed';
+      log('Flight booking preview failed: $errorMessage');
+
       emit(
         state.copyWith(
           isLoading: false,
           isRepriceLoading: false,
-          isRepriceCompleted: false, // ❌ DO NOT set completion flag on error
-          bookingError: 'Failed to process booking: ${e.toString()}',
+          isRepriceCompleted: false,
+          bookingError: 'Booking preview failed: $errorMessage',
         ),
       );
-    }
-  }
 
+      return;
+    }
+
+  } catch (e, stackTrace) {
+    log('Booking error: ${e.toString()}');
+    log('Stack trace: $stackTrace');
+    emit(
+      state.copyWith(
+        isLoading: false,
+        isRepriceLoading: false,
+        isRepriceCompleted: false,
+        bookingError: 'Failed to process booking: ${e.toString()}',
+      ),
+    );
+  }
+}
   // Helper method for the API call
   Future<Map<String, dynamic>> _makeBookingPreviewApiCall(dynamic params) async {
     try {

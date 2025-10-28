@@ -452,7 +452,7 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const ScreenRefundInitiated(),
+                    builder: (context) =>  ScreenRefundInitiated(),
                   ),
                 );
               },
@@ -461,7 +461,7 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const ScreenFailTicket(),
+                    builder: (context) =>  ScreenFailTicket(),
                   ),
                 );
               },

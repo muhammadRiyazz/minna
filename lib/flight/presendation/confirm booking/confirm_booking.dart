@@ -54,39 +54,41 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
   String? _lastRefundState;
 
   // Commission service
-  final FlightCommissionService _commissionService = FlightCommissionService();
-  double _commissionAmount = 0;
-  double _totalWithCommission = 0;
+  // final FlightCommissionService _commissionService = FlightCommissionService();
+  // double _commissionAmount = 0;
+  // double _totalWithCommission = 0;
 
   @override
   void initState() {
     super.initState();
     _startTimer();
     _initializeRazorpay();
-    _calculateCommission();
   }
 
-  void _calculateCommission() {
-    try {
-      final baseAmount = widget.flightinfo.flightFares!.first.totalAmount;
-      final travelType = widget.triptype ;
+  // void _calculateCommission() {
+  //   try {
+  //     log('_calculateCommission -------------');
+  //     final baseAmount = widget.flightinfo.flightFares!.first.totalAmount;
+
+   
+  //     final travelType = widget.triptype ;
+     
+  //     _commissionAmount = _commissionService.calculateCommission(
+  //       actualAmount: baseAmount??0,
+  //       travelType: travelType,
+  //     );
       
-      _commissionAmount = _commissionService.calculateCommission(
-        actualAmount: baseAmount??0,
-        travelType: travelType,
-      );
-      
-      _totalWithCommission = _commissionService.getTotalAmountWithCommission(
-        actualAmount: baseAmount??0,
-        travelType: travelType,
-      );
-    } catch (e) {
-      log('Error calculating commission: $e');
-      // Fallback: use base amount if commission calculation fails
-      _commissionAmount = 0;
-    _totalWithCommission = widget.flightinfo.flightFares!.first.totalAmount??0;
-    }
-  }
+  //     _totalWithCommission = _commissionService.getTotalAmountWithCommission(
+  //       actualAmount: baseAmount??0,
+  //       travelType: travelType,
+  //     );
+  //   } catch (e) {
+  //     log('Error calculating commission: $e');
+  //     // Fallback: use base amount if commission calculation fails
+  //     _commissionAmount = 0;
+  //   _totalWithCommission = widget.flightinfo.flightFares!.first.totalAmount??0;
+  //   }
+  // }
 
   void _initializeRazorpay() {
     _razorpay = Razorpay();
@@ -160,7 +162,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
 
     try {
       // Use total amount with commission for payment
-      final amount = _totalWithCommission;
+      final amount = state.totalAmountWithCommission??0;
       final orderId = await createOrder(amount);
 
       final bookingData = state.bookingdata;
@@ -286,7 +288,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                 return _buildNoDataScreen();
               }
 
-              return _buildBookingConfirmationUI(state, bookingData);
+              return _buildBookingConfirmationUI(state,);
             },
           ),
         ),
@@ -414,7 +416,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
     );
   }
 
-  Widget _buildBookingConfirmationUI(BookingState state, BBBookingRequest bookingData) {
+  Widget _buildBookingConfirmationUI(BookingState state, ) {
     final isProcessing = state.isCreatingOrder == true || 
                          state.isPaymentProcessing == true ||
                          state.isConfirmingBooking == true ||
@@ -565,12 +567,12 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
 
         // Passenger Details
         SliverToBoxAdapter(
-          child: _buildPassengerExpansionSection(bookingData.passengers),
+          child: _buildPassengerExpansionSection(state.bookingdata!.passengers),
         ),
 
         // Fare Breakdown with Commission
         SliverToBoxAdapter(
-          child: _buildEnhancedFareBreakdownWithCommission(bookingData),
+          child: _buildEnhancedFareBreakdownWithCommission( state ),
         ),
 
         // Payment Button Section
@@ -655,6 +657,11 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
   }
 
   Widget _buildPaymentButton(BookingState state, bool isProcessing) {
+
+
+
+
+
     final bool shouldShowLoading = _isPaymentButtonLoading || isProcessing;
     
     return ElevatedButton(
@@ -683,7 +690,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                 Icon(Icons.lock_rounded, size: 20),
                 SizedBox(width: 12),
                 Text(
-                  'Pay ₹${_totalWithCommission.toStringAsFixed(0)}',
+                  'Pay ₹${state.totalAmountWithCommission! .toStringAsFixed(0)}',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -812,7 +819,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
 
                 SizedBox(height: 16),
 
-                _buildEnhancedFareBreakdownWithCommission(bookingData),
+                _buildEnhancedFareBreakdownWithCommission( state),
               ],
               SizedBox(height: 32),
             ],
@@ -1265,9 +1272,9 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
     );
   }
 
- Widget _buildEnhancedFareBreakdownWithCommission(BBBookingRequest bookingData) {
-  final fare = bookingData.journey.flightOption.flightFares.first;
-  final passengers = bookingData.passengers;
+ Widget _buildEnhancedFareBreakdownWithCommission(BookingState bookingstate) {
+  final fare = bookingstate.bookingdata! .journey.flightOption.flightFares.first;
+  final passengers = bookingstate.bookingdata!.passengers;
   
   // Calculate passenger counts by type
   final adultCount = passengers.where((p) => p.paxType == 'ADT').length;
@@ -1279,26 +1286,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
   double totalTax = 0;
   double totalDiscount = 0;
   
-  // Calculate commission based on total amount
-  final baseAmount = fare.totalAmount;
-  final travelType = widget.triptype ;
-  double commissionAmount = 0;
-  double totalWithCommission = baseAmount;
-  
-  try {
-    commissionAmount = _commissionService.calculateCommission(
-      actualAmount: baseAmount,
-      travelType: travelType,
-    );
-    totalWithCommission = _commissionService.getTotalAmountWithCommission(
-      actualAmount: baseAmount,
-      travelType: travelType,
-    );
-  } catch (e) {
-    log('Error calculating commission: $e');
-    commissionAmount = 0;
-    totalWithCommission = baseAmount;
-  }
+ 
 
   return Container(
     margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -1551,7 +1539,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                   children: [
                     _summaryRow('Total Base Fare', '₹', totalBaseFare),
                     _summaryRow('Total Taxes', '₹', totalTax),
-                                        _summaryRow('Service Charge', '₹', commissionAmount, isCommission: true),
+                                        _summaryRow('Service Charge', '₹',  bookingstate.  totalCommission!, isCommission: true),
 
                     if (totalDiscount > 0)
                       _summaryRow('Discount', '₹', totalDiscount, isDiscount: true),
@@ -1559,7 +1547,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                     _summaryRow(
                       'Total Payable',
                       '₹',
-                      totalWithCommission,
+                  bookingstate.     totalAmountWithCommission!,
                       isTotal: true,
                     ),
                   ],

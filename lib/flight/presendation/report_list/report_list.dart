@@ -375,6 +375,9 @@ class _ReportListScreenState extends State<ReportListScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // View More Button - Only show if there are more than 4 bookings
+
+               if (totalBookings < 4)
+     SizedBox(height: 13,),
           if (totalBookings > 4)
             Align(
               alignment: Alignment.centerRight,
