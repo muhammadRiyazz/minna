@@ -1070,7 +1070,7 @@ log(' flightOption ------------------------ _handleRepriceCompletion ========== 
                                 selectedTitles[index] = value;
                               });
                             },
-                            value: selectedTitles[index],
+                            initialValue: selectedTitles[index],
                           ),
                         ],
                       ),
@@ -1221,7 +1221,7 @@ log(' flightOption ------------------------ _handleRepriceCompletion ========== 
                             isExpanded: true,
                             dropdownColor: _cardColor,
                             icon: Icon(Icons.arrow_drop_down_rounded, color: _textSecondary, size: 24),
-                            value: selectedNationalities[index],
+                            initialValue: selectedNationalities[index],
                             items: state.nationalitList.map((Country value) {
                               return DropdownMenuItem<Country>(
                                 value: value,
@@ -1429,7 +1429,7 @@ log(' flightOption ------------------------ _handleRepriceCompletion ========== 
                               isExpanded: true,
                               dropdownColor: _cardColor,
                               icon: Icon(Icons.arrow_drop_down_rounded, color: _textSecondary, size: 24),
-                              value: selectedCountriesOfIssue[index],
+                              initialValue: selectedCountriesOfIssue[index],
                               items: state.nationalitList.map((Country value) {
                                 return DropdownMenuItem<Country>(
                                   value: value,
@@ -1626,7 +1626,7 @@ if (hasMeals) ...[
         dropdownColor: _cardColor,
         icon: Icon(Icons.arrow_drop_down_rounded, color: _textSecondary, size: 24),
         hint: Text('No meal selected', style: TextStyle(fontSize: 14, color: _textLight)),
-        value: selectedMeals[index],
+        initialValue: selectedMeals[index],
         items: mealOptions.cast<Meal>().map<DropdownMenuItem<Meal>>((meal) {
           return DropdownMenuItem<Meal>(
             value: meal,
@@ -1725,7 +1725,7 @@ if (hasBaggage) ...[
         dropdownColor: _cardColor,
         icon: Icon(Icons.arrow_drop_down_rounded, color: _textSecondary, size: 24),
         hint: Text('No baggage selected', style: TextStyle(fontSize: 14, color: _textLight)),
-        value: selectedBaggages[index],
+        initialValue: selectedBaggages[index],
         items: baggageOptions.map((dynamic item) {
           final baggage = item as Baggage;
           return DropdownMenuItem<Baggage>(

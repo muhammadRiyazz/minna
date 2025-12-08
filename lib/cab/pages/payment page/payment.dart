@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:minna/bus/pages/screen%20conform%20ticket/widget/bottom_sheet.dart';
 import 'package:minna/bus/pages/screen%20conform%20ticket/widget/refundinitiated.dart';
 import 'package:minna/bus/pages/screen%20fail%20ticket/screen_fail_ticket.dart';
 import 'package:minna/cab/application/confirm%20booking/confirm_booking_bloc.dart';
@@ -9,7 +10,6 @@ import 'package:minna/cab/application/hold%20cab/hold_cab_bloc.dart';
 import 'package:minna/cab/domain/hold%20data/hold_data.dart';
 import 'package:minna/cab/function/commission_data.dart';
 import 'package:minna/cab/pages/payment%20page/confirmed_page.dart';
-import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/core/api.dart';
 import 'package:minna/comman/functions/create_order_id.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
@@ -255,145 +255,110 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
     );
   }
 
-  Future<bool> _onWillPop() async {
-    final shouldExit = await showModalBottomSheet<bool>(
+  void _onWillPop() async {
+   showBottomSheetbooking(
       context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return Container(
-          margin: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: _cardColor,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "Exit Booking?",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: _textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  "Are you sure you want to exit the booking process?",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: _textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () => Navigator.pop(context, false),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          side: BorderSide(color: _primaryColor),
-                        ),
-                        child: Text(
-                          "Continue Booking",
-                          style: TextStyle(color: _primaryColor),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () => Navigator.pop(context, true),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _primaryColor,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text("Exit"),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+      timer: _timer,
+      busORFlight: 
+       'This cabs seems popular! Hurry, book before it’s gone.',
+      primaryColor: _primaryColor,
+      secondaryColor: _secondaryColor,
     );
 
-    return shouldExit ?? false;
   }
+void _onBookNow(String amount) async {
+  log("_onBookNow -----");
+  context.read<ConfirmBookingBloc>().add(
+    ConfirmBookingEvent.startLoading(),
+  );
 
-  void _onBookNow(String amount) async {
-    context.read<ConfirmBookingBloc>().add(
-      ConfirmBookingEvent.startLoading(),
-    );
-
-    try {
-      final orderId = await createOrder(double.parse(amount));
-      if (orderId == null) {
-        log("orderId creating error");
-        context.read<ConfirmBookingBloc>().add(
-          ConfirmBookingEvent.stopLoading(),
-        );
-        
-        _showCustomSnackbar("Failed to create order. Please try again.", isError: true);
-        return;
-      }
-
-      setState(() {
-        _orderId = orderId;
-      });
-
-      final passenger = widget.requestData;
-      final name = passenger['name'] ?? "Passenger";
-      final phone = passenger['mobile'] ?? "0000000000";
-      final email = passenger['email'] ?? "email@example.com";
-
-      var options = {
-        'key': razorpaykey,
-        'amount': (double.parse(amount) * 100).toString(),
-        'name': name,
-        'order_id': orderId,
-        'description': 'Cab Booking Payment',
-        'prefill': {'contact': phone, 'email': email},
-        'theme': {'color': _primaryColor.value.toRadixString(16)},
-      };
-
-      try {
-        _razorpay.open(options);
-      } catch (e) {
-        log("Razorpay Error: $e");
-        context.read<ConfirmBookingBloc>().add(
-          ConfirmBookingEvent.stopLoading(),
-        );
-        _showCustomSnackbar("Payment error: $e", isError: true);
-      }
-    } catch (e) {
-      log("Error in _onBookNow: $e");
+  try {
+    final orderId = await createOrder(double.parse(amount));
+    if (orderId == null) {
+      log("orderId creating error");
       context.read<ConfirmBookingBloc>().add(
         ConfirmBookingEvent.stopLoading(),
       );
-      _showCustomSnackbar("An error occurred: $e", isError: true);
+
+      _showCustomSnackbar("Failed to create order. Please try again.", isError: true);
+      return;
     }
+
+    setState(() {
+      _orderId = orderId;
+    });
+
+    final passenger = widget.requestData;
+    log(passenger.toString());
+
+    // ✅ Extract traveller details safely
+    final traveller = passenger['traveller'] ?? {};
+    final primaryContact = traveller['primaryContact'] ?? {};
+
+    final firstName = traveller['firstName'] ?? '';
+    final lastName = traveller['lastName'] ?? '';
+    final name = ('$firstName $lastName').trim().isNotEmpty ? '$firstName $lastName' : 'Passenger';
+
+    final phone = primaryContact['number']?.toString() ?? '0000000000';
+    final email = traveller['email'] ?? 'email@example.com';
+
+    // ✅ Razorpay payment options with updated theme
+    var options = {
+      'key': razorpaykey,
+      'amount': (double.parse(amount) * 100).toString(),
+      'name': 'MT Trip', // Your brand name
+      'description': 'Cab Booking Payment',
+      'order_id': orderId,
+      // 'image': 'https://i.ibb.co/your-image-id/mtlogo.jpg', // Your logo
+      'prefill': {
+        'contact': phone, 
+        'email': email,
+        'name': name,
+      },
+      'theme': {
+        'color': '#D4AF37', // Gold for buttons and text
+        'backdrop_color': '#000000', // Black background
+      },
+      'notes': {
+        'contact': phone,
+        'email': email,
+        'name': name,
+        'booking_type': 'Cab Booking',
+        'service': 'MT Trip Cab Service',
+      },
+    };
+
+    // Platform-specific configurations
+    if (Theme.of(context).platform == TargetPlatform.iOS) {
+      options['ios'] = {
+        'hide_top_bar': false,
+      };
+    }
+
+    if (Theme.of(context).platform == TargetPlatform.android) {
+      options['android'] = {
+        'hide_logo': false,
+        'send_sms_hash': true,
+      };
+    }
+
+    try {
+      _razorpay.open(options);
+    } catch (e) {
+      log("Razorpay Error: $e");
+      context.read<ConfirmBookingBloc>().add(
+        ConfirmBookingEvent.stopLoading(),
+      );
+      // _showCustomSnackbar("Payment error: $e", isError: true);
+    }
+  } catch (e) {
+    log("Error in _onBookNow: $e");
+    context.read<ConfirmBookingBloc>().add(
+      ConfirmBookingEvent.stopLoading(),
+    );
+    // _showCustomSnackbar("An error occurred: $e", isError: true);
   }
+}
 
   void _showCustomSnackbar(String message, {bool isError = false}) {
     final color = isError ? _errorColor : _successColor;
@@ -509,7 +474,11 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
         ),
       ],
       child: WillPopScope(
-        onWillPop: _onWillPop,
+        onWillPop:()async{
+           _onWillPop();
+
+           return false;
+        },
         child: Scaffold(
           backgroundColor: _backgroundColor,
           appBar: AppBar(

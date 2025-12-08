@@ -423,12 +423,12 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
 }
 
 Widget buildShimmerLoading() {
-  final Color _baseColor = Colors.grey[300]!;
-  final Color _highlightColor = Colors.grey[100]!;
+  final Color baseColor = Colors.grey[300]!;
+  final Color highlightColor = Colors.grey[100]!;
   
   return Shimmer.fromColors(
-    baseColor: _baseColor,
-    highlightColor: _highlightColor,
+    baseColor: baseColor,
+    highlightColor: highlightColor,
     child: Column(
       children: List.generate(
         4,

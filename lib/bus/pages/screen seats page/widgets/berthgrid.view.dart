@@ -1,4 +1,3 @@
-import 'package:minna/comman/const/const.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import '../../../domain/seatlayout/seatlayoutmodal.dart';

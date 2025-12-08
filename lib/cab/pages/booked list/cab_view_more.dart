@@ -8,9 +8,9 @@ class CabAllBookingsPage extends StatefulWidget {
   final List<CabBooking> allBookings;
 
   const CabAllBookingsPage({
-    Key? key,
+    super.key,
     required this.allBookings,
-  }) : super(key: key);
+  });
 
   @override
   State<CabAllBookingsPage> createState() => _CabAllBookingsPageState();
@@ -38,7 +38,7 @@ class _CabAllBookingsPageState extends State<CabAllBookingsPage> {
   bool _isFilterActive = false;
   bool _isDateFilterActive = false;
   bool _isSearchActive = false;
-  bool _isLoading = false;
+  final bool _isLoading = false;
 
   @override
   void initState() {
@@ -88,13 +88,13 @@ class _CabAllBookingsPageState extends State<CabAllBookingsPage> {
     if (_isSearchActive && _searchController.text.isNotEmpty) {
       final query = _searchController.text.toLowerCase();
       filteredList = filteredList.where((booking) => 
-          (booking.bookingId?.toLowerCase().contains(query) ?? false) ||
-          (booking.firstName?.toLowerCase().contains(query) ?? false) ||
-          (booking.lastName?.toLowerCase().contains(query) ?? false) ||
-          (booking.priContact?.toLowerCase().contains(query) ?? false) ||
-          (booking.cabType?.toLowerCase().contains(query) ?? false) ||
-          (booking.tripType?.toLowerCase().contains(query) ?? false) ||
-          (booking.status?.toLowerCase().contains(query) ?? false)
+          (booking.bookingId.toLowerCase().contains(query) ?? false) ||
+          (booking.firstName.toLowerCase().contains(query) ?? false) ||
+          (booking.lastName.toLowerCase().contains(query) ?? false) ||
+          (booking.priContact.toLowerCase().contains(query) ?? false) ||
+          (booking.cabType.toLowerCase().contains(query) ?? false) ||
+          (booking.tripType.toLowerCase().contains(query) ?? false) ||
+          (booking.status.toLowerCase().contains(query) ?? false)
       ).toList();
     }
 
@@ -1039,8 +1039,6 @@ class _CabAllBookingsPageState extends State<CabAllBookingsPage> {
   }
 
   Color _getStatusColor(String status) {
-    if (status == null) return _secondaryColor;
-    
     switch (status.toLowerCase()) {
       case 'confirmed':
         return _successColor;
@@ -1068,7 +1066,7 @@ class _CabAllBookingsPageState extends State<CabAllBookingsPage> {
 class KeyboardDismisser extends StatelessWidget {
   final Widget child;
 
-  const KeyboardDismisser({Key? key, required this.child}) : super(key: key);
+  const KeyboardDismisser({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {

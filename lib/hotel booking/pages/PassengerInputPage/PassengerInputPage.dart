@@ -35,7 +35,7 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
   
   // Structure: List of rooms, each room contains list of passengers
   List<List<Map<String, dynamic>>> roomPassengers = [];
-  bool _isLoading = false;
+  final bool _isLoading = false;
   String? _errorMessage;
   bool _isSubmitting = false;
 
@@ -388,7 +388,7 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
             ...roomPassengers[roomIndex].asMap().entries.map((entry) {
               final passengerIndex = entry.key;
               return _buildPassengerForm(roomIndex, passengerIndex);
-            }).toList(),
+            }),
 
             // Add Passenger Button for this room
             Container(
@@ -641,7 +641,7 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
   // Updated methods with roomIndex and passengerIndex parameters
   Widget _buildTitleDropdown(int roomIndex, int passengerIndex) {
     return DropdownButtonFormField<String>(
-      value: roomPassengers[roomIndex][passengerIndex]['Title'],
+      initialValue: roomPassengers[roomIndex][passengerIndex]['Title'],
       decoration: InputDecoration(
         
         labelText: 'Title',
@@ -943,7 +943,7 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
                 }
               });
             },
-            activeColor: _secondaryColor,
+            activeThumbColor: _secondaryColor,
           ),
         ],
       ),

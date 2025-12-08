@@ -223,7 +223,7 @@ class _HotelListPageState extends State<HotelListPage> {
                       childCount: 6,
                     ),
                   );
-                } else if (!snapshot.hasData || _filteredHotels.isEmpty||_filteredHotels==null ) {
+                } else if (!snapshot.hasData || _filteredHotels.isEmpty ) {
                   return SliverToBoxAdapter(child: _buildEmptyState());
                 } else if (snapshot.hasError) {
                   return SliverToBoxAdapter(child: _buildErrorState(snapshot.error.toString()));
@@ -391,7 +391,7 @@ class _HotelListPageState extends State<HotelListPage> {
             style: TextStyle(color: _textSecondary),
           ),
           SizedBox(height: 20),
-          Container(
+          SizedBox(
             width: 140,
             child: ElevatedButton(
               onPressed: () {

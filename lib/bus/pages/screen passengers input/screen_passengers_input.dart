@@ -288,7 +288,7 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
           SizedBox(height: 16),
           Row(
             children: [
-              Container(
+              SizedBox(
                 width: 80,
                 child: TextField(
                   enabled: false,

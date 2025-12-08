@@ -19,7 +19,7 @@ class GradientSplashScreen extends StatelessWidget {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(backgroundColor: Colors.black,
-      body: Container(
+      body: SizedBox(
         width: double.infinity,
         height: double.infinity,
         // Optional: nice gradient background

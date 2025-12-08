@@ -381,37 +381,35 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     // Calculate total amount and commission from booking data
     double totalBaseAmount = 0.0;
 
-    if (bookingRequestData != null) {
-      // Calculate total base amount from flight fares
-      for (var fare in bookingRequestData.journey.flightOption.flightFares) {
-        totalBaseAmount += fare.totalAmount;
-      }
-
-      // Calculate commission based on total base amount and travel type
-      try {
-        totalCommission = commissionService.calculateCommission(
-          actualAmount: totalBaseAmount,
-          travelType: event.triptype,
-        );
-
-        totalAmountWithCommission = commissionService.getTotalAmountWithCommission(
-          actualAmount: totalBaseAmount,
-          travelType: event.triptype,
-        );
-
-        log('Commission calculated: Base Amount: ₹$totalBaseAmount, '
-            'Commission: ₹$totalCommission, '
-            'Total with Commission: ₹$totalAmountWithCommission, '
-            'Travel Type: ${event.triptype}');
-
-      } catch (e) {
-        log('Error calculating commission: $e');
-        // Fallback: use base amount if commission calculation fails
-        totalCommission = 0.0;
-        totalAmountWithCommission = totalBaseAmount;
-      }
+    // Calculate total base amount from flight fares
+    for (var fare in bookingRequestData.journey.flightOption.flightFares) {
+      totalBaseAmount += fare.totalAmount;
     }
 
+    // Calculate commission based on total base amount and travel type
+    try {
+      totalCommission = commissionService.calculateCommission(
+        actualAmount: totalBaseAmount,
+        travelType: event.triptype,
+      );
+
+      totalAmountWithCommission = commissionService.getTotalAmountWithCommission(
+        actualAmount: totalBaseAmount,
+        travelType: event.triptype,
+      );
+
+      log('Commission calculated: Base Amount: ₹$totalBaseAmount, '
+          'Commission: ₹$totalCommission, '
+          'Total with Commission: ₹$totalAmountWithCommission, '
+          'Travel Type: ${event.triptype}');
+
+    } catch (e) {
+      log('Error calculating commission: $e');
+      // Fallback: use base amount if commission calculation fails
+      totalCommission = 0.0;
+      totalAmountWithCommission = totalBaseAmount;
+    }
+  
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? userId = prefs.getString('userId');
 

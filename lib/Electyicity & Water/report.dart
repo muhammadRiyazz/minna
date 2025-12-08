@@ -80,7 +80,7 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [maincolor1!, maincolor1!.withOpacity(0.8)],
+          colors: [maincolor1, maincolor1.withOpacity(0.8)],
         ),
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(24),

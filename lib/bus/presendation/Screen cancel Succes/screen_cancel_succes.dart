@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/pages/main%20home/home.dart';
 
 import '../../domain/cancel succes modal/cancel_succes_modal.dart';

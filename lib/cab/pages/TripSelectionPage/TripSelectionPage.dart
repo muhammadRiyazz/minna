@@ -313,7 +313,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                       ],
                     ),
                   ),
-SizedBox(height: 12,),
+SizedBox(height: 6,),
 
                   // Current Location Button
                   Padding(
@@ -321,7 +321,7 @@ SizedBox(height: 12,),
                     child: GestureDetector(
                       onTap: () => _getCurrentLocation(setModalState, fieldType, multiCityIndex),
                       child: Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
                           color: _secondaryColor.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(16),
@@ -342,7 +342,7 @@ SizedBox(height: 12,),
                                   Text(
                                     'Use Current Location',
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 12,
                                       fontWeight: FontWeight.w600,
                                       color: _secondaryColor,
                                     ),
@@ -350,7 +350,7 @@ SizedBox(height: 12,),
                                   Text(
                                     'Get your current location automatically',
                                     style: TextStyle(
-                                      fontSize: 12,
+                                      fontSize: 10,
                                       color: _secondaryColor.withOpacity(0.7),
                                     ),
                                   ),
@@ -1704,7 +1704,7 @@ SizedBox(height: 12,),
   }
 
   Widget _buildSearchButton() {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       height: 56,
       child: ElevatedButton(

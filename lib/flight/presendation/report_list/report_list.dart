@@ -7,7 +7,7 @@ import 'package:minna/flight/presendation/report%20details/report_details.dart';
 import 'package:minna/flight/presendation/report_list/view_more.dart';
 
 class ReportListScreen extends StatefulWidget {
-  const ReportListScreen({Key? key}) : super(key: key);
+  const ReportListScreen({super.key});
 
   @override
   State<ReportListScreen> createState() => _ReportListScreenState();

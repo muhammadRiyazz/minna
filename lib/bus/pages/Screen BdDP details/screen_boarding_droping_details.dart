@@ -62,7 +62,7 @@ class _ScreenBdDpDetailsState extends State<ScreenBdDpDetails> {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          backgroundColor: _primaryColor!,
+          backgroundColor: _primaryColor,
           iconTheme: const IconThemeData(color: Colors.white),
         ),
         body: Column(

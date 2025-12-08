@@ -10,10 +10,10 @@ Future<dynamic> showBottomSheetbooking({
   required Color primaryColor,
   required Color secondaryColor,
 }) {
-  final Color _backgroundColor = Color(0xFFF8F9FA);
-  final Color _cardColor = Colors.white;
-  final Color _textPrimary = Colors.black;
-  final Color _textSecondary = Color(0xFF666666);
+  final Color backgroundColor = Color(0xFFF8F9FA);
+  final Color cardColor = Colors.white;
+  final Color textPrimary = Colors.black;
+  final Color textSecondary = Color(0xFF666666);
 
   return showModalBottomSheet(
     context: context,
@@ -21,7 +21,7 @@ Future<dynamic> showBottomSheetbooking({
     builder: (context) {
       return Container(
         decoration: BoxDecoration(
-          color: _cardColor,
+          color: cardColor,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(25),
             topRight: Radius.circular(25),
@@ -36,7 +36,7 @@ Future<dynamic> showBottomSheetbooking({
                 height: 5,
                 width: 50,
                 decoration: BoxDecoration(
-                  color: _textSecondary.withOpacity(0.3),
+                  color: textSecondary.withOpacity(0.3),
                   borderRadius: BorderRadius.circular(5),
                 ),
               ),
@@ -59,17 +59,19 @@ Future<dynamic> showBottomSheetbooking({
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: _textPrimary,
+                  color: textPrimary,
                 ),
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 12),
               Text(
-                'This $busORFlight seems popular! Hurry, book before all the seats get filled.',
+
+                busORFlight
+              ,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
-                  color: _textSecondary,
+                  color: textSecondary,
                   height: 1.4,
                 ),
               ),
@@ -114,7 +116,7 @@ Future<dynamic> showBottomSheetbooking({
                 child: Text(
                   'Cancel Booking',
                   style: TextStyle(
-                    color: _textSecondary,
+                    color: textSecondary,
                     fontSize: 14,
                   ),
                 ),

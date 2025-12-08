@@ -18,6 +18,7 @@ import 'package:minna/comman/pages/screen%20my%20account/my_account_page.dart';
 import 'package:minna/flight/presendation/screen%20flight/home_flight.dart';
 import 'package:minna/hotel%20booking/pages/holel%20home%20page/home_page_hotel.dart' hide FlightBookingTab;
 import 'package:minna/train/pages/webView.dart';
+import 'package:minna/visa/pages/visa_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
@@ -36,6 +37,7 @@ class _HomePageState extends State<HomePage> {
     HistoryPage(),
     MyAccountPage(),
   ];
+  @override
   void initState() {
     super.initState();
     // Load login info from bloc
@@ -218,7 +220,10 @@ class _HomeContentPageState extends State<HomeContentPage> {
       'icon': FontAwesomeIcons.passport,
       'color': Color(0xFFD4AF37), // Gold
       'onTap': (BuildContext context) {
-        _showComingSoonBottomSheet(context, "Visa Services");
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => VisaPage()),
+        );
       },
     },
     {
@@ -1113,7 +1118,7 @@ Widget _buildLoginAlertBanner(bool isSmallScreen) {
     bool isTablet,
     double bodyFontSize,
   ) {
-    return Container(
+    return SizedBox(
       height: isSmallScreen
           ? 140
           : isTablet

@@ -93,7 +93,7 @@ void showAirportBottomSheet(BuildContext context, {required bool isFrom}) {
                       itemBuilder: (context, index) {
                         final airport = state.airports[index];
                         return ListTile(
-                          leading: Icon(Icons.flight, color: maincolor1!),
+                          leading: Icon(Icons.flight, color: maincolor1),
                           title: Text(airport.name),
                           subtitle: Text(
                             '${airport.code} • ${airport.type}',

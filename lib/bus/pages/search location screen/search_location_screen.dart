@@ -119,7 +119,7 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
             ),
           ),
           
-          const SizedBox(height: 16),
+          // const SizedBox(height: 10),
 
           // Search Bar
           Padding(
@@ -127,7 +127,7 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
             child: _buildSearchBar(context),
           ),
           
-          const SizedBox(height: 16),
+          const SizedBox(height: 10),
 
           // Search Results
           Expanded(
@@ -385,7 +385,7 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
   Widget _buildLocationCard(BuildContext context, City location, int index) {
     return AnimatedContainer(
       duration: Duration(milliseconds: 200),
-      margin: EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: 10),
       child: Material(
         color: _cardColor,
         borderRadius: BorderRadius.circular(16),
@@ -396,7 +396,7 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
           splashColor: _secondaryColor.withOpacity(0.1),
           highlightColor: _secondaryColor.withOpacity(0.05),
           child: Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: _cardColor,
               borderRadius: BorderRadius.circular(16),
@@ -411,8 +411,8 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
             child: Row(
               children: [
                 Container(
-                  width: 44,
-                  height: 44,
+                  width: 40,
+                  height: 40,
                   decoration: BoxDecoration(
                     color: _secondaryColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -420,10 +420,10 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
                   child: Icon(
                     Icons.location_on_rounded,
                     color: _secondaryColor,
-                    size: 24,
+                    size: 20,
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -431,18 +431,18 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
                       Text(
                         location.name,
                         style: TextStyle(
-                          fontSize: 15,
+                          fontSize: 13,
                           fontWeight: FontWeight.w600,
                           color: _textPrimary,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 2),
                       Text(
                         location.state,
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 12,
                           color: _textSecondary,
                           fontWeight: FontWeight.w500,
                         ),

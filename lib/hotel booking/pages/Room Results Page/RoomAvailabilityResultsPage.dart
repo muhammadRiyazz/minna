@@ -498,7 +498,7 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
                             Padding(
                               padding: const EdgeInsets.only(top: 4),
                               child: Text(
-                                '${numberOfRooms} rooms × ${currencyFormat.format(totalFare / numberOfRooms)}',
+                                '$numberOfRooms rooms × ${currencyFormat.format(totalFare / numberOfRooms)}',
                                 style: TextStyle(
                                   color: _textLight,
                                   fontSize: 12,
@@ -586,7 +586,7 @@ class _RoomAvailabilityResultsPageState extends State<RoomAvailabilityResultsPag
                                   ),
                                 )
                               : Text(
-                                numberOfRooms > 1 ? 'Book ${numberOfRooms} Rooms' : 'Book Now',
+                                numberOfRooms > 1 ? 'Book $numberOfRooms Rooms' : 'Book Now',
                                 style: const TextStyle(
                                     fontWeight: FontWeight.w600, fontSize: 12),
                               ),

@@ -9,9 +9,9 @@ class FlightAllReportsPage extends StatefulWidget {
   final List<ReportData> allReports;
 
   const FlightAllReportsPage({
-    Key? key,
+    super.key,
     required this.allReports,
-  }) : super(key: key);
+  });
 
   @override
   State<FlightAllReportsPage> createState() => _FlightAllReportsPageState();
@@ -1074,7 +1074,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
 class KeyboardDismisser extends StatelessWidget {
   final Widget child;
 
-  const KeyboardDismisser({Key? key, required this.child}) : super(key: key);
+  const KeyboardDismisser({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {

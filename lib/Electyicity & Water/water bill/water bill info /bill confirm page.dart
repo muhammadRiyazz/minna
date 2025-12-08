@@ -137,7 +137,7 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
         'contact': widget.phoneNo,
         'email': 'customer@example.com',
       },
-      'theme': {'color': maincolor1!.value}
+      'theme': {'color': maincolor1.value}
     };
 
     log("Razorpay Options: $options");
@@ -236,12 +236,12 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [maincolor1!, maincolor1!.withOpacity(0.8)],
+          colors: [maincolor1, maincolor1.withOpacity(0.8)],
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: maincolor1!.withOpacity(0.3),
+            color: maincolor1.withOpacity(0.3),
             blurRadius: 10,
             offset: Offset(0, 4),
           ),

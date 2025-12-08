@@ -7,7 +7,6 @@ import 'package:minna/cab/application/fetch%20cab/fetch_cabs_state.dart';
 import 'package:minna/cab/domain/cab%20list%20model/cab_list_data.dart';
 import 'package:minna/cab/function/commission_data.dart';
 import 'package:minna/cab/pages/booking_hold/booking_hold_input.dart';
-import 'package:minna/comman/const/const.dart';
 
 class CabsListPage extends StatefulWidget {
   final Map<String, dynamic> requestData;

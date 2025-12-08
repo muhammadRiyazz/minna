@@ -14,9 +14,9 @@ class BusAllBookingsPage extends StatefulWidget {
   final List<BusTicketReport> allBookings;
 
   const BusAllBookingsPage({
-    Key? key,
+    super.key,
     required this.allBookings,
-  }) : super(key: key);
+  });
 
   @override
   State<BusAllBookingsPage> createState() => _BusAllBookingsPageState();
@@ -155,11 +155,11 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
     if (_isSearchActive && _searchController.text.isNotEmpty) {
       final query = _searchController.text.toLowerCase();
       filteredList = filteredList.where((report) => 
-          (report.blockKey?.toLowerCase().contains(query) ?? false) ||
-          (report.ticketNo?.toLowerCase().contains(query) ?? false) ||
-          (report.source?.toLowerCase().contains(query) ?? false) ||
-          (report.destination?.toLowerCase().contains(query) ?? false) ||
-          (report.status?.toLowerCase().contains(query) ?? false)
+          (report.blockKey.toLowerCase().contains(query) ?? false) ||
+          (report.ticketNo.toLowerCase().contains(query) ?? false) ||
+          (report.source.toLowerCase().contains(query) ?? false) ||
+          (report.destination.toLowerCase().contains(query) ?? false) ||
+          (report.status.toLowerCase().contains(query) ?? false)
       ).toList();
     }
 
@@ -1093,8 +1093,6 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
   }
 
   Color _getStatusColor(String status) {
-    if (status == null) return _secondaryColor;
-    
     switch (status.toLowerCase()) {
       case 'confirmed':
         return _successColor;
@@ -1112,7 +1110,7 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
 class KeyboardDismisser extends StatelessWidget {
   final Widget child;
 
-  const KeyboardDismisser({Key? key, required this.child}) : super(key: key);
+  const KeyboardDismisser({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {

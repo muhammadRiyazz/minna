@@ -559,7 +559,7 @@ class FilterBottomSheet extends StatefulWidget {
   final Color textSecondary;
 
   const FilterBottomSheet({
-    Key? key,
+    super.key,
     required this.availableTrips,
     required this.currentFilterState,
     required this.onFiltersChanged,
@@ -569,7 +569,7 @@ class FilterBottomSheet extends StatefulWidget {
     required this.cardColor,
     required this.textPrimary,
     required this.textSecondary,
-  }) : super(key: key);
+  });
 
   @override
   State<FilterBottomSheet> createState() => _FilterBottomSheetState();

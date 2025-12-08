@@ -52,7 +52,7 @@ class ReportData {
     
     if (responseData != null && responseData is String && responseData.isNotEmpty) {
       try {
-        final responseJson =jsonDecode (responseData);
+        final responseJson = jsonDecode(responseData);
         parsedResponse = ResponseData.fromJson(responseJson);
       } catch (e) {
         log('Error parsing response JSON: $e');
@@ -244,6 +244,7 @@ class ReportFlightLeg {
   }
 }
 
+// Updated ReportPassenger class with SSR information
 class ReportPassenger {
   final String paxType;
   final String title;
@@ -254,6 +255,7 @@ class ReportPassenger {
   final String email;
   final String passportNo;
   final String ticketNo;
+  final ReportSsrAvailability? ssrAvailability;
 
   ReportPassenger({
     required this.paxType,
@@ -265,6 +267,7 @@ class ReportPassenger {
     required this.email,
     required this.passportNo,
     required this.ticketNo,
+    this.ssrAvailability,
   });
 
   factory ReportPassenger.fromJson(Map<String, dynamic> json) {
@@ -278,6 +281,189 @@ class ReportPassenger {
       email: json['Email']?.toString() ?? '',
       passportNo: json['PassportNo']?.toString() ?? '',
       ticketNo: json['TicketNo']?.toString() ?? '',
+      ssrAvailability: json['SSRAvailability'] != null 
+          ? ReportSsrAvailability.fromJson(json['SSRAvailability'])
+          : null,
+    );
+  }
+}
+
+// New classes for SSR (Additional Services)
+class ReportSsrAvailability {
+  final List<ReportMealInfo>? mealInfo;
+  final List<ReportBaggageInfo>? baggageInfo;
+  final List<ReportSeatInfo>? seatInfo;
+
+  ReportSsrAvailability({
+    this.mealInfo,
+    this.baggageInfo,
+    this.seatInfo,
+  });
+
+  factory ReportSsrAvailability.fromJson(Map<String, dynamic> json) {
+    return ReportSsrAvailability(
+      mealInfo: json['MealInfo'] != null
+          ? List<ReportMealInfo>.from(
+              (json['MealInfo'] as List).map((x) => ReportMealInfo.fromJson(x)))
+          : null,
+      baggageInfo: json['BaggageInfo'] != null
+          ? List<ReportBaggageInfo>.from(
+              (json['BaggageInfo'] as List).map((x) => ReportBaggageInfo.fromJson(x)))
+          : null,
+      seatInfo: json['SeatInfo'] != null
+          ? List<ReportSeatInfo>.from(
+              (json['SeatInfo'] as List).map((x) => ReportSeatInfo.fromJson(x)))
+          : null,
+    );
+  }
+}
+
+class ReportMealInfo {
+  final dynamic mealKey;
+  final dynamic tripMode;
+  final List<ReportMeal>? meals;
+
+  ReportMealInfo({
+    this.mealKey,
+    this.tripMode,
+    this.meals,
+  });
+
+  factory ReportMealInfo.fromJson(Map<String, dynamic> json) {
+    return ReportMealInfo(
+      mealKey: json['MealKey'],
+      tripMode: json['TripMode'],
+      meals: json['Meals'] != null
+          ? List<ReportMeal>.from(
+              (json['Meals'] as List).map((x) => ReportMeal.fromJson(x)))
+          : null,
+    );
+  }
+}
+
+class ReportMeal {
+  final dynamic ptc;
+  final String? code;
+  final String? name;
+  final double? amount;
+  final String? currency;
+  final String? legKey;
+
+  ReportMeal({
+    this.ptc,
+    this.code,
+    this.name,
+    this.amount,
+    this.currency,
+    this.legKey,
+  });
+
+  factory ReportMeal.fromJson(Map<String, dynamic> json) {
+    return ReportMeal(
+      ptc: json['PTC'],
+      code: json['Code']?.toString(),
+      name: json['Name']?.toString(),
+      amount: (json['Amount'] ?? 0).toDouble(),
+      currency: json['Currency']?.toString(),
+      legKey: json['LegKey']?.toString(),
+    );
+  }
+}
+
+class ReportBaggageInfo {
+  final dynamic tripMode;
+  final dynamic baggageKey;
+  final List<ReportBaggage>? baggages;
+
+  ReportBaggageInfo({
+    this.tripMode,
+    this.baggageKey,
+    this.baggages,
+  });
+
+  factory ReportBaggageInfo.fromJson(Map<String, dynamic> json) {
+    return ReportBaggageInfo(
+      tripMode: json['TripMode'],
+      baggageKey: json['BaggageKey'],
+      baggages: json['Baggages'] != null
+          ? List<ReportBaggage>.from(
+              (json['Baggages'] as List).map((x) => ReportBaggage.fromJson(x)))
+          : null,
+    );
+  }
+}
+
+class ReportBaggage {
+  final dynamic ptc;
+  final String? code;
+  final String? name;
+  final dynamic weight;
+  final double? amount;
+  final String? currency;
+  final String? legKey;
+
+  ReportBaggage({
+    this.ptc,
+    this.code,
+    this.name,
+    this.weight,
+    this.amount,
+    this.currency,
+    this.legKey,
+  });
+
+  factory ReportBaggage.fromJson(Map<String, dynamic> json) {
+    return ReportBaggage(
+      ptc: json['PTC'],
+      code: json['Code']?.toString(),
+      name: json['Name']?.toString(),
+      weight: json['Weight'],
+      amount: (json['Amount'] ?? 0).toDouble(),
+      currency: json['Currency']?.toString(),
+      legKey: json['LegKey']?.toString(),
+    );
+  }
+}
+
+class ReportSeatInfo {
+  final List<ReportSeat>? seats;
+
+  ReportSeatInfo({
+    this.seats,
+  });
+
+  factory ReportSeatInfo.fromJson(Map<String, dynamic> json) {
+    return ReportSeatInfo(
+      seats: json['Seats'] != null
+          ? List<ReportSeat>.from(
+              (json['Seats'] as List).map((x) => ReportSeat.fromJson(x)))
+          : null,
+    );
+  }
+}
+
+class ReportSeat {
+  final String? ptc;
+  final String? seatKey;
+  final String? legKey;
+  final String? fare;
+  final dynamic currency;
+
+  ReportSeat({
+    this.ptc,
+    this.seatKey,
+    this.legKey,
+    this.fare,
+    this.currency,
+  });
+
+  factory ReportSeat.fromJson(Map<String, dynamic> json) {
+    return ReportSeat(
+      ptc: json['PTC']?.toString(),
+      seatKey: json['SeatKey']?.toString(),
+      legKey: json['LegKey']?.toString(),
+      fare: json['Fare']?.toString(),
+      currency: json['Currency'],
     );
   }
 }

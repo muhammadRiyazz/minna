@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:minna/cab/domain/confirm%20model/confirm_model.dart';
-import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/pages/main%20home/home.dart';
 
 class CabSuccessPage extends StatelessWidget {
   final BookingConfirmData bookingResponse;
 
   const CabSuccessPage({super.key, required this.bookingResponse});
+
+  // Color Theme - Black & Gold Premium (matching booked_cab_details.dart)
+  static const Color _primaryColor = Colors.black;
+  static const Color _secondaryColor = Color(0xFFD4AF37); // Gold
+  static const Color _backgroundColor = Color(0xFFF8F9FA);
+  static const Color _cardColor = Colors.white;
+  static const Color _textPrimary = Colors.black;
+  static const Color _textSecondary = Color(0xFF666666);
+  static const Color _textLight = Color(0xFF999999);
 
   @override
   Widget build(BuildContext context) {
@@ -22,8 +30,9 @@ class CabSuccessPage extends StatelessWidget {
         return false;
       },
       child: Scaffold(
+        backgroundColor: _backgroundColor,
         body: Container(
-          color: maincolor1,
+          color: Colors.green,
           child: Column(
             children: [
               // Header section
@@ -31,26 +40,35 @@ class CabSuccessPage extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 60, bottom: 20),
                 child: Column(
                   children: [
-                    const Icon(
-                      Icons.check_circle,
-                      color: Colors.white,
-                      size: 80,
+                    Container(
+                      width: 90,
+                      height: 90,
+                      decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.check_circle,
+                        color: Colors.white,
+                        size: 50,
+                      ),
                     ),
-                    const SizedBox(height: 16),
-                    Text(
+                    const SizedBox(height: 15),
+                    const Text(
                       'Booking Confirmed!',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 22,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 5),
                     Text(
-                      'Your cab booking is done ',
+                      'Your cab booking is confirmed',
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.9),
-                        fontSize: 14,
+                        fontSize: 13,
                       ),
                     ),
                   ],
@@ -61,9 +79,9 @@ class CabSuccessPage extends StatelessWidget {
               Expanded(
                 child: Container(
                   width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
-                    borderRadius: const BorderRadius.only(
+                  decoration: const BoxDecoration(
+                    color: _backgroundColor,
+                    borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(30),
                       topRight: Radius.circular(30),
                     ),
@@ -97,9 +115,9 @@ class CabSuccessPage extends StatelessWidget {
                         Text(
                           'Date & Time',
                           style: TextStyle(
-                            fontSize: 15,
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Colors.grey.shade800,
+                            color: _textPrimary,
                           ),
                         ),
                         
@@ -113,9 +131,9 @@ class CabSuccessPage extends StatelessWidget {
                         Text(
                           'Cab Information',
                           style: TextStyle(
-                            fontSize: 15,
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Colors.grey.shade800,
+                            color: _textPrimary,
                           ),
                         ),
                         
@@ -124,14 +142,14 @@ class CabSuccessPage extends StatelessWidget {
                         _buildCabInfoCard(data.cabRate.cab),
                         
                         const SizedBox(height: 24),
-                        
+
                         // Fare Details
                         Text(
                           'Fare Details',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.grey.shade800,
+                            color: _textPrimary,
                           ),
                         ),
                         
@@ -145,21 +163,27 @@ class CabSuccessPage extends StatelessWidget {
                         Row(
                           children: [
                             Expanded(
-                              child: OutlinedButton(
+                              child: ElevatedButton(
                                 onPressed: () {
-  Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (_) => HomePage()),
-          (route) => false,
-        );},
-                                style: OutlinedButton.styleFrom(
+                                  Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(builder: (_) => HomePage()),
+                                    (route) => false,
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: _primaryColor,
+                                  foregroundColor: Colors.white,
                                   padding: const EdgeInsets.symmetric(vertical: 16),
-                                  side: BorderSide(color: maincolor1!),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  elevation: 0,
                                 ),
-                                child: Text(
+                                child: const Text(
                                   'GO TO HOME',
                                   style: TextStyle(
-                                    color: maincolor1,
+                                    fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -187,16 +211,25 @@ class CabSuccessPage extends StatelessWidget {
   }) {
     return Card(
       elevation: 0,
+      color: _cardColor,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            Icon(
-              icon,
-              color: highlight ? maincolor1 : Colors.grey.shade600,
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: highlight ? _secondaryColor.withOpacity(0.1) : _backgroundColor,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                icon,
+                color: highlight ? _secondaryColor : _textSecondary,
+                size: 24,
+              ),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -207,16 +240,17 @@ class CabSuccessPage extends StatelessWidget {
                     title,
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey.shade600,
+                      color: _textSecondary,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 6),
                   Text(
                     value,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: highlight ? maincolor1: Colors.grey.shade800,
+                      color: highlight ? _secondaryColor : _textPrimary,
                     ),
                   ),
                 ],
@@ -248,8 +282,9 @@ Widget _buildDateTimeCard(String dateString, String timeString) {
   
   return Card(
     elevation: 0,
+    color: _cardColor,
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(16),
     ),
     child: Padding(
       padding: const EdgeInsets.all(16),
@@ -257,11 +292,11 @@ Widget _buildDateTimeCard(String dateString, String timeString) {
         children: [
           // Calendar icon section
           Container(
-            width: 60,
-            height: 60,
+            width: 70,
+            height: 70,
             decoration: BoxDecoration(
-              color: Colors.blue.shade50,
-              borderRadius: BorderRadius.circular(12),
+              color: _secondaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -269,16 +304,17 @@ Widget _buildDateTimeCard(String dateString, String timeString) {
                 Text(
                   date.day.toString(),
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: maincolor1,
+                    color: _secondaryColor,
                   ),
                 ),
                 Text(
                   _getMonthAbbreviation(date.month),
                   style: TextStyle(
                     fontSize: 12,
-                    color: maincolor1,
+                    color: _secondaryColor,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
@@ -296,32 +332,34 @@ Widget _buildDateTimeCard(String dateString, String timeString) {
                   'Scheduled Pickup',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey.shade600,
+                    color: _textSecondary,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Text(
                   formattedDate,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey.shade800,
+                    color: _textPrimary,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Row(
                   children: [
                     Icon(
                       Icons.access_time,
                       size: 16,
-                      color: Colors.grey.shade600,
+                      color: _textSecondary,
                     ),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: 6),
                     Text(
                       formattedTime,
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey.shade600,
+                        color: _textSecondary,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
@@ -362,27 +400,27 @@ Widget _buildDateTimeCard(String dateString, String timeString) {
   Widget _buildCabInfoCard(Cab cab) {
     return Card(
       elevation: 0,
+      color: _cardColor,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            // Cab image placeholder
-            // Container(
-            //   width: 50,
-            //   height: 30,
-            //   decoration: BoxDecoration(
-            //     color: Colors.grey.shade200,
-            //     borderRadius: BorderRadius.circular(8),
-            //   ),
-            //   child: Icon(
-            //     Icons.directions_car,
-            //     size: 40,
-            //     color: Colors.grey.shade500,
-            //   ),
-            // ),
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: _secondaryColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                Icons.directions_car,
+                size: 32,
+                color: _secondaryColor,
+              ),
+            ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -391,9 +429,9 @@ Widget _buildDateTimeCard(String dateString, String timeString) {
                   Text(
                     cab.type,
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey.shade800,
+                      color: _textPrimary,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -401,37 +439,64 @@ Widget _buildDateTimeCard(String dateString, String timeString) {
                     cab.category,
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey.shade600,
+                      color: _textSecondary,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
                   Row(
                     children: [
-                      Icon(
-                        Icons.people,
-                        size: 16,
-                        color: Colors.grey.shade600,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${cab.seatingCapacity} passengers',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey.shade600,
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: _backgroundColor,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.people,
+                              size: 16,
+                              color: _textSecondary,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${cab.seatingCapacity}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: _textSecondary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(width: 16),
-                      Icon(
-                        Icons.luggage,
-                        size: 16,
-                        color: Colors.grey.shade600,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${cab.bagCapacity} bags',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey.shade600,
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: _backgroundColor,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.luggage,
+                              size: 16,
+                              color: _textSecondary,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${cab.bagCapacity}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: _textSecondary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -448,8 +513,9 @@ Widget _buildDateTimeCard(String dateString, String timeString) {
   Widget _buildFareCard(Fare fare) {
     return Card(
       elevation: 0,
+      color: _cardColor,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -457,63 +523,74 @@ Widget _buildDateTimeCard(String dateString, String timeString) {
           children: [
             // Base fare
             _buildFareRow('Base Fare', '₹${fare.baseFare}'),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             
             // Additional charges
             if (fare.driverAllowance > 0)
               Padding(
-                padding: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.only(bottom: 12),
                 child: _buildFareRow('Driver Allowance', '₹${fare.driverAllowance}'),
               ),
             
             if (fare.gst > 0)
               Padding(
-                padding: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.only(bottom: 12),
                 child: _buildFareRow('GST', '₹${fare.gst}'),
               ),
             
             if (fare.tollTax > 0)
               Padding(
-                padding: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.only(bottom: 12),
                 child: _buildFareRow('Toll Tax', '₹${fare.tollTax}'),
               ),
             
             if (fare.stateTax > 0)
               Padding(
-                padding: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.only(bottom: 12),
                 child: _buildFareRow('State Tax', '₹${fare.stateTax}'),
               ),
             
             if (fare.airportFee > 0)
               Padding(
-                padding: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.only(bottom: 12),
                 child: _buildFareRow('Airport Fee', '₹${fare.airportFee}'),
               ),
             
             // Divider
-            const Divider(height: 24),
+            Divider(
+              height: 32,
+              thickness: 1,
+              color: _textLight.withOpacity(0.3),
+            ),
             
             // Total amount
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Total Amount',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey.shade800,
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: _secondaryColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Total Amount',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: _textPrimary,
+                    ),
                   ),
-                ),
-                Text(
-                  '₹${fare.totalAmount}',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: maincolor1,
+                  Text(
+                    '₹${fare.totalAmount}',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: _secondaryColor,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
@@ -529,14 +606,16 @@ Widget _buildDateTimeCard(String dateString, String timeString) {
           label,
           style: TextStyle(
             fontSize: 14,
-            color: Colors.grey.shade600,
+            color: _textSecondary,
+            fontWeight: FontWeight.w500,
           ),
         ),
         Text(
           value,
           style: TextStyle(
             fontSize: 14,
-            color: Colors.grey.shade800,
+            color: _textPrimary,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ],

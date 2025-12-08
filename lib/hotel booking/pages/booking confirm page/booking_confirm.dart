@@ -13,6 +13,7 @@ import 'package:minna/hotel%20booking/domain/hotel%20details%20/hotel_details.da
 import 'package:minna/hotel%20booking/domain/rooms/rooms.dart' hide CancelPolicy;
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
+
 class HotelBookingConfirmationPage extends StatefulWidget {
       final String prebookId;
 
@@ -407,7 +408,8 @@ class _HotelBookingConfirmationPageState extends State<HotelBookingConfirmationP
                     SizedBox(width: 16),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: (){                    Navigator.of(context).popUntil((route) => route.isFirst);
+                        onPressed: (){           
+Navigator.of(context).popUntil((route) => route.isFirst);
 },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _primaryColor,
@@ -950,7 +952,7 @@ _showContactSupportSheet(context);
                     ),
                   ),
                 );
-              }).toList(),
+              }),
           ],
         ),
       ),
@@ -1020,7 +1022,7 @@ _showContactSupportSheet(context);
 
  Widget _buildCancellationPolicy(PreBookRoom preBookRoom) {
   // Format date from "2024-01-01T00:00:00" to "01 Jan 2024"
-  String _formatPolicyDate(String dateString) {
+  String formatPolicyDate(String dateString) {
     try {
       final date = DateTime.parse(dateString);
       return DateFormat('dd MMM yyyy').format(date);
@@ -1030,7 +1032,7 @@ _showContactSupportSheet(context);
   }
 
   // Format charge type to be more readable
-  String _formatChargeType(String chargeType) {
+  String formatChargeType(String chargeType) {
     switch (chargeType.toLowerCase()) {
       case 'flat':
         return 'Flat Charge';
@@ -1044,9 +1046,9 @@ _showContactSupportSheet(context);
   }
 
   // Get policy description based on charge type and amount
-  String _getPolicyDescription(CancelPolicy policy) {
-    final formattedDate = _formatPolicyDate(policy.fromDate);
-    final chargeType = _formatChargeType(policy.chargeType);
+  String getPolicyDescription(CancelPolicy policy) {
+    final formattedDate = formatPolicyDate(policy.fromDate);
+    final chargeType = formatChargeType(policy.chargeType);
     final charge = policy.cancellationCharge;
 
     if (policy.chargeType.toLowerCase() == 'percentage') {
@@ -1148,7 +1150,7 @@ _showContactSupportSheet(context);
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  _getPolicyDescription(policy),
+                                  getPolicyDescription(policy),
                                   style: TextStyle(
                                     fontSize: 13,
                                     color: _textPrimary,
@@ -1163,7 +1165,7 @@ _showContactSupportSheet(context);
                       ],
                     ),
                   );
-                }).toList(),
+                }),
 
                 // Additional information
                 if (preBookRoom.cancelPolicies.isNotEmpty)

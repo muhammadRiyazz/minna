@@ -1271,9 +1271,8 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
       ),
     );
   }
-
- Widget _buildEnhancedFareBreakdownWithCommission(BookingState bookingstate) {
-  final fare = bookingstate.bookingdata! .journey.flightOption.flightFares.first;
+Widget _buildEnhancedFareBreakdownWithCommission(BookingState bookingstate) {
+  final fare = bookingstate.bookingdata!.journey.flightOption.flightFares.first;
   final passengers = bookingstate.bookingdata!.passengers;
   
   // Calculate passenger counts by type
@@ -1281,12 +1280,49 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
   final childCount = passengers.where((p) => p.paxType == 'CHD').length;
   final infantCount = passengers.where((p) => p.paxType == 'INF').length;
   
-  // Calculate totals
-  double totalBaseFare = 0;
-  double totalTax = 0;
+  // Calculate base fare totals by passenger type
+  double adultBaseFare = 0;
+  double adultTax = 0;
+  double childBaseFare = 0;
+  double childTax = 0;
+  double infantBaseFare = 0;
+  double infantTax = 0;
   double totalDiscount = 0;
-  
- 
+
+  // Calculate base fares from fare types
+  for (final fareType in fare.fares) {
+    switch (fareType.ptc) {
+      case 'ADT':
+        adultBaseFare = (fareType.baseFare ?? 0) * adultCount;
+        adultTax = (fareType.tax ?? 0) * adultCount;
+        totalDiscount += (fareType.discount ?? 0) * adultCount;
+        break;
+      case 'CHD':
+        childBaseFare = (fareType.baseFare ?? 0) * childCount;
+        childTax = (fareType.tax ?? 0) * childCount;
+        totalDiscount += (fareType.discount ?? 0) * childCount;
+        break;
+      case 'INF':
+        infantBaseFare = (fareType.baseFare ?? 0) * infantCount;
+        infantTax = (fareType.tax ?? 0) * infantCount;
+        totalDiscount += (fareType.discount ?? 0) * infantCount;
+        break;
+    }
+  }
+
+  // Calculate totals
+  double totalBaseFare = adultBaseFare + childBaseFare + infantBaseFare;
+  double totalTax = adultTax + childTax + infantTax;
+  double totalAdditionalCharges = 0;
+
+  // Calculate additional charges (baggage, meals, seats)
+  final additionalChargesList = _calculateAdditionalCharges(passengers);
+  totalAdditionalCharges = additionalChargesList.fold(0, (sum, charge) => sum + charge.amount);
+
+  // Calculate final total
+  double subtotal = totalBaseFare + totalTax + totalAdditionalCharges;
+  double serviceCharge = bookingstate.totalCommission ?? 0;
+  double finalTotal = subtotal + serviceCharge - totalDiscount;
 
   return Container(
     margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -1303,12 +1339,10 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
     ),
     child: Column(
       children: [
+        // Header
         Container(
           width: double.infinity,
           padding: EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-          ),
           child: Row(
             children: [
               Container(
@@ -1327,227 +1361,103 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
               Text(
                 'Fare Breakdown',
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: _primaryColor,
                 ),
               ),
-              SizedBox(width: 8),
-           
             ],
           ),
         ),
         Divider(height: 1),
+        
         Padding(
           padding: EdgeInsets.all(20),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // // Passenger Summary
-              // if (adultCount > 0 || childCount > 0 || infantCount > 0)
-              //   Container(
-              //     padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-              //     decoration: BoxDecoration(
-              //       color: _backgroundColor,
-              //       borderRadius: BorderRadius.circular(8),
-              //     ),
-              //     child: Row(
-              //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //       children: [
-              //         Text(
-              //           'Passengers',
-              //           style: TextStyle(
-              //             fontSize: 12,
-              //             fontWeight: FontWeight.w600,
-              //             color: _textPrimary,
-              //           ),
-              //         ),
-              //         Text(
-              //           '${adultCount > 0 ? '$adultCount Adult${adultCount > 1 ? 's' : ''}' : ''}'
-              //           '${childCount > 0 ? '${adultCount > 0 ? ', ' : ''}$childCount Child${childCount > 1 ? 'ren' : ''}' : ''}'
-              //           '${infantCount > 0 ? '${(adultCount > 0 || childCount > 0) ? ', ' : ''}$infantCount Infant${infantCount > 1 ? 's' : ''}' : ''}',
-              //           style: TextStyle(
-              //             fontSize: 12,
-              //             color: _textSecondary,
-              //           ),
-              //         ),
-              //       ],
-              //     ),
-              //   ),
-              // SizedBox(height: 16),
-
-              // Base Fare Breakdown by Passenger Type
-              ...fare.fares.map((fareType) {
-                final passengerType = fareType.ptc;
-                int passengerCount = 0;
-                
-                switch (passengerType) {
-                  case 'ADT':
-                    passengerCount = adultCount;
-                    break;
-                  case 'CHD':
-                    passengerCount = childCount;
-                    break;
-                  case 'INF':
-                    passengerCount = infantCount;
-                    break;
-                }
-                
-                if (passengerCount == 0) return SizedBox.shrink();
-
-                final baseFare = fareType.baseFare ?? 0;
-                final tax = fareType.tax ?? 0;
-                final discount = fareType.discount ?? 0;
-                
-                // Add to totals
-                totalBaseFare += baseFare * passengerCount;
-                totalTax += tax * passengerCount;
-                totalDiscount += discount * passengerCount;
-
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Passenger Type Header
-                    Container(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            '${_getPassengerTypeName(passengerType!)}'
-                            '${passengerCount > 1 ? ' ($passengerCount)' : ''}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 15,
-                              color: _primaryColor,
-                            ),
-                          ),
-                          if (passengerCount > 1)
-                            Text(
-                              '× $passengerCount',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: _textSecondary,
-                              ),
-                            ),
-                        ],
-                      ),
+              // Adult Section
+              if (adultCount > 0) _buildPassengerTypeSection(
+                'Adult',
+                adultCount,
+                adultBaseFare / adultCount,
+                adultTax / adultCount,
+              ),
+              
+              // Child Section
+              if (childCount > 0) _buildPassengerTypeSection(
+                'Child',
+                childCount,
+                childBaseFare / childCount,
+                childTax / childCount,
+              ),
+              
+              // Infant Section
+              if (infantCount > 0) _buildPassengerTypeSection(
+                'Infant',
+                infantCount,
+                infantBaseFare / infantCount,
+                infantTax / infantCount,
+              ),
+              
+              // Divider
+              if (adultCount > 0 || childCount > 0 || infantCount > 0)
+                Divider(height: 24, color: Colors.grey.shade300),
+              
+              // Additional Services Section
+              if (additionalChargesList.isNotEmpty) ...[
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.only(bottom: 12),
+                  child: Text(
+                    'Additional Services',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: _primaryColor,
                     ),
-                    
-                    // Base Fare
-                    _fareRow(
-                      'Base Fare',
-                      '₹',
-                      baseFare,
-                      passengerCount: passengerCount,
-                    ),
-                    
-                    // Taxes & Fees
-                    _fareRow(
-                      'Taxes',
-                      '₹',
-                      tax,
-                      passengerCount: passengerCount,
-                    ),
-                    
-                    // Discount
-                    // if (discount > 0)
-                    //   _fareRow(
-                    //     'Discount',
-                    //     '₹',
-                    //     discount,
-                    //     passengerCount: passengerCount,
-                    //     isDiscount: true,
-                    //   ),
-                    
-                    // Passenger Type Total
-                    // if (passengerCount > 1)
-                    //   Container(
-                    //     margin: EdgeInsets.symmetric(vertical: 8),
-                    //     padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                    //     decoration: BoxDecoration(
-                    //       color: _backgroundColor,
-                    //       borderRadius: BorderRadius.circular(8),
-                    //     ),
-                    //     child: Row(
-                    //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //       children: [
-                    //         Text(
-                    //           '${_getPassengerTypeName(passengerType)} Total',
-                    //           style: TextStyle(
-                    //             fontSize: 13,
-                    //             fontWeight: FontWeight.w600,
-                    //             color: _textPrimary,
-                    //           ),
-                    //         ),
-                    //         Text(
-                    //           '₹${((baseFare + tax - discount) * passengerCount).toStringAsFixed(0)}',
-                    //           style: TextStyle(
-                    //             fontSize: 13,
-                    //             fontWeight: FontWeight.w700,
-                    //             color: _secondaryColor,
-                    //           ),
-                    //         ),
-                    //       ],
-                    //     ),
-                    //   ),
-                    
-                    Divider(height: 24, color: Colors.grey.shade300),
-                  ],
-                );
-              }).toList(),
-
-              // Commission Section
-              // Container(
-              //   padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-              //   decoration: BoxDecoration(
-              //     color: _secondaryColor.withOpacity(0.05),
-              //     borderRadius: BorderRadius.circular(12),
-              //     border: Border.all(color: _secondaryColor.withOpacity(0.2)),
-              //   ),
-              //   child: Column(
-              //     children: [
-              //       _fareRow(
-              //         'Service Charge',
-              //         '₹',
-              //         commissionAmount,
-              //         isCommission: true,
-              //       ),
-              //       SizedBox(height: 8),
-              //       Text(
-              //         'Applicable for $travelType flights',
-              //         style: TextStyle(
-              //           fontSize: 11,
-              //           color: _textSecondary,
-              //           fontStyle: FontStyle.italic,
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ),
-
-              // SizedBox(height: 16),
-
+                  ),
+                ),
+                
+                Column(
+                  children: additionalChargesList.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final charge = entry.value;
+                    return _buildAdditionalChargeRow(
+                      charge.label,
+                      charge.amount,
+                      index: index + 1,
+                    );
+                  }).toList(),
+                ),
+                
+                SizedBox(height: 16),
+              ],
+              
               // Summary Section
               Container(
-                padding: EdgeInsets.all(12),
+                padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: _backgroundColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
                   children: [
-                    _summaryRow('Total Base Fare', '₹', totalBaseFare),
-                    _summaryRow('Total Taxes', '₹', totalTax),
-                                        _summaryRow('Service Charge', '₹',  bookingstate.  totalCommission!, isCommission: true),
-
+                    _buildSummaryRow('Total Base Fare', totalBaseFare),
+                    _buildSummaryRow('Total Taxes', totalTax),
+                    
+                    if (totalAdditionalCharges > 0)
+                      _buildSummaryRow('Additional Services', totalAdditionalCharges),
+                    
+                    _buildSummaryRow('Service Charge', serviceCharge, isCommission: true),
+                    
                     if (totalDiscount > 0)
-                      _summaryRow('Discount', '₹', totalDiscount, isDiscount: true),
+                      _buildSummaryRow('Discount', -totalDiscount, isDiscount: true),
+                    
                     Divider(height: 16, color: Colors.grey.shade400),
-                    _summaryRow(
+                    
+                    _buildSummaryRow(
                       'Total Payable',
-                      '₹',
-                  bookingstate.     totalAmountWithCommission!,
+                      finalTotal,
                       isTotal: true,
                     ),
                   ],
@@ -1561,71 +1471,157 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
   );
 }
 
-String _getPassengerTypeName(String paxType) {
-  switch (paxType) {
-    case 'ADT':
-      return 'Adult';
-    case 'CHD':
-      return 'Child';
-    case 'INF':
-      return 'Infant';
-    default:
-      return paxType;
+
+
+// Calculate all additional charges
+List<AdditionalCharge> _calculateAdditionalCharges(List<RePassenger> passengers) {
+  final List<AdditionalCharge> charges = [];
+
+  for (final passenger in passengers) {
+    final ssr = passenger.ssrAvailability;
+    if (ssr != null) {
+      final passengerName = '${passenger.title} ${passenger.firstName} ${passenger.lastName}';
+      
+      // Baggage charges
+      if (ssr.baggageInfo != null) {
+        for (final baggageInfo in ssr.baggageInfo!) {
+          if (baggageInfo.baggages != null) {
+            for (final baggage in baggageInfo.baggages!) {
+              if (baggage.amount != null && baggage.amount! > 0) {
+                charges.add(AdditionalCharge(
+                  'Extra Baggage - $passengerName',
+                  baggage.amount!,
+                ));
+              }
+            }
+          }
+        }
+      }
+      
+      // Meal charges
+      if (ssr.mealInfo != null) {
+        for (final mealInfo in ssr.mealInfo!) {
+          if (mealInfo.meals != null) {
+            for (final meal in mealInfo.meals!) {
+              if (meal.amount != null && meal.amount! > 0) {
+                charges.add(AdditionalCharge(
+                  'Meal - ${meal.name} - $passengerName',
+                  meal.amount!,
+                ));
+              }
+            }
+          }
+        }
+      }
+      
+      // Seat charges
+      if (ssr.seatInfo != null) {
+        for (final seatInfo in ssr.seatInfo!) {
+          if (seatInfo.seats != null) {
+            for (final seat in seatInfo.seats!) {
+              if (seat.fare != null && seat.fare!.isNotEmpty) {
+                final seatFare = double.tryParse(seat.fare!);
+                if (seatFare != null && seatFare > 0) {
+                  charges.add(AdditionalCharge(
+                    'Seat Selection - $passengerName',
+                    seatFare,
+                  ));
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
+
+  return charges;
 }
 
-Widget _fareRow(
-  String label,
-  String symbol,
-  double amount, {
-  int passengerCount = 1,
-  bool isDiscount = false,
-  bool isCommission = false,
-}) {
-  if (amount == 0) return SizedBox.shrink();
+// Build passenger type section (Adult, Child, Infant)
+Widget _buildPassengerTypeSection(String type, int count, double baseFare, double tax) {
+  return Column(
+    children: [
+      // Passenger type header
+      Container(
+        width: double.infinity,
+        padding: EdgeInsets.only(bottom: 8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              '$type${count > 1 ? ' ($count)' : ''}',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 15,
+                color: _primaryColor,
+              ),
+            ),
+            if (count > 1)
+              Text(
+                '× $count',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: _textSecondary,
+                ),
+              ),
+          ],
+        ),
+      ),
+      
+      // Base Fare
+      _buildFareRow('Base Fare', baseFare, count),
+      
+      // Taxes
+      _buildFareRow('Taxes', tax, count),
+      
+      SizedBox(height: 12),
+    ],
+  );
+}
 
+// Build individual fare row
+Widget _buildFareRow(String label, double amount, int passengerCount) {
   final totalAmount = amount * passengerCount;
-
+  
   return Padding(
     padding: EdgeInsets.symmetric(vertical: 4),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Expanded(
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 14,
-              color: isDiscount ? _successColor : (isCommission ? _secondaryColor : _textPrimary),
-              fontWeight: FontWeight.w500,
-            ),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            color: _textPrimary,
+            fontWeight: FontWeight.w500,
           ),
         ),
         Row(
           children: [
-            if (passengerCount > 1 && label=='Base Fare') ...[
+            if (passengerCount > 1) ...[
               Text(
-                NumberFormat.currency(symbol: symbol).format(amount),
+                '₹${amount.toStringAsFixed(2)}',
                 style: TextStyle(
-                  fontSize: 10,
+                  fontSize: 12,
                   color: _textSecondary,
                 ),
               ),
               Text(
                 ' × $passengerCount',
                 style: TextStyle(
-                  fontSize: 10,
+                  fontSize: 12,
                   color: _textSecondary,
                 ),
               ),
               SizedBox(width: 8),
             ],
             Text(
-              (isDiscount ? '-' : '') + NumberFormat.currency(symbol: symbol).format(totalAmount),
+              '₹${totalAmount.toStringAsFixed(2)}',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: isDiscount ? _successColor : (isCommission ? _secondaryColor : _textPrimary),
+                color: _textPrimary,
               ),
             ),
           ],
@@ -1635,16 +1631,75 @@ Widget _fareRow(
   );
 }
 
-Widget _summaryRow(
-  String label,
-  String symbol,
-  double amount, {
+// Build additional charge row
+Widget _buildAdditionalChargeRow(String label, double amount, {required int index}) {
+  return Padding(
+    padding: EdgeInsets.symmetric(vertical: 6),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: Row(
+            children: [
+              Container(
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: _secondaryColor.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(
+                    index.toString(),
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: _secondaryColor,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: _textPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(width: 8),
+        Text(
+          '₹${amount.toStringAsFixed(2)}',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: _textPrimary,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+// Build summary row
+Widget _buildSummaryRow(String label, double amount, {
   bool isDiscount = false,
   bool isCommission = false,
   bool isTotal = false,
 }) {
+  final isNegative = amount < 0;
+  final displayAmount = isNegative ? -amount : amount;
+  
   return Padding(
-    padding: EdgeInsets.symmetric(vertical: 3),
+    padding: EdgeInsets.symmetric(vertical: 6),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -1659,7 +1714,7 @@ Widget _summaryRow(
           ),
         ),
         Text(
-          (isDiscount ? '-' : '') + NumberFormat.currency(symbol: symbol).format(amount),
+          '${isNegative ? '-' : ''}₹${displayAmount.toStringAsFixed(2)}',
           style: TextStyle(
             fontSize: isTotal ? 16 : 14,
             fontWeight: isTotal ? FontWeight.w800 : FontWeight.w600,
@@ -1678,9 +1733,9 @@ Future<dynamic> _showBottomSheetbooking({
   required BuildContext context,
   required BookingState state,
 }) {
-  final _primaryColor = Colors.black;
-  final _secondaryColor = Color(0xFFD4AF37);
-  final _errorColor = Color(0xFFE53935);
+  final primaryColor = Colors.black;
+  final secondaryColor = Color(0xFFD4AF37);
+  final errorColor = Color(0xFFE53935);
 
   final isSuccess = state.isBookingConfirmed ?? false;
   final isError = state.bookingError != null;
@@ -1711,21 +1766,21 @@ Future<dynamic> _showBottomSheetbooking({
               Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: _secondaryColor.withOpacity(0.1),
+                  color: secondaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.check_circle_rounded, color: _secondaryColor, size: 40),
+                child: Icon(Icons.check_circle_rounded, color: secondaryColor, size: 40),
               ),
               SizedBox(height: 16),
               Text(
                 'Booking Completed Successfully!',textAlign:TextAlign.center ,
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: _primaryColor),
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: primaryColor),
               ),
               SizedBox(height: 12),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: _secondaryColor.withOpacity(0.1),
+                  color: secondaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -1733,14 +1788,14 @@ Future<dynamic> _showBottomSheetbooking({
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
-                    color: _primaryColor,
+                    color: primaryColor,
                   ),
                 ),
               ),
               Spacer(),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _primaryColor,
+                  backgroundColor: primaryColor,
                   foregroundColor: Colors.white,
                   minimumSize: Size.fromHeight(56),
                   shape: RoundedRectangleBorder(
@@ -1763,10 +1818,10 @@ Future<dynamic> _showBottomSheetbooking({
               Container(
                 padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: _secondaryColor.withOpacity(0.1),
+                  color: secondaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.error_outline_rounded, color: _errorColor, size: 40),
+                child: Icon(Icons.error_outline_rounded, color: errorColor, size: 40),
               ),
               SizedBox(height: 16),
               Text(
@@ -1774,7 +1829,7 @@ Future<dynamic> _showBottomSheetbooking({
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 18,
-                  color: _errorColor,
+                  color: errorColor,
                 ),
               ),
               SizedBox(height: 12),
@@ -1783,7 +1838,7 @@ Future<dynamic> _showBottomSheetbooking({
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 13,
-                  color: _errorColor,
+                  color: errorColor,
                 ),
               ),
               Spacer(),
@@ -1792,7 +1847,7 @@ Future<dynamic> _showBottomSheetbooking({
                 height: 56,
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: _primaryColor,
+                    foregroundColor: primaryColor,
                     side: BorderSide(color: Colors.grey.shade300),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
@@ -1815,10 +1870,10 @@ Future<dynamic> _showBottomSheetbooking({
               Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: _secondaryColor.withOpacity(0.1),
+                  color: secondaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.flight_takeoff_rounded, color: _secondaryColor, size: 40),
+                child: Icon(Icons.flight_takeoff_rounded, color: secondaryColor, size: 40),
               ),
               SizedBox(height: 16),
               Text(
@@ -1826,7 +1881,7 @@ Future<dynamic> _showBottomSheetbooking({
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 15,
-                  color: _primaryColor,
+                  color: primaryColor,
                 ),
               ),
               SizedBox(height: 8),
@@ -1838,7 +1893,7 @@ Future<dynamic> _showBottomSheetbooking({
               Spacer(),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _primaryColor,
+                  backgroundColor: primaryColor,
                   foregroundColor: Colors.white,
                   minimumSize: Size.fromHeight(56),
                   shape: RoundedRectangleBorder(
@@ -1863,7 +1918,7 @@ Future<dynamic> _showBottomSheetbooking({
                 child: Text(
                   'Exit Booking',
                   style: TextStyle(
-                    color: _primaryColor,
+                    color: primaryColor,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
@@ -1891,4 +1946,9 @@ String convertMsDateToFormattedDate(String msDate) {
       "${date.year}";
 
   return formattedDate;
+}class AdditionalCharge {
+  final String label;
+  final double amount;
+
+  AdditionalCharge(this.label, this.amount);
 }

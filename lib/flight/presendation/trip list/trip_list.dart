@@ -218,7 +218,7 @@ tripType:tripType,
             ),
           ),
           const SizedBox(height: 32),
-          Container(
+          SizedBox(
             width: 200,
             height: 50,
             child: ElevatedButton(
@@ -873,7 +873,7 @@ class FlightCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '${stops == 0 ? 'Non-stop' : '$stops ${stops == 1 ? 'stop' : 'stops'}'}',
+                    stops == 0 ? 'Non-stop' : '$stops ${stops == 1 ? 'stop' : 'stops'}',
                     style: TextStyle(
                       fontSize: 10,
                       color: stops == 0 ? secondaryColor : textSecondary,
@@ -1591,7 +1591,7 @@ final String tripType;
           ),
         ),
         const SizedBox(height: 12),
-        ...legs.map((leg) => _buildLegCard(leg)).toList(),
+        ...legs.map((leg) => _buildLegCard(leg)),
       ],
     );
   }
@@ -1742,7 +1742,7 @@ final String tripType;
           
           // Base fare breakdown
           if (selectedFare?.fares != null)
-            ...selectedFare!.fares!.map((fare) => _buildFareRow(fare)).toList(),
+            ...selectedFare!.fares!.map((fare) => _buildFareRow(fare)),
           
           
           // Commission row

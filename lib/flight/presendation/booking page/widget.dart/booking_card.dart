@@ -13,13 +13,13 @@ class FlightbookingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Theme colors
-    final Color _primaryColor = Colors.black;
-    final Color _secondaryColor = Color(0xFFD4AF37);
-    final Color _backgroundColor = Color(0xFFF8F9FA);
-    final Color _cardColor = Colors.white;
-    final Color _textPrimary = Colors.black;
-    final Color _textSecondary = Color(0xFF666666);
-    final Color _textLight = Color(0xFF999999);
+    final Color primaryColor = Colors.black;
+    final Color secondaryColor = Color(0xFFD4AF37);
+    final Color backgroundColor = Color(0xFFF8F9FA);
+    final Color cardColor = Colors.white;
+    final Color textPrimary = Colors.black;
+    final Color textSecondary = Color(0xFF666666);
+    final Color textLight = Color(0xFF999999);
 
     // Safely get onward and return legs with null checks
     final onwardLegs = flightOption.flightOnwardLegs ?? [];
@@ -71,7 +71,7 @@ class FlightbookingCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -100,7 +100,7 @@ class FlightbookingCard extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: _secondaryColor,
+                    color: secondaryColor,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -116,7 +116,7 @@ class FlightbookingCard extends StatelessWidget {
                     
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: _primaryColor,
+                    color: primaryColor,
                   ),
                 ),
               ],
@@ -134,7 +134,7 @@ class FlightbookingCard extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: _secondaryColor.withOpacity(0.04),
+                    color: secondaryColor.withOpacity(0.04),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -155,10 +155,10 @@ class FlightbookingCard extends StatelessWidget {
                             fit: BoxFit.contain,
                             errorBuilder: (context, error, stackTrace) =>
                                 Container(
-                              color: _backgroundColor,
+                              color: backgroundColor,
                               child: Icon(
                                 Icons.airlines_rounded,
-                                color: _secondaryColor,
+                                color: secondaryColor,
                                 size: 20,
                               ),
                             ),
@@ -176,7 +176,7 @@ class FlightbookingCard extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
-                                color: _primaryColor,
+                                color: primaryColor,
                               ),
                             ),
                             SizedBox(height: 2),
@@ -184,7 +184,7 @@ class FlightbookingCard extends StatelessWidget {
                               flightOption.ticketingCarrier ?? 'Flight Carrier',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: _textSecondary,
+                                color: textSecondary,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -195,16 +195,16 @@ class FlightbookingCard extends StatelessWidget {
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: _secondaryColor.withOpacity(0.1),
+                          color: secondaryColor.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: _secondaryColor.withOpacity(0.3)),
+                          border: Border.all(color: secondaryColor.withOpacity(0.3)),
                         ),
                         child: Text(
                           returnLegs.isNotEmpty ? 'Round Trip' : 'One Way',
                           style: TextStyle(
                             fontSize: 8,
                             fontWeight: FontWeight.w600,
-                            color: _secondaryColor,
+                            color: secondaryColor,
                           ),
                         ),
                       ),
@@ -226,9 +226,9 @@ class FlightbookingCard extends StatelessWidget {
                     arrivalTime: onwardArrivalTime,
                     duration: onwardDuration!,
                     stops: onwardStops,
-                    primaryColor: _primaryColor,
-                    secondaryColor: _secondaryColor,
-                    textSecondary: _textSecondary,
+                    primaryColor: primaryColor,
+                    secondaryColor: secondaryColor,
+                    textSecondary: textSecondary,
                   ),
 
                 // Return Journey Section
@@ -244,9 +244,9 @@ class FlightbookingCard extends StatelessWidget {
                     arrivalTime: returnArrivalTime,
                     duration: returnDuration!,
                     stops: returnStops,
-                    primaryColor: _primaryColor,
-                    secondaryColor: _secondaryColor,
-                    textSecondary: _textSecondary,
+                    primaryColor: primaryColor,
+                    secondaryColor: secondaryColor,
+                    textSecondary: textSecondary,
                   ),
                 ],
 
@@ -256,26 +256,26 @@ class FlightbookingCard extends StatelessWidget {
                 if (onwardLegs.isNotEmpty || returnLegs.isNotEmpty)
                   Container(
                     decoration: BoxDecoration(
-                      color: _backgroundColor,
+                      color: backgroundColor,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: Colors.grey.shade200),
                     ),
                     child: ExpansionTile(
-                      collapsedIconColor: _secondaryColor,
-                      iconColor: _secondaryColor,
+                      collapsedIconColor: secondaryColor,
+                      iconColor: secondaryColor,
                       tilePadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       title: Row(
                         children: [
                           Container(
                             padding: EdgeInsets.all(4),
                             decoration: BoxDecoration(
-                              color: _secondaryColor.withOpacity(0.1),
+                              color: secondaryColor.withOpacity(0.1),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
                               Icons.list_alt_rounded,
                               size: 16,
-                              color: _secondaryColor,
+                              color: secondaryColor,
                             ),
                           ),
                           SizedBox(width: 12),
@@ -284,7 +284,7 @@ class FlightbookingCard extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: _primaryColor,
+                              color: primaryColor,
                             ),
                           ),
                         ],
@@ -299,9 +299,9 @@ class FlightbookingCard extends StatelessWidget {
                                 _buildLegsSection(
                                   title: 'Onward Journey Legs',
                                   legs: onwardLegs,
-                                  primaryColor: _primaryColor,
-                                  secondaryColor: _secondaryColor,
-                                  textSecondary: _textSecondary,
+                                  primaryColor: primaryColor,
+                                  secondaryColor: secondaryColor,
+                                  textSecondary: textSecondary,
                                 ),
                                 if (returnLegs.isNotEmpty) SizedBox(height: 20),
                               ],
@@ -310,9 +310,9 @@ class FlightbookingCard extends StatelessWidget {
                                 _buildLegsSection(
                                   title: 'Return Journey Legs',
                                   legs: returnLegs,
-                                  primaryColor: _primaryColor,
-                                  secondaryColor: _secondaryColor,
-                                  textSecondary: _textSecondary,
+                                  primaryColor: primaryColor,
+                                  secondaryColor: secondaryColor,
+                                  textSecondary: textSecondary,
                                 ),
                             ],
                           ),
@@ -590,7 +590,7 @@ class FlightbookingCard extends StatelessWidget {
               if (!isLast) _buildLayoverInfo(leg, legs[index + 1], secondaryColor, textSecondary),
             ],
           );
-        }).toList(),
+        }),
       ],
     );
   }

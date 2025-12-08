@@ -6,8 +6,6 @@ import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:minna/bus/infrastructure/fareCalculation/fare_calculation.dart';
 import 'package:minna/bus/infrastructure/time.dart';
-import 'package:minna/bus/pages/Screen%20available%20Trip/screen_available_triplist.dart';
-import 'package:minna/comman/const/const.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../domain/CncelData/cancel_data.dart';

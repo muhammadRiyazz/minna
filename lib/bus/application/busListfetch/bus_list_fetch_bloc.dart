@@ -14,7 +14,7 @@ part 'bus_list_fetch_bloc.freezed.dart';
 
 class BusListFetchBloc extends Bloc<BusListFetchEvent, BusListFetchState> {
   BusListFetchBloc() : super(BusListFetchState.initial()) {
-    List<AvailableTrip> _totalTripList = [];
+    List<AvailableTrip> totalTripList = [];
     
     on<FetchTrip>((event, emit) async {
       emit(
@@ -53,7 +53,7 @@ class BusListFetchBloc extends Bloc<BusListFetchEvent, BusListFetchState> {
                 busLogFromJson(resp.body).availableTrips
                   ..sort((a, b) => a.departureTime.compareTo(b.departureTime));
 
-            _totalTripList = availableTriplist;
+            totalTripList = availableTriplist;
 
             emit(
               state.copyWith(
@@ -79,7 +79,7 @@ class BusListFetchBloc extends Bloc<BusListFetchEvent, BusListFetchState> {
     on<FilterConform>((event, emit) {
       emit(state.copyWith(isLoading: true, isError: false));
 
-      List<AvailableTrip> filteredTrips = _totalTripList;
+      List<AvailableTrip> filteredTrips = totalTripList;
 
       // Apply bus type filters
       if (event.sleeper || event.seater || event.ac || event.nonAC) {
@@ -129,7 +129,7 @@ class BusListFetchBloc extends Bloc<BusListFetchEvent, BusListFetchState> {
           !event.arrivalCase4;
 
       if (noFiltersSelected) {
-        filteredTrips = _totalTripList;
+        filteredTrips = totalTripList;
       }
 
       log('Filtered trips: ${filteredTrips.length}');

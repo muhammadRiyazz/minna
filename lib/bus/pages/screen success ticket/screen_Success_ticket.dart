@@ -42,7 +42,7 @@ class _ScreenSuccessTicketState extends State<ScreenSuccessTicket> {
       child: Scaffold(
         backgroundColor: _backgroundColor,
         body: SafeArea(
-          child: Container(
+          child: SizedBox(
             width: double.infinity,
             height: double.infinity,
             child: Stack(

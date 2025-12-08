@@ -1458,7 +1458,7 @@ void _showAllFacilitiesBottomSheet(List<String> facilities) {
                   style: TextStyle(color: _textSecondary),
                 ),
                 SizedBox(height: 20),
-                Container(
+                SizedBox(
                   width: 140,
                   child: ElevatedButton(
                     onPressed: () {
@@ -1552,7 +1552,7 @@ void _showAllFacilitiesBottomSheet(List<String> facilities) {
                   style: TextStyle(color: _textSecondary),
                 ),
                 SizedBox(height: 20),
-                Container(
+                SizedBox(
                   width: 120,
                   child: ElevatedButton(
                     onPressed: () => Navigator.pop(context),

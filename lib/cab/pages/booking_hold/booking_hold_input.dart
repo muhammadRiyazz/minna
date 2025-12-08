@@ -452,7 +452,7 @@ class _BookingPageState extends State<BookingPage> {
               Row(
                 children: [
                   // Country Code (Fixed +91)
-                  Container(
+                  SizedBox(
                     width: 80,
                     child: _buildCountryCodeField(countryCode),
                   ),
@@ -474,7 +474,7 @@ class _BookingPageState extends State<BookingPage> {
               Row(
                 children: [
                   // Country Code (Fixed +91)
-                  Container(
+                  SizedBox(
                     width: 80,
                     child: _buildCountryCodeField(countryCode),
                   ),
@@ -768,7 +768,7 @@ class _BookingPageState extends State<BookingPage> {
       trailing: Switch(
         value: value,
         onChanged: onChanged,
-        activeColor: _secondaryColor,
+        activeThumbColor: _secondaryColor,
         activeTrackColor: _secondaryColor.withOpacity(0.5),
       ),
     );

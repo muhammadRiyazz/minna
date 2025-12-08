@@ -5,7 +5,6 @@ import 'package:minna/bus/domain/trips%20list%20modal/trip_list_modal.dart';
 import 'package:minna/bus/pages/Screen%20BdDP%20details/screen_boarding_droping_details.dart';
 import 'package:minna/bus/pages/screen%20seats%20page/widgets/berthgrid.view.dart';
 import 'package:minna/bus/presendation/widgets/error_widget.dart';
-import 'package:minna/comman/const/const.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shimmer/shimmer.dart';

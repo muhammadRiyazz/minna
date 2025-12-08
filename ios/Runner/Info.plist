@@ -26,10 +26,73 @@
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
+	
+	<!-- Location Permissions -->
 	<key>NSLocationWhenInUseUsageDescription</key>
-<string>This app needs access to location when open to get your current location for cab booking.</string>
-<key>NSLocationAlwaysUsageDescription</key>
-<string>This app needs access to location when in the background to get your current location for cab booking.</string>
+	<string>This app needs access to location when open to get your current location for cab booking.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app needs access to location when in the background to get your current location for cab booking.</string>
+	
+	<!-- Razorpay Configuration -->
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>razorpay</string>
+		<string>googlechromes</string>
+		<string>comgooglemaps</string>
+		<string>maps</string>
+		<string>paytm</string>
+		<string>phonepe</string>
+		<string>gpay</string>
+	</array>
+	
+	<!-- App Transport Security for Razorpay -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>razorpay.com</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
+				<false/>
+			</dict>
+			<key>api.razorpay.com</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
+				<false/>
+			</dict>
+		</dict>
+	</dict>
+	
+	<!-- URL Types for Razorpay Callback -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>razorpay</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>razorpay</string>
+			</array>
+		</dict>
+	</array>
+	
+	<!-- Camera Permission for Card Scanning (Optional) -->
+	<key>NSCameraUsageDescription</key>
+	<string>This app requires camera access to scan credit/debit cards for payment</string>
+	
+	<!-- Photo Library Permission (Optional) -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app requires photo library access to save payment receipts</string>
+	
+	<!-- UI Configuration -->
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>
@@ -38,12 +101,6 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>LSApplicationQueriesSchemes</key>
-<array>
-    <string>googlechromes</string>
-    <string>comgooglemaps</string>
-    <string>maps</string>
-</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -51,6 +108,8 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	
+	<!-- Performance Settings -->
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

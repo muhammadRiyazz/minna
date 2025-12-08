@@ -721,8 +721,8 @@ class AccountSettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color _primaryColor = Colors.black;
-    final Color _secondaryColor = Color(0xFFD4AF37);
+    final Color primaryColor = Colors.black;
+    final Color secondaryColor = Color(0xFFD4AF37);
 
     return Scaffold(
       backgroundColor: Color(0xFFF8F9FA),
@@ -734,7 +734,7 @@ class AccountSettingsPage extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
         ),
-        backgroundColor: _primaryColor,
+        backgroundColor: primaryColor,
         elevation: 0,
         centerTitle: true,
         shape: RoundedRectangleBorder(

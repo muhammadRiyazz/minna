@@ -7,17 +7,17 @@ class AboutUsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Color Theme
-    final Color _primaryColor = Colors.black;
-    final Color _secondaryColor = Color(0xFFD4AF37);
-    final Color _accentColor = Color(0xFFC19B3C);
-    final Color _backgroundColor = Color(0xFFF8F9FA);
-    final Color _cardColor = Colors.white;
-    final Color _textPrimary = Colors.black;
-    final Color _textSecondary = Color(0xFF666666);
-    final Color _textLight = Color(0xFF999999);
+    final Color primaryColor = Colors.black;
+    final Color secondaryColor = Color(0xFFD4AF37);
+    final Color accentColor = Color(0xFFC19B3C);
+    final Color backgroundColor = Color(0xFFF8F9FA);
+    final Color cardColor = Colors.white;
+    final Color textPrimary = Colors.black;
+    final Color textSecondary = Color(0xFF666666);
+    final Color textLight = Color(0xFF999999);
 
     return Scaffold(
-      backgroundColor: _backgroundColor,
+      backgroundColor: backgroundColor,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -26,7 +26,7 @@ class AboutUsPage extends StatelessWidget {
             pinned: true,
             snap: false,
             floating: false,
-            backgroundColor: _primaryColor,
+            backgroundColor: primaryColor,
             elevation: 4,
             shadowColor: Colors.black.withOpacity(0.3),
             flexibleSpace: FlexibleSpaceBar(
@@ -34,7 +34,7 @@ class AboutUsPage extends StatelessWidget {
               title: Text(
                 'MT Trip',
                 style: TextStyle(
-                  color: _cardColor,
+                  color: cardColor,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -42,7 +42,7 @@ class AboutUsPage extends StatelessWidget {
               background: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [_primaryColor, _primaryColor.withOpacity(0.9)],
+                    colors: [primaryColor, primaryColor.withOpacity(0.9)],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
@@ -53,7 +53,7 @@ class AboutUsPage extends StatelessWidget {
                     Icon(
                       Icons.travel_explore_rounded,
                       size: 50,
-                      color: _secondaryColor,
+                      color: secondaryColor,
                     ),
                    SizedBox(height: 60,)
                   ],
@@ -67,19 +67,19 @@ class AboutUsPage extends StatelessWidget {
               child: Column(
                 children: [
                   // Description Card
-                  _buildDescriptionCard(_cardColor, _secondaryColor, _textPrimary, _textSecondary),
+                  _buildDescriptionCard(cardColor, secondaryColor, textPrimary, textSecondary),
                   SizedBox(height: 24),
 
                   // Services Grid
-                  _buildServicesSection(_cardColor, _secondaryColor, _textPrimary, _textSecondary),
+                  _buildServicesSection(cardColor, secondaryColor, textPrimary, textSecondary),
                   SizedBox(height: 24),
 
                   // Why Choose Us
-                  _buildWhyChooseUsSection(_cardColor, _secondaryColor, _textPrimary, _textSecondary),
+                  _buildWhyChooseUsSection(cardColor, secondaryColor, textPrimary, textSecondary),
                   SizedBox(height: 24),
 
                   // Final Statement
-                  _buildFinalStatement(_secondaryColor, _primaryColor, _cardColor),
+                  _buildFinalStatement(secondaryColor, primaryColor, cardColor),
                   SizedBox(height: 24),
                 ],
               ),

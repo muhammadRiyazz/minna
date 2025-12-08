@@ -12,7 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 class FlightBookingTab extends StatefulWidget {
-   FlightBookingTab({super.key});
+   const FlightBookingTab({super.key});
 
   @override
   State<FlightBookingTab> createState() => _FlightBookingTabState();
@@ -626,7 +626,7 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
     final isEnabled = state.from != null && state.to != null && 
         (!state.oneWay ? state.returnDate != null : true);
 
-    return Container(
+    return SizedBox(
       width: double.infinity,
       height: 56,
       child: ElevatedButton(

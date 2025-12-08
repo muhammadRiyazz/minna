@@ -6,9 +6,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:minna/cab/application/booked%20details/booked_details_bloc.dart';
+import 'package:minna/cab/application/booked%20info%20list/booked_info_bloc.dart';
 import 'package:minna/cab/domain/cab%20list%20model/cab_booked_details.dart';
 import 'package:minna/cab/function/commission_data.dart';
-import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/core/api.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -24,15 +24,14 @@ class BookingDetailsPage extends StatefulWidget {
 
 class _BookingDetailsPageState extends State<BookingDetailsPage> {
   bool _isCancelling = false;
-  bool _isConfirmingCancellation = false;
   final String _baseUrl = 'http://gozotech2.ddns.net:5192/api/cpapi/booking';
   final String _authorization = 'Basic ZjA2MjljNTIxZjE2MjU0NTA2YmIyMDQzNWI4MTJmMmE=';
   late CommissionProvider commissionProvider;
+  BuildContext? _parentContext;
 
   // New color scheme
   final Color _primaryColor = Colors.black;
   final Color _secondaryColor = Color(0xFFD4AF37); // Gold
-  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
   final Color _backgroundColor = Color(0xFFF8F9FA);
   final Color _cardColor = Colors.white;
   final Color _textPrimary = Colors.black;
@@ -61,23 +60,52 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Store parent context before creating local BlocProvider
+    _parentContext = context;
+    
     return BlocProvider(
       create: (context) =>
           BookedDetailsBloc()..add(BookedDetailsEvent.fetchDetails(widget.bookingId)),
-      child: Scaffold(
-        backgroundColor: _backgroundColor,
-        body: BlocBuilder<BookedDetailsBloc, BookedDetailsState>(
-          builder: (context, state) {
-            return state.maybeWhen(
-              loading: () => _buildShimmerLoading(),
-              success: (details) => _buildSuccessState(context, details),
-              error: (message) => _buildErrorState(context, message),
-              orElse: () => _buildInitialState(),
-            );
-          },
+      child: WillPopScope(
+        onWillPop: () async {
+          // Refresh booking list when navigating back
+          _refreshBookingListOnBack();
+          return true;
+        },
+        child: Scaffold(
+          backgroundColor: _backgroundColor,
+          body: BlocBuilder<BookedDetailsBloc, BookedDetailsState>(
+            builder: (context, state) {
+              return state.maybeWhen(
+                loading: () => _buildShimmerLoading(),
+                success: (details) => _buildSuccessState(context, details),
+                error: (message) => _buildErrorState(context, message),
+                orElse: () => _buildInitialState(),
+              );
+            },
+          ),
         ),
       ),
     );
+  }
+
+  /// Refresh booking list when navigating back
+  void _refreshBookingListOnBack() {
+    // Use the parent context we stored
+    final parentCtx = _parentContext;
+    if (parentCtx == null || !parentCtx.mounted) {
+      log('Parent context not available for refreshing booking list on back');
+      return;
+    }
+    
+    try {
+      final bookedInfoBloc = parentCtx.read<BookedInfoBloc>();
+      log('Refreshing booking list on back navigation');
+      bookedInfoBloc.add(BookedInfoEvent.fetchList());
+    } catch (e) {
+      // Silently fail if bloc is not available
+      log('Could not refresh booking list on back: $e');
+    }
   }
 
   Widget _buildShimmerLoading() {
@@ -182,7 +210,13 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
   }
 
   Widget _buildSuccessState(BuildContext context, BookingDetails details) {
-    final isCancelled = details.statusDesc.toLowerCase().contains('cancel');
+    // Check multiple ways the status might indicate cancellation
+    final statusLower = details.statusDesc.toLowerCase();
+    final isCancelled = statusLower.contains('cancel') || 
+                        statusLower.contains('cancelled') ||
+                        statusLower == 'cancel';
+    
+    log('📊 Building success state - Status: ${details.statusDesc}, isCancelled: $isCancelled');
 
     return Stack(
       children: [
@@ -523,7 +557,7 @@ Widget _buildJourneyCard(BookingDetails details) {
               ),
               const SizedBox(height: 12),
               // Second row - centered single item
-              _buildCompactTripInfoItem('Booked On', '${_formatDate(details.bookingDate)}'),
+              _buildCompactTripInfoItem('Booked On', _formatDate(details.bookingDate)),
             ],
           ),
         ),
@@ -1139,11 +1173,14 @@ Widget _buildCompactTripInfoItem(String title, String value) {
     String selectedReasonId = reasons.isNotEmpty ? reasons.first.id : '';
     String additionalText = '';
     String placeholder = reasons.isNotEmpty ? reasons.first.placeholder : 'Additional details';
+    bool isModalLoading = false;
 
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: _cardColor,
+      isDismissible: false,
+      enableDrag: false,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -1179,7 +1216,9 @@ Widget _buildCompactTripInfoItem(String title, String value) {
                         ),
                       ),
                       IconButton(
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: isModalLoading
+                            ? null
+                            : () => Navigator.of(context).pop(),
                         icon: Icon(Icons.close, color: _textSecondary),
                       ),
                     ],
@@ -1197,7 +1236,6 @@ Widget _buildCompactTripInfoItem(String title, String value) {
                         ),
                         const SizedBox(height: 12),
                         ...reasons.map((r) {
-                          final isSelected = r.id == selectedReasonId;
                           return ListTile(
                             contentPadding: EdgeInsets.zero,
                             title: Text(r.text),
@@ -1205,23 +1243,28 @@ Widget _buildCompactTripInfoItem(String title, String value) {
                             leading: Radio<String>(
                               value: r.id,
                               groupValue: selectedReasonId,
-                              onChanged: (val) {
-                                setModalState(() {
-                                  selectedReasonId = val ?? '';
-                                  placeholder = r.placeholder;
-                                });
-                              },
+                              onChanged: isModalLoading
+                                  ? null
+                                  : (val) {
+                                      setModalState(() {
+                                        selectedReasonId = val ?? '';
+                                        placeholder = r.placeholder;
+                                      });
+                                    },
                             ),
-                            onTap: () {
-                              setModalState(() {
-                                selectedReasonId = r.id;
-                                placeholder = r.placeholder;
-                              });
-                            },
+                            onTap: isModalLoading
+                                ? null
+                                : () {
+                                    setModalState(() {
+                                      selectedReasonId = r.id;
+                                      placeholder = r.placeholder;
+                                    });
+                                  },
                           );
                         }),
                         const SizedBox(height: 16),
                         TextField(
+                          enabled: !isModalLoading,
                           minLines: 1,
                           maxLines: 5,
                           onChanged: (val) => additionalText = val,
@@ -1235,13 +1278,28 @@ Widget _buildCompactTripInfoItem(String title, String value) {
                           children: [
                             Expanded(
                               child: ElevatedButton(
-                                onPressed: _isConfirmingCancellation
+                                onPressed: isModalLoading
                                     ? null
-                                    : () {
-                                        Navigator.of(context).pop();
+                                    : () async {
+                                        // Show loading in modal
+                                        setModalState(() {
+                                          isModalLoading = true;
+                                        });
+                                        
+                                        // Wait a brief moment to show loading state
+                                        await Future.delayed(const Duration(milliseconds: 300));
+                                        
+                                        // Close modal
+                                        if (context.mounted) {
+                                          Navigator.of(context).pop();
+                                        }
+                                        
+                                        // Start cancellation process
                                         _confirmCancellation(
                                           bookingId: bookingId,
-                                          reasonText: additionalText.isNotEmpty ? additionalText : (reasons.firstWhere((r) => r.id == selectedReasonId).text),
+                                          reasonText: additionalText.isNotEmpty
+                                              ? additionalText
+                                              : (reasons.firstWhere((r) => r.id == selectedReasonId).text),
                                           reasonId: selectedReasonId,
                                         );
                                       },
@@ -1253,13 +1311,16 @@ Widget _buildCompactTripInfoItem(String title, String value) {
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                 ),
-                                child: _isConfirmingCancellation
+                                child: isModalLoading
                                     ? const SizedBox(
                                         width: 20,
                                         height: 20,
-                                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.white,
+                                        ),
                                       )
-                                    : Text('Confirm Cancellation'),
+                                    : const Text('Confirm Cancellation'),
                               ),
                             ),
                           ],
@@ -1281,9 +1342,12 @@ Widget _buildCompactTripInfoItem(String title, String value) {
     required String reasonText,
     required String reasonId,
   }) async {
-    setState(() {
-      _isConfirmingCancellation = true;
-    });
+    // Set loading state for the cancel button
+    if (mounted) {
+      setState(() {
+        _isCancelling = true;
+      });
+    }
 
     try {
       final uri = Uri.parse('$_baseUrl/cancelBooking');
@@ -1302,10 +1366,6 @@ Widget _buildCompactTripInfoItem(String title, String value) {
         body: jsonEncode(bodyMap),
       ).timeout(const Duration(seconds: 20));
 
-      setState(() {
-        _isConfirmingCancellation = false;
-      });
-
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
@@ -1323,6 +1383,7 @@ Widget _buildCompactTripInfoItem(String title, String value) {
             refundAmount: double.parse(refundedAmount.toString()),
           );
 
+          // Show success dialog
           await showModalBottomSheet(
             context: context,
             isScrollControlled: true,
@@ -1392,7 +1453,16 @@ Widget _buildCompactTripInfoItem(String title, String value) {
                       ),
                       const SizedBox(height: 20),
                       ElevatedButton.icon(
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () async {
+                          Navigator.of(context).pop();
+                          // Wait a moment for dialog to close
+                          await Future.delayed(const Duration(milliseconds: 300));
+                          // Reload both booking details and booking list after closing success dialog
+                          if (mounted) {
+                            _reloadBookingDetails();
+                            _reloadBookingList();
+                          }
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _primaryColor,
                           foregroundColor: Colors.white,
@@ -1412,16 +1482,100 @@ Widget _buildCompactTripInfoItem(String title, String value) {
             },
           );
         } else {
+          if (mounted) {
+            setState(() {
+              _isCancelling = false;
+            });
+          }
           _showError('Cancellation failed. Please try again.');
         }
       } else {
+        if (mounted) {
+          setState(() {
+            _isCancelling = false;
+          });
+        }
         _showError('Cancellation failed: ${response.statusCode}');
       }
     } catch (e) {
-      setState(() {
-        _isConfirmingCancellation = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isCancelling = false;
+        });
+      }
       _showError('Failed to cancel booking. Please check your connection and try again.');
+    }
+  }
+
+  /// Reload booking details after cancellation
+  void _reloadBookingDetails() {
+    if (!mounted) return;
+    
+    // Reset loading states
+    setState(() {
+      _isCancelling = false;
+    });
+    
+    // Wait a moment then fetch updated booking details to ensure backend has processed cancellation
+    Future.delayed(const Duration(milliseconds: 1000), () {
+      if (mounted) {
+        log('🔄 Reloading booking details after cancellation - Booking ID: ${widget.bookingId}');
+        context.read<BookedDetailsBloc>().add(
+          BookedDetailsEvent.fetchDetails(widget.bookingId),
+        );
+      }
+    });
+  }
+
+  /// Reload booking list after cancellation
+  void _reloadBookingList() {
+    if (!mounted) return;
+    
+    // Use the parent context we stored before creating local BlocProvider
+    final parentCtx = _parentContext;
+    if (parentCtx == null || !parentCtx.mounted) {
+      log('Parent context not available for refreshing booking list');
+      _tryRefreshBookingListAlternative();
+      return;
+    }
+    
+    try {
+      // Access BookedInfoBloc from parent context (above our local BlocProvider)
+      final bookedInfoBloc = parentCtx.read<BookedInfoBloc>();
+      log('✅ Refreshing booking list after cancellation - Found BookedInfoBloc');
+      bookedInfoBloc.add(BookedInfoEvent.fetchList());
+    } catch (e, stackTrace) {
+      // BookedInfoBloc might not be available in this context
+      log('❌ Could not refresh booking list from parent context: $e', error: e, stackTrace: stackTrace);
+      // Try alternative approach
+      _tryRefreshBookingListAlternative();
+    }
+  }
+
+  /// Alternative method to refresh booking list
+  void _tryRefreshBookingListAlternative() {
+    if (!mounted) return;
+    
+    try {
+      // Walk up the widget tree to find BookedInfoBloc using current context
+      BookedInfoBloc? bookedInfoBloc;
+      context.visitAncestorElements((element) {
+        try {
+          bookedInfoBloc = element.read<BookedInfoBloc>();
+          return false; // Stop walking
+        } catch (e) {
+          return true; // Continue walking
+        }
+      });
+      
+      if (bookedInfoBloc != null) {
+        log('Found BookedInfoBloc using alternative method, refreshing list');
+        bookedInfoBloc!.add(BookedInfoEvent.fetchList());
+      } else {
+        log('BookedInfoBloc not found in widget tree using alternative method');
+      }
+    } catch (e) {
+      log('Alternative refresh method also failed: $e');
     }
   }
 

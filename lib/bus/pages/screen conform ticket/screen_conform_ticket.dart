@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:minna/bus/application/change%20location/location_bloc.dart';
 import 'package:minna/bus/domain/BlockTicket/block_respo.dart';
@@ -11,7 +13,6 @@ import 'package:minna/bus/infrastructure/bookTicket/book_ticket.dart';
 import 'package:minna/bus/infrastructure/inset%20data/insert_data.dart';
 import 'package:minna/bus/pages/screen%20conform%20ticket/widget/bottom_sheet.dart';
 import 'package:minna/bus/pages/sceen%20Time%20out/screen_time_out.dart';
-import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/core/api.dart';
 import 'package:minna/comman/functions/create_order_id.dart';
 import 'package:minna/comman/functions/refund_payment.dart';
@@ -214,13 +215,20 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
     );
   }
 
-  void _initRazorpay() {
-    _razorpay = Razorpay();
+void _initRazorpay() {
+  _razorpay = Razorpay();
+  
+  try {
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+  } catch (e) {
+    log("Razorpay initialization error: $e");
+    if (mounted) {
+      _showErrorSnackBar("Payment service unavailable. Please try again.");
+    }
   }
-
+}
   @override
   void dispose() {
     _timer?.cancel();
@@ -264,7 +272,8 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
     showBottomSheetbooking(
       context: context,
       timer: _timer!,
-      busORFlight: 'bus',
+      busORFlight: 
+       'This bus seems popular! Hurry, book before all the seats get filled',
       primaryColor: _primaryColor,
       secondaryColor: _secondaryColor,
     );
@@ -366,28 +375,114 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
     return _hasFareChanged() ? updatedFare : totalFare;
   }
 
-  Future<Map<String, dynamic>> _preparePaymentOptions(String orderId) async {
-    final passenger = widget.alldata.inventoryItems?.isNotEmpty == true
-        ? widget.alldata.inventoryItems!.first.passenger
-        : null;
+// Future<Map<String, dynamic>> _preparePaymentOptions(String orderId) async {
+//   final passenger = widget.alldata.inventoryItems?.isNotEmpty == true
+//       ? widget.alldata.inventoryItems!.first.passenger
+//       : null;
 
-    final amount = _getCurrentFare();
+//   final amount = _getCurrentFare();
 
-    return {
-      'key': razorpaykey,
-      'amount': (amount * 100).toInt(),
+//   Map<String, dynamic> options = {
+//     'key': razorpaykey,
+//     'amount': (amount * 100).toInt(),
+//     'name': 'MT Trip',
+//     'description': 'Bus Ticket Booking - ${widget.selectedSeats.length} seat(s)',
+//     'order_id': orderId,
+//     'prefill': {
+//       'contact': passenger?.mobile ?? "0000000000",
+//       'email': passenger?.email ?? "email@example.com",
+//       'name': passenger?.name ?? "Passenger",
+//     },
+//     'theme': {
+//       'color': '#D4AF37', // Gold as primary color
+//       'backdrop_color': '#000000', // Black as backdrop
+//     },
+//     'notes': {
+//       'booking_reference': _blockId,
+//       'trip': '${widget.alldata.source} to ${widget.alldata.destination}',
+//     },
+//   };
+
+//   // Try to load logo, but don't break the payment if it fails
+//   try {
+//     // Correct asset path - remove 'asset/' prefix if using Flutter asset system
+//     final ByteData imageData = await rootBundle.load('asset/mtlogo.jpg');
+//     final Uint8List bytes = imageData.buffer.asUint8List();
+//     final String base64Image = base64Encode(bytes);
+    
+//     options['image'] = 'data:image/jpg;base64,$base64Image'; // Changed to jpg
+//     log("Logo loaded successfully");
+//   } catch (e) {
+//     log("Failed to load logo: $e");
+//     // Fallback to hosted logo or skip
+//     options['image'] = 'https://via.placeholder.com/256x256/D4AF37/000000?text=MT+Trip';
+//   }
+
+//   // Platform-specific configurations
+//   if (Theme.of(context).platform == TargetPlatform.iOS) {
+//     options['ios'] = {
+//       'hide_top_bar': false,
+//     };
+//   }
+
+//   if (Theme.of(context).platform == TargetPlatform.android) {
+//     options['android'] = {
+//       'hide_logo': false,
+//       'send_sms_hash': true,
+//     };
+//   }
+
+//   return options;
+// }
+
+Future<Map<String, dynamic>> _preparePaymentOptions(String orderId) async {
+  final passenger = widget.alldata.inventoryItems?.isNotEmpty == true
+      ? widget.alldata.inventoryItems!.first.passenger
+      : null;
+
+  final amount = _getCurrentFare();
+
+  Map<String, dynamic> options = {
+    'key': razorpaykey,
+    'amount': (amount * 100).toInt(),
+    'name': 'MT Trip',
+    'description': 'Bus Ticket Booking - ${widget.selectedSeats.length} seat(s)',
+    'order_id': orderId,
+    // 'image': 'https://i.ibb.co/your-image-id/mtlogo.jpg', // Use hosted image
+    'prefill': {
+      'contact': passenger?.mobile ?? "0000000000",
+      'email': passenger?.email ?? "email@example.com",
       'name': passenger?.name ?? "Passenger",
-      'order_id': orderId,
-      'description': 'Bus Ticket Payment - ${widget.selectedSeats.length} seat(s)',
-      'prefill': {
-        'contact': passenger?.mobile ?? "0000000000",
-        'email': passenger?.email ?? "email@example.com"
-      },
-      'theme': {'color': _primaryColor.value.toRadixString(16)},
-      'timeout': 300, // 5 minutes timeout
+    },
+    'theme': {
+      'color': '#D4AF37', // Gold color for buttons and text
+      'backdrop_color': '#000000', // Black background
+    },
+    'notes': {
+      'contact': passenger?.mobile ?? "0000000000",
+      'email': passenger?.email ?? "email@example.com",
+      'name': passenger?.name ?? "Passenger",
+      'booking_reference': _blockId,
+      'trip': '${widget.alldata.source} to ${widget.alldata.destination}',
+    },
+  };
+
+  // Platform-specific configurations
+  if (Theme.of(context).platform == TargetPlatform.iOS) {
+    options['ios'] = {
+      'hide_top_bar': false,
     };
   }
 
+  if (Theme.of(context).platform == TargetPlatform.android) {
+    options['android'] = {
+      'hide_logo': false,
+      'send_sms_hash': true,
+    };
+  }
+
+  return options;
+}
   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
     log("Payment Success - Payment ID: ${response.paymentId}, Order ID: ${response.orderId}");
 
@@ -428,7 +523,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
       log("Booking processing error: $e");
       
       // Attempt refund on failure
-      await _handleBookingFailure(response.paymentId!, e.toString());
+      // await _handleBookingFailure(response.paymentId!, e.toString());
     } finally {
       if (mounted) {
         setState(() => _isBooking = false);
@@ -436,30 +531,79 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
     }
   }
 
-  void _handlePaymentError(PaymentFailureResponse response) async {
-    log("Payment Failed: ${response.message} - ${response.error}");
+void _handlePaymentError(PaymentFailureResponse response) async {
+  log("Payment Failed: ${response.message} - Error: ${response.error}");
 
-    // Save failed payment details if we have an order ID
-    if (_orderId != null) {
-      try {
-        await savePaymentDetails(
-          orderId: _orderId!,
-          status: 2,
-          table: "bus_blockrequest",
-          tableid: _blockId,
-          transactionId: _paymentId ?? '',
-        );
-      } catch (e) {
-        log("Error saving failed payment: $e");
+  String errorMessage = "Payment failed. Please try again.";
+  
+  // Extract error code from the error map
+  dynamic errorCode;
+  if (response.error is Map) {
+    errorCode = (response.error as Map)['code'];
+  }
+
+  // iOS-specific error messages
+  if (Theme.of(context).platform == TargetPlatform.iOS) {
+    if (errorCode != null) {
+      switch (errorCode) {
+        case 1:
+          errorMessage = "Payment cancelled by user";
+          break;
+        case 2:
+          errorMessage = "Network error. Please check your connection";
+          break;
+        case 3:
+          errorMessage = "Payment failed due to technical issue";
+          break;
+        default:
+          errorMessage = response.message ?? "Payment failed";
       }
-    }
-
-    if (mounted) {
-      setState(() => _isBooking = false);
-      _showErrorSnackBar("Payment failed. Please try again.");
+    } else {
+      // Fallback error message parsing for iOS
+      if (response.message?.toLowerCase().contains('cancelled') == true) {
+        errorMessage = "Payment cancelled by user";
+      } else if (response.message?.toLowerCase().contains('network') == true) {
+        errorMessage = "Network error. Please check your connection";
+      }
     }
   }
 
+  // Android-specific error messages
+  if (Theme.of(context).platform == TargetPlatform.android) {
+    if (errorCode != null) {
+      switch (errorCode) {
+        case 1:
+          errorMessage = "Payment cancelled by user";
+          break;
+        case 2:
+          errorMessage = "Network error. Please check your connection";
+          break;
+        default:
+          errorMessage = response.message ?? "Payment failed";
+      }
+    }
+  }
+
+  // Save failed payment details if we have an order ID
+  if (_orderId != null) {
+    try {
+      await savePaymentDetails(
+        orderId: _orderId!,
+        status: 2,
+        table: "bus_blockrequest",
+        tableid: _blockId,
+        transactionId: _paymentId ?? '',
+      );
+    } catch (e) {
+      log("Error saving failed payment: $e");
+    }
+  }
+
+  if (mounted) {
+    setState(() => _isBooking = false);
+    _showErrorSnackBar(errorMessage);
+  }
+}
   void _handleExternalWallet(ExternalWalletResponse response) {
     log("External Wallet: ${response.walletName}");
     // Handle external wallet payment if needed

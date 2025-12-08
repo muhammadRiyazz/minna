@@ -3,10 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:minna/flight/domain/report/report_model.dart';
 
+// Add this class definition at the top of your file
+class AdditionalCharge {
+  final String label;
+  final double amount;
+
+  AdditionalCharge(this.label, this.amount);
+}
+
 class ReportDetailScreen extends StatelessWidget {
   final ReportData report;
 
-  const ReportDetailScreen({Key? key, required this.report}) : super(key: key);
+  const ReportDetailScreen({super.key, required this.report});
 
   // Updated color scheme matching your cab booking details
   static final Color _primaryColor = Colors.black;
@@ -384,7 +392,7 @@ class ReportDetailScreen extends StatelessWidget {
               ),
             )
           else
-            ...flightLegs.map((leg) => _buildFlightLeg(leg)).toList(),
+            ...flightLegs.map((leg) => _buildFlightLeg(leg)),
         ],
       ),
     );
@@ -723,72 +731,202 @@ class ReportDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFareBreakdownCard(ResponseData response) {
-    final flightFares = response.journey.flightOption.flightFares;
-    
-    if (flightFares.isEmpty) {
-      return Container();
-    }
+Widget _buildFareBreakdownCard(ResponseData response) {
+  final flightFares = response.journey.flightOption.flightFares;
+  
+  if (flightFares.isEmpty) {
+    return Container();
+  }
 
-    final firstFare = flightFares.first;
-    
-    return Container(
-      decoration: BoxDecoration(
-        color: _cardColor,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 20,
-            offset: Offset(0, 8),
-          ),
-        ],
-      ),
-      padding: EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: _secondaryColor.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(Icons.currency_rupee_rounded, color: _secondaryColor, size: 16),
+  final firstFare = flightFares.first;
+  
+    // Calculate additional charges from passengers
+  double totalAdditionalCharges = 0;
+  final additionalChargesList = <AdditionalCharge>[];
+  
+  for (final passenger in response.passengers) {
+    final ssr = passenger.ssrAvailability;
+    if (ssr != null) {
+      final passengerName = '${passenger.title} ${passenger.firstName} ${passenger.lastName}';
+      
+      // Baggage charges
+      if (ssr.baggageInfo != null) {
+        for (final baggageInfo in ssr.baggageInfo!) {
+          if (baggageInfo.baggages != null) {
+            for (final baggage in baggageInfo.baggages!) {
+              if (baggage.amount != null && baggage.amount! > 0) {
+                additionalChargesList.add(AdditionalCharge(
+                  'Extra Baggage - $passengerName',
+                  baggage.amount!,
+                ));
+                totalAdditionalCharges += baggage.amount!;
+              }
+            }
+          }
+        }
+      }
+      
+      // Meal charges
+      if (ssr.mealInfo != null) {
+        for (final mealInfo in ssr.mealInfo!) {
+          if (mealInfo.meals != null) {
+            for (final meal in mealInfo.meals!) {
+              if (meal.amount != null && meal.amount! > 0) {
+                additionalChargesList.add(AdditionalCharge(
+                  'Meal - ${meal.name} - $passengerName',
+                  meal.amount!,
+                ));
+                totalAdditionalCharges += meal.amount!;
+              }
+            }
+          }
+        }
+      }
+      
+      // Seat charges
+      if (ssr.seatInfo != null) {
+        for (final seatInfo in ssr.seatInfo!) {
+          if (seatInfo.seats != null) {
+            for (final seat in seatInfo.seats!) {
+              if (seat.fare != null && seat.fare!.isNotEmpty) {
+                final seatFare = double.tryParse(seat.fare!);
+                if (seatFare != null && seatFare > 0) {
+                  additionalChargesList.add(AdditionalCharge(
+                    'Seat Selection - $passengerName',
+                    seatFare,
+                  ));
+                  totalAdditionalCharges += seatFare;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Calculate totals
+  double totalBaseFare = 0;
+  double totalTax = 0;
+  double totalDiscount = 0;
+
+  for (final fare in firstFare.fares) {
+    totalBaseFare += fare.baseFare;
+    totalTax += fare.tax;
+    totalDiscount += fare.discount;
+  }
+
+  return Container(
+    decoration: BoxDecoration(
+      color: _cardColor,
+      borderRadius: BorderRadius.circular(20),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.08),
+          blurRadius: 20,
+          offset: Offset(0, 8),
+        ),
+      ],
+    ),
+    padding: EdgeInsets.all(16),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: _secondaryColor.withOpacity(0.1),
+                shape: BoxShape.circle,
               ),
-              SizedBox(width: 12),
-              Text(
-                'FARE BREAKDOWN',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: _textSecondary,
-                  fontWeight: FontWeight.w600,
-                ),
+              child: Icon(Icons.currency_rupee_rounded, color: _secondaryColor, size: 16),
+            ),
+            SizedBox(width: 12),
+            Text(
+              'FARE BREAKDOWN',
+              style: TextStyle(
+                fontSize: 13,
+                color: _textSecondary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 20),
+        
+        // Base Fare and Taxes
+        ...firstFare.fares.expand((fare) => [
+          _buildFareItem('${_getPassengerTypeName(fare.ptc)} Base Fare', '₹${fare.baseFare.toStringAsFixed(2)}'),
+          _buildFareItem('${_getPassengerTypeName(fare.ptc)} Tax', '₹${fare.tax.toStringAsFixed(2)}'),
+          // if (fare.discount > 0)
+          //   _buildFareItem('${_getPassengerTypeName(fare.ptc)} Discount', '-₹${fare.discount.toStringAsFixed(2)}'),
+        ]),
+        
+        // Additional Services Section
+        if (additionalChargesList.isNotEmpty) ...[
+          SizedBox(height: 16),
+          Divider(height: 1),
+          SizedBox(height: 16),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.only(bottom: 12),
+            child: Text(
+              'Additional Services',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: _primaryColor,
+              ),
+            ),
+          ),
+          ...additionalChargesList.asMap().entries.map((entry) {
+            final index = entry.key;
+            final charge = entry.value;
+            return _buildAdditionalChargeRow(
+              charge.label,
+              charge.amount,
+              index: index + 1,
+            );
+          }),
+        ],
+        
+        SizedBox(height: 16),
+        Divider(height: 1),
+        SizedBox(height: 16),
+        
+        // Summary Section
+        Container(
+          padding: EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: _backgroundColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            children: [
+              _buildSummaryRow('Total Base Fare', totalBaseFare),
+              _buildSummaryRow('Total Taxes', totalTax),
+              
+              if (totalAdditionalCharges > 0)
+                _buildSummaryRow('Additional Services', totalAdditionalCharges),
+              
+              if (totalDiscount > 0)
+                _buildSummaryRow('Discount', -totalDiscount, isDiscount: true),
+              
+              Divider(height: 16, color: Colors.grey.shade400),
+              
+              _buildSummaryRow(
+                'Total Amount',
+                firstFare.totalAmount,
+                isTotal: true,
               ),
             ],
           ),
-          SizedBox(height: 20),
-          ...firstFare.fares.expand((fare) => [
-            _buildFareItem('${fare.ptc} Base Fare', '₹${fare.baseFare.toStringAsFixed(2)}'),
-            _buildFareItem('${fare.ptc} Tax', '₹${fare.tax.toStringAsFixed(2)}'),
-            if (fare.discount > 0)
-              _buildFareItem('${fare.ptc} Discount', '-₹${fare.discount.toStringAsFixed(2)}'),
-          ]).toList(),
-          SizedBox(height: 8),
-          Divider(height: 1),
-          SizedBox(height: 8),
-          _buildFareItem(
-            'Total Amount',
-            '₹${firstFare.totalAmount.toStringAsFixed(2)}',
-            isTotal: true,
-          ),
-        ],
-      ),
-    );
-  }
-
+        ),
+      ],
+    ),
+  );
+}
   Widget _buildFareItem(String label, String amount, {bool isTotal = false}) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 8),
@@ -814,6 +952,114 @@ class ReportDetailScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildAdditionalChargeRow(String label, double amount, {required int index}) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Row(
+              children: [
+                Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: _secondaryColor.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text(
+                      index.toString(),
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        color: _secondaryColor,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: _textPrimary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: 8),
+          Text(
+            '₹${amount.toStringAsFixed(2)}',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: _textPrimary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryRow(String label, double amount, {
+    bool isDiscount = false,
+    bool isCommission = false,
+    bool isTotal = false,
+  }) {
+    final isNegative = amount < 0;
+    final displayAmount = isNegative ? -amount : amount;
+    
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: isTotal ? 15 : 14,
+              fontWeight: isTotal ? FontWeight.w700 : FontWeight.w500,
+              color: isDiscount ? _successColor : 
+                    (isCommission ? _secondaryColor : 
+                    (isTotal ? _primaryColor : _textPrimary)),
+            ),
+          ),
+          Text(
+            '${isNegative ? '-' : ''}₹${displayAmount.toStringAsFixed(2)}',
+            style: TextStyle(
+              fontSize: isTotal ? 16 : 14,
+              fontWeight: isTotal ? FontWeight.w800 : FontWeight.w600,
+              color: isDiscount ? _successColor : 
+                    (isCommission ? _secondaryColor : 
+                    (isTotal ? _secondaryColor : _textPrimary)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getPassengerTypeName(String paxType) {
+    switch (paxType) {
+      case 'ADT':
+        return 'Adult';
+      case 'CHD':
+        return 'Child';
+      case 'INF':
+        return 'Infant';
+      default:
+        return paxType;
+    }
   }
 
   String _formatDateTime(String dateTime) {

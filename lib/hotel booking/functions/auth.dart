@@ -20,6 +20,7 @@ class AuthApiService {
   String get _endUserIp => '192.168.1.1'; // Replace with actual IP detection
 
   Future<ApiResult<AuthenticateResponse>> authenticate() async {
+    log('authenticate ------------------------------');
     try {
       final request = AuthenticateRequest(
         clientId: 'ApiIntegrationNew',
@@ -33,7 +34,8 @@ class AuthApiService {
         headers: {'Content-Type': 'application/json'},
         body: json.encode(request.toJson()),
       );
-log(response.body);
+      log('authenticate respo--');
+        log(response.body);
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final authResponse = AuthenticateResponse.fromJson(data);

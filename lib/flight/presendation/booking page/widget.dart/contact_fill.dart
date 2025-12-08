@@ -23,7 +23,7 @@ Widget buildContactInformation() {
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: maincolor1!,
+            color: maincolor1,
             borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
           ),
           child: Row(
@@ -69,7 +69,7 @@ Widget buildContactInformation() {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: maincolor1!, width: 1),
+                    borderSide: BorderSide(color: maincolor1, width: 1),
                   ),
                   prefixIcon: Icon(
                     Icons.phone,
@@ -109,7 +109,7 @@ Widget buildContactInformation() {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: maincolor1!, width: 1),
+                    borderSide: BorderSide(color: maincolor1, width: 1),
                   ),
                   prefixIcon: Icon(
                     Icons.email,

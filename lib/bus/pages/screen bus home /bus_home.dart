@@ -468,7 +468,7 @@ class BusHomeTab extends StatelessWidget {
   Widget _buildSearchButton(BuildContext context, LocationState state) {
     final isEnabled = state.from != null && state.to != null;
 
-    return Container(
+    return SizedBox(
       width: double.infinity,
       height: 56,
       child: ElevatedButton(

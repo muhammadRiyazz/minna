@@ -406,7 +406,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
   Widget _buildSearchButton() {
     final isEnabled = selectedCountry != null && selectedCity != null && !isLoadingCities;
     
-    return Container(
+    return SizedBox(
       width: double.infinity,
       height: 56,
       child: ElevatedButton(
