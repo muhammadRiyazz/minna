@@ -1,199 +1,98 @@
-class AuthenticateRequest {
-  final String clientId;
-  final String userName;
-  final String password;
-  final String endUserIp;
+// All model classes including ValidationInfo
+class ValidationInfo {
+  final bool panMandatory;
+  final bool passportMandatory;
+  final bool corporateBookingAllowed;
+  final int panCountRequired;
+  final bool samePaxNameAllowed;
+  final bool spaceAllowed;
+  final bool specialCharAllowed;
+  final int paxNameMinLength;
+  final int paxNameMaxLength;
+  final bool charLimit;
+  final bool packageFare;
+  final bool packageDetailsMandatory;
+  final bool departureDetailsMandatory;
+  final bool gstAllowed;
 
-  AuthenticateRequest({
-    required this.clientId,
-    required this.userName,
-    required this.password,
-    required this.endUserIp,
+  ValidationInfo({
+    required this.panMandatory,
+    required this.passportMandatory,
+    required this.corporateBookingAllowed,
+    required this.panCountRequired,
+    required this.samePaxNameAllowed,
+    required this.spaceAllowed,
+    required this.specialCharAllowed,
+    required this.paxNameMinLength,
+    required this.paxNameMaxLength,
+    required this.charLimit,
+    required this.packageFare,
+    required this.packageDetailsMandatory,
+    required this.departureDetailsMandatory,
+    required this.gstAllowed,
   });
 
-  Map<String, dynamic> toJson() => {
-        'ClientId': clientId,
-        'UserName': userName,
-        'Password': password,
-        'EndUserIp': endUserIp,
-      };
-}
-
-class AuthenticateResponse {
-  final int status;
-  final String tokenId;
-  final Member member;
-  final ApiError error;
-
-  AuthenticateResponse({
-    required this.status,
-    required this.tokenId,
-    required this.member,
-    required this.error,
-  });
-
-  factory AuthenticateResponse.fromJson(Map<String, dynamic> json) {
-    return AuthenticateResponse(
-      status: json['Status'] ?? 0,
-      tokenId: json['TokenId'] ?? '',
-      member: Member.fromJson(json['Member'] ?? {}),
-      error: ApiError.fromJson(json['Error'] ?? {}),
+  factory ValidationInfo.fromJson(Map<String, dynamic> json) {
+    return ValidationInfo(
+      panMandatory: json['PanMandatory'] ?? false,
+      passportMandatory: json['PassportMandatory'] ?? false,
+      corporateBookingAllowed: json['CorporateBookingAllowed'] ?? false,
+      panCountRequired: json['PanCountRequired'] ?? 0,
+      samePaxNameAllowed: json['SamePaxNameAllowed'] ?? true,
+      spaceAllowed: json['SpaceAllowed'] ?? true,
+      specialCharAllowed: json['SpecialCharAllowed'] ?? false,
+      paxNameMinLength: json['PaxNameMinLength'] ?? 0,
+      paxNameMaxLength: json['PaxNameMaxLength'] ?? 50,
+      charLimit: json['CharLimit'] ?? true,
+      packageFare: json['PackageFare'] ?? false,
+      packageDetailsMandatory: json['PackageDetailsMandatory'] ?? false,
+      departureDetailsMandatory: json['DepartureDetailsMandatory'] ?? false,
+      gstAllowed: json['GSTAllowed'] ?? false,
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        'Status': status,
-        'TokenId': tokenId,
-        'Member': member.toJson(),
-        'Error': error.toJson(),
-      };
-
-  bool get isSuccess => status == 1;
+  Map<String, dynamic> toJson() {
+    return {
+      'PanMandatory': panMandatory,
+      'PassportMandatory': passportMandatory,
+      'CorporateBookingAllowed': corporateBookingAllowed,
+      'PanCountRequired': panCountRequired,
+      'SamePaxNameAllowed': samePaxNameAllowed,
+      'SpaceAllowed': spaceAllowed,
+      'SpecialCharAllowed': specialCharAllowed,
+      'PaxNameMinLength': paxNameMinLength,
+      'PaxNameMaxLength': paxNameMaxLength,
+      'CharLimit': charLimit,
+      'PackageFare': packageFare,
+      'PackageDetailsMandatory': packageDetailsMandatory,
+      'DepartureDetailsMandatory': departureDetailsMandatory,
+      'GSTAllowed': gstAllowed,
+    };
+  }
 }
 
-class Member {
-  final String firstName;
-  final String lastName;
-  final String email;
-  final int memberId;
-  final int agencyId;
-  final String loginName;
-  final String loginDetails;
+class ApiStatus {
+  final int code;
+  final String description;
 
-  Member({
-    required this.firstName,
-    required this.lastName,
-    required this.email,
-    required this.memberId,
-    required this.agencyId,
-    required this.loginName,
-    required this.loginDetails,
+  ApiStatus({
+    required this.code,
+    required this.description,
   });
 
-  factory Member.fromJson(Map<String, dynamic> json) {
-    return Member(
-      firstName: json['FirstName'] ?? '',
-      lastName: json['LastName'] ?? '',
-      email: json['Email'] ?? '',
-      memberId: json['MemberId'] ?? 0,
-      agencyId: json['AgencyId'] ?? 0,
-      loginName: json['LoginName'] ?? '',
-      loginDetails: json['LoginDetails'] ?? '',
+  factory ApiStatus.fromJson(Map<String, dynamic> json) {
+    return ApiStatus(
+      code: json['Code'] ?? 0,
+      description: json['Description'] ?? '',
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        'FirstName': firstName,
-        'LastName': lastName,
-        'Email': email,
-        'MemberId': memberId,
-        'AgencyId': agencyId,
-        'LoginName': loginName,
-        'LoginDetails': loginDetails,
-      };
-
-  String get userId => memberId.toString();
-}
-
-class ApiError {
-  final int errorCode;
-  final String errorMessage;
-
-  ApiError({
-    required this.errorCode,
-    required this.errorMessage,
-  });
-
-  factory ApiError.fromJson(Map<String, dynamic> json) {
-    return ApiError(
-      errorCode: json['ErrorCode'] ?? 0,
-      errorMessage: json['ErrorMessage'] ?? '',
-    );
+  Map<String, dynamic> toJson() {
+    return {
+      'Code': code,
+      'Description': description,
+    };
   }
-
-  Map<String, dynamic> toJson() => {
-        'ErrorCode': errorCode,
-        'ErrorMessage': errorMessage,
-      };
-
-  bool get hasError => errorCode != 0;
-}
-
-class AgencyBalanceRequest {
-  final String clientId;
-  final String tokenAgencyId;
-  final String tokenMemberId;
-  final String endUserIp;
-  final String tokenId;
-
-  AgencyBalanceRequest({
-    required this.clientId,
-    required this.tokenAgencyId,
-    required this.tokenMemberId,
-    required this.endUserIp,
-    required this.tokenId,
-  });
-
-  Map<String, dynamic> toJson() => {
-        'ClientId': clientId,
-        'TokenAgencyId': tokenAgencyId,
-        'TokenMemberId': tokenMemberId,
-        'EndUserIp': endUserIp,
-        'TokenId': tokenId,
-      };
-}
-
-class AgencyBalanceResponse {
-  final int status;
-  final int agencyType;
-  final double cashBalance;
-  final double creditBalance;
-  final ApiError error;
-
-  AgencyBalanceResponse({
-    required this.status,
-    required this.agencyType,
-    required this.cashBalance,
-    required this.creditBalance,
-    required this.error,
-  });
-
-  factory AgencyBalanceResponse.fromJson(Map<String, dynamic> json) {
-    return AgencyBalanceResponse(
-      status: json['Status'] ?? 0,
-      agencyType: json['AgencyType'] ?? 0,
-      cashBalance: (json['CashBalance'] ?? 0).toDouble(),
-      creditBalance: (json['CreditBalance'] ?? 0).toDouble(),
-      error: ApiError.fromJson(json['Error'] ?? {}),
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        'Status': status,
-        'AgencyType': agencyType,
-        'CashBalance': cashBalance,
-        'CreditBalance': creditBalance,
-        'Error': error.toJson(),
-      };
-
-  bool get isSuccess => status == 1;
-  
-  double get totalBalance => cashBalance + creditBalance;
-}
-
-class PreBookRequest {
-  final String bookingCode;
-  final String paymentMode;
-
-  PreBookRequest({
-    required this.bookingCode,
-    this.paymentMode = 'Limit',
-  });
-
-  Map<String, dynamic> toJson() => {
-        'BookingCode': bookingCode,
-        'PaymentMode': paymentMode,
-      };
 }
 
 class PreBookResponse {
@@ -466,98 +365,307 @@ class Supplement {
       };
 }
 
-class ValidationInfo {
-  final bool panMandatory;
-  final bool passportMandatory;
-  final bool corporateBookingAllowed;
-  final int panCountRequired;
-  final bool samePaxNameAllowed;
-  final bool spaceAllowed;
-  final bool specialCharAllowed;
-  final int paxNameMinLength;
-  final int paxNameMaxLength;
-  final bool charLimit;
-  final bool packageFare;
-  final bool packageDetailsMandatory;
-  final bool departureDetailsMandatory;
-  final bool gstAllowed;
+// All other model classes...
 
-  ValidationInfo({
-    required this.panMandatory,
-    required this.passportMandatory,
-    required this.corporateBookingAllowed,
-    required this.panCountRequired,
-    required this.samePaxNameAllowed,
-    required this.spaceAllowed,
-    required this.specialCharAllowed,
-    required this.paxNameMinLength,
-    required this.paxNameMaxLength,
-    required this.charLimit,
-    required this.packageFare,
-    required this.packageDetailsMandatory,
-    required this.departureDetailsMandatory,
-    required this.gstAllowed,
+class AuthenticateRequest {
+  final String clientId;
+  final String userName;
+  final String password;
+  final String endUserIp;
+
+  AuthenticateRequest({
+    required this.clientId,
+    required this.userName,
+    required this.password,
+    required this.endUserIp,
   });
 
-  factory ValidationInfo.fromJson(Map<String, dynamic> json) {
-    return ValidationInfo(
-      panMandatory: json['PanMandatory'] ?? false,
-      passportMandatory: json['PassportMandatory'] ?? false,
-      corporateBookingAllowed: json['CorporateBookingAllowed'] ?? false,
-      panCountRequired: json['PanCountRequired'] ?? 0,
-      samePaxNameAllowed: json['SamePaxNameAllowed'] ?? true,
-      spaceAllowed: json['SpaceAllowed'] ?? true,
-      specialCharAllowed: json['SpecialCharAllowed'] ?? false,
-      paxNameMinLength: json['PaxNameMinLength'] ?? 0,
-      paxNameMaxLength: json['PaxNameMaxLength'] ?? 50,
-      charLimit: json['CharLimit'] ?? true,
-      packageFare: json['PackageFare'] ?? false,
-      packageDetailsMandatory: json['PackageDetailsMandatory'] ?? false,
-      departureDetailsMandatory: json['DepartureDetailsMandatory'] ?? false,
-      gstAllowed: json['GSTAllowed'] ?? false,
+  Map<String, dynamic> toJson() => {
+        'ClientId': clientId,
+        'UserName': userName,
+        'Password': password,
+        'EndUserIp': endUserIp,
+      };
+}
+
+class AuthenticateResponse {
+  final int status;
+  final String tokenId;
+  final Member member;
+  final ApiError error;
+
+  AuthenticateResponse({
+    required this.status,
+    required this.tokenId,
+    required this.member,
+    required this.error,
+  });
+
+  factory AuthenticateResponse.fromJson(Map<String, dynamic> json) {
+    return AuthenticateResponse(
+      status: json['Status'] ?? 0,
+      tokenId: json['TokenId'] ?? '',
+      member: Member.fromJson(json['Member'] ?? {}),
+      error: ApiError.fromJson(json['Error'] ?? {}),
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson() => {
+        'Status': status,
+        'TokenId': tokenId,
+        'Member': member.toJson(),
+        'Error': error.toJson(),
+      };
+
+  bool get isSuccess => status == 1;
+}
+
+class Member {
+  final String firstName;
+  final String lastName;
+  final String email;
+  final int memberId;
+  final int agencyId;
+  final String loginName;
+  final String loginDetails;
+
+  Member({
+    required this.firstName,
+    required this.lastName,
+    required this.email,
+    required this.memberId,
+    required this.agencyId,
+    required this.loginName,
+    required this.loginDetails,
+  });
+
+  factory Member.fromJson(Map<String, dynamic> json) {
+    return Member(
+      firstName: json['FirstName'] ?? '',
+      lastName: json['LastName'] ?? '',
+      email: json['Email'] ?? '',
+      memberId: json['MemberId'] ?? 0,
+      agencyId: json['AgencyId'] ?? 0,
+      loginName: json['LoginName'] ?? '',
+      loginDetails: json['LoginDetails'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'FirstName': firstName,
+        'LastName': lastName,
+        'Email': email,
+        'MemberId': memberId,
+        'AgencyId': agencyId,
+        'LoginName': loginName,
+        'LoginDetails': loginDetails,
+      };
+
+  String get userId => memberId.toString();
+}
+
+class ApiError {
+  final int errorCode;
+  final String errorMessage;
+
+  ApiError({
+    required this.errorCode,
+    required this.errorMessage,
+  });
+
+  factory ApiError.fromJson(Map<String, dynamic> json) {
+    return ApiError(
+      errorCode: json['ErrorCode'] ?? 0,
+      errorMessage: json['ErrorMessage'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'ErrorCode': errorCode,
+        'ErrorMessage': errorMessage,
+      };
+
+  bool get hasError => errorCode != 0;
+}
+
+class AgencyBalanceRequest {
+  final String clientId;
+  final String tokenAgencyId;
+  final String tokenMemberId;
+  final String endUserIp;
+  final String tokenId;
+
+  AgencyBalanceRequest({
+    required this.clientId,
+    required this.tokenAgencyId,
+    required this.tokenMemberId,
+    required this.endUserIp,
+    required this.tokenId,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'ClientId': clientId,
+        'TokenAgencyId': tokenAgencyId,
+        'TokenMemberId': tokenMemberId,
+        'EndUserIp': endUserIp,
+        'TokenId': tokenId,
+      };
+}
+
+class AgencyBalanceResponse {
+  final int status;
+  final int agencyType;
+  final double cashBalance;
+  final double creditBalance;
+  final ApiError error;
+
+  AgencyBalanceResponse({
+    required this.status,
+    required this.agencyType,
+    required this.cashBalance,
+    required this.creditBalance,
+    required this.error,
+  });
+
+  factory AgencyBalanceResponse.fromJson(Map<String, dynamic> json) {
+    return AgencyBalanceResponse(
+      status: json['Status'] ?? 0,
+      agencyType: json['AgencyType'] ?? 0,
+      cashBalance: (json['CashBalance'] ?? 0).toDouble(),
+      creditBalance: (json['CreditBalance'] ?? 0).toDouble(),
+      error: ApiError.fromJson(json['Error'] ?? {}),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'Status': status,
+        'AgencyType': agencyType,
+        'CashBalance': cashBalance,
+        'CreditBalance': creditBalance,
+        'Error': error.toJson(),
+      };
+
+  bool get isSuccess => status == 1;
+  
+  double get totalBalance => cashBalance + creditBalance;
+}
+
+class PreBookRequest {
+  final String bookingCode;
+  final String paymentMode;
+
+  PreBookRequest({
+    required this.bookingCode,
+    this.paymentMode = 'Limit',
+  });
+
+  Map<String, dynamic> toJson() => {
+        'BookingCode': bookingCode,
+        'PaymentMode': paymentMode,
+      };
+}
+
+// Enhanced PreBook Response with Auth Info
+class PreBookResponseWithAuth {
+  final PreBookResponse preBookResponse;
+  final String tokenId;
+  final int agencyId;
+  final int memberId;
+  final String endUserIp;
+  final String clientId;
+
+  PreBookResponseWithAuth({
+    required this.preBookResponse,
+    required this.tokenId,
+    required this.agencyId,
+    required this.memberId,
+    required this.endUserIp,
+    required this.clientId,
+  });
+
+  ConfirmationData get confirmationData => ConfirmationData(
+        preBookResponse: preBookResponse,
+        tokenId: tokenId,
+        agencyId: agencyId,
+        memberId: memberId,
+        endUserIp: endUserIp,
+        clientId: clientId,
+      );
+
+  bool get isSuccess => preBookResponse.isSuccess;
+}
+
+// Data class to pass to confirmation page
+class ConfirmationData {
+  final PreBookResponse preBookResponse;
+  final String tokenId;
+  final int agencyId;
+  final int memberId;
+  final String endUserIp;
+  final String clientId;
+
+  ConfirmationData({
+    required this.preBookResponse,
+    required this.tokenId,
+    required this.agencyId,
+    required this.memberId,
+    required this.endUserIp,
+    required this.clientId,
+  });
+
+  Map<String, dynamic> toBookingRequest({
+    required String bookingCode,
+    required List<GuestInfo> guests,
+  }) {
     return {
-      'PanMandatory': panMandatory,
-      'PassportMandatory': passportMandatory,
-      'CorporateBookingAllowed': corporateBookingAllowed,
-      'PanCountRequired': panCountRequired,
-      'SamePaxNameAllowed': samePaxNameAllowed,
-      'SpaceAllowed': spaceAllowed,
-      'SpecialCharAllowed': specialCharAllowed,
-      'PaxNameMinLength': paxNameMinLength,
-      'PaxNameMaxLength': paxNameMaxLength,
-      'CharLimit': charLimit,
-      'PackageFare': packageFare,
-      'PackageDetailsMandatory': packageDetailsMandatory,
-      'DepartureDetailsMandatory': departureDetailsMandatory,
-      'GSTAllowed': gstAllowed,
+      'BookingCode': bookingCode,
+      'TokenId': tokenId,
+      'TokenAgencyId': agencyId.toString(),
+      'TokenMemberId': memberId.toString(),
+      'EndUserIp': endUserIp,
+      'ClientId': clientId,
+      'Guests': guests.map((guest) => guest.toJson()).toList(),
     };
   }
 }
 
-class ApiStatus {
-  final int code;
-  final String description;
+class GuestInfo {
+  final String title;
+  final String firstName;
+  final String lastName;
+  final String? passportNumber;
+  final String? panNumber;
+  final String? email;
+  final String? phone;
+  final int? age;
+  final int paxType;
+  final bool leadPassenger;
 
-  ApiStatus({
-    required this.code,
-    required this.description,
+  GuestInfo({
+    required this.title,
+    required this.firstName,
+    required this.lastName,
+    this.passportNumber,
+    this.panNumber,
+    this.email,
+    this.phone,
+    this.age,
+    this.paxType = 1,
+    this.leadPassenger = false,
   });
-
-  factory ApiStatus.fromJson(Map<String, dynamic> json) {
-    return ApiStatus(
-      code: json['Code'] ?? 0,
-      description: json['Description'] ?? '',
-    );
-  }
 
   Map<String, dynamic> toJson() {
     return {
-      'Code': code,
-      'Description': description,
+      'Title': title,
+      'FirstName': firstName,
+      'LastName': lastName,
+      'Email': email,
+      'Phone': phone,
+      'PaxType': paxType,
+      'LeadPassenger': leadPassenger,
+      'Age': age,
+      'Passport': passportNumber,
+      'PAN': panNumber,
     };
   }
 }

@@ -43,7 +43,7 @@ import 'package:minna/flight/application/search%20data/search_data_bloc.dart';
 import 'package:minna/flight/application/trip%20request/trip_request_bloc.dart';
 
 // Hotel
-import 'package:minna/hotel%20booking/application/bloc/hotel_booking_confirm_bloc.dart';
+import 'package:minna/hotel%20booking/application/hotel/hotel_booking_confirm_bloc.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

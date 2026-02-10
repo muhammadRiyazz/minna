@@ -1,7 +1,9 @@
 const String baseUrl = 'https://maaxusdigitalhub.com/minna/';
 const int liveOrStage = 0;
 
+
 const String razorpaykey = 'rzp_test_Dr1h8dVI9Vimy9';
+
 
 
 //  const String baseUrl = "https://tictechnologies.in/stage/minna/";
@@ -13,4 +15,4 @@ const String razorpaykey = 'rzp_test_Dr1h8dVI9Vimy9';
 
 
 
-  final String locationapiKey = 'AIzaSyALjWcxp0DAnTOkKNHbXCFKkjObKHvyMns';
+  final String locationapiKey = 'AIzaSyAGmdSqGPgz_-Qoc669E8U7pHNTAJWGGSU';

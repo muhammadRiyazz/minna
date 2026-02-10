@@ -1,4 +1,4 @@
-package com.example.minna_travels
+package com.mttrip.app
 
 import io.flutter.embedding.android.FlutterActivity
 

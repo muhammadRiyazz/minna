@@ -2,19 +2,15 @@
 
 
 
-import 'dart:developer';
 
 import 'package:minna/bus/application/busListfetch/bus_list_fetch_bloc.dart';
 import 'package:minna/bus/application/busListfetch/bus_list_fetch_state.dart';
 import 'package:minna/bus/application/change%20location/location_bloc.dart';
 import 'package:minna/bus/infrastructure/time.dart';
 import 'package:minna/bus/pages/Screen%20available%20Trip/widgets/trip_container.dart';
-import 'package:minna/bus/presendation/widgets/error_widget.dart';
 import 'package:minna/bus/domain/trips%20list%20modal/trip_list_modal.dart';
-import 'package:minna/comman/const/const.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ScreenAvailableTrips extends StatefulWidget {
@@ -463,7 +459,7 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
           child: ListView.builder(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             itemCount: state.availableTrips!.length,
-            itemBuilder: (context, index) {
+        itemBuilder: (context, index) {
               final startfare = faredecode(
                 fare: state.availableTrips![index].fareDetails,
               );

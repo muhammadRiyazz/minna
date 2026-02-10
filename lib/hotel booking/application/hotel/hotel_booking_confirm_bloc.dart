@@ -118,7 +118,6 @@ class HotelBookingConfirmBloc extends Bloc<HotelBookingConfirmEvent, HotelBookin
         },
         body: jsonEncode(bookingRequest),
       );
-
       log('📩 Hotel Book API Response: ${response.statusCode}');
       log('📩 Hotel Book API Body: ${response.body}');
 
