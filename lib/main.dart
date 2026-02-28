@@ -149,7 +149,7 @@ class _MyAppState extends State<MyApp> {
                       color: Colors.white,
                       fontSize: 12,
                     ),
-                  ),
+                  )
                 ],
               ),
             ),

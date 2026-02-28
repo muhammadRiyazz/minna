@@ -6,32 +6,26 @@ import 'package:minna/hotel%20booking/core/core.dart';
 import 'package:minna/hotel%20booking/domain/hotel%20details%20/hotel_details.dart';
 
 class HotelDetailsApiService {
-  static const String baseUrl = 'http://api.tbotechnology.in/TBOHolidays_HotelAPI/Hoteldetails';
-  String get _basicAuth => 'Basic ${base64Encode(utf8.encode('$hotelusername:$hoteluserpass'))}';
+  static const String baseUrl =
+      'http://api.tbotechnology.in/TBOHolidays_HotelAPI/Hoteldetails';
+  String get _basicAuth =>
+      'Basic ${base64Encode(utf8.encode('$hotelusername:$hoteluserpass'))}';
 
   Future<HotelDetailsResponse> fetchHotelDetails(String hotelCode) async {
     try {
       final response = await http.post(
         Uri.parse(baseUrl),
         headers: {
-                    'Authorization': _basicAuth,
+          'Authorization': _basicAuth,
 
           'Content-Type': 'application/json',
         },
-        body: json.encode({
-        'Hotelcodes': 1124503,
-          // 'Hotelcodes': hotelCode,
-          'Language': 'EN'
-        }),      
+        body: json.encode({'Hotelcodes': hotelCode, 'Language': 'EN'}),
       );
 
+      log(json.encode({'Hotelcodes': hotelCode, 'Language': 'EN'}).toString());
 
-      log(json.encode({
-          'Hotelcodes': hotelCode,
-          'Language': 'EN'
-        }).toString());
-
-log(response.body);
+      log(response.body);
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
         return HotelDetailsResponse.fromJson(data);

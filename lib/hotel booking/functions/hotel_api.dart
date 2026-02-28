@@ -25,9 +25,10 @@ class ApiException implements Exception {
   String toString() => 'ApiException: $message (Status: $statusCode)';
 }
 
+
 class HotelApiService {
   static const String _baseUrl = 'http://tictechnologies.in/stage/minna';
- 
+
   final http.Client _client;
 
   HotelApiService({http.Client? client}) : _client = client ?? http.Client();

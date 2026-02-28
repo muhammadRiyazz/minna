@@ -5,7 +5,8 @@ import 'package:minna/DTH%20&%20Mobile/DTH/pages/dth%20home%20inputs/dht_input_p
 import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/application/oparator/operators_bloc.dart';
 import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/pages/home%20page/recharge_home.dart';
 import 'package:minna/Electyicity%20&%20Water/kseb/kseb%20home/electricity_home.dart';
-import 'package:minna/Electyicity%20&%20Water/water%20bill/water%20bill%20home/water_input.dart' hide ElectricityBillInputPage;
+import 'package:minna/Electyicity%20&%20Water/water%20bill/water%20bill%20home/water_input.dart'
+    hide ElectricityBillInputPage;
 import 'package:minna/bus/application/location%20fetch/bus_location_fetch_bloc.dart';
 import 'package:minna/bus/pages/screen%20bus%20home%20/bus_home.dart';
 import 'package:minna/cab/pages/TripSelectionPage/TripSelectionPage.dart';
@@ -16,7 +17,8 @@ import 'package:minna/comman/pages/log%20in/login_page.dart';
 import 'package:minna/comman/pages/screen%20bookings/screen_booking.dart';
 import 'package:minna/comman/pages/screen%20my%20account/my_account_page.dart';
 import 'package:minna/flight/presendation/screen%20flight/home_flight.dart';
-import 'package:minna/hotel%20booking/pages/holel%20home%20page/home_page_hotel.dart' hide FlightBookingTab;
+import 'package:minna/hotel%20booking/pages/holel%20home%20page/home_page_hotel.dart'
+    hide FlightBookingTab;
 import 'package:minna/train/pages/webView.dart';
 import 'package:minna/visa/pages/visa_page.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -196,7 +198,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
       'icon': FontAwesomeIcons.bus,
       'color': Color(0xFFD4AF37), // Gold
       'onTap': (BuildContext context) {
-            context.read<BusLocationFetchBloc>().add(const GetData());
+        context.read<BusLocationFetchBloc>().add(const GetData());
 
         Navigator.push(
           context,
@@ -242,13 +244,15 @@ class _HomeContentPageState extends State<HomeContentPage> {
       'icon': FontAwesomeIcons.train,
       'color': Color(0xFFD4AF37), // Gold
       'onTap': (BuildContext context) {
-         Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => IrctcInAppWebView(
-        ),
-      ),
-    );
+        _showComingSoonBottomSheet(context, "Train");
+
+        //      Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (_) => IrctcInAppWebView(
+        //     ),
+        //   ),
+        // );
       },
     },
     {
@@ -346,7 +350,12 @@ class _HomeContentPageState extends State<HomeContentPage> {
           return [
             BlocBuilder<LoginBloc, LoginState>(
               builder: (context, state) {
-                return _buildAppBar(isSmallScreen, isTablet, titleFontSize ,state);
+                return _buildAppBar(
+                  isSmallScreen,
+                  isTablet,
+                  titleFontSize,
+                  state,
+                );
               },
             ),
           ];
@@ -407,387 +416,401 @@ class _HomeContentPageState extends State<HomeContentPage> {
   }
 
   SliverAppBar _buildAppBar(
-  bool isSmallScreen,
-  bool isTablet,
-  double titleFontSize,
-  LoginState state
-) {
-  final isLoggedIn = state.isLoggedIn ?? false;
+    bool isSmallScreen,
+    bool isTablet,
+    double titleFontSize,
+    LoginState state,
+  ) {
+    final isLoggedIn = state.isLoggedIn ?? false;
 
-  return SliverAppBar(
-    backgroundColor: Colors.white,
-    expandedHeight: ! isLoggedIn?
-    
-    
-    
-    ( isTablet ? 170 : isSmallScreen ? 150 : 255):  150,
-     floating: false,
-    pinned: true,
-    elevation: 0,
-    shadowColor: Colors.black.withOpacity(0.1),
-    surfaceTintColor: Colors.white,
-    stretch: true,
-    collapsedHeight: 60,
-    flexibleSpace: FlexibleSpaceBar(
-      background: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 8,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: isSmallScreen ? 16 : 24,
-              vertical: isSmallScreen ? 8 : 16,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Main header row
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Logo and App Name
-                    Row(
-                      children: [
-                        // App Logo Container
-                        Container(
-                          width: isSmallScreen ? 40 : isTablet ? 50 : 44,
-                          height: isSmallScreen ? 40 : isTablet ? 50 : 44,
-                          decoration: BoxDecoration(
-                            color: _primaryColor,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 8,
-                                offset: Offset(0, 2),
+    return SliverAppBar(
+      backgroundColor: Colors.white,
+      expandedHeight: !isLoggedIn
+          ? (isTablet
+                ? 170
+                : isSmallScreen
+                ? 150
+                : 255)
+          : 150,
+      floating: false,
+      pinned: true,
+      elevation: 0,
+      shadowColor: Colors.black.withOpacity(0.1),
+      surfaceTintColor: Colors.white,
+      stretch: true,
+      collapsedHeight: 60,
+      flexibleSpace: FlexibleSpaceBar(
+        background: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 8,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: isSmallScreen ? 16 : 24,
+                vertical: isSmallScreen ? 8 : 16,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Main header row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Logo and App Name
+                      Row(
+                        children: [
+                          // App Logo Container
+                          Container(
+                            width: isSmallScreen
+                                ? 40
+                                : isTablet
+                                ? 50
+                                : 44,
+                            height: isSmallScreen
+                                ? 40
+                                : isTablet
+                                ? 50
+                                : 44,
+                            decoration: BoxDecoration(
+                              color: _primaryColor,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 8,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(6.0),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.asset(
+                                  'asset/mtlogo.jpg',
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      color: _secondaryColor,
+                                      child: Icon(
+                                        Icons.airplanemode_active,
+                                        color: _primaryColor,
+                                        size: isSmallScreen ? 20 : 24,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: isSmallScreen ? 12 : 16),
+                          // App Name and Tagline
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'MT TRIP',
+                                style: TextStyle(
+                                  color: _primaryColor,
+                                  fontSize: isSmallScreen
+                                      ? 20
+                                      : isTablet
+                                      ? 28
+                                      : 24,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 1.2,
+                                  height: 1.0,
+                                ),
+                              ),
+                              SizedBox(height: 2),
+                              Text(
+                                'Travel • Explore • Experience',
+                                style: TextStyle(
+                                  color: _textSecondary,
+                                  fontSize: isSmallScreen
+                                      ? 10
+                                      : isTablet
+                                      ? 13
+                                      : 11,
+                                  fontWeight: FontWeight.w500,
+                                  letterSpacing: 0.5,
+                                ),
                               ),
                             ],
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(6.0),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.asset(
-                                'asset/mtlogo.jpg',
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    color: _secondaryColor,
-                                    child: Icon(
-                                      Icons.airplanemode_active,
-                                      color: _primaryColor,
-                                      size: isSmallScreen ? 20 : 24,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: isSmallScreen ? 12 : 16),
-                        // App Name and Tagline
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'MT TRIP',
-                              style: TextStyle(
-                                color: _primaryColor,
-                                fontSize: isSmallScreen ? 20 : isTablet ? 28 : 24,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: 1.2,
-                                height: 1.0,
-                              ),
-                            ),
-                            SizedBox(height: 2),
-                            Text(
-                              'Travel • Explore • Experience',
-                              style: TextStyle(
-                                color: _textSecondary,
-                                fontSize: isSmallScreen ? 10 : isTablet ? 13 : 11,
-                                fontWeight: FontWeight.w500,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Spacer(),
-                    
-                    // Profile/Login Section
-                    Row(
-                      children: [
-                        if (isLoggedIn) ...[
-                          // Profile Icon with Badge
-                          GestureDetector(
-                            onTap: () {
-                              // Navigate to profile
-                            },
-                            child: Container(
-                              padding: EdgeInsets.all(isSmallScreen ? 6 : 8),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: _secondaryColor.withOpacity(0.2),
-                                  width: 1,
-                                ),
-                              ),
-                              child: Stack(
-                                children: [
-                                  Icon(
-                                    Icons.person_outline_sharp,
-                                    color: _primaryColor,
-                                    size: isSmallScreen ? 16 : 20,
+                        ],
+                      ),
+                      Spacer(),
+
+                      // Profile/Login Section
+                      Row(
+                        children: [
+                          if (isLoggedIn) ...[
+                            // Profile Icon with Badge
+                            GestureDetector(
+                              onTap: () {
+                                // Navigate to profile
+                              },
+                              child: Container(
+                                padding: EdgeInsets.all(isSmallScreen ? 6 : 8),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: _secondaryColor.withOpacity(0.2),
+                                    width: 1,
                                   ),
-                                  Positioned(
-                                    right: 0,
-                                    top: 0,
-                                    child: Container(
-                                      width: isSmallScreen ? 8 : 10,
-                                      height: isSmallScreen ? 8 : 10,
-                                      decoration: BoxDecoration(
-                                        color: Colors.red[500],
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: Colors.white,
-                                          width: 1.5,
+                                ),
+                                child: Stack(
+                                  children: [
+                                    Icon(
+                                      Icons.person_outline_sharp,
+                                      color: _primaryColor,
+                                      size: isSmallScreen ? 16 : 20,
+                                    ),
+                                    Positioned(
+                                      right: 0,
+                                      top: 0,
+                                      child: Container(
+                                        width: isSmallScreen ? 8 : 10,
+                                        height: isSmallScreen ? 8 : 10,
+                                        decoration: BoxDecoration(
+                                          color: Colors.red[500],
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: Colors.white,
+                                            width: 1.5,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        ] else ...[
-                          // Login Button with Alert Functionality
-                  //         GestureDetector(
-                  //           onTap: () {
-                  // showModalBottomSheet(
-                  // context: context,
-                  // isScrollControlled: true,
-                  // backgroundColor: Colors.transparent,
-                  // builder: (context) => LoginBottomSheet(login: 2),
-                  // );
-                  // },
-                  //           child: Container(
-                  //             height: isSmallScreen ? 36 : 40,
-                  //             padding: EdgeInsets.symmetric(horizontal: 16),
-                  //             decoration: BoxDecoration(
-                  //             color: _primaryColor,
-                  //               borderRadius: BorderRadius.circular(20),
-                  //               boxShadow: [
-                                 
-                  //               ],
-                  //             ),
-                  //             child: Row(
-                  //               mainAxisSize: MainAxisSize.min,
-                  //               children: [
-                  //                 Icon(
-                  //                   Icons.login,
-                  //                   color: Colors.white,
-                  //                   size: 13,
-                  //                 ),
-                  //                 SizedBox(width: 6),
-                  //                 Text(
-                  //                   'Login',
-                  //                   style: TextStyle(
-                  //                     color: Colors.white,
-                  //                     fontSize: isSmallScreen ? 12 : 12,
-                  //                     fontWeight: FontWeight.w600,
-                  //                   ),
-                  //                 ),
-                  //               ],
-                  //             ),
-                  //           ),
-                  //         ),
+                          ] else ...[
+                            // Login Button with Alert Functionality
+                            //         GestureDetector(
+                            //           onTap: () {
+                            // showModalBottomSheet(
+                            // context: context,
+                            // isScrollControlled: true,
+                            // backgroundColor: Colors.transparent,
+                            // builder: (context) => LoginBottomSheet(login: 2),
+                            // );
+                            // },
+                            //           child: Container(
+                            //             height: isSmallScreen ? 36 : 40,
+                            //             padding: EdgeInsets.symmetric(horizontal: 16),
+                            //             decoration: BoxDecoration(
+                            //             color: _primaryColor,
+                            //               borderRadius: BorderRadius.circular(20),
+                            //               boxShadow: [
+
+                            //               ],
+                            //             ),
+                            //             child: Row(
+                            //               mainAxisSize: MainAxisSize.min,
+                            //               children: [
+                            //                 Icon(
+                            //                   Icons.login,
+                            //                   color: Colors.white,
+                            //                   size: 13,
+                            //                 ),
+                            //                 SizedBox(width: 6),
+                            //                 Text(
+                            //                   'Login',
+                            //                   style: TextStyle(
+                            //                     color: Colors.white,
+                            //                     fontSize: isSmallScreen ? 12 : 12,
+                            //                     fontWeight: FontWeight.w600,
+                            //                   ),
+                            //                 ),
+                            //               ],
+                            //             ),
+                            //           ),
+                            //         ),
+                          ],
                         ],
-                      ],
-                    ),
-                  ],
-                ),
-
-                // Login Alert Banner (only when not logged in)
-                if (!isLoggedIn) ...[
-                  SizedBox(height: isSmallScreen ? 12 : 16),
-                  _buildLoginAlertBanner(isSmallScreen),
-                ],
-
-                // Search Bar Section
-                SizedBox(height: isSmallScreen ? 12 : 16),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[50],
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.grey[200]!, width: 1),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.03),
-                        blurRadius: 6,
-                        offset: Offset(0, 2),
                       ),
                     ],
                   ),
-                  child: TextField(
-                    controller: _searchController,
-                    onChanged: (value) {
-                      setState(() {
-                        _searchText = value;
-                      });
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Search for buses, flights, hotels...',
-                      hintStyle: TextStyle(
-                        color: Colors.grey[500],
-                        fontSize: isSmallScreen ? 14 : 16,
-                      ),
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: _primaryColor,
-                        size: isSmallScreen ? 20 : 22,
-                      ),
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(
-                        vertical: isSmallScreen ? 14 : 16,
-                        horizontal: 16,
+
+                  // Login Alert Banner (only when not logged in)
+                  if (!isLoggedIn) ...[
+                    SizedBox(height: isSmallScreen ? 12 : 16),
+                    _buildLoginAlertBanner(isSmallScreen),
+                  ],
+
+                  // Search Bar Section
+                  SizedBox(height: isSmallScreen ? 12 : 16),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[50],
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.grey[200]!, width: 1),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.03),
+                          blurRadius: 6,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: TextField(
+                      controller: _searchController,
+                      onChanged: (value) {
+                        setState(() {
+                          _searchText = value;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        hintText: 'Search for buses, flights, hotels...',
+                        hintStyle: TextStyle(
+                          color: Colors.grey[500],
+                          fontSize: isSmallScreen ? 14 : 16,
+                        ),
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: _primaryColor,
+                          size: isSmallScreen ? 20 : 22,
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(
+                          vertical: isSmallScreen ? 14 : 16,
+                          horizontal: 16,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
-// Login Alert Banner Widget
-Widget _buildLoginAlertBanner(bool isSmallScreen) {
-  return GestureDetector(
-    onTap: () {
-  showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (context) => LoginBottomSheet(login: 2),
-                  );    },
-    child: Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(
-        horizontal: isSmallScreen ? 16 : 20,
-        vertical: isSmallScreen ? 12 : 16,
-      ),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            _secondaryColor.withOpacity(0.1),
-            _secondaryColor.withOpacity(0.05)
+  // Login Alert Banner Widget
+  Widget _buildLoginAlertBanner(bool isSmallScreen) {
+    return GestureDetector(
+      onTap: () {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => LoginBottomSheet(login: 2),
+        );
+      },
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(
+          horizontal: isSmallScreen ? 16 : 20,
+          vertical: isSmallScreen ? 12 : 16,
+        ),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              _secondaryColor.withOpacity(0.1),
+              _secondaryColor.withOpacity(0.05),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: _secondaryColor.withOpacity(0.2)),
+        ),
+        child: Row(
+          children: [
+            // // Alert Icon
+            // Container(
+            //   padding: EdgeInsets.all(8),
+            //   decoration: BoxDecoration(
+            //     color: _secondaryColor.withOpacity(0.1),
+            //     shape: BoxShape.circle,
+            //   ),
+            //   child: Icon(
+            //     Icons.info_outline,
+            //     color: _secondaryColor,
+            //     size: isSmallScreen ? 18 : 20,
+            //   ),
+            // ),
+            // SizedBox(width: isSmallScreen ? 12 : 16),
+
+            // Alert Message
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Login Required!',
+                    style: TextStyle(
+                      color: _primaryColor,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    'login to manage trips, explore offers & more',
+                    style: TextStyle(color: _textSecondary, fontSize: 10),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+
+            // // Quick Login Button
+            Container(
+              height: isSmallScreen ? 32 : 36,
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: _primaryColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: TextButton(
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => LoginBottomSheet(login: 2),
+                  );
+                },
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text(
+                  'Login Now',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: isSmallScreen ? 11 : 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
           ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: _secondaryColor.withOpacity(0.2),
         ),
       ),
-      child: Row(
-        children: [
-          // // Alert Icon
-          // Container(
-          //   padding: EdgeInsets.all(8),
-          //   decoration: BoxDecoration(
-          //     color: _secondaryColor.withOpacity(0.1),
-          //     shape: BoxShape.circle,
-          //   ),
-          //   child: Icon(
-          //     Icons.info_outline,
-          //     color: _secondaryColor,
-          //     size: isSmallScreen ? 18 : 20,
-          //   ),
-          // ),
-          // SizedBox(width: isSmallScreen ? 12 : 16),
-          
-          // Alert Message
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Login Required!',
-                  style: TextStyle(
-                    color: _primaryColor,
-                    fontSize:14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  'login to manage trips, explore offers & more',
-                  style: TextStyle(
-                    color: _textSecondary,
-                    fontSize: 10,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-          
-          // // Quick Login Button
-          Container(
-            height: isSmallScreen ? 32 : 36,
-            padding: EdgeInsets.symmetric(horizontal: 12),
-            decoration: BoxDecoration(
-              color: _primaryColor,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: TextButton(
-              onPressed: () {
-  showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (context) => LoginBottomSheet(login: 2),
-                  );              },
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.zero,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: Text(
-                'Login Now',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: isSmallScreen ? 11 : 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
+    );
+  }
 
-// Show Login Alert Dialog
-
+  // Show Login Alert Dialog
 
   // Helper method for stat items
   Widget _buildStatItem(String value, String label, bool isSmallScreen) {
@@ -1330,16 +1353,14 @@ Widget _buildLoginAlertBanner(bool isSmallScreen) {
               child: FaIcon(
                 service['icon'],
                 color: service['color'],
-                size:
-                
-                 isSmallScreen ? iconSize - 2 : iconSize-5,
+                size: isSmallScreen ? iconSize - 2 : iconSize - 5,
               ),
             ),
             SizedBox(height: isSmallScreen ? 6 : 8),
             Text(
               service['label'],
               style: TextStyle(
-                fontSize: bodyFontSize-2,
+                fontSize: bodyFontSize - 2,
                 fontWeight: FontWeight.w600,
 
                 color: _textPrimary,
@@ -1400,8 +1421,8 @@ Widget _buildLoginAlertBanner(bool isSmallScreen) {
                 service,
                 isSmallScreen,
                 isTablet,
-                iconSize-2,
-                bodyFontSize-2,
+                iconSize - 2,
+                bodyFontSize - 2,
               );
             },
           ),
@@ -1541,9 +1562,8 @@ Widget _buildLoginAlertBanner(bool isSmallScreen) {
                       'Travel The World\nWith Confidence',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 
-                            18,
-                            
+                        fontSize: 18,
+
                         fontWeight: FontWeight.bold,
                         height: 1.3,
                       ),

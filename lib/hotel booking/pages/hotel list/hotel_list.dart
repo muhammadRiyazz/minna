@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:minna/hotel booking/functions/hotel_api.dart';
+import 'package:minna/hotel booking/functions/hotel_details.dart';
 import 'package:minna/hotel%20booking/domain/hotel%20list/hotel_list.dart';
 import 'package:minna/hotel%20booking/pages/hotel%20details/hotel_details_page.dart';
 
@@ -58,7 +59,9 @@ class _HotelListPageState extends State<HotelListPage> {
         hotels.clear();
       });
 
-      log('🔍 Starting hotel search for city: ${widget.cityName} (${widget.cityId})');
+      log(
+        '🔍 Starting hotel search for city: ${widget.cityName} (${widget.cityId})',
+      );
 
       final response = await _apiService.searchHotels(
         country: 'IN',
@@ -71,6 +74,27 @@ class _HotelListPageState extends State<HotelListPage> {
       if (response.status) {
         log('✅ Search successful! Found ${response.totalHotels} hotels');
 
+        List<String> codes = response.hotels
+            .map((h) => h.hotelSearchDetails.hotelCode)
+            .where((c) => c.isNotEmpty)
+            .toList();
+
+        Map<String, dynamic> detailsMap = {};
+        if (codes.isNotEmpty) {
+          String codesString = codes.join(',');
+          log('📡 Fetching HotelDetails for codes: $codesString');
+          try {
+            final detailsRes = await HotelDetailsApiService().fetchHotelDetails(
+              codesString,
+            );
+            for (var d in detailsRes.hotelDetails) {
+              detailsMap[d.hotelCode] = d.toJson();
+            }
+          } catch (e) {
+            log('⚠️ Error fetching hotel details: $e');
+          }
+        }
+
         final List<HotelListItem> hotelListItems = [];
 
         for (final hotelItem in response.hotels) {
@@ -79,17 +103,39 @@ class _HotelListPageState extends State<HotelListPage> {
                 .map((room) => room.totalFare)
                 .reduce((a, b) => a < b ? a : b);
 
-            hotelListItems.add(HotelListItem(
-              hotelDetails:
-                  SimplifiedHotelDetails.fromHotelDetails(hotelItem.hotelDetails),
-              startingPrice: minPrice,
-              currency: hotelItem.hotelSearchDetails.currency,
-              hotelSearchItem: hotelItem,
-            ));
+            HotelDetails finalDetails = hotelItem.hotelDetails;
+            final remoteDetailJson =
+                detailsMap[hotelItem.hotelSearchDetails.hotelCode];
+
+            if (remoteDetailJson != null) {
+              try {
+                finalDetails = HotelDetails.fromJson(remoteDetailJson);
+              } catch (e) {
+                log('Error parsing HotelDetails: $e');
+              }
+            }
+
+            final updatedHotelItem = HotelSearchItem(
+              hotelSearchDetails: hotelItem.hotelSearchDetails,
+              hotelDetails: finalDetails,
+            );
+
+            hotelListItems.add(
+              HotelListItem(
+                hotelDetails: SimplifiedHotelDetails.fromHotelDetails(
+                  finalDetails,
+                ),
+                startingPrice: minPrice,
+                currency: updatedHotelItem.hotelSearchDetails.currency,
+                hotelSearchItem: updatedHotelItem,
+              ),
+            );
           }
         }
 
-        hotelListItems.sort((a, b) => a.startingPrice.compareTo(b.startingPrice));
+        hotelListItems.sort(
+          (a, b) => a.startingPrice.compareTo(b.startingPrice),
+        );
 
         setState(() {
           hotels = hotelListItems;
@@ -130,8 +176,14 @@ class _HotelListPageState extends State<HotelListPage> {
   }
 
   int get totalGuests {
-    final totalAdults = widget.rooms.fold(0, (sum, room) => sum + (room['adults'] as int));
-    final totalChildren = widget.rooms.fold(0, (sum, room) => sum + (room['children'] as int));
+    final totalAdults = widget.rooms.fold(
+      0,
+      (sum, room) => sum + (room['adults'] as int),
+    );
+    final totalChildren = widget.rooms.fold(
+      0,
+      (sum, room) => sum + (room['children'] as int),
+    );
     return totalAdults + totalChildren;
   }
 
@@ -143,186 +195,183 @@ class _HotelListPageState extends State<HotelListPage> {
         children: [
           // Fixed Header
           _buildHeader(),
-          
+
           // Scrollable Content
-          Expanded(
-            child: _buildContent(),
-          ),
+          Expanded(child: _buildContent()),
         ],
       ),
     );
   }
 
-Widget _buildHeader() {
-  return Container(
-    decoration: BoxDecoration(
-      color: _primaryColor,
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.1),
-          blurRadius: 8,
-          offset: Offset(0, 2),
-        ),
-      ],
-    ),
-    child: SafeArea(
-      bottom: false,
-      child: Column(
-        children: [
-          // App Bar
-          Padding(
-            padding: EdgeInsets.fromLTRB(16, 12, 16, 12),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(
-                      Iconsax.arrow_left_2,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                ),
-                SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Hotels in ${widget.cityName}',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: -0.3,
-                        ),
-                      ),
-                     
-                    ],
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    // TODO: Filter functionality
-                  },
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: _secondaryColor.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: _secondaryColor.withOpacity(0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: Icon(
-                      Iconsax.filter_search,
-                      color: _secondaryColor,
-                      size: 20,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          
-          // Search Details Section
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.15),
-              border: Border(
-                top: BorderSide(color: Colors.white.withOpacity(0.08)),
-                bottom: BorderSide(color: Colors.white.withOpacity(0.08)),
-              ),
-            ),
-            child: Column(
-              children: [
-                // Dates Row
-                Row(
-                  children: [
-               
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Check-in / Check-out',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.7),
-                              fontSize: 11,
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: 0.3,
-                            ),
-                          ),
-                          SizedBox(height: 2),
-                          Text(
-                            '${formatDate(widget.checkInDate)} - ${formatDate(widget.checkOutDate)}',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                        Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(9),
-                      ),
-                      child: Icon(
-                        Iconsax.calendar_1,
-                        size: 18,
-                        color: Colors.white.withOpacity(0.9),
-                      ),
-                    ),
-                  ],
-                ),
-             
-              ],
-            ),
+  Widget _buildHeader() {
+    return Container(
+      decoration: BoxDecoration(
+        color: _primaryColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: Offset(0, 2),
           ),
         ],
       ),
-    ),
-  );
-}
+      child: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            // App Bar
+            Padding(
+              padding: EdgeInsets.fromLTRB(16, 12, 16, 12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(
+                        Iconsax.arrow_left_2,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Hotels in ${widget.cityName}',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: -0.3,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      // TODO: Filter functionality
+                    },
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: _secondaryColor.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: _secondaryColor.withOpacity(0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Icon(
+                        Iconsax.filter_search,
+                        color: _secondaryColor,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
 
-String _calculateNights() {
-  final difference = widget.checkOutDate.difference(widget.checkInDate).inDays;
-  return '$difference ${difference == 1 ? 'night' : 'nights'}';
-}
+            // Search Details Section
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.15),
+                border: Border(
+                  top: BorderSide(color: Colors.white.withOpacity(0.08)),
+                  bottom: BorderSide(color: Colors.white.withOpacity(0.08)),
+                ),
+              ),
+              child: Column(
+                children: [
+                  // Dates Row
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Check-in / Check-out',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.7),
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                                letterSpacing: 0.3,
+                              ),
+                            ),
+                            SizedBox(height: 2),
+                            Text(
+                              '${formatDate(widget.checkInDate)} - ${formatDate(widget.checkOutDate)}',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(9),
+                        ),
+                        child: Icon(
+                          Iconsax.calendar_1,
+                          size: 18,
+                          color: Colors.white.withOpacity(0.9),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-// String formatDate(DateTime date) {
-//   return DateFormat('MMM dd, yyyy').format(date);
-// }
+  String _calculateNights() {
+    final difference = widget.checkOutDate
+        .difference(widget.checkInDate)
+        .inDays;
+    return '$difference ${difference == 1 ? 'night' : 'nights'}';
+  }
+
+  // String formatDate(DateTime date) {
+  //   return DateFormat('MMM dd, yyyy').format(date);
+  // }
 
   Widget _buildContent() {
     if (isLoading) {
       return _buildLoading();
     }
-    
+
     if (hasError) {
       return _buildError();
     }
-    
+
     if (hotels.isEmpty) {
       return _buildEmpty();
     }
-    
+
     return _buildHotelList();
   }
 
@@ -371,11 +420,7 @@ String _calculateNights() {
                         margin: EdgeInsets.only(bottom: 12),
                       ),
                       Spacer(),
-                      Container(
-                        height: 20,
-                        width: 60,
-                        color: Colors.grey[200],
-                      ),
+                      Container(height: 20, width: 60, color: Colors.grey[200]),
                     ],
                   ),
                 ),
@@ -420,10 +465,7 @@ String _calculateNights() {
             Text(
               errorMessage,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: _textSecondary,
-              ),
+              style: TextStyle(fontSize: 14, color: _textSecondary),
             ),
             SizedBox(height: 24),
             ElevatedButton(
@@ -458,11 +500,7 @@ String _calculateNights() {
                 color: Colors.grey[100],
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                Iconsax.building,
-                size: 40,
-                color: Colors.grey[500],
-              ),
+              child: Icon(Iconsax.building, size: 40, color: Colors.grey[500]),
             ),
             SizedBox(height: 20),
             Text(
@@ -476,10 +514,7 @@ String _calculateNights() {
             SizedBox(height: 12),
             Text(
               'Try adjusting your search criteria',
-              style: TextStyle(
-                fontSize: 14,
-                color: _textSecondary,
-              ),
+              style: TextStyle(fontSize: 14, color: _textSecondary),
             ),
           ],
         ),
@@ -494,11 +529,7 @@ String _calculateNights() {
       separatorBuilder: (context, index) => SizedBox(height: 16),
       itemBuilder: (context, index) {
         final hotel = hotels[index];
-        return 
-        
-        
-        
-        _buildHotelCard(hotel);
+        return _buildHotelCard(hotel);
       },
     );
   }
@@ -593,7 +624,7 @@ String _calculateNights() {
                         ),
                 ),
               ),
-              
+
               // Hotel Details
               Expanded(
                 child: Padding(
@@ -614,7 +645,7 @@ String _calculateNights() {
                         overflow: TextOverflow.ellipsis,
                       ),
                       SizedBox(height: 6),
-                      
+
                       // Location
                       Row(
                         children: [
@@ -637,7 +668,7 @@ String _calculateNights() {
                         ],
                       ),
                       SizedBox(height: 8),
-                      
+
                       // Rating
                       if (hotel.hotelDetails.hotelRating > 0)
                         Row(
@@ -656,13 +687,11 @@ String _calculateNights() {
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
-                         
-                           
                           ],
                         ),
-                      
+
                       // Spacer(),
-                      
+
                       // Price
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -696,7 +725,7 @@ String _calculateNights() {
                               ),
                             ],
                           ),
-                          
+
                           // View Button
                           Container(
                             padding: EdgeInsets.symmetric(

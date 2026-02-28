@@ -21,10 +21,7 @@ class Status {
   Status({required this.code, required this.description});
 
   factory Status.fromJson(Map<String, dynamic> json) {
-    return Status(
-      code: json['Code'],
-      description: json['Description'],
-    );
+    return Status(code: json['Code'], description: json['Description']);
   }
 }
 
@@ -62,6 +59,7 @@ class Hotel {
     );
   }
 }
+
 // hotel_models.dart
 class HotelSearchRequest {
   final String country;
@@ -122,10 +120,13 @@ class HotelSearchResponse {
     return HotelSearchResponse(
       status: json['status'] as bool? ?? false,
       message: json['message'] as String? ?? '',
-      totalHotels: json['totalHotels'] as int? ?? 0,
-      hotels: (json['hotels'] as List<dynamic>?)
-          ?.map((e) => HotelSearchItem.fromJson(e))
-          .toList() ?? [],
+      totalHotels:
+          json['total_hotels'] as int? ?? json['totalHotels'] as int? ?? 0,
+      hotels:
+          (json['hotels'] as List<dynamic>?)
+              ?.map((e) => HotelSearchItem.fromJson(e))
+              .toList() ??
+          [],
     );
   }
 }
@@ -140,9 +141,18 @@ class HotelSearchItem {
   });
 
   factory HotelSearchItem.fromJson(Map<String, dynamic> json) {
+    if (json.containsKey('HotelCode') &&
+        !json.containsKey('HotelSearchDetails')) {
+      return HotelSearchItem(
+        hotelSearchDetails: HotelSearchDetails.fromJson(json),
+        hotelDetails: HotelDetails.fromJson({}),
+      );
+    }
     return HotelSearchItem(
-      hotelSearchDetails: HotelSearchDetails.fromJson(json['HotelSearchDetails']),
-      hotelDetails: HotelDetails.fromJson(json['HotelDetails']),
+      hotelSearchDetails: HotelSearchDetails.fromJson(
+        json['HotelSearchDetails'] ?? {},
+      ),
+      hotelDetails: HotelDetails.fromJson(json['HotelDetails'] ?? {}),
     );
   }
 }
@@ -162,9 +172,11 @@ class HotelSearchDetails {
     return HotelSearchDetails(
       hotelCode: json['HotelCode'] as String? ?? '',
       currency: json['Currency'] as String? ?? 'INR',
-      rooms: (json['Rooms'] as List<dynamic>?)
-          ?.map((e) => RoomDetail.fromJson(e))
-          .toList() ?? [],
+      rooms:
+          (json['Rooms'] as List<dynamic>?)
+              ?.map((e) => RoomDetail.fromJson(e))
+              .toList() ??
+          [],
     );
   }
 }
@@ -200,31 +212,41 @@ class RoomDetail {
 
   factory RoomDetail.fromJson(Map<String, dynamic> json) {
     return RoomDetail(
-      name: (json['Name'] as List<dynamic>?)
-          ?.map((e) => e.toString())
-          .toList() ?? [],
+      name:
+          (json['Name'] as List<dynamic>?)?.map((e) => e.toString()).toList() ??
+          [],
       bookingCode: json['BookingCode'] as String? ?? '',
       inclusion: json['Inclusion'] as String? ?? '',
-      dayRates: (json['DayRates'] as List<dynamic>?)
-          ?.map((e) => (e as List<dynamic>)
-              .map((rate) => DayRate.fromJson(rate))
-              .toList())
-          .toList() ?? [],
+      dayRates:
+          (json['DayRates'] as List<dynamic>?)
+              ?.map(
+                (e) => (e as List<dynamic>)
+                    .map((rate) => DayRate.fromJson(rate))
+                    .toList(),
+              )
+              .toList() ??
+          [],
       totalFare: (json['TotalFare'] as num?)?.toDouble() ?? 0.0,
       totalTax: (json['TotalTax'] as num?)?.toDouble() ?? 0.0,
-      roomPromotion: (json['RoomPromotion'] as List<dynamic>?)
-          ?.map((e) => e.toString())
-          .toList() ?? [],
-      cancelPolicies: (json['CancelPolicies'] as List<dynamic>?)
-          ?.map((e) => CancelPolicy.fromJson(e))
-          .toList() ?? [],
+      roomPromotion:
+          (json['RoomPromotion'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
+      cancelPolicies:
+          (json['CancelPolicies'] as List<dynamic>?)
+              ?.map((e) => CancelPolicy.fromJson(e))
+              .toList() ??
+          [],
       mealType: json['MealType'] as String? ?? '',
       isRefundable: json['IsRefundable'] as bool? ?? false,
       withTransfers: json['WithTransfers'] as bool? ?? false,
       supplements: (json['Supplements'] as List<dynamic>?)
-          ?.map((e) => (e as List<dynamic>)
-              .map((sup) => Supplement.fromJson(sup))
-              .toList())
+          ?.map(
+            (e) => (e as List<dynamic>)
+                .map((sup) => Supplement.fromJson(sup))
+                .toList(),
+          )
           .toList(),
     );
   }
@@ -236,9 +258,7 @@ class DayRate {
   DayRate({required this.basePrice});
 
   factory DayRate.fromJson(Map<String, dynamic> json) {
-    return DayRate(
-      basePrice: (json['BasePrice'] as num?)?.toDouble() ?? 0.0,
-    );
+    return DayRate(basePrice: (json['BasePrice'] as num?)?.toDouble() ?? 0.0);
   }
 }
 
@@ -257,7 +277,8 @@ class CancelPolicy {
     return CancelPolicy(
       fromDate: json['FromDate'] as String? ?? '',
       chargeType: json['ChargeType'] as String? ?? '',
-      cancellationCharge: (json['CancellationCharge'] as num?)?.toDouble() ?? 0.0,
+      cancellationCharge:
+          (json['CancellationCharge'] as num?)?.toDouble() ?? 0.0,
     );
   }
 }
@@ -352,13 +373,17 @@ class HotelDetails {
       hotelCode: json['HotelCode'] as String? ?? '',
       hotelName: json['HotelName'] as String? ?? '',
       description: json['Description'] as String? ?? '',
-      hotelFacilities: (json['HotelFacilities'] as List<dynamic>?)
-          ?.map((e) => e.toString())
-          .toList() ?? [],
+      hotelFacilities:
+          (json['HotelFacilities'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
       attractions: attractionsMap,
-      images: (json['Images'] as List<dynamic>?)
-          ?.map((e) => e.toString())
-          .toList() ?? [],
+      images:
+          (json['Images'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
       address: json['Address'] as String? ?? '',
       pinCode: json['PinCode'] as String? ?? '',
       cityId: json['CityId'] as String? ?? '',
@@ -374,9 +399,11 @@ class HotelDetails {
       checkInTime: json['CheckInTime'] as String? ?? '',
       checkOutTime: json['CheckOutTime'] as String? ?? '',
       hotelFees: HotelFees.fromJson(json['HotelFees'] ?? {}),
-      roomDetails: (json['RoomDetails'] as List<dynamic>?)
-          ?.map((e) => RoomTypeDetail.fromJson(e))
-          .toList() ?? [],
+      roomDetails:
+          (json['RoomDetails'] as List<dynamic>?)
+              ?.map((e) => RoomTypeDetail.fromJson(e))
+              .toList() ??
+          [],
     );
   }
 }
@@ -419,9 +446,11 @@ class RoomTypeDetail {
   factory RoomTypeDetail.fromJson(Map<String, dynamic> json) {
     return RoomTypeDetail(
       roomName: json['RoomName'] as String? ?? '',
-      imageURL: (json['imageURL'] as List<dynamic>?)
-          ?.map((e) => e.toString())
-          .toList() ?? [],
+      imageURL:
+          (json['imageURL'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
       roomId: json['RoomId'] as int? ?? 0,
       roomSize: json['RoomSize'] as String? ?? '',
       roomDescription: json['RoomDescription'] as String? ?? '',
