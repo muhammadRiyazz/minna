@@ -15,11 +15,13 @@ import 'package:http/http.dart' as http;
 class AmountEntryPage extends StatefulWidget {
   final String phoneNo;
   final String operator;
+  final String? initialAmount;
 
   const AmountEntryPage({
     super.key,
     required this.phoneNo,
     required this.operator,
+    this.initialAmount,
   });
 
   @override
@@ -32,7 +34,7 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
   String? _orderId;
   bool _isPaymentInProgress = false;
   String? _callbackId;
-  
+
   // New color scheme
   final Color _primaryColor = Colors.black;
   final Color _secondaryColor = Color(0xFFD4AF37); // Gold
@@ -44,12 +46,15 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
   final Color _textLight = Color(0xFF999999);
   final Color _errorColor = Color(0xFFE53935);
   final Color _successColor = Color(0xFF4CAF50);
-  
+
   RechargeProceedState? _lastProcessedState;
 
   @override
   void initState() {
     super.initState();
+    if (widget.initialAmount != null) {
+      _amountController.text = widget.initialAmount!;
+    }
     context.read<LoginBloc>().add(const LoginEvent.loginInfo());
     _initRazorpay();
   }
@@ -134,7 +139,9 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
     }
 
     // Reset bloc state for new payment
-    context.read<RechargeProceedBloc>().add(const RechargeProceedEvent.resetStates());
+    context.read<RechargeProceedBloc>().add(
+      const RechargeProceedEvent.resetStates(),
+    );
 
     // First make the callback to temporary storage
     final callbackResult = await _makeCallbackToTemporaryStorage(amount);
@@ -154,7 +161,7 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
 
     try {
       final url = Uri.parse('${baseUrl}utility_store');
-      
+
       final response = await http.post(
         url,
         body: {
@@ -170,18 +177,17 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
-        
-        if (responseData['status'] == 'SUCCESS' && 
-            responseData['statusCode'] == 0 && 
+
+        if (responseData['status'] == 'SUCCESS' &&
+            responseData['statusCode'] == 0 &&
             responseData['data'] != null) {
-          
           final callbackId = responseData['data'].toString();
           log("Callback successful, received ID: $callbackId");
-          
+
           setState(() {
             _isPaymentInProgress = false;
           });
-          
+
           return callbackId;
         } else {
           log("Callback failed with status: ${responseData['status']}");
@@ -234,10 +240,7 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
         'name': 'Mobile Recharge',
         'order_id': orderId,
         'description': 'Mobile Recharge for ${widget.phoneNo}',
-        'prefill': {
-          'contact': widget.phoneNo,
-          'email': 'user@example.com'
-        },
+        'prefill': {'contact': widget.phoneNo, 'email': 'user@example.com'},
         'theme': {'color': _secondaryColor.value.toRadixString(16)},
       };
 
@@ -288,13 +291,12 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
     if (_lastProcessedState == state) return;
     _lastProcessedState = state;
 
-    if (state.rechargeStatus == "FAILED" && 
-        state.shouldRefund == true && 
+    if (state.rechargeStatus == "FAILED" &&
+        state.shouldRefund == true &&
         !state.hasRefundBeenAttempted &&
         state.hasRechargeFailedHandled == true) {
-      
       log("Triggering refund due to recharge failure");
-      
+
       context.read<RechargeProceedBloc>().add(
         RechargeProceedEvent.initiateRefund(
           orderId: state.orderId ?? '',
@@ -306,13 +308,12 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
       );
     }
 
-    if (state.paymentSavedStatus == "PAYMENT_SAVED_FAILED" && 
-        state.shouldRefund == true && 
+    if (state.paymentSavedStatus == "PAYMENT_SAVED_FAILED" &&
+        state.shouldRefund == true &&
         !state.hasRefundBeenAttempted &&
         state.hasPaymentSaveFailedHandled == true) {
-      
       log("Triggering refund due to payment save failure");
-      
+
       context.read<RechargeProceedBloc>().add(
         RechargeProceedEvent.initiateRefund(
           orderId: state.orderId ?? '',
@@ -365,7 +366,10 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
                   decoration: BoxDecoration(
                     color: _successColor.withOpacity(0.1),
                     shape: BoxShape.circle,
-                    border: Border.all(color: _successColor.withOpacity(0.3), width: 2),
+                    border: Border.all(
+                      color: _successColor.withOpacity(0.3),
+                      width: 2,
+                    ),
                   ),
                   child: Icon(
                     Icons.check_circle_rounded,
@@ -374,7 +378,7 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Success Title
                 Text(
                   'Recharge Successful!',
@@ -385,7 +389,7 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Details Card
                 Container(
                   padding: const EdgeInsets.all(20),
@@ -399,23 +403,24 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
                       _buildDetailRow('Amount', '₹$amount'),
                       _buildDetailRow('Mobile Number', phoneNo),
                       _buildDetailRow('Operator', operator),
-                      _buildDetailRow('Status', 'Successfully Recharged', isSuccess: true),
+                      _buildDetailRow(
+                        'Status',
+                        'Successfully Recharged',
+                        isSuccess: true,
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Message
                 Text(
                   'Your mobile recharge has been processed successfully.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: _textSecondary,
-                  ),
+                  style: TextStyle(fontSize: 16, color: _textSecondary),
                 ),
                 const SizedBox(height: 32),
-                
+
                 // Done Button
                 SizedBox(
                   width: double.infinity,
@@ -492,7 +497,10 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
                   decoration: BoxDecoration(
                     color: _secondaryColor.withOpacity(0.1),
                     shape: BoxShape.circle,
-                    border: Border.all(color: _secondaryColor.withOpacity(0.3), width: 2),
+                    border: Border.all(
+                      color: _secondaryColor.withOpacity(0.3),
+                      width: 2,
+                    ),
                   ),
                   child: Icon(
                     Icons.autorenew_rounded,
@@ -501,7 +509,7 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Title
                 Text(
                   'Refund Initiated',
@@ -512,7 +520,7 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Details Card
                 Container(
                   padding: const EdgeInsets.all(20),
@@ -525,23 +533,24 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
                     children: [
                       _buildDetailRow('Amount', '₹$amount'),
                       _buildDetailRow('Mobile Number', phoneNo),
-                      _buildDetailRow('Status', 'Refund Initiated', isWarning: true),
+                      _buildDetailRow(
+                        'Status',
+                        'Refund Initiated',
+                        isWarning: true,
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Message
                 Text(
                   'Sorry, your recharge could not be processed. Refund has been initiated and amount will be credited to your account shortly.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: _textSecondary,
-                  ),
+                  style: TextStyle(fontSize: 16, color: _textSecondary),
                 ),
                 const SizedBox(height: 32),
-                
+
                 // Close Button
                 SizedBox(
                   width: double.infinity,
@@ -618,7 +627,10 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
                   decoration: BoxDecoration(
                     color: _errorColor.withOpacity(0.1),
                     shape: BoxShape.circle,
-                    border: Border.all(color: _errorColor.withOpacity(0.3), width: 2),
+                    border: Border.all(
+                      color: _errorColor.withOpacity(0.3),
+                      width: 2,
+                    ),
                   ),
                   child: Icon(
                     Icons.error_outline_rounded,
@@ -627,7 +639,7 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Title
                 Text(
                   'Refund Failed',
@@ -638,7 +650,7 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Details Card
                 Container(
                   padding: const EdgeInsets.all(20),
@@ -656,7 +668,7 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Important Message
                 Container(
                   padding: const EdgeInsets.all(16),
@@ -679,16 +691,13 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
                       Text(
                         'Sorry, your recharge failed and we were unable to process the refund automatically. If the amount was debited from your account, please contact our support team for assistance.',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: _errorColor,
-                        ),
+                        style: TextStyle(fontSize: 14, color: _errorColor),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Close Button
                 SizedBox(
                   width: double.infinity,
@@ -726,7 +735,13 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
     );
   }
 
-  Widget _buildDetailRow(String title, String value, {bool isSuccess = false, bool isError = false, bool isWarning = false}) {
+  Widget _buildDetailRow(
+    String title,
+    String value, {
+    bool isSuccess = false,
+    bool isError = false,
+    bool isWarning = false,
+  }) {
     Color valueColor = _textPrimary;
     if (isSuccess) valueColor = _successColor;
     if (isError) valueColor = _errorColor;
@@ -766,7 +781,7 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
           listener: (context, state) {
             if (!state.isLoading) {
               _handleRefundLogic(state);
-              
+
               if (state.rechargeStatus == "SUCCESS") {
                 log("Recharge Successful ✅");
                 _showSuccessBottomSheet(
@@ -774,11 +789,11 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
                   phoneNo: widget.phoneNo,
                   operator: widget.operator,
                 );
-              } 
-              else if (state.rechargeStatus == "FAILED" && state.shouldRefund == true) {
+              } else if (state.rechargeStatus == "FAILED" &&
+                  state.shouldRefund == true) {
                 log("Recharge Failed - Refund will be initiated ❌");
-              }
-              else if (state.rechargeStatus == "FAILED" && state.shouldRefund != true) {
+              } else if (state.rechargeStatus == "FAILED" &&
+                  state.shouldRefund != true) {
                 log("Recharge Failed - No refund needed ❌");
               }
 
@@ -788,8 +803,7 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
                   amount: state.amount ?? '',
                   phoneNo: widget.phoneNo,
                 );
-              } 
-              else if (state.refundStatus == "REFUND_FAILED") {
+              } else if (state.refundStatus == "REFUND_FAILED") {
                 log("Refund failed");
                 _showRefundFailedBottomSheet(
                   amount: state.amount ?? '',
@@ -838,19 +852,30 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
                   children: [
                     // Operator Info
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                       decoration: BoxDecoration(
                         color: _secondaryColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: _secondaryColor.withOpacity(0.3)),
+                        border: Border.all(
+                          color: _secondaryColor.withOpacity(0.3),
+                        ),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.phone_iphone, color: _secondaryColor, size: 20),
+                          Icon(
+                            Icons.phone_iphone,
+                            color: _secondaryColor,
+                            size: 20,
+                          ),
                           const SizedBox(width: 8),
                           Text(
-                            widget.operator == 'Vodafone' ? 'VI' : widget.operator,
+                            widget.operator == 'Vodafone'
+                                ? 'VI'
+                                : widget.operator,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -874,8 +899,8 @@ class _AmountEntryPageState extends State<AmountEntryPage> {
                   ],
                 ),
               ),
-              
-SizedBox(height: 80,)              ,
+
+              SizedBox(height: 80),
               // Amount Input Section
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -907,21 +932,23 @@ SizedBox(height: 80,)              ,
                       const SizedBox(height: 8),
                       Text(
                         "Please enter the amount you want to recharge",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: _textSecondary,
-                        ),
+                        style: TextStyle(fontSize: 14, color: _textSecondary),
                       ),
                       const SizedBox(height: 32),
-                      
+
                       // Amount Input
                       Container(
                         decoration: BoxDecoration(
                           color: _backgroundColor,
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: _secondaryColor.withOpacity(0.3)),
+                          border: Border.all(
+                            color: _secondaryColor.withOpacity(0.3),
+                          ),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 16,
+                        ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -938,7 +965,10 @@ SizedBox(height: 80,)              ,
                               width: 180,
                               child: TextField(
                                 controller: _amountController,
-                                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                keyboardType:
+                                    const TextInputType.numberWithOptions(
+                                      decimal: true,
+                                    ),
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 48,
@@ -964,9 +994,9 @@ SizedBox(height: 80,)              ,
                   ),
                 ),
               ),
-              
+
               const Spacer(flex: 2),
-              
+
               // Proceed Button
               Padding(
                 padding: const EdgeInsets.all(24.0),
@@ -975,7 +1005,9 @@ SizedBox(height: 80,)              ,
                     return SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: (state.isLoading || _isPaymentInProgress) ? null : _onProceed,
+                        onPressed: (state.isLoading || _isPaymentInProgress)
+                            ? null
+                            : _onProceed,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _primaryColor,
                           foregroundColor: Colors.white,

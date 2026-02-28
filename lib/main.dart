@@ -24,9 +24,11 @@ import 'package:minna/cab/application/hold%20cab/hold_cab_bloc.dart';
 import 'package:minna/cab/function/commission_data.dart';
 
 // DTH & Mobile
-import 'package:minna/DTH%20&%20Mobile/DTH/application/dth%20proceed/dth_confirm_bloc.dart';
-import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/application/oparator/operators_bloc.dart';
-import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/application/proceed_recharge/recharge_proceed_bloc.dart';
+import 'package:minna/DTH & Mobile/DTH/application/dth proceed/dth_confirm_bloc.dart';
+import 'package:minna/DTH & Mobile/mobile  recharge/application/oparator/operators_bloc.dart';
+import 'package:minna/DTH & Mobile/mobile  recharge/application/proceed_recharge/recharge_proceed_bloc.dart';
+import 'package:minna/DTH & Mobile/mobile  recharge/application/plans/plans_bloc.dart';
+import 'package:minna/DTH & Mobile/DTH/application/dth_plans_bloc.dart';
 
 // Electricity & Water
 import 'package:minna/Electyicity%20&%20Water/application/bill%20report/bill_report_bloc.dart';
@@ -82,7 +84,7 @@ class _MyAppState extends State<MyApp> {
       final result = await _connectivity.checkConnectivity();
       if (!mounted) return;
       _updateConnectionStatus(result);
-      
+
       _connectivitySubscription = _connectivity.onConnectivityChanged.listen(
         _updateConnectionStatus,
         onError: (error) {
@@ -90,13 +92,20 @@ class _MyAppState extends State<MyApp> {
         },
       );
     } on PlatformException catch (e) {
-      log('Couldn\'t check connectivity status', error: e, name: 'Connectivity');
+      log(
+        'Couldn\'t check connectivity status',
+        error: e,
+        name: 'Connectivity',
+      );
       // Show error to user if connectivity check fails
       if (mounted) {
         _showSnackbar('Unable to check network connection');
       }
     } catch (e) {
-      log('Unexpected error initializing connectivity: $e', name: 'Connectivity');
+      log(
+        'Unexpected error initializing connectivity: $e',
+        name: 'Connectivity',
+      );
     }
   }
 
@@ -105,7 +114,7 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
 
     final hasConnection = !result.contains(ConnectivityResult.none);
-    
+
     if (!hasConnection && !_isShowingSnackbar) {
       log('No internet connection detected');
       _showSnackbar('Check your network connection');
@@ -117,7 +126,7 @@ class _MyAppState extends State<MyApp> {
   /// Shows a network error snackbar
   void _showSnackbar(String message) {
     if (!mounted) return;
-    
+
     _isShowingSnackbar = true;
     _scaffoldMessengerKey.currentState?.showSnackBar(
       SnackBar(
@@ -145,11 +154,8 @@ class _MyAppState extends State<MyApp> {
                   const SizedBox(height: 2),
                   Text(
                     message,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                    ),
-                  )
+                    style: const TextStyle(color: Colors.white, fontSize: 12),
+                  ),
                 ],
               ),
             ),
@@ -163,7 +169,7 @@ class _MyAppState extends State<MyApp> {
   /// Hides the network status snackbar
   void _hideSnackbar() {
     if (!mounted) return;
-    
+
     _isShowingSnackbar = false;
     _scaffoldMessengerKey.currentState?.hideCurrentSnackBar();
   }
@@ -174,41 +180,41 @@ class _MyAppState extends State<MyApp> {
       providers: [
         // ChangeNotifier Providers
         ChangeNotifierProvider(create: (_) => CommissionProvider()),
-        
+
         // Common BlocProviders
         BlocProvider(create: (_) => LoginBloc()),
-        
+
         // Flight BlocProviders
         BlocProvider(create: (_) => NationalityBloc()),
         BlocProvider(create: (_) => SearchDataBloc()),
         BlocProvider(create: (_) => TripRequestBloc()),
         BlocProvider(create: (_) => FareRequestBloc()),
         BlocProvider(create: (_) => BookingBloc()),
-        
+
         // Bus BlocProviders
         BlocProvider(create: (_) => BusLocationFetchBloc()),
         BlocProvider(create: (_) => LocationBloc()),
         BlocProvider(create: (_) => BusListFetchBloc()),
-        
+
         // Cab BlocProviders
         BlocProvider(create: (_) => FetchCabsBloc()),
         BlocProvider(create: (_) => HoldCabBloc()),
         BlocProvider(create: (_) => ConfirmBookingBloc()),
         BlocProvider(create: (_) => BookedInfoBloc()),
-        
+
         // Mobile & DTH BlocProviders
         BlocProvider(create: (_) => OperatorsBloc()),
         BlocProvider(create: (_) => RechargeProceedBloc()),
         BlocProvider(create: (_) => DthConfirmBloc()),
-        
+        BlocProvider(create: (_) => PlansBloc()),
+        BlocProvider(create: (_) => DTHPlansBloc()),
+
         // Electricity & Water BlocProviders
         BlocProvider(create: (_) => ProvidersBloc()),
         BlocProvider(create: (_) => FetchBillBloc()),
         BlocProvider(create: (_) => ConfirmBillBloc()),
-        BlocProvider(
-          create: (_) => BillPaymentBloc(BillPaymentRepository()),
-        ),
-        
+        BlocProvider(create: (_) => BillPaymentBloc(BillPaymentRepository())),
+
         // Hotel BlocProviders
         BlocProvider(create: (_) => HotelBookingConfirmBloc()),
       ],

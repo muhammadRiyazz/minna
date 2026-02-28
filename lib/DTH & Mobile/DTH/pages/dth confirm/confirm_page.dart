@@ -16,12 +16,14 @@ class DTHAmountEntryPage extends StatefulWidget {
   final String phoneNo;
   final String operator;
   final String subcriberNo;
+  final String? initialAmount;
 
   const DTHAmountEntryPage({
     super.key,
     required this.phoneNo,
     required this.operator,
     required this.subcriberNo,
+    this.initialAmount,
   });
 
   @override
@@ -34,7 +36,7 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
   String? _orderId;
   bool _isPaymentInProgress = false;
   String? _callbackId;
-  
+
   // New color scheme
   final Color _primaryColor = Colors.black;
   final Color _secondaryColor = Color(0xFFD4AF37); // Gold
@@ -47,13 +49,16 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
   final Color _errorColor = Color(0xFFE53935);
   final Color _successColor = Color(0xFF4CAF50);
   final Color _warningColor = Color(0xFFFF9800);
-  
+
   // Track processed states to prevent duplicate handling
   DthConfirmState? _lastProcessedState;
 
   @override
   void initState() {
     super.initState();
+    if (widget.initialAmount != null && widget.initialAmount!.isNotEmpty) {
+      _amountController.text = widget.initialAmount!;
+    }
     context.read<LoginBloc>().add(const LoginEvent.loginInfo());
     _initRazorpay();
   }
@@ -160,7 +165,7 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
 
     try {
       final url = Uri.parse('${baseUrl}utility_store');
-      
+
       final response = await http.post(
         url,
         body: {
@@ -176,25 +181,27 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
-        
-        if (responseData['status'] == 'SUCCESS' && 
-            responseData['statusCode'] == 0 && 
+
+        if (responseData['status'] == 'SUCCESS' &&
+            responseData['statusCode'] == 0 &&
             responseData['data'] != null) {
-          
           final callbackId = responseData['data'].toString();
           log("Callback successful, received ID: $callbackId");
-          
+
           setState(() {
             _isPaymentInProgress = false;
           });
-          
+
           return callbackId;
         } else {
           log("Callback failed with status: ${responseData['status']}");
           setState(() {
             _isPaymentInProgress = false;
           });
-          _showCustomSnackbar("Failed to initialize DTH recharge", isError: true);
+          _showCustomSnackbar(
+            "Failed to initialize DTH recharge",
+            isError: true,
+          );
           return null;
         }
       } else {
@@ -240,10 +247,7 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
         'name': 'DTH Recharge',
         'order_id': orderId,
         'description': 'DTH Recharge for ${widget.phoneNo}',
-        'prefill': {
-          'contact': widget.phoneNo,
-          'email': 'user@example.com'
-        },
+        'prefill': {'contact': widget.phoneNo, 'email': 'user@example.com'},
         'theme': {'color': _secondaryColor.value.toRadixString(16)},
       };
 
@@ -296,13 +300,12 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
     _lastProcessedState = state;
 
     // Handle recharge failure - trigger refund only once
-    if (state.rechargeStatus == "FAILED" && 
-        state.shouldRefund == true && 
+    if (state.rechargeStatus == "FAILED" &&
+        state.shouldRefund == true &&
         !state.hasRefundBeenAttempted &&
         state.hasRechargeFailedHandled == true) {
-      
       log("Triggering refund due to DTH recharge failure");
-      
+
       context.read<DthConfirmBloc>().add(
         DthConfirmEvent.initiateRefund(
           orderId: state.orderId ?? '',
@@ -315,13 +318,12 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
     }
 
     // Handle payment save failure - trigger refund only once
-    if (state.paymentSavedStatus == "PAYMENT_SAVED_FAILED" && 
-        state.shouldRefund == true && 
+    if (state.paymentSavedStatus == "PAYMENT_SAVED_FAILED" &&
+        state.shouldRefund == true &&
         !state.hasRefundBeenAttempted &&
         state.hasPaymentSaveFailedHandled == true) {
-      
       log("Triggering refund due to payment save failure");
-      
+
       context.read<DthConfirmBloc>().add(
         DthConfirmEvent.initiateRefund(
           orderId: state.orderId ?? '',
@@ -374,7 +376,10 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
                   decoration: BoxDecoration(
                     color: _successColor.withOpacity(0.1),
                     shape: BoxShape.circle,
-                    border: Border.all(color: _successColor.withOpacity(0.3), width: 2),
+                    border: Border.all(
+                      color: _successColor.withOpacity(0.3),
+                      width: 2,
+                    ),
                   ),
                   child: Icon(
                     Icons.check_circle_rounded,
@@ -383,7 +388,7 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Success Title
                 Text(
                   'DTH Recharge Successful!',
@@ -394,7 +399,7 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Details Card
                 Container(
                   padding: const EdgeInsets.all(20),
@@ -409,23 +414,24 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
                       _buildDetailRow('Phone Number', phoneNo),
                       _buildDetailRow('Subscriber ID', widget.subcriberNo),
                       _buildDetailRow('Operator', operator),
-                      _buildDetailRow('Status', 'Successfully Recharged', isSuccess: true),
+                      _buildDetailRow(
+                        'Status',
+                        'Successfully Recharged',
+                        isSuccess: true,
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Message
                 Text(
                   'Your DTH recharge has been processed successfully.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: _textSecondary,
-                  ),
+                  style: TextStyle(fontSize: 16, color: _textSecondary),
                 ),
                 const SizedBox(height: 32),
-                
+
                 // Done Button
                 SizedBox(
                   width: double.infinity,
@@ -502,7 +508,10 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
                   decoration: BoxDecoration(
                     color: _secondaryColor.withOpacity(0.1),
                     shape: BoxShape.circle,
-                    border: Border.all(color: _secondaryColor.withOpacity(0.3), width: 2),
+                    border: Border.all(
+                      color: _secondaryColor.withOpacity(0.3),
+                      width: 2,
+                    ),
                   ),
                   child: Icon(
                     Icons.autorenew_rounded,
@@ -511,7 +520,7 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Title
                 Text(
                   'Refund Initiated',
@@ -522,7 +531,7 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Details Card
                 Container(
                   padding: const EdgeInsets.all(20),
@@ -536,23 +545,24 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
                       _buildDetailRow('Amount', '₹$amount'),
                       _buildDetailRow('Phone Number', phoneNo),
                       _buildDetailRow('Subscriber ID', widget.subcriberNo),
-                      _buildDetailRow('Status', 'Refund Initiated', isWarning: true),
+                      _buildDetailRow(
+                        'Status',
+                        'Refund Initiated',
+                        isWarning: true,
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Message
                 Text(
                   'Sorry, your DTH recharge could not be processed. Refund has been initiated and amount will be credited to your account shortly.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: _textSecondary,
-                  ),
+                  style: TextStyle(fontSize: 16, color: _textSecondary),
                 ),
                 const SizedBox(height: 32),
-                
+
                 // Close Button
                 SizedBox(
                   width: double.infinity,
@@ -629,7 +639,10 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
                   decoration: BoxDecoration(
                     color: _errorColor.withOpacity(0.1),
                     shape: BoxShape.circle,
-                    border: Border.all(color: _errorColor.withOpacity(0.3), width: 2),
+                    border: Border.all(
+                      color: _errorColor.withOpacity(0.3),
+                      width: 2,
+                    ),
                   ),
                   child: Icon(
                     Icons.error_outline_rounded,
@@ -638,7 +651,7 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Title
                 Text(
                   'Refund Failed',
@@ -649,7 +662,7 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Details Card
                 Container(
                   padding: const EdgeInsets.all(20),
@@ -668,7 +681,7 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Important Message
                 Container(
                   padding: const EdgeInsets.all(16),
@@ -691,16 +704,13 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
                       Text(
                         'Sorry, your DTH recharge failed and we were unable to process the refund automatically. If the amount was debited from your account, please contact our support team for assistance.',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: _errorColor,
-                        ),
+                        style: TextStyle(fontSize: 14, color: _errorColor),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Close Button
                 SizedBox(
                   width: double.infinity,
@@ -779,7 +789,10 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
                   decoration: BoxDecoration(
                     color: _warningColor.withOpacity(0.1),
                     shape: BoxShape.circle,
-                    border: Border.all(color: _warningColor.withOpacity(0.3), width: 2),
+                    border: Border.all(
+                      color: _warningColor.withOpacity(0.3),
+                      width: 2,
+                    ),
                   ),
                   child: Icon(
                     Icons.warning_amber_rounded,
@@ -788,7 +801,7 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Title
                 Text(
                   'Invalid Input',
@@ -799,7 +812,7 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Details Card
                 Container(
                   padding: const EdgeInsets.all(20),
@@ -819,18 +832,15 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Message
                 Text(
                   'Please check your subscriber ID and try again. No amount was deducted.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: _textSecondary,
-                  ),
+                  style: TextStyle(fontSize: 16, color: _textSecondary),
                 ),
                 const SizedBox(height: 32),
-                
+
                 // Try Again Button
                 SizedBox(
                   width: double.infinity,
@@ -864,7 +874,13 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
     );
   }
 
-  Widget _buildDetailRow(String title, String value, {bool isSuccess = false, bool isError = false, bool isWarning = false}) {
+  Widget _buildDetailRow(
+    String title,
+    String value, {
+    bool isSuccess = false,
+    bool isError = false,
+    bool isWarning = false,
+  }) {
     Color valueColor = _textPrimary;
     if (isSuccess) valueColor = _successColor;
     if (isError) valueColor = _errorColor;
@@ -904,7 +920,7 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
           listener: (context, state) {
             if (!state.isLoading) {
               _handleRefundLogic(state);
-              
+
               // Show success bottom sheet
               if (state.rechargeStatus == "SUCCESS") {
                 log("DTH Recharge Successful ✅");
@@ -913,7 +929,7 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
                   phoneNo: widget.phoneNo,
                   operator: widget.operator,
                 );
-              } 
+              }
               // Show recharge failed - check if refund is needed
               else if (state.rechargeStatus == "FAILED") {
                 if (state.shouldRefund == true) {
@@ -937,7 +953,7 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
                   amount: state.amount ?? '',
                   phoneNo: widget.phoneNo,
                 );
-              } 
+              }
               // Show refund failed
               else if (state.refundStatus == "REFUND_FAILED") {
                 log("Refund failed");
@@ -990,50 +1006,68 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
                   children: [
                     // DTH Info
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                       decoration: BoxDecoration(
                         color: _secondaryColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: _secondaryColor.withOpacity(0.3)),
+                        border: Border.all(
+                          color: _secondaryColor.withOpacity(0.3),
+                        ),
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.satellite_alt,
+                                color: _secondaryColor,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                widget.operator,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
 
-
-                          Row(children: [  Icon(Icons.satellite_alt, color: _secondaryColor, size: 20),
-                          const SizedBox(width: 8),
-                          Text(
-                            widget.operator,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),],),
-
-                          SizedBox(height: 10,),
-                        Row(children: [Icon(Icons.credit_card, color: _secondaryColor, size: 20),
-                          const SizedBox(width: 8),
-                          Text(
-                            widget.subcriberNo,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),],),
-                          
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.credit_card,
+                                color: _secondaryColor,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                widget.subcriberNo,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
                   ],
                 ),
               ),
-              
-              SizedBox(height: 50,),
+
+              SizedBox(height: 50),
               // Amount Input Section
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -1066,22 +1100,24 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
                       const SizedBox(height: 8),
                       Text(
                         "Please enter the amount you want to recharge",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: _textSecondary,
-                        ),
+                        style: TextStyle(fontSize: 14, color: _textSecondary),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 32),
-                      
+
                       // Amount Input
                       Container(
                         decoration: BoxDecoration(
                           color: _backgroundColor,
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: _secondaryColor.withOpacity(0.3)),
+                          border: Border.all(
+                            color: _secondaryColor.withOpacity(0.3),
+                          ),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 16,
+                        ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -1099,7 +1135,10 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
                               width: 150,
                               child: TextField(
                                 controller: _amountController,
-                                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                keyboardType:
+                                    const TextInputType.numberWithOptions(
+                                      decimal: true,
+                                    ),
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 48,
@@ -1126,9 +1165,9 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
                   ),
                 ),
               ),
-              
-              SizedBox(height: 40,),
-              
+
+              SizedBox(height: 40),
+
               // Proceed Button
               Padding(
                 padding: const EdgeInsets.all(24.0),
@@ -1137,7 +1176,9 @@ class _DTHAmountEntryPageState extends State<DTHAmountEntryPage> {
                     return SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: (state.isLoading || _isPaymentInProgress) ? null : _onProceed,
+                        onPressed: (state.isLoading || _isPaymentInProgress)
+                            ? null
+                            : _onProceed,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _primaryColor,
                           foregroundColor: Colors.white,

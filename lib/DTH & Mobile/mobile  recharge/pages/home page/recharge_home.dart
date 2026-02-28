@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:minna/comman/const/const.dart';
-import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/application/oparator/operators_bloc.dart';
-import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/pages/add%20amount/add_amount.dart';
+import 'package:minna/DTH & Mobile/mobile  recharge/application/oparator/operators_bloc.dart';
+import 'package:minna/DTH & Mobile/mobile  recharge/pages/packageslist/rechargelist.dart';
 import 'package:shimmer/shimmer.dart';
 
 class MobileRechargeInputPage extends StatefulWidget {
@@ -17,6 +17,26 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
   final TextEditingController phoneController = TextEditingController();
   String? selectedOperator;
   final _formKey = GlobalKey<FormState>();
+
+  Color _getOperatorColor(String operatorName) {
+    switch (operatorName.toUpperCase()) {
+      case 'AIRTEL':
+        return Colors.red;
+      case 'JIO':
+      case 'RELIANCE JIO':
+        return Colors.blue.shade800;
+      case 'VI':
+      case 'VODAFONE':
+      case 'IDEA':
+        return Colors.redAccent;
+      case 'BSNL':
+        return Colors.blue.shade600;
+      case 'MTNL':
+        return Colors.orange;
+      default:
+        return const Color(0xFFD4AF37); // Fallback to Secondary Gold
+    }
+  }
 
   // New color scheme
   final Color _primaryColor = Colors.black;
@@ -36,7 +56,7 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
       appBar: AppBar(
         backgroundColor: _primaryColor,
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.white, size: 20,),
+        iconTheme: IconThemeData(color: Colors.white, size: 20),
         title: const Text(
           'Mobile Recharge',
           style: TextStyle(
@@ -52,7 +72,7 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
         child: ListView(
           children: [
             const SizedBox(height: 20),
-            
+
             // Header Section
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -70,17 +90,14 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                   const SizedBox(height: 2),
                   Text(
                     'Recharge your mobile instantly',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: _textSecondary,
-                    ),
+                    style: TextStyle(fontSize: 13, color: _textSecondary),
                   ),
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 15),
-            
+
             // Input Card
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -132,10 +149,7 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                         controller: phoneController,
                         keyboardType: TextInputType.phone,
                         maxLength: 10,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: _textPrimary,
-                        ),
+                        style: TextStyle(fontSize: 16, color: _textPrimary),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter mobile number';
@@ -159,7 +173,10 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: _secondaryColor, width: 2),
+                            borderSide: BorderSide(
+                              color: _secondaryColor,
+                              width: 2,
+                            ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -174,7 +191,7 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      
+
                       // Operator Section
                       Row(
                         children: [
@@ -239,8 +256,8 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                                             ? _secondaryColor.withOpacity(0.1)
                                             : _cardColor,
                                         border: Border.all(
-                                          color:  Colors.grey.shade100,
-                                          width:  1,
+                                          color: Colors.grey.shade100,
+                                          width: 1,
                                         ),
                                         borderRadius: BorderRadius.circular(12),
                                         // boxShadow: selectedOperator == opName
@@ -264,26 +281,42 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                                         children: [
                                           // Operator Icon
                                           Container(
-                                            width: 40,
-                                            height: 40,
+                                            width: 44,
+                                            height: 44,
                                             decoration: BoxDecoration(
-                                              color: selectedOperator == opName
-                                                  ? _secondaryColor
-                                                  : _textLight.withOpacity(0.2),
+                                              color: _getOperatorColor(
+                                                opName,
+                                              ).withOpacity(0.15),
                                               shape: BoxShape.circle,
+                                              border: Border.all(
+                                                color:
+                                                    selectedOperator == opName
+                                                    ? _getOperatorColor(opName)
+                                                    : Colors.transparent,
+                                                width: 2,
+                                              ),
                                             ),
-                                            child: Icon(
-                                              Icons.phone_android,
-                                              color: selectedOperator == opName
-                                                  ? Colors.white
-                                                  : _textLight,
-                                              size: 20,
+                                            child: Center(
+                                              child: Text(
+                                                opName.isNotEmpty
+                                                    ? opName[0].toUpperCase()
+                                                    : '?',
+                                                style: TextStyle(
+                                                  color: _getOperatorColor(
+                                                    opName,
+                                                  ),
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 20,
+                                                ),
+                                              ),
                                             ),
                                           ),
                                           const SizedBox(width: 12),
                                           Expanded(
                                             child: Text(
-                                              opName == 'Vodafone' ? 'VI' : opName,
+                                              opName == 'Vodafone'
+                                                  ? 'VI'
+                                                  : opName,
                                               style: TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w500,
@@ -297,7 +330,8 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                                             decoration: BoxDecoration(
                                               shape: BoxShape.circle,
                                               border: Border.all(
-                                                color: selectedOperator == opName
+                                                color:
+                                                    selectedOperator == opName
                                                     ? _secondaryColor
                                                     : _textLight,
                                                 width: 2,
@@ -305,7 +339,8 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                                             ),
                                             child: selectedOperator == opName
                                                 ? Container(
-                                                    margin: const EdgeInsets.all(4),
+                                                    margin:
+                                                        const EdgeInsets.all(4),
                                                     decoration: BoxDecoration(
                                                       shape: BoxShape.circle,
                                                       color: _secondaryColor,
@@ -328,9 +363,9 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // Next Button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -343,9 +378,9 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => AmountEntryPage(
+                          builder: (_) => MobileRechargePlansPage(
                             operator: selectedOperator.toString(),
-                            phoneNo: phoneController.text,
+                            mobileNumber: phoneController.text,
                           ),
                         ),
                       );
@@ -382,7 +417,7 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 20),
           ],
         ),
@@ -425,7 +460,7 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
 Widget buildShimmerLoading() {
   final Color baseColor = Colors.grey[300]!;
   final Color highlightColor = Colors.grey[100]!;
-  
+
   return Shimmer.fromColors(
     baseColor: baseColor,
     highlightColor: highlightColor,

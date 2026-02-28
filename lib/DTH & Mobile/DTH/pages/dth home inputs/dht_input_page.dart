@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:minna/DTH%20&%20Mobile/DTH/pages/dth%20confirm/confirm_page.dart';
+import 'package:minna/DTH%20&%20Mobile/DTH/pages/dth%20packageslist/dth_rechargelist.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/application/oparator/operators_bloc.dart';
 import 'package:shimmer/shimmer.dart';
@@ -90,9 +90,9 @@ class _DTHInputPageState extends State<DTHInputPage> {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 20),
-            
+
             // Input Card
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -144,10 +144,7 @@ class _DTHInputPageState extends State<DTHInputPage> {
                         controller: phoneController,
                         keyboardType: TextInputType.phone,
                         maxLength: 10,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: _textPrimary,
-                        ),
+                        style: TextStyle(fontSize: 16, color: _textPrimary),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your phone number';
@@ -171,7 +168,10 @@ class _DTHInputPageState extends State<DTHInputPage> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: _secondaryColor, width: 2),
+                            borderSide: BorderSide(
+                              color: _secondaryColor,
+                              width: 2,
+                            ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -185,9 +185,9 @@ class _DTHInputPageState extends State<DTHInputPage> {
                           ),
                         ),
                       ),
-                      
+
                       const SizedBox(height: 20),
-                      
+
                       // Subscriber ID Section
                       Row(
                         children: [
@@ -218,10 +218,7 @@ class _DTHInputPageState extends State<DTHInputPage> {
                       TextFormField(
                         controller: consumerIdController,
                         keyboardType: TextInputType.number,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: _textPrimary,
-                        ),
+                        style: TextStyle(fontSize: 16, color: _textPrimary),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your subscriber ID';
@@ -243,7 +240,10 @@ class _DTHInputPageState extends State<DTHInputPage> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: _secondaryColor, width: 2),
+                            borderSide: BorderSide(
+                              color: _secondaryColor,
+                              width: 2,
+                            ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -262,9 +262,9 @@ class _DTHInputPageState extends State<DTHInputPage> {
                           ),
                         ),
                       ),
-                      
+
                       const SizedBox(height: 20),
-                      
+
                       // Operator Section
                       Row(
                         children: [
@@ -337,7 +337,6 @@ class _DTHInputPageState extends State<DTHInputPage> {
                                         //   width: selectedOperator == opName ? 2 : 1,
                                         // ),
                                         borderRadius: BorderRadius.circular(12),
-                                     
                                       ),
                                       padding: const EdgeInsets.all(16),
                                       child: Row(
@@ -377,7 +376,8 @@ class _DTHInputPageState extends State<DTHInputPage> {
                                             decoration: BoxDecoration(
                                               shape: BoxShape.circle,
                                               border: Border.all(
-                                                color: selectedOperator == opName
+                                                color:
+                                                    selectedOperator == opName
                                                     ? _secondaryColor
                                                     : _textLight,
                                                 width: 2,
@@ -385,7 +385,8 @@ class _DTHInputPageState extends State<DTHInputPage> {
                                             ),
                                             child: selectedOperator == opName
                                                 ? Container(
-                                                    margin: const EdgeInsets.all(4),
+                                                    margin:
+                                                        const EdgeInsets.all(4),
                                                     decoration: BoxDecoration(
                                                       shape: BoxShape.circle,
                                                       color: _secondaryColor,
@@ -408,9 +409,9 @@ class _DTHInputPageState extends State<DTHInputPage> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Next Button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -423,10 +424,10 @@ class _DTHInputPageState extends State<DTHInputPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => DTHAmountEntryPage(
-                            operator: selectedOperator!,
+                          builder: (_) => DTHRechargePlansPage(
                             phoneNo: phoneController.text,
                             subcriberNo: consumerIdController.text,
+                            operator: selectedOperator!,
                           ),
                         ),
                       );
@@ -463,7 +464,7 @@ class _DTHInputPageState extends State<DTHInputPage> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 20),
           ],
         ),
@@ -506,7 +507,7 @@ class _DTHInputPageState extends State<DTHInputPage> {
 Widget buildShimmerLoading() {
   final Color baseColor = Colors.grey[300]!;
   final Color highlightColor = Colors.grey[100]!;
-  
+
   return Shimmer.fromColors(
     baseColor: baseColor,
     highlightColor: highlightColor,

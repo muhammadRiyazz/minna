@@ -1,32 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:minna/comman/const/const.dart';
-import 'package:minna/DTH & Mobile/mobile  recharge/pages/add amount/add_amount.dart';
-import 'package:minna/DTH & Mobile/mobile  recharge/application/plans/plans_bloc.dart';
+import 'package:minna/DTH & Mobile/DTH/pages/dth confirm/confirm_page.dart';
+import 'package:minna/DTH & Mobile/DTH/application/dth_plans_bloc.dart';
 
-class MobileRechargePlansPage extends StatefulWidget {
-  final String mobileNumber;
+class DTHRechargePlansPage extends StatefulWidget {
+  final String phoneNo;
+  final String subcriberNo;
   final String operator;
 
-  const MobileRechargePlansPage({
+  const DTHRechargePlansPage({
     super.key,
-    required this.mobileNumber,
+    required this.phoneNo,
+    required this.subcriberNo,
     required this.operator,
   });
 
   @override
-  _MobileRechargePlansPageState createState() =>
-      _MobileRechargePlansPageState();
+  _DTHRechargePlansPageState createState() => _DTHRechargePlansPageState();
 }
 
-class _MobileRechargePlansPageState extends State<MobileRechargePlansPage> {
+class _DTHRechargePlansPageState extends State<DTHRechargePlansPage> {
   final TextEditingController amountController = TextEditingController();
+
+  Color _getOperatorColor(String operatorName) {
+    switch (operatorName.toUpperCase()) {
+      case 'AIRTEL DTH':
+      case 'AIRTEL':
+        return Colors.red;
+      case 'SUN DIRECT':
+        return Colors.orangeAccent;
+      case 'TATA SKY':
+      case 'TATA PLAY':
+        return Colors.purple.shade700;
+      case 'DISH TV':
+        return Colors.red.shade900;
+      case 'D2H':
+      case 'VIDEOCON D2H':
+        return Colors.lightGreen;
+      default:
+        return const Color(0xFFD4AF37); // Fallback to Secondary Gold
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    context.read<PlansBloc>().add(
-      FetchPlansEvent(operatorName: widget.operator),
+    context.read<DTHPlansBloc>().add(
+      FetchDTHPlansEvent(operatorName: widget.operator),
     );
   }
 
@@ -34,11 +54,11 @@ class _MobileRechargePlansPageState extends State<MobileRechargePlansPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: maincolor1,
+        backgroundColor: Colors.black, // Primary color from input page
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white, size: 20),
         title: const Text(
-          'Mobile Recharge',
+          'DTH Recharge',
           style: TextStyle(fontSize: 18, color: Colors.white),
         ),
       ),
@@ -53,15 +73,29 @@ class _MobileRechargePlansPageState extends State<MobileRechargePlansPage> {
               children: [
                 Row(
                   children: [
-                    CircleAvatar(
-                      backgroundColor: Colors.red.shade50,
-                      child: Text(
-                        widget.operator.length >= 2
-                            ? widget.operator.substring(0, 2).toUpperCase()
-                            : widget.operator,
-                        style: const TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold,
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: _getOperatorColor(
+                          widget.operator,
+                        ).withOpacity(0.15),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: _getOperatorColor(widget.operator),
+                          width: 2,
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          widget.operator.isNotEmpty
+                              ? widget.operator[0].toUpperCase()
+                              : '?',
+                          style: TextStyle(
+                            color: _getOperatorColor(widget.operator),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
                         ),
                       ),
                     ),
@@ -77,7 +111,7 @@ class _MobileRechargePlansPageState extends State<MobileRechargePlansPage> {
                           ),
                         ),
                         Text(
-                          widget.mobileNumber,
+                          'ID: ${widget.subcriberNo} | Ph: ${widget.phoneNo}',
                           style: const TextStyle(
                             color: Colors.grey,
                             fontSize: 13,
@@ -113,7 +147,7 @@ class _MobileRechargePlansPageState extends State<MobileRechargePlansPage> {
                     const SizedBox(width: 12),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: maincolor1,
+                        backgroundColor: Colors.black, // Primary color
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -127,8 +161,9 @@ class _MobileRechargePlansPageState extends State<MobileRechargePlansPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => AmountEntryPage(
-                                phoneNo: widget.mobileNumber,
+                              builder: (_) => DTHAmountEntryPage(
+                                phoneNo: widget.phoneNo,
+                                subcriberNo: widget.subcriberNo,
                                 operator: widget.operator,
                                 initialAmount: amountController.text,
                               ),
@@ -151,11 +186,12 @@ class _MobileRechargePlansPageState extends State<MobileRechargePlansPage> {
 
           // BlocBuilder for Tabs and Plans
           Expanded(
-            child: BlocBuilder<PlansBloc, PlansState>(
+            child: BlocBuilder<DTHPlansBloc, DTHPlansState>(
               builder: (context, state) {
-                if (state is PlansStateLoading || state is PlansStateInitial) {
+                if (state is DTHPlansStateLoading ||
+                    state is DTHPlansStateInitial) {
                   return const Center(child: CircularProgressIndicator());
-                } else if (state is PlansStateError) {
+                } else if (state is DTHPlansStateError) {
                   return Center(
                     child: Padding(
                       padding: const EdgeInsets.all(20.0),
@@ -166,7 +202,7 @@ class _MobileRechargePlansPageState extends State<MobileRechargePlansPage> {
                       ),
                     ),
                   );
-                } else if (state is PlansStateLoaded) {
+                } else if (state is DTHPlansStateLoaded) {
                   final tabs = state.tabs;
                   if (tabs.isEmpty) {
                     return const Center(child: Text("No plans available."));
@@ -178,9 +214,12 @@ class _MobileRechargePlansPageState extends State<MobileRechargePlansPage> {
                       children: [
                         TabBar(
                           isScrollable: true,
-                          labelColor: maincolor1,
+                          labelColor: Colors.black,
                           unselectedLabelColor: Colors.grey,
-                          indicatorColor: maincolor1,
+                          indicatorColor: const Color(
+                            0xFFD4AF37,
+                          ), // Secondary color
+                          indicatorWeight: 3,
                           tabs: tabs.map((t) => Tab(text: t.title)).toList(),
                         ),
                         Expanded(
@@ -206,13 +245,13 @@ class _MobileRechargePlansPageState extends State<MobileRechargePlansPage> {
                                       borderRadius: BorderRadius.circular(20),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: maincolor1.withOpacity(0.08),
+                                          color: Colors.black.withOpacity(0.08),
                                           blurRadius: 15,
                                           offset: const Offset(0, 5),
                                         ),
                                       ],
                                       border: Border.all(
-                                        color: maincolor1.withOpacity(0.1),
+                                        color: Colors.black.withOpacity(0.1),
                                         width: 1.5,
                                       ),
                                     ),
@@ -223,11 +262,14 @@ class _MobileRechargePlansPageState extends State<MobileRechargePlansPage> {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (_) => AmountEntryPage(
-                                                phoneNo: widget.mobileNumber,
-                                                operator: widget.operator,
-                                                initialAmount: plan.amt,
-                                              ),
+                                              builder: (_) =>
+                                                  DTHAmountEntryPage(
+                                                    phoneNo: widget.phoneNo,
+                                                    subcriberNo:
+                                                        widget.subcriberNo,
+                                                    operator: widget.operator,
+                                                    initialAmount: plan.amt,
+                                                  ),
                                             ),
                                           );
                                         },
@@ -250,11 +292,11 @@ class _MobileRechargePlansPageState extends State<MobileRechargePlansPage> {
                                                         CrossAxisAlignment
                                                             .start,
                                                     children: [
-                                                      Text(
+                                                      const Text(
                                                         '₹',
                                                         style: TextStyle(
                                                           fontSize: 18,
-                                                          color: maincolor1,
+                                                          color: Colors.black,
                                                           fontWeight:
                                                               FontWeight.bold,
                                                         ),
@@ -277,21 +319,22 @@ class _MobileRechargePlansPageState extends State<MobileRechargePlansPage> {
                                                           vertical: 6,
                                                         ),
                                                     decoration: BoxDecoration(
-                                                      gradient: LinearGradient(
-                                                        colors: [
-                                                          maincolor1,
-                                                          maincolor1
-                                                              .withOpacity(0.8),
-                                                        ],
-                                                      ),
+                                                      gradient:
+                                                          const LinearGradient(
+                                                            colors: [
+                                                              Color(0xFFC19B3C),
+                                                              Color(0xFFD4AF37),
+                                                            ],
+                                                          ),
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                             30,
                                                           ),
                                                       boxShadow: [
                                                         BoxShadow(
-                                                          color: maincolor1
-                                                              .withOpacity(0.3),
+                                                          color: const Color(
+                                                            0xFFD4AF37,
+                                                          ).withOpacity(0.3),
                                                           blurRadius: 8,
                                                           offset: const Offset(
                                                             0,
