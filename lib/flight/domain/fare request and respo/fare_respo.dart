@@ -405,6 +405,22 @@ class FFlightLeg {
   });
 
   factory FFlightLeg.fromJson(Map<String, dynamic> json) {
+    List<FreeBaggage>? parsedFreeBaggages;
+    if (json['FreeBaggages'] != null) {
+      if (json['FreeBaggages'] is String) {
+        parsedFreeBaggages = [FreeBaggage(adtBaggage: json['FreeBaggages'])];
+      } else if (json['FreeBaggages'] is List) {
+        parsedFreeBaggages = List<FreeBaggage>.from(
+          (json['FreeBaggages'] as List).map((x) {
+            if (x is String) return FreeBaggage(adtBaggage: x);
+            // handle other map cases if they exist
+            // For simplicity, we just convert the map values to strings
+            return FreeBaggage(adtBaggage: x.toString());
+          }),
+        );
+      }
+    }
+
     return FFlightLeg(
       type: json['Type'] as String?,
       airlinePNR: json['AirlinePNR'],
@@ -423,7 +439,7 @@ class FFlightLeg {
       segmentRefKey: json['SegmentRefKey'],
       mealKey: json['MealKey'] as String?,
       baggageKey: json['BaggageKey'] as String?,
-      freeBaggages: json['FreeBaggages'],
+      freeBaggages: parsedFreeBaggages,
       codeShare: json['CodeShare'] as String?,
       rbd: json['RBD'] as String?,
     );
