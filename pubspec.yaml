@@ -58,6 +58,7 @@ dependencies:
   chips_choice_null_safety: ^2.0.6
   flutter_inappwebview: ^6.0.0
   iconsax: ^0.0.8
+  flutter_launcher_icons: ^0.14.4
 
 
 
@@ -87,3 +88,9 @@ flutter:
         - asset: asset/font/Montserrat-Regular.ttf
         - asset: asset/font/Montserrat-Bold.ttf
           weight: 700
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "asset/mtlogo.jpg"
+  remove_alpha_ios: true

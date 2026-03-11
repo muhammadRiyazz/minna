@@ -73,6 +73,13 @@ class HotelApiService {
 );
 
 
+
+
+
+
+
+
+
       log('📡 Response body: ${response.body}');
 
       if (response.statusCode == 200) {

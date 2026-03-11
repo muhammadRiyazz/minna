@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:minna/DTH & Mobile/DTH/pages/dth confirm/confirm_page.dart';
 import 'package:minna/DTH & Mobile/DTH/application/dth_plans_bloc.dart';
+import 'package:shimmer/shimmer.dart';
 
 class DTHRechargePlansPage extends StatefulWidget {
   final String phoneNo;
@@ -190,7 +191,7 @@ class _DTHRechargePlansPageState extends State<DTHRechargePlansPage> {
               builder: (context, state) {
                 if (state is DTHPlansStateLoading ||
                     state is DTHPlansStateInitial) {
-                  return const Center(child: CircularProgressIndicator());
+                  return _buildShimmerLoading();
                 } else if (state is DTHPlansStateError) {
                   return Center(
                     child: Padding(
@@ -423,6 +424,88 @@ class _DTHRechargePlansPageState extends State<DTHRechargePlansPage> {
                   );
                 }
                 return const SizedBox();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShimmerLoading() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      child: Column(
+        children: [
+          // Shimmer Tabs
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: List.generate(
+                4,
+                (index) => Container(
+                  width: 80,
+                  height: 30,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // Shimmer List Items
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: 5,
+              itemBuilder: (context, index) {
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.grey.shade200),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            width: 100,
+                            height: 30,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          Container(
+                            width: 80,
+                            height: 24,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Container(
+                        width: double.infinity,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
               },
             ),
           ),

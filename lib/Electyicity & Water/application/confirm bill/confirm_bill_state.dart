@@ -14,6 +14,13 @@ class ConfirmBillState with _$ConfirmBillState {
     String receiptId,
   ) = _PaymentSuccess;
   const factory ConfirmBillState.paymentError(String message) = _PaymentError;
+  const factory ConfirmBillState.walletBalanceError(String message) =
+      _WalletBalanceError;
+  const factory ConfirmBillState.billPaymentResponse(
+    Map<String, dynamic> responseData,
+  ) = _BillPaymentResponse;
+  const factory ConfirmBillState.billPaymentError(String message) =
+      _BillPaymentError;
   const factory ConfirmBillState.refundProcessing() = _RefundProcessing;
   const factory ConfirmBillState.refundSuccess(
     String message,

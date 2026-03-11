@@ -10,7 +10,7 @@ class ConfirmBillEvent with _$ConfirmBillEvent {
     required String providerName,
     required String receiptId,
   }) = InitiatePayment;
-  
+
   const factory ConfirmBillEvent.processPaymentSuccess({
     required String orderId,
     required String transactionId,
@@ -19,8 +19,9 @@ class ConfirmBillEvent with _$ConfirmBillEvent {
     required String phoneNo,
     required String consumerId,
     required ElectricityBillModel? currentBill,
+    required String signature,
   }) = ProcessPaymentSuccess;
-  
+
   const factory ConfirmBillEvent.processPaymentFailure({
     required String orderId,
     required String transactionId,

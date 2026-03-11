@@ -38,6 +38,42 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
     }
   }
 
+  String _getOperatorImageURL(String operatorName) {
+    switch (operatorName.toUpperCase()) {
+      case 'AIRTEL':
+        return 'https://1000logos.net/wp-content/uploads/2023/06/Airtel-logo.png';
+      case 'JIO':
+      case 'RELIANCE JIO':
+        return 'https://indianexpress.com/wp-content/uploads/2016/07/reliancejio_newlogo_1.jpg';
+      case 'VI':
+      case 'VODAFONE':
+      case 'IDEA':
+        return 'https://www.logoshape.com/wp-content/uploads/2024/08/vi-vodafone-idea-vector-logo_logoshape.com_.png';
+      case 'BSNL':
+        return 'https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/bsnl-logo-icon.png';
+      case 'MTNL':
+        return 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/MTNL_logo.svg/1024px-MTNL_logo.svg.png';
+      default:
+        return '';
+    }
+  }
+
+  Widget _buildTextFallback(String opName) {
+    return Container(
+      color: _getOperatorColor(opName).withOpacity(0.15),
+      child: Center(
+        child: Text(
+          opName.isNotEmpty ? opName[0].toUpperCase() : '?',
+          style: TextStyle(
+            color: _getOperatorColor(opName),
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
+      ),
+    );
+  }
+
   // New color scheme
   final Color _primaryColor = Colors.black;
   final Color _secondaryColor = Color(0xFFD4AF37); // Gold
@@ -252,11 +288,13 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                                     borderRadius: BorderRadius.circular(12),
                                     child: Container(
                                       decoration: BoxDecoration(
-                                        color: selectedOperator == opName
-                                            ? _secondaryColor.withOpacity(0.1)
-                                            : _cardColor,
+                                        // color: selectedOperator == opName
+                                        //     ? _secondaryColor.withOpacity(0.1)
+                                        //     : _cardColor,
                                         border: Border.all(
-                                          color: Colors.grey.shade100,
+                                          color: selectedOperator == opName
+                                              ? _secondaryColor
+                                              : Colors.grey.shade100,
                                           width: 1,
                                         ),
                                         borderRadius: BorderRadius.circular(12),
@@ -284,31 +322,40 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                                             width: 44,
                                             height: 44,
                                             decoration: BoxDecoration(
-                                              color: _getOperatorColor(
-                                                opName,
-                                              ).withOpacity(0.15),
-                                              shape: BoxShape.circle,
-                                              border: Border.all(
-                                                color:
-                                                    selectedOperator == opName
-                                                    ? _getOperatorColor(opName)
-                                                    : Colors.transparent,
-                                                width: 2,
-                                              ),
+                                              color: Colors.white,
+                                              // shape: BoxShape.circle,
+                                              // border: Border.all(
+                                              //   color:
+                                              //       selectedOperator == opName
+                                              //       ? _getOperatorColor(opName)
+                                              //       : Colors.transparent,
+                                              //   width: 2,
+                                              // ),
                                             ),
-                                            child: Center(
-                                              child: Text(
-                                                opName.isNotEmpty
-                                                    ? opName[0].toUpperCase()
-                                                    : '?',
-                                                style: TextStyle(
-                                                  color: _getOperatorColor(
+                                            child: ClipRRect(
+                                              // borderRadius:
+                                              //     BorderRadius.circular(22),
+                                              child:
+                                                  _getOperatorImageURL(
                                                     opName,
-                                                  ),
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 20,
-                                                ),
-                                              ),
+                                                  ).isNotEmpty
+                                                  ? Image.network(
+                                                      _getOperatorImageURL(
+                                                        opName,
+                                                      ),
+                                                      fit: BoxFit.contain,
+                                                      errorBuilder:
+                                                          (
+                                                            context,
+                                                            error,
+                                                            stackTrace,
+                                                          ) {
+                                                            return _buildTextFallback(
+                                                              opName,
+                                                            );
+                                                          },
+                                                    )
+                                                  : _buildTextFallback(opName),
                                             ),
                                           ),
                                           const SizedBox(width: 12),

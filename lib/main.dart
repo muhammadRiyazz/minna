@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 
 // Common
 import 'package:minna/comman/application/login/login_bloc.dart';
+import 'package:minna/comman/application/home_data/home_data_bloc.dart';
 import 'package:minna/comman/pages/screen%20splash/splash_page.dart';
 
 // Bus
@@ -183,6 +184,7 @@ class _MyAppState extends State<MyApp> {
 
         // Common BlocProviders
         BlocProvider(create: (_) => LoginBloc()),
+        BlocProvider(create: (_) => HomeDataBloc()),
 
         // Flight BlocProviders
         BlocProvider(create: (_) => NationalityBloc()),

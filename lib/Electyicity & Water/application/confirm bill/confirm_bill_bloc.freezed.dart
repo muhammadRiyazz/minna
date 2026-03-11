@@ -37,6 +37,7 @@ mixin _$ConfirmBillEvent {
       String phoneNo,
       String consumerId,
       ElectricityBillModel? currentBill,
+      String signature,
     )
     processPaymentSuccess,
     required TResult Function(
@@ -73,6 +74,7 @@ mixin _$ConfirmBillEvent {
       String phoneNo,
       String consumerId,
       ElectricityBillModel? currentBill,
+      String signature,
     )?
     processPaymentSuccess,
     TResult? Function(
@@ -109,6 +111,7 @@ mixin _$ConfirmBillEvent {
       String phoneNo,
       String consumerId,
       ElectricityBillModel? currentBill,
+      String signature,
     )?
     processPaymentSuccess,
     TResult Function(
@@ -356,6 +359,7 @@ class _$InitiatePaymentImpl implements InitiatePayment {
       String phoneNo,
       String consumerId,
       ElectricityBillModel? currentBill,
+      String signature,
     )
     processPaymentSuccess,
     required TResult Function(
@@ -403,6 +407,7 @@ class _$InitiatePaymentImpl implements InitiatePayment {
       String phoneNo,
       String consumerId,
       ElectricityBillModel? currentBill,
+      String signature,
     )?
     processPaymentSuccess,
     TResult? Function(
@@ -450,6 +455,7 @@ class _$InitiatePaymentImpl implements InitiatePayment {
       String phoneNo,
       String consumerId,
       ElectricityBillModel? currentBill,
+      String signature,
     )?
     processPaymentSuccess,
     TResult Function(
@@ -564,6 +570,7 @@ abstract class _$$ProcessPaymentSuccessImplCopyWith<$Res>
     String phoneNo,
     String consumerId,
     ElectricityBillModel? currentBill,
+    String signature,
   });
 }
 
@@ -588,6 +595,7 @@ class __$$ProcessPaymentSuccessImplCopyWithImpl<$Res>
     Object? phoneNo = null,
     Object? consumerId = null,
     Object? currentBill = freezed,
+    Object? signature = null,
   }) {
     return _then(
       _$ProcessPaymentSuccessImpl(
@@ -619,6 +627,10 @@ class __$$ProcessPaymentSuccessImplCopyWithImpl<$Res>
             ? _value.currentBill
             : currentBill // ignore: cast_nullable_to_non_nullable
                   as ElectricityBillModel?,
+        signature: null == signature
+            ? _value.signature
+            : signature // ignore: cast_nullable_to_non_nullable
+                  as String,
       ),
     );
   }
@@ -635,6 +647,7 @@ class _$ProcessPaymentSuccessImpl implements ProcessPaymentSuccess {
     required this.phoneNo,
     required this.consumerId,
     required this.currentBill,
+    required this.signature,
   });
 
   @override
@@ -651,10 +664,12 @@ class _$ProcessPaymentSuccessImpl implements ProcessPaymentSuccess {
   final String consumerId;
   @override
   final ElectricityBillModel? currentBill;
+  @override
+  final String signature;
 
   @override
   String toString() {
-    return 'ConfirmBillEvent.processPaymentSuccess(orderId: $orderId, transactionId: $transactionId, receiptId: $receiptId, providerID: $providerID, phoneNo: $phoneNo, consumerId: $consumerId, currentBill: $currentBill)';
+    return 'ConfirmBillEvent.processPaymentSuccess(orderId: $orderId, transactionId: $transactionId, receiptId: $receiptId, providerID: $providerID, phoneNo: $phoneNo, consumerId: $consumerId, currentBill: $currentBill, signature: $signature)';
   }
 
   @override
@@ -673,7 +688,9 @@ class _$ProcessPaymentSuccessImpl implements ProcessPaymentSuccess {
             (identical(other.consumerId, consumerId) ||
                 other.consumerId == consumerId) &&
             (identical(other.currentBill, currentBill) ||
-                other.currentBill == currentBill));
+                other.currentBill == currentBill) &&
+            (identical(other.signature, signature) ||
+                other.signature == signature));
   }
 
   @override
@@ -686,6 +703,7 @@ class _$ProcessPaymentSuccessImpl implements ProcessPaymentSuccess {
     phoneNo,
     consumerId,
     currentBill,
+    signature,
   );
 
   /// Create a copy of ConfirmBillEvent
@@ -720,6 +738,7 @@ class _$ProcessPaymentSuccessImpl implements ProcessPaymentSuccess {
       String phoneNo,
       String consumerId,
       ElectricityBillModel? currentBill,
+      String signature,
     )
     processPaymentSuccess,
     required TResult Function(
@@ -745,6 +764,7 @@ class _$ProcessPaymentSuccessImpl implements ProcessPaymentSuccess {
       phoneNo,
       consumerId,
       currentBill,
+      signature,
     );
   }
 
@@ -768,6 +788,7 @@ class _$ProcessPaymentSuccessImpl implements ProcessPaymentSuccess {
       String phoneNo,
       String consumerId,
       ElectricityBillModel? currentBill,
+      String signature,
     )?
     processPaymentSuccess,
     TResult? Function(
@@ -793,6 +814,7 @@ class _$ProcessPaymentSuccessImpl implements ProcessPaymentSuccess {
       phoneNo,
       consumerId,
       currentBill,
+      signature,
     );
   }
 
@@ -816,6 +838,7 @@ class _$ProcessPaymentSuccessImpl implements ProcessPaymentSuccess {
       String phoneNo,
       String consumerId,
       ElectricityBillModel? currentBill,
+      String signature,
     )?
     processPaymentSuccess,
     TResult Function(
@@ -843,6 +866,7 @@ class _$ProcessPaymentSuccessImpl implements ProcessPaymentSuccess {
         phoneNo,
         consumerId,
         currentBill,
+        signature,
       );
     }
     return orElse();
@@ -897,6 +921,7 @@ abstract class ProcessPaymentSuccess implements ConfirmBillEvent {
     required final String phoneNo,
     required final String consumerId,
     required final ElectricityBillModel? currentBill,
+    required final String signature,
   }) = _$ProcessPaymentSuccessImpl;
 
   String get orderId;
@@ -907,6 +932,7 @@ abstract class ProcessPaymentSuccess implements ConfirmBillEvent {
   String get phoneNo;
   String get consumerId;
   ElectricityBillModel? get currentBill;
+  String get signature;
 
   /// Create a copy of ConfirmBillEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -1049,6 +1075,7 @@ class _$ProcessPaymentFailureImpl implements ProcessPaymentFailure {
       String phoneNo,
       String consumerId,
       ElectricityBillModel? currentBill,
+      String signature,
     )
     processPaymentSuccess,
     required TResult Function(
@@ -1094,6 +1121,7 @@ class _$ProcessPaymentFailureImpl implements ProcessPaymentFailure {
       String phoneNo,
       String consumerId,
       ElectricityBillModel? currentBill,
+      String signature,
     )?
     processPaymentSuccess,
     TResult? Function(
@@ -1139,6 +1167,7 @@ class _$ProcessPaymentFailureImpl implements ProcessPaymentFailure {
       String phoneNo,
       String consumerId,
       ElectricityBillModel? currentBill,
+      String signature,
     )?
     processPaymentSuccess,
     TResult Function(
@@ -1361,6 +1390,7 @@ class _$InitiateRefundImpl implements InitiateRefund {
       String phoneNo,
       String consumerId,
       ElectricityBillModel? currentBill,
+      String signature,
     )
     processPaymentSuccess,
     required TResult Function(
@@ -1401,6 +1431,7 @@ class _$InitiateRefundImpl implements InitiateRefund {
       String phoneNo,
       String consumerId,
       ElectricityBillModel? currentBill,
+      String signature,
     )?
     processPaymentSuccess,
     TResult? Function(
@@ -1441,6 +1472,7 @@ class _$InitiateRefundImpl implements InitiateRefund {
       String phoneNo,
       String consumerId,
       ElectricityBillModel? currentBill,
+      String signature,
     )?
     processPaymentSuccess,
     TResult Function(
@@ -1541,6 +1573,10 @@ mixin _$ConfirmBillState {
     orderCreated,
     required TResult Function(String message, String receiptId) paymentSuccess,
     required TResult Function(String message) paymentError,
+    required TResult Function(String message) walletBalanceError,
+    required TResult Function(Map<String, dynamic> responseData)
+    billPaymentResponse,
+    required TResult Function(String message) billPaymentError,
     required TResult Function() refundProcessing,
     required TResult Function(String message, String receiptId) refundSuccess,
     required TResult Function(String message, String receiptId) refundFailed,
@@ -1557,6 +1593,9 @@ mixin _$ConfirmBillState {
     orderCreated,
     TResult? Function(String message, String receiptId)? paymentSuccess,
     TResult? Function(String message)? paymentError,
+    TResult? Function(String message)? walletBalanceError,
+    TResult? Function(Map<String, dynamic> responseData)? billPaymentResponse,
+    TResult? Function(String message)? billPaymentError,
     TResult? Function()? refundProcessing,
     TResult? Function(String message, String receiptId)? refundSuccess,
     TResult? Function(String message, String receiptId)? refundFailed,
@@ -1573,6 +1612,9 @@ mixin _$ConfirmBillState {
     orderCreated,
     TResult Function(String message, String receiptId)? paymentSuccess,
     TResult Function(String message)? paymentError,
+    TResult Function(String message)? walletBalanceError,
+    TResult Function(Map<String, dynamic> responseData)? billPaymentResponse,
+    TResult Function(String message)? billPaymentError,
     TResult Function()? refundProcessing,
     TResult Function(String message, String receiptId)? refundSuccess,
     TResult Function(String message, String receiptId)? refundFailed,
@@ -1585,6 +1627,9 @@ mixin _$ConfirmBillState {
     required TResult Function(_OrderCreated value) orderCreated,
     required TResult Function(_PaymentSuccess value) paymentSuccess,
     required TResult Function(_PaymentError value) paymentError,
+    required TResult Function(_WalletBalanceError value) walletBalanceError,
+    required TResult Function(_BillPaymentResponse value) billPaymentResponse,
+    required TResult Function(_BillPaymentError value) billPaymentError,
     required TResult Function(_RefundProcessing value) refundProcessing,
     required TResult Function(_RefundSuccess value) refundSuccess,
     required TResult Function(_RefundFailed value) refundFailed,
@@ -1596,6 +1641,9 @@ mixin _$ConfirmBillState {
     TResult? Function(_OrderCreated value)? orderCreated,
     TResult? Function(_PaymentSuccess value)? paymentSuccess,
     TResult? Function(_PaymentError value)? paymentError,
+    TResult? Function(_WalletBalanceError value)? walletBalanceError,
+    TResult? Function(_BillPaymentResponse value)? billPaymentResponse,
+    TResult? Function(_BillPaymentError value)? billPaymentError,
     TResult? Function(_RefundProcessing value)? refundProcessing,
     TResult? Function(_RefundSuccess value)? refundSuccess,
     TResult? Function(_RefundFailed value)? refundFailed,
@@ -1607,6 +1655,9 @@ mixin _$ConfirmBillState {
     TResult Function(_OrderCreated value)? orderCreated,
     TResult Function(_PaymentSuccess value)? paymentSuccess,
     TResult Function(_PaymentError value)? paymentError,
+    TResult Function(_WalletBalanceError value)? walletBalanceError,
+    TResult Function(_BillPaymentResponse value)? billPaymentResponse,
+    TResult Function(_BillPaymentError value)? billPaymentError,
     TResult Function(_RefundProcessing value)? refundProcessing,
     TResult Function(_RefundSuccess value)? refundSuccess,
     TResult Function(_RefundFailed value)? refundFailed,
@@ -1689,6 +1740,10 @@ class _$InitialImpl implements _Initial {
     orderCreated,
     required TResult Function(String message, String receiptId) paymentSuccess,
     required TResult Function(String message) paymentError,
+    required TResult Function(String message) walletBalanceError,
+    required TResult Function(Map<String, dynamic> responseData)
+    billPaymentResponse,
+    required TResult Function(String message) billPaymentError,
     required TResult Function() refundProcessing,
     required TResult Function(String message, String receiptId) refundSuccess,
     required TResult Function(String message, String receiptId) refundFailed,
@@ -1709,6 +1764,9 @@ class _$InitialImpl implements _Initial {
     orderCreated,
     TResult? Function(String message, String receiptId)? paymentSuccess,
     TResult? Function(String message)? paymentError,
+    TResult? Function(String message)? walletBalanceError,
+    TResult? Function(Map<String, dynamic> responseData)? billPaymentResponse,
+    TResult? Function(String message)? billPaymentError,
     TResult? Function()? refundProcessing,
     TResult? Function(String message, String receiptId)? refundSuccess,
     TResult? Function(String message, String receiptId)? refundFailed,
@@ -1729,6 +1787,9 @@ class _$InitialImpl implements _Initial {
     orderCreated,
     TResult Function(String message, String receiptId)? paymentSuccess,
     TResult Function(String message)? paymentError,
+    TResult Function(String message)? walletBalanceError,
+    TResult Function(Map<String, dynamic> responseData)? billPaymentResponse,
+    TResult Function(String message)? billPaymentError,
     TResult Function()? refundProcessing,
     TResult Function(String message, String receiptId)? refundSuccess,
     TResult Function(String message, String receiptId)? refundFailed,
@@ -1748,6 +1809,9 @@ class _$InitialImpl implements _Initial {
     required TResult Function(_OrderCreated value) orderCreated,
     required TResult Function(_PaymentSuccess value) paymentSuccess,
     required TResult Function(_PaymentError value) paymentError,
+    required TResult Function(_WalletBalanceError value) walletBalanceError,
+    required TResult Function(_BillPaymentResponse value) billPaymentResponse,
+    required TResult Function(_BillPaymentError value) billPaymentError,
     required TResult Function(_RefundProcessing value) refundProcessing,
     required TResult Function(_RefundSuccess value) refundSuccess,
     required TResult Function(_RefundFailed value) refundFailed,
@@ -1763,6 +1827,9 @@ class _$InitialImpl implements _Initial {
     TResult? Function(_OrderCreated value)? orderCreated,
     TResult? Function(_PaymentSuccess value)? paymentSuccess,
     TResult? Function(_PaymentError value)? paymentError,
+    TResult? Function(_WalletBalanceError value)? walletBalanceError,
+    TResult? Function(_BillPaymentResponse value)? billPaymentResponse,
+    TResult? Function(_BillPaymentError value)? billPaymentError,
     TResult? Function(_RefundProcessing value)? refundProcessing,
     TResult? Function(_RefundSuccess value)? refundSuccess,
     TResult? Function(_RefundFailed value)? refundFailed,
@@ -1778,6 +1845,9 @@ class _$InitialImpl implements _Initial {
     TResult Function(_OrderCreated value)? orderCreated,
     TResult Function(_PaymentSuccess value)? paymentSuccess,
     TResult Function(_PaymentError value)? paymentError,
+    TResult Function(_WalletBalanceError value)? walletBalanceError,
+    TResult Function(_BillPaymentResponse value)? billPaymentResponse,
+    TResult Function(_BillPaymentError value)? billPaymentError,
     TResult Function(_RefundProcessing value)? refundProcessing,
     TResult Function(_RefundSuccess value)? refundSuccess,
     TResult Function(_RefundFailed value)? refundFailed,
@@ -1847,6 +1917,10 @@ class _$PaymentProcessingImpl implements _PaymentProcessing {
     orderCreated,
     required TResult Function(String message, String receiptId) paymentSuccess,
     required TResult Function(String message) paymentError,
+    required TResult Function(String message) walletBalanceError,
+    required TResult Function(Map<String, dynamic> responseData)
+    billPaymentResponse,
+    required TResult Function(String message) billPaymentError,
     required TResult Function() refundProcessing,
     required TResult Function(String message, String receiptId) refundSuccess,
     required TResult Function(String message, String receiptId) refundFailed,
@@ -1867,6 +1941,9 @@ class _$PaymentProcessingImpl implements _PaymentProcessing {
     orderCreated,
     TResult? Function(String message, String receiptId)? paymentSuccess,
     TResult? Function(String message)? paymentError,
+    TResult? Function(String message)? walletBalanceError,
+    TResult? Function(Map<String, dynamic> responseData)? billPaymentResponse,
+    TResult? Function(String message)? billPaymentError,
     TResult? Function()? refundProcessing,
     TResult? Function(String message, String receiptId)? refundSuccess,
     TResult? Function(String message, String receiptId)? refundFailed,
@@ -1887,6 +1964,9 @@ class _$PaymentProcessingImpl implements _PaymentProcessing {
     orderCreated,
     TResult Function(String message, String receiptId)? paymentSuccess,
     TResult Function(String message)? paymentError,
+    TResult Function(String message)? walletBalanceError,
+    TResult Function(Map<String, dynamic> responseData)? billPaymentResponse,
+    TResult Function(String message)? billPaymentError,
     TResult Function()? refundProcessing,
     TResult Function(String message, String receiptId)? refundSuccess,
     TResult Function(String message, String receiptId)? refundFailed,
@@ -1906,6 +1986,9 @@ class _$PaymentProcessingImpl implements _PaymentProcessing {
     required TResult Function(_OrderCreated value) orderCreated,
     required TResult Function(_PaymentSuccess value) paymentSuccess,
     required TResult Function(_PaymentError value) paymentError,
+    required TResult Function(_WalletBalanceError value) walletBalanceError,
+    required TResult Function(_BillPaymentResponse value) billPaymentResponse,
+    required TResult Function(_BillPaymentError value) billPaymentError,
     required TResult Function(_RefundProcessing value) refundProcessing,
     required TResult Function(_RefundSuccess value) refundSuccess,
     required TResult Function(_RefundFailed value) refundFailed,
@@ -1921,6 +2004,9 @@ class _$PaymentProcessingImpl implements _PaymentProcessing {
     TResult? Function(_OrderCreated value)? orderCreated,
     TResult? Function(_PaymentSuccess value)? paymentSuccess,
     TResult? Function(_PaymentError value)? paymentError,
+    TResult? Function(_WalletBalanceError value)? walletBalanceError,
+    TResult? Function(_BillPaymentResponse value)? billPaymentResponse,
+    TResult? Function(_BillPaymentError value)? billPaymentError,
     TResult? Function(_RefundProcessing value)? refundProcessing,
     TResult? Function(_RefundSuccess value)? refundSuccess,
     TResult? Function(_RefundFailed value)? refundFailed,
@@ -1936,6 +2022,9 @@ class _$PaymentProcessingImpl implements _PaymentProcessing {
     TResult Function(_OrderCreated value)? orderCreated,
     TResult Function(_PaymentSuccess value)? paymentSuccess,
     TResult Function(_PaymentError value)? paymentError,
+    TResult Function(_WalletBalanceError value)? walletBalanceError,
+    TResult Function(_BillPaymentResponse value)? billPaymentResponse,
+    TResult Function(_BillPaymentError value)? billPaymentError,
     TResult Function(_RefundProcessing value)? refundProcessing,
     TResult Function(_RefundSuccess value)? refundSuccess,
     TResult Function(_RefundFailed value)? refundFailed,
@@ -2055,6 +2144,10 @@ class _$OrderCreatedImpl implements _OrderCreated {
     orderCreated,
     required TResult Function(String message, String receiptId) paymentSuccess,
     required TResult Function(String message) paymentError,
+    required TResult Function(String message) walletBalanceError,
+    required TResult Function(Map<String, dynamic> responseData)
+    billPaymentResponse,
+    required TResult Function(String message) billPaymentError,
     required TResult Function() refundProcessing,
     required TResult Function(String message, String receiptId) refundSuccess,
     required TResult Function(String message, String receiptId) refundFailed,
@@ -2075,6 +2168,9 @@ class _$OrderCreatedImpl implements _OrderCreated {
     orderCreated,
     TResult? Function(String message, String receiptId)? paymentSuccess,
     TResult? Function(String message)? paymentError,
+    TResult? Function(String message)? walletBalanceError,
+    TResult? Function(Map<String, dynamic> responseData)? billPaymentResponse,
+    TResult? Function(String message)? billPaymentError,
     TResult? Function()? refundProcessing,
     TResult? Function(String message, String receiptId)? refundSuccess,
     TResult? Function(String message, String receiptId)? refundFailed,
@@ -2095,6 +2191,9 @@ class _$OrderCreatedImpl implements _OrderCreated {
     orderCreated,
     TResult Function(String message, String receiptId)? paymentSuccess,
     TResult Function(String message)? paymentError,
+    TResult Function(String message)? walletBalanceError,
+    TResult Function(Map<String, dynamic> responseData)? billPaymentResponse,
+    TResult Function(String message)? billPaymentError,
     TResult Function()? refundProcessing,
     TResult Function(String message, String receiptId)? refundSuccess,
     TResult Function(String message, String receiptId)? refundFailed,
@@ -2114,6 +2213,9 @@ class _$OrderCreatedImpl implements _OrderCreated {
     required TResult Function(_OrderCreated value) orderCreated,
     required TResult Function(_PaymentSuccess value) paymentSuccess,
     required TResult Function(_PaymentError value) paymentError,
+    required TResult Function(_WalletBalanceError value) walletBalanceError,
+    required TResult Function(_BillPaymentResponse value) billPaymentResponse,
+    required TResult Function(_BillPaymentError value) billPaymentError,
     required TResult Function(_RefundProcessing value) refundProcessing,
     required TResult Function(_RefundSuccess value) refundSuccess,
     required TResult Function(_RefundFailed value) refundFailed,
@@ -2129,6 +2231,9 @@ class _$OrderCreatedImpl implements _OrderCreated {
     TResult? Function(_OrderCreated value)? orderCreated,
     TResult? Function(_PaymentSuccess value)? paymentSuccess,
     TResult? Function(_PaymentError value)? paymentError,
+    TResult? Function(_WalletBalanceError value)? walletBalanceError,
+    TResult? Function(_BillPaymentResponse value)? billPaymentResponse,
+    TResult? Function(_BillPaymentError value)? billPaymentError,
     TResult? Function(_RefundProcessing value)? refundProcessing,
     TResult? Function(_RefundSuccess value)? refundSuccess,
     TResult? Function(_RefundFailed value)? refundFailed,
@@ -2144,6 +2249,9 @@ class _$OrderCreatedImpl implements _OrderCreated {
     TResult Function(_OrderCreated value)? orderCreated,
     TResult Function(_PaymentSuccess value)? paymentSuccess,
     TResult Function(_PaymentError value)? paymentError,
+    TResult Function(_WalletBalanceError value)? walletBalanceError,
+    TResult Function(_BillPaymentResponse value)? billPaymentResponse,
+    TResult Function(_BillPaymentError value)? billPaymentError,
     TResult Function(_RefundProcessing value)? refundProcessing,
     TResult Function(_RefundSuccess value)? refundSuccess,
     TResult Function(_RefundFailed value)? refundFailed,
@@ -2265,6 +2373,10 @@ class _$PaymentSuccessImpl implements _PaymentSuccess {
     orderCreated,
     required TResult Function(String message, String receiptId) paymentSuccess,
     required TResult Function(String message) paymentError,
+    required TResult Function(String message) walletBalanceError,
+    required TResult Function(Map<String, dynamic> responseData)
+    billPaymentResponse,
+    required TResult Function(String message) billPaymentError,
     required TResult Function() refundProcessing,
     required TResult Function(String message, String receiptId) refundSuccess,
     required TResult Function(String message, String receiptId) refundFailed,
@@ -2285,6 +2397,9 @@ class _$PaymentSuccessImpl implements _PaymentSuccess {
     orderCreated,
     TResult? Function(String message, String receiptId)? paymentSuccess,
     TResult? Function(String message)? paymentError,
+    TResult? Function(String message)? walletBalanceError,
+    TResult? Function(Map<String, dynamic> responseData)? billPaymentResponse,
+    TResult? Function(String message)? billPaymentError,
     TResult? Function()? refundProcessing,
     TResult? Function(String message, String receiptId)? refundSuccess,
     TResult? Function(String message, String receiptId)? refundFailed,
@@ -2305,6 +2420,9 @@ class _$PaymentSuccessImpl implements _PaymentSuccess {
     orderCreated,
     TResult Function(String message, String receiptId)? paymentSuccess,
     TResult Function(String message)? paymentError,
+    TResult Function(String message)? walletBalanceError,
+    TResult Function(Map<String, dynamic> responseData)? billPaymentResponse,
+    TResult Function(String message)? billPaymentError,
     TResult Function()? refundProcessing,
     TResult Function(String message, String receiptId)? refundSuccess,
     TResult Function(String message, String receiptId)? refundFailed,
@@ -2324,6 +2442,9 @@ class _$PaymentSuccessImpl implements _PaymentSuccess {
     required TResult Function(_OrderCreated value) orderCreated,
     required TResult Function(_PaymentSuccess value) paymentSuccess,
     required TResult Function(_PaymentError value) paymentError,
+    required TResult Function(_WalletBalanceError value) walletBalanceError,
+    required TResult Function(_BillPaymentResponse value) billPaymentResponse,
+    required TResult Function(_BillPaymentError value) billPaymentError,
     required TResult Function(_RefundProcessing value) refundProcessing,
     required TResult Function(_RefundSuccess value) refundSuccess,
     required TResult Function(_RefundFailed value) refundFailed,
@@ -2339,6 +2460,9 @@ class _$PaymentSuccessImpl implements _PaymentSuccess {
     TResult? Function(_OrderCreated value)? orderCreated,
     TResult? Function(_PaymentSuccess value)? paymentSuccess,
     TResult? Function(_PaymentError value)? paymentError,
+    TResult? Function(_WalletBalanceError value)? walletBalanceError,
+    TResult? Function(_BillPaymentResponse value)? billPaymentResponse,
+    TResult? Function(_BillPaymentError value)? billPaymentError,
     TResult? Function(_RefundProcessing value)? refundProcessing,
     TResult? Function(_RefundSuccess value)? refundSuccess,
     TResult? Function(_RefundFailed value)? refundFailed,
@@ -2354,6 +2478,9 @@ class _$PaymentSuccessImpl implements _PaymentSuccess {
     TResult Function(_OrderCreated value)? orderCreated,
     TResult Function(_PaymentSuccess value)? paymentSuccess,
     TResult Function(_PaymentError value)? paymentError,
+    TResult Function(_WalletBalanceError value)? walletBalanceError,
+    TResult Function(_BillPaymentResponse value)? billPaymentResponse,
+    TResult Function(_BillPaymentError value)? billPaymentError,
     TResult Function(_RefundProcessing value)? refundProcessing,
     TResult Function(_RefundSuccess value)? refundSuccess,
     TResult Function(_RefundFailed value)? refundFailed,
@@ -2460,6 +2587,10 @@ class _$PaymentErrorImpl implements _PaymentError {
     orderCreated,
     required TResult Function(String message, String receiptId) paymentSuccess,
     required TResult Function(String message) paymentError,
+    required TResult Function(String message) walletBalanceError,
+    required TResult Function(Map<String, dynamic> responseData)
+    billPaymentResponse,
+    required TResult Function(String message) billPaymentError,
     required TResult Function() refundProcessing,
     required TResult Function(String message, String receiptId) refundSuccess,
     required TResult Function(String message, String receiptId) refundFailed,
@@ -2480,6 +2611,9 @@ class _$PaymentErrorImpl implements _PaymentError {
     orderCreated,
     TResult? Function(String message, String receiptId)? paymentSuccess,
     TResult? Function(String message)? paymentError,
+    TResult? Function(String message)? walletBalanceError,
+    TResult? Function(Map<String, dynamic> responseData)? billPaymentResponse,
+    TResult? Function(String message)? billPaymentError,
     TResult? Function()? refundProcessing,
     TResult? Function(String message, String receiptId)? refundSuccess,
     TResult? Function(String message, String receiptId)? refundFailed,
@@ -2500,6 +2634,9 @@ class _$PaymentErrorImpl implements _PaymentError {
     orderCreated,
     TResult Function(String message, String receiptId)? paymentSuccess,
     TResult Function(String message)? paymentError,
+    TResult Function(String message)? walletBalanceError,
+    TResult Function(Map<String, dynamic> responseData)? billPaymentResponse,
+    TResult Function(String message)? billPaymentError,
     TResult Function()? refundProcessing,
     TResult Function(String message, String receiptId)? refundSuccess,
     TResult Function(String message, String receiptId)? refundFailed,
@@ -2519,6 +2656,9 @@ class _$PaymentErrorImpl implements _PaymentError {
     required TResult Function(_OrderCreated value) orderCreated,
     required TResult Function(_PaymentSuccess value) paymentSuccess,
     required TResult Function(_PaymentError value) paymentError,
+    required TResult Function(_WalletBalanceError value) walletBalanceError,
+    required TResult Function(_BillPaymentResponse value) billPaymentResponse,
+    required TResult Function(_BillPaymentError value) billPaymentError,
     required TResult Function(_RefundProcessing value) refundProcessing,
     required TResult Function(_RefundSuccess value) refundSuccess,
     required TResult Function(_RefundFailed value) refundFailed,
@@ -2534,6 +2674,9 @@ class _$PaymentErrorImpl implements _PaymentError {
     TResult? Function(_OrderCreated value)? orderCreated,
     TResult? Function(_PaymentSuccess value)? paymentSuccess,
     TResult? Function(_PaymentError value)? paymentError,
+    TResult? Function(_WalletBalanceError value)? walletBalanceError,
+    TResult? Function(_BillPaymentResponse value)? billPaymentResponse,
+    TResult? Function(_BillPaymentError value)? billPaymentError,
     TResult? Function(_RefundProcessing value)? refundProcessing,
     TResult? Function(_RefundSuccess value)? refundSuccess,
     TResult? Function(_RefundFailed value)? refundFailed,
@@ -2549,6 +2692,9 @@ class _$PaymentErrorImpl implements _PaymentError {
     TResult Function(_OrderCreated value)? orderCreated,
     TResult Function(_PaymentSuccess value)? paymentSuccess,
     TResult Function(_PaymentError value)? paymentError,
+    TResult Function(_WalletBalanceError value)? walletBalanceError,
+    TResult Function(_BillPaymentResponse value)? billPaymentResponse,
+    TResult Function(_BillPaymentError value)? billPaymentError,
     TResult Function(_RefundProcessing value)? refundProcessing,
     TResult Function(_RefundSuccess value)? refundSuccess,
     TResult Function(_RefundFailed value)? refundFailed,
@@ -2570,6 +2716,666 @@ abstract class _PaymentError implements ConfirmBillState {
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$PaymentErrorImplCopyWith<_$PaymentErrorImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$WalletBalanceErrorImplCopyWith<$Res> {
+  factory _$$WalletBalanceErrorImplCopyWith(
+    _$WalletBalanceErrorImpl value,
+    $Res Function(_$WalletBalanceErrorImpl) then,
+  ) = __$$WalletBalanceErrorImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({String message});
+}
+
+/// @nodoc
+class __$$WalletBalanceErrorImplCopyWithImpl<$Res>
+    extends _$ConfirmBillStateCopyWithImpl<$Res, _$WalletBalanceErrorImpl>
+    implements _$$WalletBalanceErrorImplCopyWith<$Res> {
+  __$$WalletBalanceErrorImplCopyWithImpl(
+    _$WalletBalanceErrorImpl _value,
+    $Res Function(_$WalletBalanceErrorImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of ConfirmBillState
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? message = null}) {
+    return _then(
+      _$WalletBalanceErrorImpl(
+        null == message
+            ? _value.message
+            : message // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+
+class _$WalletBalanceErrorImpl implements _WalletBalanceError {
+  const _$WalletBalanceErrorImpl(this.message);
+
+  @override
+  final String message;
+
+  @override
+  String toString() {
+    return 'ConfirmBillState.walletBalanceError(message: $message)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$WalletBalanceErrorImpl &&
+            (identical(other.message, message) || other.message == message));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, message);
+
+  /// Create a copy of ConfirmBillState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$WalletBalanceErrorImplCopyWith<_$WalletBalanceErrorImpl> get copyWith =>
+      __$$WalletBalanceErrorImplCopyWithImpl<_$WalletBalanceErrorImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() initial,
+    required TResult Function() paymentProcessing,
+    required TResult Function(
+      String orderId,
+      String receiptId,
+      ElectricityBillModel bill,
+    )
+    orderCreated,
+    required TResult Function(String message, String receiptId) paymentSuccess,
+    required TResult Function(String message) paymentError,
+    required TResult Function(String message) walletBalanceError,
+    required TResult Function(Map<String, dynamic> responseData)
+    billPaymentResponse,
+    required TResult Function(String message) billPaymentError,
+    required TResult Function() refundProcessing,
+    required TResult Function(String message, String receiptId) refundSuccess,
+    required TResult Function(String message, String receiptId) refundFailed,
+  }) {
+    return walletBalanceError(message);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initial,
+    TResult? Function()? paymentProcessing,
+    TResult? Function(
+      String orderId,
+      String receiptId,
+      ElectricityBillModel bill,
+    )?
+    orderCreated,
+    TResult? Function(String message, String receiptId)? paymentSuccess,
+    TResult? Function(String message)? paymentError,
+    TResult? Function(String message)? walletBalanceError,
+    TResult? Function(Map<String, dynamic> responseData)? billPaymentResponse,
+    TResult? Function(String message)? billPaymentError,
+    TResult? Function()? refundProcessing,
+    TResult? Function(String message, String receiptId)? refundSuccess,
+    TResult? Function(String message, String receiptId)? refundFailed,
+  }) {
+    return walletBalanceError?.call(message);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
+    TResult Function()? paymentProcessing,
+    TResult Function(
+      String orderId,
+      String receiptId,
+      ElectricityBillModel bill,
+    )?
+    orderCreated,
+    TResult Function(String message, String receiptId)? paymentSuccess,
+    TResult Function(String message)? paymentError,
+    TResult Function(String message)? walletBalanceError,
+    TResult Function(Map<String, dynamic> responseData)? billPaymentResponse,
+    TResult Function(String message)? billPaymentError,
+    TResult Function()? refundProcessing,
+    TResult Function(String message, String receiptId)? refundSuccess,
+    TResult Function(String message, String receiptId)? refundFailed,
+    required TResult orElse(),
+  }) {
+    if (walletBalanceError != null) {
+      return walletBalanceError(message);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Initial value) initial,
+    required TResult Function(_PaymentProcessing value) paymentProcessing,
+    required TResult Function(_OrderCreated value) orderCreated,
+    required TResult Function(_PaymentSuccess value) paymentSuccess,
+    required TResult Function(_PaymentError value) paymentError,
+    required TResult Function(_WalletBalanceError value) walletBalanceError,
+    required TResult Function(_BillPaymentResponse value) billPaymentResponse,
+    required TResult Function(_BillPaymentError value) billPaymentError,
+    required TResult Function(_RefundProcessing value) refundProcessing,
+    required TResult Function(_RefundSuccess value) refundSuccess,
+    required TResult Function(_RefundFailed value) refundFailed,
+  }) {
+    return walletBalanceError(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_Initial value)? initial,
+    TResult? Function(_PaymentProcessing value)? paymentProcessing,
+    TResult? Function(_OrderCreated value)? orderCreated,
+    TResult? Function(_PaymentSuccess value)? paymentSuccess,
+    TResult? Function(_PaymentError value)? paymentError,
+    TResult? Function(_WalletBalanceError value)? walletBalanceError,
+    TResult? Function(_BillPaymentResponse value)? billPaymentResponse,
+    TResult? Function(_BillPaymentError value)? billPaymentError,
+    TResult? Function(_RefundProcessing value)? refundProcessing,
+    TResult? Function(_RefundSuccess value)? refundSuccess,
+    TResult? Function(_RefundFailed value)? refundFailed,
+  }) {
+    return walletBalanceError?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Initial value)? initial,
+    TResult Function(_PaymentProcessing value)? paymentProcessing,
+    TResult Function(_OrderCreated value)? orderCreated,
+    TResult Function(_PaymentSuccess value)? paymentSuccess,
+    TResult Function(_PaymentError value)? paymentError,
+    TResult Function(_WalletBalanceError value)? walletBalanceError,
+    TResult Function(_BillPaymentResponse value)? billPaymentResponse,
+    TResult Function(_BillPaymentError value)? billPaymentError,
+    TResult Function(_RefundProcessing value)? refundProcessing,
+    TResult Function(_RefundSuccess value)? refundSuccess,
+    TResult Function(_RefundFailed value)? refundFailed,
+    required TResult orElse(),
+  }) {
+    if (walletBalanceError != null) {
+      return walletBalanceError(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _WalletBalanceError implements ConfirmBillState {
+  const factory _WalletBalanceError(final String message) =
+      _$WalletBalanceErrorImpl;
+
+  String get message;
+
+  /// Create a copy of ConfirmBillState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$WalletBalanceErrorImplCopyWith<_$WalletBalanceErrorImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$BillPaymentResponseImplCopyWith<$Res> {
+  factory _$$BillPaymentResponseImplCopyWith(
+    _$BillPaymentResponseImpl value,
+    $Res Function(_$BillPaymentResponseImpl) then,
+  ) = __$$BillPaymentResponseImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({Map<String, dynamic> responseData});
+}
+
+/// @nodoc
+class __$$BillPaymentResponseImplCopyWithImpl<$Res>
+    extends _$ConfirmBillStateCopyWithImpl<$Res, _$BillPaymentResponseImpl>
+    implements _$$BillPaymentResponseImplCopyWith<$Res> {
+  __$$BillPaymentResponseImplCopyWithImpl(
+    _$BillPaymentResponseImpl _value,
+    $Res Function(_$BillPaymentResponseImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of ConfirmBillState
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? responseData = null}) {
+    return _then(
+      _$BillPaymentResponseImpl(
+        null == responseData
+            ? _value._responseData
+            : responseData // ignore: cast_nullable_to_non_nullable
+                  as Map<String, dynamic>,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+
+class _$BillPaymentResponseImpl implements _BillPaymentResponse {
+  const _$BillPaymentResponseImpl(final Map<String, dynamic> responseData)
+    : _responseData = responseData;
+
+  final Map<String, dynamic> _responseData;
+  @override
+  Map<String, dynamic> get responseData {
+    if (_responseData is EqualUnmodifiableMapView) return _responseData;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_responseData);
+  }
+
+  @override
+  String toString() {
+    return 'ConfirmBillState.billPaymentResponse(responseData: $responseData)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$BillPaymentResponseImpl &&
+            const DeepCollectionEquality().equals(
+              other._responseData,
+              _responseData,
+            ));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    const DeepCollectionEquality().hash(_responseData),
+  );
+
+  /// Create a copy of ConfirmBillState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$BillPaymentResponseImplCopyWith<_$BillPaymentResponseImpl> get copyWith =>
+      __$$BillPaymentResponseImplCopyWithImpl<_$BillPaymentResponseImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() initial,
+    required TResult Function() paymentProcessing,
+    required TResult Function(
+      String orderId,
+      String receiptId,
+      ElectricityBillModel bill,
+    )
+    orderCreated,
+    required TResult Function(String message, String receiptId) paymentSuccess,
+    required TResult Function(String message) paymentError,
+    required TResult Function(String message) walletBalanceError,
+    required TResult Function(Map<String, dynamic> responseData)
+    billPaymentResponse,
+    required TResult Function(String message) billPaymentError,
+    required TResult Function() refundProcessing,
+    required TResult Function(String message, String receiptId) refundSuccess,
+    required TResult Function(String message, String receiptId) refundFailed,
+  }) {
+    return billPaymentResponse(responseData);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initial,
+    TResult? Function()? paymentProcessing,
+    TResult? Function(
+      String orderId,
+      String receiptId,
+      ElectricityBillModel bill,
+    )?
+    orderCreated,
+    TResult? Function(String message, String receiptId)? paymentSuccess,
+    TResult? Function(String message)? paymentError,
+    TResult? Function(String message)? walletBalanceError,
+    TResult? Function(Map<String, dynamic> responseData)? billPaymentResponse,
+    TResult? Function(String message)? billPaymentError,
+    TResult? Function()? refundProcessing,
+    TResult? Function(String message, String receiptId)? refundSuccess,
+    TResult? Function(String message, String receiptId)? refundFailed,
+  }) {
+    return billPaymentResponse?.call(responseData);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
+    TResult Function()? paymentProcessing,
+    TResult Function(
+      String orderId,
+      String receiptId,
+      ElectricityBillModel bill,
+    )?
+    orderCreated,
+    TResult Function(String message, String receiptId)? paymentSuccess,
+    TResult Function(String message)? paymentError,
+    TResult Function(String message)? walletBalanceError,
+    TResult Function(Map<String, dynamic> responseData)? billPaymentResponse,
+    TResult Function(String message)? billPaymentError,
+    TResult Function()? refundProcessing,
+    TResult Function(String message, String receiptId)? refundSuccess,
+    TResult Function(String message, String receiptId)? refundFailed,
+    required TResult orElse(),
+  }) {
+    if (billPaymentResponse != null) {
+      return billPaymentResponse(responseData);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Initial value) initial,
+    required TResult Function(_PaymentProcessing value) paymentProcessing,
+    required TResult Function(_OrderCreated value) orderCreated,
+    required TResult Function(_PaymentSuccess value) paymentSuccess,
+    required TResult Function(_PaymentError value) paymentError,
+    required TResult Function(_WalletBalanceError value) walletBalanceError,
+    required TResult Function(_BillPaymentResponse value) billPaymentResponse,
+    required TResult Function(_BillPaymentError value) billPaymentError,
+    required TResult Function(_RefundProcessing value) refundProcessing,
+    required TResult Function(_RefundSuccess value) refundSuccess,
+    required TResult Function(_RefundFailed value) refundFailed,
+  }) {
+    return billPaymentResponse(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_Initial value)? initial,
+    TResult? Function(_PaymentProcessing value)? paymentProcessing,
+    TResult? Function(_OrderCreated value)? orderCreated,
+    TResult? Function(_PaymentSuccess value)? paymentSuccess,
+    TResult? Function(_PaymentError value)? paymentError,
+    TResult? Function(_WalletBalanceError value)? walletBalanceError,
+    TResult? Function(_BillPaymentResponse value)? billPaymentResponse,
+    TResult? Function(_BillPaymentError value)? billPaymentError,
+    TResult? Function(_RefundProcessing value)? refundProcessing,
+    TResult? Function(_RefundSuccess value)? refundSuccess,
+    TResult? Function(_RefundFailed value)? refundFailed,
+  }) {
+    return billPaymentResponse?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Initial value)? initial,
+    TResult Function(_PaymentProcessing value)? paymentProcessing,
+    TResult Function(_OrderCreated value)? orderCreated,
+    TResult Function(_PaymentSuccess value)? paymentSuccess,
+    TResult Function(_PaymentError value)? paymentError,
+    TResult Function(_WalletBalanceError value)? walletBalanceError,
+    TResult Function(_BillPaymentResponse value)? billPaymentResponse,
+    TResult Function(_BillPaymentError value)? billPaymentError,
+    TResult Function(_RefundProcessing value)? refundProcessing,
+    TResult Function(_RefundSuccess value)? refundSuccess,
+    TResult Function(_RefundFailed value)? refundFailed,
+    required TResult orElse(),
+  }) {
+    if (billPaymentResponse != null) {
+      return billPaymentResponse(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _BillPaymentResponse implements ConfirmBillState {
+  const factory _BillPaymentResponse(final Map<String, dynamic> responseData) =
+      _$BillPaymentResponseImpl;
+
+  Map<String, dynamic> get responseData;
+
+  /// Create a copy of ConfirmBillState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$BillPaymentResponseImplCopyWith<_$BillPaymentResponseImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$BillPaymentErrorImplCopyWith<$Res> {
+  factory _$$BillPaymentErrorImplCopyWith(
+    _$BillPaymentErrorImpl value,
+    $Res Function(_$BillPaymentErrorImpl) then,
+  ) = __$$BillPaymentErrorImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({String message});
+}
+
+/// @nodoc
+class __$$BillPaymentErrorImplCopyWithImpl<$Res>
+    extends _$ConfirmBillStateCopyWithImpl<$Res, _$BillPaymentErrorImpl>
+    implements _$$BillPaymentErrorImplCopyWith<$Res> {
+  __$$BillPaymentErrorImplCopyWithImpl(
+    _$BillPaymentErrorImpl _value,
+    $Res Function(_$BillPaymentErrorImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of ConfirmBillState
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? message = null}) {
+    return _then(
+      _$BillPaymentErrorImpl(
+        null == message
+            ? _value.message
+            : message // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+
+class _$BillPaymentErrorImpl implements _BillPaymentError {
+  const _$BillPaymentErrorImpl(this.message);
+
+  @override
+  final String message;
+
+  @override
+  String toString() {
+    return 'ConfirmBillState.billPaymentError(message: $message)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$BillPaymentErrorImpl &&
+            (identical(other.message, message) || other.message == message));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, message);
+
+  /// Create a copy of ConfirmBillState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$BillPaymentErrorImplCopyWith<_$BillPaymentErrorImpl> get copyWith =>
+      __$$BillPaymentErrorImplCopyWithImpl<_$BillPaymentErrorImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() initial,
+    required TResult Function() paymentProcessing,
+    required TResult Function(
+      String orderId,
+      String receiptId,
+      ElectricityBillModel bill,
+    )
+    orderCreated,
+    required TResult Function(String message, String receiptId) paymentSuccess,
+    required TResult Function(String message) paymentError,
+    required TResult Function(String message) walletBalanceError,
+    required TResult Function(Map<String, dynamic> responseData)
+    billPaymentResponse,
+    required TResult Function(String message) billPaymentError,
+    required TResult Function() refundProcessing,
+    required TResult Function(String message, String receiptId) refundSuccess,
+    required TResult Function(String message, String receiptId) refundFailed,
+  }) {
+    return billPaymentError(message);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initial,
+    TResult? Function()? paymentProcessing,
+    TResult? Function(
+      String orderId,
+      String receiptId,
+      ElectricityBillModel bill,
+    )?
+    orderCreated,
+    TResult? Function(String message, String receiptId)? paymentSuccess,
+    TResult? Function(String message)? paymentError,
+    TResult? Function(String message)? walletBalanceError,
+    TResult? Function(Map<String, dynamic> responseData)? billPaymentResponse,
+    TResult? Function(String message)? billPaymentError,
+    TResult? Function()? refundProcessing,
+    TResult? Function(String message, String receiptId)? refundSuccess,
+    TResult? Function(String message, String receiptId)? refundFailed,
+  }) {
+    return billPaymentError?.call(message);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
+    TResult Function()? paymentProcessing,
+    TResult Function(
+      String orderId,
+      String receiptId,
+      ElectricityBillModel bill,
+    )?
+    orderCreated,
+    TResult Function(String message, String receiptId)? paymentSuccess,
+    TResult Function(String message)? paymentError,
+    TResult Function(String message)? walletBalanceError,
+    TResult Function(Map<String, dynamic> responseData)? billPaymentResponse,
+    TResult Function(String message)? billPaymentError,
+    TResult Function()? refundProcessing,
+    TResult Function(String message, String receiptId)? refundSuccess,
+    TResult Function(String message, String receiptId)? refundFailed,
+    required TResult orElse(),
+  }) {
+    if (billPaymentError != null) {
+      return billPaymentError(message);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Initial value) initial,
+    required TResult Function(_PaymentProcessing value) paymentProcessing,
+    required TResult Function(_OrderCreated value) orderCreated,
+    required TResult Function(_PaymentSuccess value) paymentSuccess,
+    required TResult Function(_PaymentError value) paymentError,
+    required TResult Function(_WalletBalanceError value) walletBalanceError,
+    required TResult Function(_BillPaymentResponse value) billPaymentResponse,
+    required TResult Function(_BillPaymentError value) billPaymentError,
+    required TResult Function(_RefundProcessing value) refundProcessing,
+    required TResult Function(_RefundSuccess value) refundSuccess,
+    required TResult Function(_RefundFailed value) refundFailed,
+  }) {
+    return billPaymentError(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_Initial value)? initial,
+    TResult? Function(_PaymentProcessing value)? paymentProcessing,
+    TResult? Function(_OrderCreated value)? orderCreated,
+    TResult? Function(_PaymentSuccess value)? paymentSuccess,
+    TResult? Function(_PaymentError value)? paymentError,
+    TResult? Function(_WalletBalanceError value)? walletBalanceError,
+    TResult? Function(_BillPaymentResponse value)? billPaymentResponse,
+    TResult? Function(_BillPaymentError value)? billPaymentError,
+    TResult? Function(_RefundProcessing value)? refundProcessing,
+    TResult? Function(_RefundSuccess value)? refundSuccess,
+    TResult? Function(_RefundFailed value)? refundFailed,
+  }) {
+    return billPaymentError?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Initial value)? initial,
+    TResult Function(_PaymentProcessing value)? paymentProcessing,
+    TResult Function(_OrderCreated value)? orderCreated,
+    TResult Function(_PaymentSuccess value)? paymentSuccess,
+    TResult Function(_PaymentError value)? paymentError,
+    TResult Function(_WalletBalanceError value)? walletBalanceError,
+    TResult Function(_BillPaymentResponse value)? billPaymentResponse,
+    TResult Function(_BillPaymentError value)? billPaymentError,
+    TResult Function(_RefundProcessing value)? refundProcessing,
+    TResult Function(_RefundSuccess value)? refundSuccess,
+    TResult Function(_RefundFailed value)? refundFailed,
+    required TResult orElse(),
+  }) {
+    if (billPaymentError != null) {
+      return billPaymentError(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _BillPaymentError implements ConfirmBillState {
+  const factory _BillPaymentError(final String message) =
+      _$BillPaymentErrorImpl;
+
+  String get message;
+
+  /// Create a copy of ConfirmBillState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$BillPaymentErrorImplCopyWith<_$BillPaymentErrorImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -2626,6 +3432,10 @@ class _$RefundProcessingImpl implements _RefundProcessing {
     orderCreated,
     required TResult Function(String message, String receiptId) paymentSuccess,
     required TResult Function(String message) paymentError,
+    required TResult Function(String message) walletBalanceError,
+    required TResult Function(Map<String, dynamic> responseData)
+    billPaymentResponse,
+    required TResult Function(String message) billPaymentError,
     required TResult Function() refundProcessing,
     required TResult Function(String message, String receiptId) refundSuccess,
     required TResult Function(String message, String receiptId) refundFailed,
@@ -2646,6 +3456,9 @@ class _$RefundProcessingImpl implements _RefundProcessing {
     orderCreated,
     TResult? Function(String message, String receiptId)? paymentSuccess,
     TResult? Function(String message)? paymentError,
+    TResult? Function(String message)? walletBalanceError,
+    TResult? Function(Map<String, dynamic> responseData)? billPaymentResponse,
+    TResult? Function(String message)? billPaymentError,
     TResult? Function()? refundProcessing,
     TResult? Function(String message, String receiptId)? refundSuccess,
     TResult? Function(String message, String receiptId)? refundFailed,
@@ -2666,6 +3479,9 @@ class _$RefundProcessingImpl implements _RefundProcessing {
     orderCreated,
     TResult Function(String message, String receiptId)? paymentSuccess,
     TResult Function(String message)? paymentError,
+    TResult Function(String message)? walletBalanceError,
+    TResult Function(Map<String, dynamic> responseData)? billPaymentResponse,
+    TResult Function(String message)? billPaymentError,
     TResult Function()? refundProcessing,
     TResult Function(String message, String receiptId)? refundSuccess,
     TResult Function(String message, String receiptId)? refundFailed,
@@ -2685,6 +3501,9 @@ class _$RefundProcessingImpl implements _RefundProcessing {
     required TResult Function(_OrderCreated value) orderCreated,
     required TResult Function(_PaymentSuccess value) paymentSuccess,
     required TResult Function(_PaymentError value) paymentError,
+    required TResult Function(_WalletBalanceError value) walletBalanceError,
+    required TResult Function(_BillPaymentResponse value) billPaymentResponse,
+    required TResult Function(_BillPaymentError value) billPaymentError,
     required TResult Function(_RefundProcessing value) refundProcessing,
     required TResult Function(_RefundSuccess value) refundSuccess,
     required TResult Function(_RefundFailed value) refundFailed,
@@ -2700,6 +3519,9 @@ class _$RefundProcessingImpl implements _RefundProcessing {
     TResult? Function(_OrderCreated value)? orderCreated,
     TResult? Function(_PaymentSuccess value)? paymentSuccess,
     TResult? Function(_PaymentError value)? paymentError,
+    TResult? Function(_WalletBalanceError value)? walletBalanceError,
+    TResult? Function(_BillPaymentResponse value)? billPaymentResponse,
+    TResult? Function(_BillPaymentError value)? billPaymentError,
     TResult? Function(_RefundProcessing value)? refundProcessing,
     TResult? Function(_RefundSuccess value)? refundSuccess,
     TResult? Function(_RefundFailed value)? refundFailed,
@@ -2715,6 +3537,9 @@ class _$RefundProcessingImpl implements _RefundProcessing {
     TResult Function(_OrderCreated value)? orderCreated,
     TResult Function(_PaymentSuccess value)? paymentSuccess,
     TResult Function(_PaymentError value)? paymentError,
+    TResult Function(_WalletBalanceError value)? walletBalanceError,
+    TResult Function(_BillPaymentResponse value)? billPaymentResponse,
+    TResult Function(_BillPaymentError value)? billPaymentError,
     TResult Function(_RefundProcessing value)? refundProcessing,
     TResult Function(_RefundSuccess value)? refundSuccess,
     TResult Function(_RefundFailed value)? refundFailed,
@@ -2819,6 +3644,10 @@ class _$RefundSuccessImpl implements _RefundSuccess {
     orderCreated,
     required TResult Function(String message, String receiptId) paymentSuccess,
     required TResult Function(String message) paymentError,
+    required TResult Function(String message) walletBalanceError,
+    required TResult Function(Map<String, dynamic> responseData)
+    billPaymentResponse,
+    required TResult Function(String message) billPaymentError,
     required TResult Function() refundProcessing,
     required TResult Function(String message, String receiptId) refundSuccess,
     required TResult Function(String message, String receiptId) refundFailed,
@@ -2839,6 +3668,9 @@ class _$RefundSuccessImpl implements _RefundSuccess {
     orderCreated,
     TResult? Function(String message, String receiptId)? paymentSuccess,
     TResult? Function(String message)? paymentError,
+    TResult? Function(String message)? walletBalanceError,
+    TResult? Function(Map<String, dynamic> responseData)? billPaymentResponse,
+    TResult? Function(String message)? billPaymentError,
     TResult? Function()? refundProcessing,
     TResult? Function(String message, String receiptId)? refundSuccess,
     TResult? Function(String message, String receiptId)? refundFailed,
@@ -2859,6 +3691,9 @@ class _$RefundSuccessImpl implements _RefundSuccess {
     orderCreated,
     TResult Function(String message, String receiptId)? paymentSuccess,
     TResult Function(String message)? paymentError,
+    TResult Function(String message)? walletBalanceError,
+    TResult Function(Map<String, dynamic> responseData)? billPaymentResponse,
+    TResult Function(String message)? billPaymentError,
     TResult Function()? refundProcessing,
     TResult Function(String message, String receiptId)? refundSuccess,
     TResult Function(String message, String receiptId)? refundFailed,
@@ -2878,6 +3713,9 @@ class _$RefundSuccessImpl implements _RefundSuccess {
     required TResult Function(_OrderCreated value) orderCreated,
     required TResult Function(_PaymentSuccess value) paymentSuccess,
     required TResult Function(_PaymentError value) paymentError,
+    required TResult Function(_WalletBalanceError value) walletBalanceError,
+    required TResult Function(_BillPaymentResponse value) billPaymentResponse,
+    required TResult Function(_BillPaymentError value) billPaymentError,
     required TResult Function(_RefundProcessing value) refundProcessing,
     required TResult Function(_RefundSuccess value) refundSuccess,
     required TResult Function(_RefundFailed value) refundFailed,
@@ -2893,6 +3731,9 @@ class _$RefundSuccessImpl implements _RefundSuccess {
     TResult? Function(_OrderCreated value)? orderCreated,
     TResult? Function(_PaymentSuccess value)? paymentSuccess,
     TResult? Function(_PaymentError value)? paymentError,
+    TResult? Function(_WalletBalanceError value)? walletBalanceError,
+    TResult? Function(_BillPaymentResponse value)? billPaymentResponse,
+    TResult? Function(_BillPaymentError value)? billPaymentError,
     TResult? Function(_RefundProcessing value)? refundProcessing,
     TResult? Function(_RefundSuccess value)? refundSuccess,
     TResult? Function(_RefundFailed value)? refundFailed,
@@ -2908,6 +3749,9 @@ class _$RefundSuccessImpl implements _RefundSuccess {
     TResult Function(_OrderCreated value)? orderCreated,
     TResult Function(_PaymentSuccess value)? paymentSuccess,
     TResult Function(_PaymentError value)? paymentError,
+    TResult Function(_WalletBalanceError value)? walletBalanceError,
+    TResult Function(_BillPaymentResponse value)? billPaymentResponse,
+    TResult Function(_BillPaymentError value)? billPaymentError,
     TResult Function(_RefundProcessing value)? refundProcessing,
     TResult Function(_RefundSuccess value)? refundSuccess,
     TResult Function(_RefundFailed value)? refundFailed,
@@ -3022,6 +3866,10 @@ class _$RefundFailedImpl implements _RefundFailed {
     orderCreated,
     required TResult Function(String message, String receiptId) paymentSuccess,
     required TResult Function(String message) paymentError,
+    required TResult Function(String message) walletBalanceError,
+    required TResult Function(Map<String, dynamic> responseData)
+    billPaymentResponse,
+    required TResult Function(String message) billPaymentError,
     required TResult Function() refundProcessing,
     required TResult Function(String message, String receiptId) refundSuccess,
     required TResult Function(String message, String receiptId) refundFailed,
@@ -3042,6 +3890,9 @@ class _$RefundFailedImpl implements _RefundFailed {
     orderCreated,
     TResult? Function(String message, String receiptId)? paymentSuccess,
     TResult? Function(String message)? paymentError,
+    TResult? Function(String message)? walletBalanceError,
+    TResult? Function(Map<String, dynamic> responseData)? billPaymentResponse,
+    TResult? Function(String message)? billPaymentError,
     TResult? Function()? refundProcessing,
     TResult? Function(String message, String receiptId)? refundSuccess,
     TResult? Function(String message, String receiptId)? refundFailed,
@@ -3062,6 +3913,9 @@ class _$RefundFailedImpl implements _RefundFailed {
     orderCreated,
     TResult Function(String message, String receiptId)? paymentSuccess,
     TResult Function(String message)? paymentError,
+    TResult Function(String message)? walletBalanceError,
+    TResult Function(Map<String, dynamic> responseData)? billPaymentResponse,
+    TResult Function(String message)? billPaymentError,
     TResult Function()? refundProcessing,
     TResult Function(String message, String receiptId)? refundSuccess,
     TResult Function(String message, String receiptId)? refundFailed,
@@ -3081,6 +3935,9 @@ class _$RefundFailedImpl implements _RefundFailed {
     required TResult Function(_OrderCreated value) orderCreated,
     required TResult Function(_PaymentSuccess value) paymentSuccess,
     required TResult Function(_PaymentError value) paymentError,
+    required TResult Function(_WalletBalanceError value) walletBalanceError,
+    required TResult Function(_BillPaymentResponse value) billPaymentResponse,
+    required TResult Function(_BillPaymentError value) billPaymentError,
     required TResult Function(_RefundProcessing value) refundProcessing,
     required TResult Function(_RefundSuccess value) refundSuccess,
     required TResult Function(_RefundFailed value) refundFailed,
@@ -3096,6 +3953,9 @@ class _$RefundFailedImpl implements _RefundFailed {
     TResult? Function(_OrderCreated value)? orderCreated,
     TResult? Function(_PaymentSuccess value)? paymentSuccess,
     TResult? Function(_PaymentError value)? paymentError,
+    TResult? Function(_WalletBalanceError value)? walletBalanceError,
+    TResult? Function(_BillPaymentResponse value)? billPaymentResponse,
+    TResult? Function(_BillPaymentError value)? billPaymentError,
     TResult? Function(_RefundProcessing value)? refundProcessing,
     TResult? Function(_RefundSuccess value)? refundSuccess,
     TResult? Function(_RefundFailed value)? refundFailed,
@@ -3111,6 +3971,9 @@ class _$RefundFailedImpl implements _RefundFailed {
     TResult Function(_OrderCreated value)? orderCreated,
     TResult Function(_PaymentSuccess value)? paymentSuccess,
     TResult Function(_PaymentError value)? paymentError,
+    TResult Function(_WalletBalanceError value)? walletBalanceError,
+    TResult Function(_BillPaymentResponse value)? billPaymentResponse,
+    TResult Function(_BillPaymentError value)? billPaymentError,
     TResult Function(_RefundProcessing value)? refundProcessing,
     TResult Function(_RefundSuccess value)? refundSuccess,
     TResult Function(_RefundFailed value)? refundFailed,

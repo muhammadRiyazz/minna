@@ -15,8 +15,11 @@ part 'confirm_bill_bloc.freezed.dart';
 class ConfirmBillBloc extends Bloc<ConfirmBillEvent, ConfirmBillState> {
   ConfirmBillBloc() : super(_Initial()) {
     on<InitiatePayment>(_onInitiatePayment);
+
     on<ProcessPaymentSuccess>(_onProcessPaymentSuccess);
+
     on<ProcessPaymentFailure>(_onProcessPaymentFailure);
+
     on<InitiateRefund>(_onInitiateRefund);
   }
 
@@ -27,46 +30,35 @@ class ConfirmBillBloc extends Bloc<ConfirmBillEvent, ConfirmBillState> {
     emit(const ConfirmBillState.paymentProcessing());
 
     try {
-      // // Step 1: Store bill payment temp
-      // final tempStoreResult = await _storeBillPaymentTemp(event);
-      
-      // if (!tempStoreResult['success']) {
-      //   emit(ConfirmBillState.paymentError(tempStoreResult['message']));
-      //   return;
-      // }
+      // Step 0: Check Wallet Balance
+      final walletCheckResult = await _checkWalletBalance(
+        event.bill.billAmount,
+      );
 
-      // final receiptId = tempStoreResult['receiptId'];
+      if (!walletCheckResult['success']) {
+        emit(ConfirmBillState.walletBalanceError(walletCheckResult['message']));
+        return;
+      }
 
       // Step 2: Create Razorpay order
-      final orderResult = await _createRazorpayOrder(event.bill.billAmount);
-      
+      final orderResult = await _createRazorpayOrder(event);
+
       if (!orderResult['success']) {
         emit(ConfirmBillState.paymentError(orderResult['message']));
         return;
       }
 
       final orderId = orderResult['orderId'];
-
-      // Step 3: Save payment details
-      final saveResult = await _savePaymentDetails(
-        receiptId:event. receiptId,
-        orderId: orderId,
-        transactionId: '',
-        status: '2', // Initial status as pending
-      );
-
-      if (!saveResult['success']) {
-        emit(ConfirmBillState.paymentError(saveResult['message']));
-        return;
-      }
+      final receiptId = orderResult['receiptId'];
 
       // Include bill in the orderCreated state
-      emit(ConfirmBillState.orderCreated(
-        orderId: orderId, 
-        receiptId:event. receiptId,
-        bill: event.bill,
-      ));
-
+      emit(
+        ConfirmBillState.orderCreated(
+          orderId: orderId,
+          receiptId: receiptId,
+          bill: event.bill,
+        ),
+      );
     } catch (e) {
       log(e.toString());
       emit(ConfirmBillState.paymentError('Failed to initiate payment: $e'));
@@ -80,54 +72,22 @@ class ConfirmBillBloc extends Bloc<ConfirmBillEvent, ConfirmBillState> {
     emit(const ConfirmBillState.paymentProcessing());
 
     try {
-      // Step 1: Update payment details as success
-      final updateResult = await _savePaymentDetails(
-        receiptId: event.receiptId,
-        orderId: event.orderId,
-        transactionId: event.transactionId,
-        status: '1', // Success
-      );
-
-      if (!updateResult['success']) {
-        // If update fails, initiate refund
-        log("Payment update failed, initiating refund");
-        add(InitiateRefund(
-          transactionId: event.transactionId,
-          receiptId: event.receiptId,
-          amount: event.currentBill!.billAmount,
-          reason: 'Payment update failed',
-        ));
-        return;
-      }
-
-      // Step 2: Process final bill payment
-      final paymentResult = await _processBillPayment(event);
+      // Process final bill payment & verify
+      final paymentResult = await _verifyRazorpayPayment(event);
 
       if (paymentResult['success']) {
-        emit(ConfirmBillState.paymentSuccess(
-          'Payment completed successfully!',
-          paymentResult['receiptId'] ?? event.receiptId,
-        ));
+        emit(ConfirmBillState.billPaymentResponse(paymentResult['data'] ?? {}));
       } else {
-        // If final payment fails, initiate refund
-        log("Bill payment failed, initiating refund: ${paymentResult['message']}");
-        add(InitiateRefund(
-          transactionId: event.transactionId,
-          receiptId: event.receiptId,
-          amount: event.currentBill!.billAmount,
-          reason: paymentResult['message'] ?? 'Bill payment failed',
-        ));
+        log("Bill payment failed: ${paymentResult['message']}");
+        emit(
+          ConfirmBillState.billPaymentError(
+            paymentResult['message'] ?? 'Bill payment failed',
+          ),
+        );
       }
-
     } catch (e) {
       log("Payment processing error: $e");
-      // If any error occurs, initiate refund
-      add(InitiateRefund(
-        transactionId: event.transactionId,
-        receiptId: event.receiptId,
-        amount: event.currentBill!.billAmount,
-        reason: 'Payment processing error: $e',
-      ));
+      emit(ConfirmBillState.paymentError('Payment processing error: $e'));
     }
   }
 
@@ -135,14 +95,6 @@ class ConfirmBillBloc extends Bloc<ConfirmBillEvent, ConfirmBillState> {
     ProcessPaymentFailure event,
     Emitter<ConfirmBillState> emit,
   ) async {
-    // Update payment details as failure
-    await _savePaymentDetails(
-      receiptId: event.receiptId,
-      orderId: event.orderId,
-      transactionId: event.transactionId,
-      status: '2', // Failure
-    );
-
     emit(ConfirmBillState.paymentError(event.errorMessage));
   }
 
@@ -150,125 +102,67 @@ class ConfirmBillBloc extends Bloc<ConfirmBillEvent, ConfirmBillState> {
     InitiateRefund event,
     Emitter<ConfirmBillState> emit,
   ) async {
-    log("Initiating refund for transaction: ${event.transactionId}");
-    emit(const ConfirmBillState.refundProcessing());
-
-    try {
-      final refundResult = await _processRefund(
-        transactionId: event.transactionId,
-        receiptId: event.receiptId,
-        amount: event.amount,
-      );
-
-      if (refundResult['success']) {
-        // Update payment status to refunded
-        await _savePaymentDetails(
-          receiptId: event.receiptId,
-          orderId: '',
-          transactionId: event.transactionId,
-          status: '3', // Refunded
-        );
-        
-        emit(ConfirmBillState.refundSuccess(
-          'Refund initiated successfully. Amount will be credited to your account within 5-7 business days.',
-          event.receiptId,
-        ));
-      } else {
-        emit(ConfirmBillState.refundFailed(
-          'Refund failed: ${refundResult['message']}. Please contact customer support.',
-          event.receiptId,
-        ));
-      }
-    } catch (e) {
-      log("Refund processing error: $e");
-      emit(ConfirmBillState.refundFailed(
-        'Refund processing failed: $e. Please contact customer support.',
-        event.receiptId,
-      ));
-    }
+    log("Refund obsolete in this flow. Not executing");
   }
 
   // API Helper Methods
 
+  Future<Map<String, dynamic>> _checkWalletBalance(String billAmount) async {
+    log("_checkWalletBalance ---");
 
-  Future<Map<String, dynamic>> _createRazorpayOrder(String amount) async {
-    log("_createRazorpayOrder---");
-    final amountInPaise = (double.tryParse(amount) ?? 0 * 100).toInt();
-    final url = Uri.parse('${baseUrl}createOrder');
-
-    try {
-      final response = await http.post(
-        url,
-        body: {'amount': amountInPaise.toString()},
-      );
-      log(response.body);
-      final responseData = json.decode(response.body);
-      
-      if (responseData['statusCode'] == 200) {
-        return {
-          'success': true,
-          'orderId': responseData['message']['order_id'],
-        };
-      } else {
-        return {
-          'success': false,
-          'message': responseData['message'] ?? 'Failed to create order',
-        };
-      }
-    } catch (e) {
-      log(e.toString());
-      return {
-        'success': false,
-        'message': 'Order creation failed: $e',
-      };
-    }
-  }
-
-  Future<Map<String, dynamic>> _savePaymentDetails({
-    required String receiptId,
-    required String orderId,
-    required String transactionId,
-    required String status,
-  }) async {
-    final url = Uri.parse('${baseUrl}paysave');
-
-    try {
-      log("_savePaymentDetails ---- ");
-      final response = await http.post(
-        url,
-        body: {
-          'id': receiptId,
-          'order_id': orderId,
-          'transaction_id': transactionId,
-          'status': status,
-          'table': 'mm_bbpspayment',
-        },
-      );
-      log(response.body);
-      final responseData = json.decode(response.body);
-      
-      if (responseData['statusCode'] == 200) {
-        return {'success': true};
-      } else {
-        return {
-          'success': false,
-          'message': responseData['message'] ?? 'Failed to save payment details',
-        };
-      }
-    } catch (e) {
-      log(e.toString());
-      return {
-        'success': false,
-        'message': 'Payment save failed: $e',
-      };
-    }
-  }
-
-  Future<Map<String, dynamic>> _processBillPayment(ProcessPaymentSuccess event) async {
     final SharedPreferences preferences = await SharedPreferences.getInstance();
     final userId = preferences.getString('userId') ?? '';
 
-    final url = Uri.parse('${baseUrl}kseb-bill-payment');
+    final url = Uri.parse('${baseUrl}wallet-balance');
+
+    try {
+      final response = await http.post(url);
+
+      log("Wallet balance response: ${response.body}");
+      final responseData = json.decode(response.body);
+
+      if (responseData['status'] == 'SUCCESS') {
+        final walletBalanceStr = responseData['data']['walletBalance']
+            .toString();
+        final walletBalance = double.tryParse(walletBalanceStr) ?? 0.0;
+        final amountRequired = double.tryParse(billAmount) ?? 0.0;
+
+        if (walletBalance >= amountRequired) {
+          return {'success': true};
+        } else {
+          return {
+            'success': false,
+            'message':
+                'Insufficient wallet balance. Available: ₹$walletBalanceStr, Required: ₹$billAmount',
+          };
+        }
+      } else {
+        return {
+          'success': false,
+          'message':
+              responseData['statusDesc'] ?? 'Failed to fetch wallet balance',
+        };
+      }
+    } catch (e) {
+      log(e.toString());
+      return {
+        'success': false,
+        'message': 'Network error while checking wallet balance: $e',
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> _createRazorpayOrder(
+    InitiatePayment event,
+  ) async {
+    log("_createRazorpayOrder---");
+
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
+    final userId = preferences.getString('userId') ?? '';
+
+    final url = Uri.parse(
+      'https://mttrip.in/bill-payment-create-razorpay-order-api',
+    );
 
     try {
       final response = await http.post(
@@ -277,86 +171,77 @@ class ConfirmBillBloc extends Bloc<ConfirmBillEvent, ConfirmBillState> {
           'userId': userId,
           'txtMobile': event.phoneNo,
           'txtConsumer': event.consumerId,
-          'txtAmount': event.currentBill!.billAmount,
-          'txtBillerName': event.providerID,
-          'txtBillPeriod': event.currentBill!.billPeriod,
-          'txtBillNumber': event.currentBill!.billNumber,
-          'txtCustomerName': event.currentBill!.customerName,
-          'txtBillDueDate': event.currentBill!.dueDate,
-          'txtBillDate': event.currentBill!.billDate,
-          'txtreqId': event.currentBill!.reqId,
+          'txtAmount': event.bill.billAmount,
+          'txtBillerName': event.providerName,
+          'txtBillPeriod': event.bill.billPeriod,
+          'txtBillNumber': event.bill.billNumber,
+          'txtCustomerName': event.bill.customerName,
+          'txtBillDueDate': event.bill.dueDate,
+          'txtBillDate': event.bill.billDate,
+          'txtreqId': event.bill.reqId,
           'billerId': event.providerID,
-          'receiptId': event.receiptId,
-          'orderId': event.orderId,
-          'paymentStatus': '1',
-          'transactionId': event.transactionId,
         },
       );
-      
-      log('_processBillPayment response: ${response.body}');
-
+      log(response.body);
       final responseData = json.decode(response.body);
-      
-      if (responseData['status'] == 'SUCCESS') {
+      log(responseData.toString());
+      if (responseData['status'] == "SUCCESS") {
         return {
           'success': true,
+          'orderId': responseData['data']['order_id'],
           'receiptId': responseData['data']['receiptId'].toString(),
-                    // 'receiptId':  event.receiptId,
-
         };
       } else {
         return {
           'success': false,
-          'message': responseData['statusDesc'] ?? 'Bill payment failed',
+          'message': responseData['statusDesc'] ?? 'Failed to create order',
         };
       }
     } catch (e) {
-      log("_processBillPayment error: $e");
-      return {
-        'success': false,
-        'message': 'Bill payment processing failed: $e',
-      };
+      log(e.toString());
+      return {'success': false, 'message': 'Order creation failed: $e'};
     }
   }
 
-  Future<Map<String, dynamic>> _processRefund({
-    required String transactionId,
-    required String receiptId,
-    required String amount,
-  }) async {
-    final url = Uri.parse('${baseUrl}payrefund');
-    
+  Future<Map<String, dynamic>> _verifyRazorpayPayment(
+    ProcessPaymentSuccess event,
+  ) async {
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
+    final userId = preferences.getString('userId') ?? '';
+
+    final url = Uri.parse('https://mttrip.in/bill-payment-verify-razorpay-api');
+
     try {
-      log("Processing refund for transaction: $transactionId, amount: $amount");
       final response = await http.post(
         url,
         body: {
-          'id': receiptId,
-          'transaction_id': transactionId,
-          'amount': amount,
-          'table': 'mm_bbpspayment',
+          'razorpay_payment_id': event.transactionId,
+          'razorpay_order_id': event.orderId,
+          'razorpay_signature': event.signature,
+          'userId': userId,
+          'billerId': event.providerID,
+          'receiptId': event.receiptId,
         },
       );
 
-      log("Refund response: ${response.body}");
+      log('_verifyRazorpayPayment response: ${response.body}');
+
       final responseData = json.decode(response.body);
-      
-      if (responseData['statusCode'] == 200) {
-        return {
-          'success': true,
-          'message': responseData['message'] ?? 'Refund initiated successfully',
-        };
+
+      if (responseData['status'] == 'SUCCESS') {
+        return {'success': true, 'data': responseData};
       } else {
         return {
           'success': false,
-          'message': responseData['message'] ?? 'Refund initiation failed',
+          'message':
+              responseData['statusDesc'] ?? 'Bill payment verification failed',
         };
       }
     } catch (e) {
-      log('Refund processing failed: $e');
+      log("_verifyRazorpayPayment error: $e");
       return {
         'success': false,
-        'message': 'Refund processing failed',
+        'message': 'Bill payment processing failed: $e',
       };
     }
   }

@@ -19,7 +19,7 @@ class FetchBillBloc extends Bloc<FetchBillEvent, FetchBillState> {
   Future<void> _onFetchWaterBill(
     FetchWaterBill event,
     Emitter<FetchBillState> emit,
-  ) async { 
+  ) async {
     log("_onFetchWaterBill ---");
     emit(const FetchBillState.loading());
 
@@ -29,44 +29,44 @@ class FetchBillBloc extends Bloc<FetchBillEvent, FetchBillState> {
     final url = Uri.parse('${baseUrl}fetch-kseb-bill');
 
     try {
-      // final response = await http.post(
-      //   url,
-      //   body: {
-      //     'userId': userId,
-      //     'txtMobile': event.phoneNo,
-      //     'txtConsumer': event.consumerId,
-      //     'billerId': event.providerID,
-      //   },
-      // );
-      // log(response.body);
-       final testdata = '''
-      {
-        "status": "SUCCESS",
-        "statusCode": 0,
-        "statusDesc": "Bill successfully fetched.",
-        "data": {
-          "data": {
-            "responseCode": "000",
-            "inputParams": {
-              "input": {
-                "paramName": "Consumer Number",
-                "paramValue": "1157443002603"
-              }
-            },
-            "billerResponse": {
-              "billAmount": "170100",
-              "billDate": "2025-07-02",
-              "billNumber": "5744250700277",
-              "billPeriod": "NA",
-              "customerName": "RAKHIYANATH FRAKRUDEEN",
-              "dueDate": "2025-07-12"
-            }
-          },
-          "reqId": "26EXAAZDDGXX3WLAWITCTV609FT9WNPYALE"
-        }
-      }''';
+      final response = await http.post(
+        url,
+        body: {
+          'userId': userId,
+          'txtMobile': event.phoneNo,
+          'txtConsumer': event.consumerId,
+          'billerId': event.providerID,
+        },
+      );
+      log(response.body);
+      // final testdata = '''
+      // {
+      //   "status": "SUCCESS",
+      //   "statusCode": 0,
+      //   "statusDesc": "Bill successfully fetched.",
+      //   "data": {
+      //     "data": {
+      //       "responseCode": "000",
+      //       "inputParams": {
+      //         "input": {
+      //           "paramName": "Consumer Number",
+      //           "paramValue": "1157443002603"
+      //         }
+      //       },
+      //       "billerResponse": {
+      //         "billAmount": "170100",
+      //         "billDate": "2025-07-02",
+      //         "billNumber": "5744250700277",
+      //         "billPeriod": "NA",
+      //         "customerName": "RAKHIYANATH FRAKRUDEEN",
+      //         "dueDate": "2025-07-12"
+      //       }
+      //     },
+      //     "reqId": "26EXAAZDDGXX3WLAWITCTV609FT9WNPYALE"
+      //   }
+      // }''';
 
-      final responseData = json.decode(testdata);
+      final responseData = json.decode(response.body);
 
       if (responseData['status'] == 'SUCCESS') {
         final data = responseData['data']['data'];
@@ -77,27 +77,19 @@ class FetchBillBloc extends Bloc<FetchBillEvent, FetchBillState> {
           final reqId = responseData['data']['reqId'] ?? '';
           final bill = ElectricityBillModel.fromJson(billerJson, reqId);
 
-          // Store bill payment temp
-          final tempStoreResult = await _storeBillPaymentTemp(
-            bill: bill,
-            event: event,
-          );
-      
-          if (!tempStoreResult['success']) {
-            emit(FetchBillState.error(tempStoreResult['message'] ?? 'Failed to store bill details'));
-            return;
-          }
-
-          final receiptId = tempStoreResult['receiptId'];
-          emit(FetchBillState.success(bill: bill, receiptId: receiptId));
+          emit(FetchBillState.success(bill: bill, receiptId: ""));
         } else if (responseCode == '001') {
-          final errorMessage = data['errorInfo']?['error']?['errorMessage'] ?? 'Unable to fetch bill';
+          final errorMessage =
+              data['errorInfo']?['error']?['errorMessage'] ??
+              'Unable to fetch bill';
           emit(FetchBillState.error(errorMessage));
         } else {
           emit(const FetchBillState.error('Unexpected bill fetch response.'));
         }
       } else {
-        emit(FetchBillState.error(responseData['statusDesc'] ?? 'Fetch failed.'));
+        emit(
+          FetchBillState.error(responseData['statusDesc'] ?? 'Fetch failed.'),
+        );
       }
     } catch (e) {
       log(e.toString());
@@ -117,14 +109,8 @@ class FetchBillBloc extends Bloc<FetchBillEvent, FetchBillState> {
 
     final url = Uri.parse('${baseUrl}fetch-kseb-bill');
 
-
-
-
     try {
-
-
-
-        final response = await http.post(
+      final response = await http.post(
         url,
         body: {
           'userId': userId,
@@ -164,7 +150,6 @@ class FetchBillBloc extends Bloc<FetchBillEvent, FetchBillState> {
       //   }
       // }''';
 
-
       if (responseData['status'] == 'SUCCESS') {
         final data = responseData['data']['data'];
         final responseCode = data['responseCode'];
@@ -173,108 +158,24 @@ class FetchBillBloc extends Bloc<FetchBillEvent, FetchBillState> {
           final billerJson = data['billerResponse'];
           final reqId = responseData['data']['reqId'] ?? '';
           final bill = ElectricityBillModel.fromJson(billerJson, reqId);
-          
-          // Store bill payment temp
-          final tempStoreResult = await _storeBillPaymentTemp(
-            bill: bill,
-            event: event,
-          );
-      
-          if (!tempStoreResult['success']) {
-            emit(FetchBillState.error(tempStoreResult['message'] ?? 'Failed to store bill details'));
-            return;
-          }
 
-          final receiptId = tempStoreResult['receiptId'];
-          emit(FetchBillState.success(bill: bill, receiptId: receiptId));
+          emit(FetchBillState.success(bill: bill, receiptId: ""));
         } else if (responseCode == '001') {
-          final errorMessage = data['errorInfo']?['error']?['errorMessage'] ?? 'Unable to fetch bill';
+          final errorMessage =
+              data['errorInfo']?['error']?['errorMessage'] ??
+              'Unable to fetch bill';
           emit(FetchBillState.error(errorMessage));
         } else {
           emit(const FetchBillState.error('Unexpected bill fetch response.'));
         }
       } else {
-        emit(FetchBillState.error(responseData['statusDesc'] ?? 'Fetch failed.'));
+        emit(
+          FetchBillState.error(responseData['statusDesc'] ?? 'Fetch failed.'),
+        );
       }
     } catch (e) {
       log(e.toString());
       emit(FetchBillState.error('Something went wrong. Please try again.'));
-    }
-  }
-
-  Future<Map<String, dynamic>> _storeBillPaymentTemp({
-    required ElectricityBillModel bill,
-    required FetchBillEvent event,
-  }) async {
-    log("_storeBillPaymentTemp ---");
-    
-    final SharedPreferences preferences = await SharedPreferences.getInstance();
-    final userId = preferences.getString('userId') ?? '';
-
-    // Extract common parameters based on event type
-    String phoneNo;
-    String consumerId;
-    String providerID;
-    String providerName;
-
-    if (event is FetchElectricityBill) {
-      phoneNo = event.phoneNo;
-      consumerId = event.consumerId;
-      providerID = event.providerID;
-      providerName = event.providerName;
-    } else if (event is FetchWaterBill) {
-      phoneNo = event.phoneNo;
-      consumerId = event.consumerId;
-      providerID = event.providerID;
-      providerName = event.providerName;
-    } else {
-      return {
-        'success': false,
-        'message': 'Invalid event type',
-      };
-    }
-
-    final url = Uri.parse('${baseUrl}kseb-bill-payment-temp-store');
-    
-    try {
-      final response = await http.post(
-        url,
-        body: {
-          'userId': userId,
-          'txtMobile': phoneNo,
-          'txtConsumer': consumerId,
-          'txtAmount': bill.billAmount,
-          'txtBillerName': providerName,
-          'txtBillPeriod': bill.billPeriod,
-          'txtBillNumber': bill.billNumber,
-          'txtCustomerName': bill.customerName,
-          'txtBillDueDate': bill.dueDate,
-          'txtBillDate': bill.billDate,
-          'txtreqId': bill.reqId,
-          'billerId': providerID,
-        }
-      );
-
-      log("Store bill temp response: ${response.body}");
-      final responseData = json.decode(response.body);
-      
-      if (responseData['status'] == 'SUCCESS') {
-        return {
-          'success': true,
-          'receiptId': responseData['data']['receiptId'].toString(),
-        };
-      } else {
-        return {
-          'success': false,
-          'message': responseData['statusDesc'] ?? 'Failed to store bill details',
-        };
-      }
-    } catch (e) {
-      log(e.toString());
-      return {
-        'success': false,
-        'message': 'Network error: $e',
-      };
     }
   }
 }

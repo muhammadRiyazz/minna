@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:minna/comman/application/home_data/home_data_bloc.dart';
+import 'package:minna/comman/application/home_data/home_data_event.dart';
+import 'package:minna/comman/application/home_data/home_data_state.dart';
+import 'package:minna/comman/application/home_data/visa_model.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class VisaPage extends StatefulWidget {
@@ -17,76 +23,20 @@ class _VisaPageState extends State<VisaPage> {
   final Color _cardColor = Colors.white;
   final Color _textPrimary = Colors.black;
   final Color _textSecondary = Color(0xFF666666);
-  
+
   final TextEditingController _searchController = TextEditingController();
-  final String _supportPhoneNumber = '+919876543210'; // Replace with actual support number
+  final String _supportPhoneNumber =
+      '+919876543210'; // Replace with actual support number
 
-  // Sample visa data - replace with actual API data
-  final List<Map<String, dynamic>> _countries = [
-    {
-      'name': 'United Arab Emirates',
-      'flag': '🇦🇪',
-      'visaType': 'E-VISA',
-      'deliveryDate': '05 Nov',
-      'highlight': '100% Visa Fee Refund on Rejection',
-      'stats': '100k+ Visas Processed',
-      'price': 6800,
-      'serviceFee': 649,
-      'hasVoucher': true,
-    },
-    {
-      'name': 'Thailand',
-      'flag': '🇹🇭',
-      'visaType': 'DAC',
-      'deliveryDate': '02 Nov',
-      'highlight': 'Guaranteed Approval',
-      'stats': '20k+ DACs Processed',
-      'price': 0,
-      'serviceFee': 118,
-      'hasVoucher': true,
-    },
-    {
-      'name': 'Vietnam',
-      'flag': '🇻🇳',
-      'visaType': 'E-VISA',
-      'deliveryDate': '07 Nov',
-      'highlight': '100% Visa Fee Refund on Rejection',
-      'stats': '20k+ Visas Processed',
-      'price': 2500,
-      'serviceFee': 350,
-      'hasVoucher': true,
-    },
-    {
-      'name': 'Singapore',
-      'flag': '🇸🇬',
-      'visaType': 'E-VISA',
-      'deliveryDate': '03 Nov',
-      'highlight': 'Fast Processing',
-      'stats': '50k+ Visas Processed',
-      'price': 3000,
-      'serviceFee': 450,
-      'hasVoucher': true,
-    },
-    {
-      'name': 'Malaysia',
-      'flag': '🇲🇾',
-      'visaType': 'E-VISA',
-      'deliveryDate': '04 Nov',
-      'highlight': 'Easy Application',
-      'stats': '30k+ Visas Processed',
-      'price': 2200,
-      'serviceFee': 400,
-      'hasVoucher': true,
-    },
-  ];
-
-  List<Map<String, dynamic>> _filteredCountries = [];
+  List<VisaModel> _allVisas = [];
+  List<VisaModel> _filteredVisas = [];
 
   @override
   void initState() {
     super.initState();
-    _filteredCountries = _countries;
     _searchController.addListener(_onSearchChanged);
+    // Explicitly fetch if not already loaded, though it's likely loaded by main home
+    context.read<HomeDataBloc>().add(const FetchVisaCountries());
   }
 
   @override
@@ -99,10 +49,10 @@ class _VisaPageState extends State<VisaPage> {
     setState(() {
       final query = _searchController.text.toLowerCase();
       if (query.isEmpty) {
-        _filteredCountries = _countries;
+        _filteredVisas = List.from(_allVisas);
       } else {
-        _filteredCountries = _countries.where((country) {
-          return country['name'].toString().toLowerCase().contains(query);
+        _filteredVisas = _allVisas.where((visa) {
+          return visa.name.toLowerCase().contains(query);
         }).toList();
       }
     });
@@ -126,10 +76,7 @@ class _VisaPageState extends State<VisaPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
         );
       }
     }
@@ -177,7 +124,10 @@ class _VisaPageState extends State<VisaPage> {
                   hintStyle: TextStyle(color: _textSecondary),
                   prefixIcon: Icon(Icons.search, color: _textSecondary),
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
                 ),
               ),
             ),
@@ -198,7 +148,11 @@ class _VisaPageState extends State<VisaPage> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.check_circle, color: _secondaryColor, size: 18),
+                        Icon(
+                          Icons.check_circle,
+                          color: _secondaryColor,
+                          size: 18,
+                        ),
                         SizedBox(width: 8),
                         Flexible(
                           child: Text(
@@ -226,7 +180,11 @@ class _VisaPageState extends State<VisaPage> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.check_circle, color: _secondaryColor, size: 18),
+                        Icon(
+                          Icons.check_circle,
+                          color: _secondaryColor,
+                          size: 18,
+                        ),
                         SizedBox(width: 8),
                         Flexible(
                           child: Text(
@@ -250,65 +208,132 @@ class _VisaPageState extends State<VisaPage> {
           SizedBox(height: 10),
 
           // Most-visited Countries Title
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Most-visited Countries',
-                  style: TextStyle(
-                    color: _textPrimary,
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                  ),
+          BlocBuilder<HomeDataBloc, HomeDataState>(
+            builder: (context, state) {
+              if (state.isVisaLoading) {
+                return _buildShimmerTitle();
+              }
+
+              // Only update source if we have new data and aren't searching
+              if (state.visaCountries != null &&
+                  _searchController.text.isEmpty) {
+                _allVisas = state.visaCountries!;
+                _filteredVisas = List.from(_allVisas);
+              }
+
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Visas Available',
+                      style: TextStyle(
+                        color: _textPrimary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      '${_filteredVisas.length} countries',
+                      style: TextStyle(color: _textSecondary, fontSize: 14),
+                    ),
+                  ],
                 ),
-                Text(
-                  '${_filteredCountries.length} countries',
-                  style: TextStyle(
-                    color: _textSecondary,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
+              );
+            },
           ),
 
           SizedBox(height: 10),
 
           // Countries List
           Expanded(
-            child: _filteredCountries.isEmpty
-                ? Center(
+            child: BlocBuilder<HomeDataBloc, HomeDataState>(
+              builder: (context, state) {
+                if (state.isVisaLoading) {
+                  return ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: 5,
+                    itemBuilder: (context, index) {
+                      return _buildShimmerCard();
+                    },
+                  );
+                }
+
+                if (_filteredVisas.isEmpty) {
+                  return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.search_off, size: 60, color: _textSecondary),
                         SizedBox(height: 16),
                         Text(
-                          'No countries found',
-                          style: TextStyle(
-                            color: _textSecondary,
-                            fontSize: 16,
-                          ),
+                          'No visas found',
+                          style: TextStyle(color: _textSecondary, fontSize: 16),
                         ),
                       ],
                     ),
-                  )
-                : ListView.builder(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: _filteredCountries.length,
-                    itemBuilder: (context, index) {
-                      return _buildCountryCard(_filteredCountries[index]);
-                    },
-                  ),
+                  );
+                }
+
+                return ListView.builder(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: _filteredVisas.length,
+                  itemBuilder: (context, index) {
+                    return _buildCountryCard(_filteredVisas[index]);
+                  },
+                );
+              },
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildCountryCard(Map<String, dynamic> country) {
+  Widget _buildShimmerTitle() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Shimmer.fromColors(
+            baseColor: Colors.grey.shade300,
+            highlightColor: Colors.grey.shade100,
+            child: Container(height: 16, width: 120, color: Colors.white),
+          ),
+          Shimmer.fromColors(
+            baseColor: Colors.grey.shade300,
+            highlightColor: Colors.grey.shade100,
+            child: Container(height: 16, width: 80, color: Colors.white),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShimmerCard() {
+    return Container(
+      margin: EdgeInsets.only(bottom: 16),
+      height: 150,
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.04), // subtle gray
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Shimmer.fromColors(
+        baseColor: Colors.grey.shade300,
+        highlightColor: Colors.grey.shade100,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCountryCard(VisaModel visa) {
     return Container(
       margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -331,25 +356,23 @@ class _VisaPageState extends State<VisaPage> {
             Row(
               children: [
                 // Flag
-                Container(
-                  padding: EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: _backgroundColor,
-                    borderRadius: BorderRadius.circular(8),
+                if (visa.flag.isNotEmpty)
+                  Container(
+                    padding: EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: _backgroundColor,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(visa.flag, style: TextStyle(fontSize: 24)),
                   ),
-                  child: Text(
-                    country['flag'],
-                    style: TextStyle(fontSize: 24),
-                  ),
-                ),
-                SizedBox(width: 10),
+                if (visa.flag.isNotEmpty) SizedBox(width: 10),
                 // Country Name
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        country['name'],
+                        visa.name,
                         style: TextStyle(
                           color: _textPrimary,
                           fontSize: 14,
@@ -359,7 +382,7 @@ class _VisaPageState extends State<VisaPage> {
                       ),
                       SizedBox(height: 4),
                       Text(
-                        'Get your visa by ${country['deliveryDate']}',
+                        'Get your visa by ${visa.deliveryDate}',
                         style: TextStyle(
                           color: _secondaryColor,
                           fontSize: 10,
@@ -370,25 +393,26 @@ class _VisaPageState extends State<VisaPage> {
                   ),
                 ),
                 // Visa Type Badge
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: _secondaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: _secondaryColor.withOpacity(0.3),
-                      width: 1,
+                if (visa.visaType.isNotEmpty)
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: _secondaryColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: _secondaryColor.withOpacity(0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Text(
+                      visa.visaType,
+                      style: TextStyle(
+                        color: _secondaryColor,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                  child: Text(
-                    country['visaType'],
-                    style: TextStyle(
-                      color: _secondaryColor,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
               ],
             ),
 
@@ -399,58 +423,52 @@ class _VisaPageState extends State<VisaPage> {
               spacing: 8,
               runSpacing: 6,
               children: [
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: _backgroundColor,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.shield,
-                        size: 12,
-                        color: _secondaryColor,
-                      ),
-                      SizedBox(width: 4),
-                      Text(
-                        country['highlight'],
-                        style: TextStyle(
-                          color: _textPrimary,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
+                if (visa.highlight.isNotEmpty)
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: _backgroundColor,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.shield, size: 12, color: _secondaryColor),
+                        SizedBox(width: 4),
+                        Text(
+                          visa.highlight,
+                          style: TextStyle(
+                            color: _textPrimary,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: _backgroundColor,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.people,
-                        size: 12,
-                        color: _secondaryColor,
-                      ),
-                      SizedBox(width: 4),
-                      Text(
-                        country['stats'],
-                        style: TextStyle(
-                          color: _textPrimary,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
+                if (visa.stats.isNotEmpty)
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: _backgroundColor,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.people, size: 12, color: _secondaryColor),
+                        SizedBox(width: 4),
+                        Text(
+                          visa.stats,
+                          style: TextStyle(
+                            color: _textPrimary,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
               ],
             ),
 
@@ -466,41 +484,46 @@ class _VisaPageState extends State<VisaPage> {
                     children: [
                       Text(
                         'Total Price',
-                        style: TextStyle(
-                          color: _textSecondary,
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: _textSecondary, fontSize: 12),
+                      ),
+                      SizedBox(height: 2),
+                      Builder(
+                        builder: (context) {
+                          double basePrice = double.tryParse(visa.price) ?? 0;
+                          double serviceFee =
+                              double.tryParse(visa.serviceFee) ?? 0;
+                          double total = basePrice + serviceFee;
+                          return Text(
+                            '₹ $total',
+                            style: TextStyle(
+                              color: _textPrimary,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          );
+                        },
                       ),
                       SizedBox(height: 2),
                       Text(
-                        '₹ ${country['price'] + country['serviceFee']}',
-                        style: TextStyle(
-                          color: _textPrimary,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 2),
-                      Text(
-                        'Visa: ₹${country['price']} + Fees: ₹${country['serviceFee']}',
-                        style: TextStyle(
-                          color: _textSecondary,
-                          fontSize: 10,
-                        ),
+                        'Visa: ₹${visa.price} + Fees: ₹${visa.serviceFee}',
+                        style: TextStyle(color: _textSecondary, fontSize: 10),
                       ),
                     ],
                   ),
                 ),
-                
+
                 // Connect Button - Smaller size
-                Container(
+                SizedBox(
                   width: 140,
                   child: ElevatedButton.icon(
                     onPressed: _makePhoneCall,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _primaryColor,
                       foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                      padding: EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 12,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
