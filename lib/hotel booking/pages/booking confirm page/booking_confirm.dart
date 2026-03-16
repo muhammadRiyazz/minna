@@ -11,6 +11,8 @@ import 'package:minna/hotel%20booking/application/hotel/hotel_booking_confirm_bl
 import 'package:minna/hotel%20booking/domain/authentication/authendication.dart';
 import 'package:minna/hotel%20booking/domain/hotel%20list/hotel_list.dart' hide CancelPolicy;
 import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:minna/comman/application/login/login_bloc.dart';
+import 'package:minna/comman/pages/log%20in/login_page.dart';
 
 class HotelBookingConfirmationPage extends StatefulWidget {
   final String prebookId;
@@ -61,6 +63,7 @@ class _HotelBookingConfirmationPageState extends State<HotelBookingConfirmationP
   @override
   void initState() {
     super.initState();
+    context.read<LoginBloc>().add(const LoginEvent.loginInfo());
     _startOptimizedTimer();
     _initRazorpay();
   }
@@ -494,6 +497,23 @@ Future<Map<String, dynamic>> _generateBookingRequest() async {
   }
 
 void _onProceedToPayment() async {
+  final isLoggedIn = context.read<LoginBloc>().state.isLoggedIn ?? false;
+
+  if (!isLoggedIn) {
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const LoginBottomSheet(login: 1),
+    );
+
+    // Re-check login status after bottom sheet is closed
+    final newLoginState = context.read<LoginBloc>().state;
+    if (newLoginState.isLoggedIn != true) {
+      return;
+    }
+  }
+
   if (_isTimerExpired) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

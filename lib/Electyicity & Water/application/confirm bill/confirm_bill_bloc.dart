@@ -223,7 +223,16 @@ class ConfirmBillBloc extends Bloc<ConfirmBillEvent, ConfirmBillState> {
           'receiptId': event.receiptId,
         },
       );
-
+      log(
+        {
+          'razorpay_payment_id': event.transactionId,
+          'razorpay_order_id': event.orderId,
+          'razorpay_signature': event.signature,
+          'userId': userId,
+          'billerId': event.providerID,
+          'receiptId': event.receiptId,
+        }.toString(),
+      );
       log('_verifyRazorpayPayment response: ${response.body}');
 
       final responseData = json.decode(response.body);

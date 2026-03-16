@@ -15,6 +15,8 @@ import 'package:minna/flight/presendation/booking%20page/widget.dart/booking_car
 import 'package:minna/flight/presendation/widgets.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:minna/flight/infrastracture/commission/commission_service.dart';
+import 'package:minna/comman/application/login/login_bloc.dart';
+import 'package:minna/comman/pages/log%20in/login_page.dart';
 
 class BookingConfirmationScreen extends StatefulWidget {
   const BookingConfirmationScreen({
@@ -61,6 +63,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
   @override
   void initState() {
     super.initState();
+    context.read<LoginBloc>().add(const LoginEvent.loginInfo());
     _startTimer();
     _initializeRazorpay();
   }
@@ -152,6 +155,23 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
   }
 
   void _openRazorpayPayment(BookingState state) async {
+    final isLoggedIn = context.read<LoginBloc>().state.isLoggedIn ?? false;
+
+    if (!isLoggedIn) {
+      await showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => const LoginBottomSheet(login: 1),
+      );
+
+      // Re-check login status after bottom sheet is closed
+      final newLoginState = context.read<LoginBloc>().state;
+      if (newLoginState.isLoggedIn != true) {
+        return;
+      }
+    }
+
     if (_isPaymentButtonLoading) {
       return; // Prevent multiple clicks
     }

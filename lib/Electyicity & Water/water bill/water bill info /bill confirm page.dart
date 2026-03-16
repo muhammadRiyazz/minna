@@ -7,6 +7,8 @@ import 'package:minna/Electyicity%20&%20Water/application/fetch%20bill/fetch_bil
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/core/api.dart';
 import 'package:minna/comman/pages/main%20home/home.dart';
+import 'package:minna/comman/application/login/login_bloc.dart';
+import 'package:minna/comman/pages/log%20in/login_page.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/pages/add%20amount/add_amount.dart';
@@ -38,6 +40,7 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
   @override
   void initState() {
     super.initState();
+    context.read<LoginBloc>().add(const LoginEvent.loginInfo());
     _initializeRazorpay();
   }
 
@@ -395,7 +398,24 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
           "Pay Now",
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
-        onPressed: () {
+        onPressed: () async {
+          final isLoggedIn = context.read<LoginBloc>().state.isLoggedIn ?? false;
+
+          if (!isLoggedIn) {
+            await showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (context) => const LoginBottomSheet(login: 1),
+            );
+
+            // Re-check login status after bottom sheet is closed
+            final newLoginState = context.read<LoginBloc>().state;
+            if (newLoginState.isLoggedIn != true) {
+              return;
+            }
+          }
+
           context.read<ConfirmBillBloc>().add(
             InitiatePayment(
               bill: bill,
