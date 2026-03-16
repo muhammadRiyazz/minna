@@ -243,7 +243,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
       'icon': Iconsax.mobile,
       'label': 'Mobile',
       'color': Color(0xFFD4AF37), // Gold
-      'onTap': () {
+      'onTap': (BuildContext context) {
         context.read<OperatorsBloc>().add(const OperatorsEvent.getop());
         Navigator.push(
           context,
@@ -255,7 +255,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
       'icon': Iconsax.monitor,
       'label': 'DTH',
       'color': Color(0xFFD4AF37), // Gold
-      'onTap': () {
+      'onTap': (BuildContext context) {
         context.read<OperatorsBloc>().add(const OperatorsEvent.getDTHop());
         Navigator.push(
           context,
@@ -267,7 +267,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
       'icon': Iconsax.flash,
       'label': 'Electricity',
       'color': Color(0xFFD4AF37), // Gold
-      'onTap': () {
+      'onTap': (BuildContext context) {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => ElectricityBillInputPage()),
@@ -278,7 +278,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
       'icon': Iconsax.drop,
       'label': 'Water',
       'color': Color(0xFFD4AF37), // Gold
-      'onTap': () {
+      'onTap': (BuildContext context) {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => WaterBillInputPage()),
