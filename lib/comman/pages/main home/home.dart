@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:minna/DTH%20&%20Mobile/DTH/pages/dth%20home%20inputs/dht_input_page.dart';
 import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/application/oparator/operators_bloc.dart';
 import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/pages/home%20page/recharge_home.dart';
@@ -72,23 +73,23 @@ class _HomePageState extends State<HomePage> {
       },
       items: [
         BottomNavigationBarItem(
-          icon: Icon(Icons.home_outlined),
-          activeIcon: Icon(Icons.home),
+          icon: Icon(Iconsax.home),
+          activeIcon: Icon(Iconsax.home),
           label: 'Home',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.bookmarks_outlined),
-          activeIcon: Icon(Icons.bookmarks),
+          icon: Icon(Iconsax.book),
+          activeIcon: Icon(Iconsax.book),
           label: 'Bookings',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.history_outlined),
-          activeIcon: Icon(Icons.history),
+          icon: Icon(Iconsax.timer_1),
+          activeIcon: Icon(Iconsax.timer),
           label: 'History',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.person_outline),
-          activeIcon: Icon(Icons.person),
+          icon: Icon(Iconsax.user),
+          activeIcon: Icon(Iconsax.user),
           label: 'Account',
         ),
       ],
@@ -108,14 +109,16 @@ class _HomeContentPageState extends State<HomeContentPage> {
   String _searchText = '';
 
   // Color Theme - Consistent throughout
-  final Color _primaryColor = Colors.black;
-  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
-  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
-  final Color _backgroundColor = Color(0xFFF8F9FA);
+  // Color Theme - Refined for Premium Experience
+  final Color _primaryColor = const Color(0xFF0F172A); // Dark Indigo/Slate
+  final Color _secondaryColor = const Color(0xFFE2B059); // Sophisticated Gold
+  final Color _accentColor = const Color(0xFF3B82F6); // Vibrant Blue
+  final Color _backgroundColor = const Color(0xFFFBFBFE);
   final Color _cardColor = Colors.white;
-  final Color _textPrimary = Colors.black;
-  final Color _textSecondary = Color(0xFF666666);
-  final Color _textLight = Color(0xFF999999);
+  final Color _textPrimary = const Color(0xFF0F172A);
+  final Color _textSecondary = const Color(0xFF64748B);
+  final Color _textLight = const Color(0xFF94A3B8);
+  final Color _successColor = const Color(0xFF10B981);
 
   // Travel Offers Data with working image URLs
   final List<Map<String, dynamic>> _travelOffers = [
@@ -146,12 +149,11 @@ class _HomeContentPageState extends State<HomeContentPage> {
     context.read<HomeDataBloc>().add(const FetchVisaCountries());
   }
 
-
   // Travel Services Data with theme colors
   List<Map<String, dynamic>> get _travelServices => [
     {
       'label': 'Flights',
-      'icon': FontAwesomeIcons.plane,
+      'icon': Iconsax.airplane,
       'color': Color(0xFFD4AF37), // Gold
       'onTap': (BuildContext context) {
         Navigator.push(
@@ -162,7 +164,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     },
     {
       'label': 'Hotels',
-      'icon': FontAwesomeIcons.hotel,
+      'icon': Iconsax.building,
       'color': Color(0xFFD4AF37), // Gold
       'onTap': (BuildContext context) {
         Navigator.push(
@@ -173,7 +175,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     },
     {
       'label': 'Bus',
-      'icon': FontAwesomeIcons.bus,
+      'icon': Iconsax.bus,
       'color': Color(0xFFD4AF37), // Gold
       'onTap': (BuildContext context) {
         context.read<BusLocationFetchBloc>().add(const GetData());
@@ -186,7 +188,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     },
     {
       'label': 'Cabs',
-      'icon': FontAwesomeIcons.carSide,
+      'icon': Iconsax.car,
       'color': Color(0xFFD4AF37), // Gold
       'onTap': (BuildContext context) {
         Navigator.push(
@@ -197,7 +199,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     },
     {
       'label': 'Visa',
-      'icon': FontAwesomeIcons.passport,
+      'icon': Iconsax.global,
       'color': Color(0xFFD4AF37), // Gold
       'onTap': (BuildContext context) {
         Navigator.push(
@@ -208,7 +210,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     },
     {
       'label': 'Airport Cabs',
-      'icon': FontAwesomeIcons.taxi,
+      'icon': Iconsax.car,
       'color': Color(0xFFD4AF37), // Gold
       'onTap': (BuildContext context) {
         Navigator.push(
@@ -219,23 +221,15 @@ class _HomeContentPageState extends State<HomeContentPage> {
     },
     {
       'label': 'Train',
-      'icon': FontAwesomeIcons.train,
+      'icon': Iconsax.bus,
       'color': Color(0xFFD4AF37), // Gold
       'onTap': (BuildContext context) {
         _showComingSoonBottomSheet(context, "Train");
-
-        //      Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (_) => IrctcInAppWebView(
-        //     ),
-        //   ),
-        // );
       },
     },
     {
       'label': 'Cruise',
-      'icon': FontAwesomeIcons.ship,
+      'icon': Iconsax.ship,
       'color': Color(0xFFD4AF37), // Gold
       'onTap': (BuildContext context) {
         _showComingSoonBottomSheet(context, "Cruise");
@@ -246,7 +240,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
   // Quick Services Data with theme colors
   List<Map<String, dynamic>> get _quickServices => [
     {
-      'icon': Icons.phone_android,
+      'icon': Iconsax.mobile,
       'label': 'Mobile',
       'color': Color(0xFFD4AF37), // Gold
       'onTap': () {
@@ -258,7 +252,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
       },
     },
     {
-      'icon': Icons.tv,
+      'icon': Iconsax.monitor,
       'label': 'DTH',
       'color': Color(0xFFD4AF37), // Gold
       'onTap': () {
@@ -270,7 +264,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
       },
     },
     {
-      'icon': Icons.lightbulb_outline,
+      'icon': Iconsax.flash,
       'label': 'Electricity',
       'color': Color(0xFFD4AF37), // Gold
       'onTap': () {
@@ -281,7 +275,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
       },
     },
     {
-      'icon': Icons.water_drop,
+      'icon': Iconsax.drop,
       'label': 'Water',
       'color': Color(0xFFD4AF37), // Gold
       'onTap': () {
@@ -313,8 +307,8 @@ class _HomeContentPageState extends State<HomeContentPage> {
     final double headingFontSize = isSmallScreen
         ? 14
         : isTablet
-        ? 20
-        : 18;
+        ? 16
+        : 15;
     final double bodyFontSize = isSmallScreen
         ? 12
         : isTablet
@@ -323,82 +317,154 @@ class _HomeContentPageState extends State<HomeContentPage> {
 
     return Scaffold(
       backgroundColor: _backgroundColor,
-      body: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Fixed Static Main Header
             BlocBuilder<LoginBloc, LoginState>(
               builder: (context, state) {
-                return _buildAppBar(
-                  isSmallScreen,
-                  isTablet,
-                  titleFontSize,
-                  state,
-                );
+                return _buildStaticBrandingHeader(isSmallScreen, state);
               },
             ),
-          ];
-        },
-        body: SingleChildScrollView(
-          physics: ClampingScrollPhysics(),
-          child: Column(
-            children: [
-              // Search Section
-              // _buildSearchSection(isSmallScreen, isTablet, bodyFontSize),
-
-              // Popular Destinations - MOVED TO TOP
-              BlocBuilder<HomeDataBloc, HomeDataState>(
-                builder: (context, state) {
-                  return _buildPopularDestinations(
-                    isSmallScreen,
-                    isTablet,
-                    headingFontSize,
-                    bodyFontSize,
-                    state,
-                  );
+            Expanded(
+              child: NestedScrollView(
+                headerSliverBuilder: (context, innerBoxIsScrolled) {
+                  return [
+                    BlocBuilder<LoginBloc, LoginState>(
+                      builder: (context, state) {
+                        return _buildDynamicAppBar(
+                          isSmallScreen,
+                          isTablet,
+                          titleFontSize,
+                          state,
+                        );
+                      },
+                    ),
+                  ];
                 },
+                body: SingleChildScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  child: Column(
+                    children: [
+                      // Search Section
+                      // _buildSearchSection(isSmallScreen, isTablet, bodyFontSize),
+
+                      // Popular Destinations - MOVED TO TOP
+                      BlocBuilder<HomeDataBloc, HomeDataState>(
+                        builder: (context, state) {
+                          return _buildPopularDestinations(
+                            isSmallScreen,
+                            isTablet,
+                            headingFontSize,
+                            bodyFontSize,
+                            state,
+                          );
+                        },
+                      ),
+
+                      // Travel Offers Banner
+
+                      // Travel Services Grid
+                      _buildTravelServicesSection(
+                        context,
+                        isSmallScreen,
+                        isTablet,
+                        iconSize,
+                        headingFontSize,
+                        bodyFontSize,
+                      ),
+                      // _buildOffersBanner(isSmallScreen, isTablet, bodyFontSize),
+
+                      // Quick Services
+                      _buildQuickServicesSection(
+                        context,
+                        isSmallScreen,
+                        isTablet,
+                        iconSize,
+                        headingFontSize,
+                        bodyFontSize,
+                      ),
+
+                      // Promo Banner
+                      _buildPromoBanner(isSmallScreen, isTablet, bodyFontSize),
+                      SizedBox(
+                        height: isSmallScreen
+                            ? 20
+                            : isTablet
+                            ? 40
+                            : 30,
+                      ),
+                    ],
+                  ),
+                ),
               ),
-
-              // Travel Offers Banner
-
-              // Travel Services Grid
-              _buildTravelServicesSection(
-                context,
-                isSmallScreen,
-                isTablet,
-                iconSize,
-                headingFontSize,
-                bodyFontSize,
-              ),
-              _buildOffersBanner(isSmallScreen, isTablet, bodyFontSize),
-
-              // Quick Services
-              _buildQuickServicesSection(
-                context,
-                isSmallScreen,
-                isTablet,
-                iconSize,
-                headingFontSize,
-                bodyFontSize,
-              ),
-
-              // Promo Banner
-              _buildPromoBanner(isSmallScreen, isTablet, bodyFontSize),
-
-              SizedBox(
-                height: isSmallScreen
-                    ? 20
-                    : isTablet
-                    ? 40
-                    : 30,
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  SliverAppBar _buildAppBar(
+  Widget _buildStaticBrandingHeader(bool isSmallScreen, LoginState state) {
+    final isLoggedIn = state.isLoggedIn ?? false;
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: isSmallScreen ? 16 : 24,
+        vertical: 12,
+      ),
+      color: _backgroundColor,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // App Brand Logo & Name
+          Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: _primaryColor,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: Image.asset(
+                    'asset/mtlogo.jpg',
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Icon(
+                      Iconsax.airplane,
+                      color: _secondaryColor,
+                      size: 18,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'MT TRIP',
+                style: TextStyle(
+                  color: _primaryColor,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ],
+          ),
+          // Profile Actions
+          Row(
+            children: [
+              _buildCircleIconButton(Iconsax.notification, onTap: () {}),
+              const SizedBox(width: 12),
+              _buildProfileAvatar(isLoggedIn),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  SliverAppBar _buildDynamicAppBar(
     bool isSmallScreen,
     bool isTablet,
     double titleFontSize,
@@ -407,277 +473,145 @@ class _HomeContentPageState extends State<HomeContentPage> {
     final isLoggedIn = state.isLoggedIn ?? false;
 
     return SliverAppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: _backgroundColor,
       expandedHeight: !isLoggedIn
           ? (isTablet
-                ? 170
+                ? 160
                 : isSmallScreen
-                ? 150
-                : 255)
-          : 150,
+                ? 140
+                : 175)
+          : 85,
       floating: false,
-      pinned: true,
+      pinned: false, // Changed to false because branding is now fixed above
       elevation: 0,
-      shadowColor: Colors.black.withOpacity(0.1),
-      surfaceTintColor: Colors.white,
-      stretch: true,
-      collapsedHeight: 60,
+      centerTitle: false,
+      titleSpacing: 0,
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 8,
-                offset: Offset(0, 2),
-              ),
-            ],
-          ),
-          child: SafeArea(
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: isSmallScreen ? 16 : 24,
-                vertical: isSmallScreen ? 8 : 16,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Main header row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // Logo and App Name
-                      Row(
-                        children: [
-                          // App Logo Container
-                          Container(
-                            width: isSmallScreen
-                                ? 40
-                                : isTablet
-                                ? 50
-                                : 44,
-                            height: isSmallScreen
-                                ? 40
-                                : isTablet
-                                ? 50
-                                : 44,
-                            decoration: BoxDecoration(
-                              color: _primaryColor,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 8,
-                                  offset: Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(6.0),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.asset(
-                                  'asset/mtlogo.jpg',
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Container(
-                                      color: _secondaryColor,
-                                      child: Icon(
-                                        Icons.airplanemode_active,
-                                        color: _primaryColor,
-                                        size: isSmallScreen ? 20 : 24,
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: isSmallScreen ? 12 : 16),
-                          // App Name and Tagline
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'MT TRIP',
-                                style: TextStyle(
-                                  color: _primaryColor,
-                                  fontSize: isSmallScreen
-                                      ? 20
-                                      : isTablet
-                                      ? 28
-                                      : 24,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 1.2,
-                                  height: 1.0,
-                                ),
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                'Travel • Explore • Experience',
-                                style: TextStyle(
-                                  color: _textSecondary,
-                                  fontSize: isSmallScreen
-                                      ? 10
-                                      : isTablet
-                                      ? 13
-                                      : 11,
-                                  fontWeight: FontWeight.w500,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      Spacer(),
-
-                      // Profile/Login Section
-                      Row(
-                        children: [
-                          if (isLoggedIn) ...[
-                            // Profile Icon with Badge
-                            GestureDetector(
-                              onTap: () {
-                                // Navigate to profile
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(isSmallScreen ? 6 : 8),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: _secondaryColor.withOpacity(0.2),
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Stack(
-                                  children: [
-                                    Icon(
-                                      Icons.person_outline_sharp,
-                                      color: _primaryColor,
-                                      size: isSmallScreen ? 16 : 20,
-                                    ),
-                                    Positioned(
-                                      right: 0,
-                                      top: 0,
-                                      child: Container(
-                                        width: isSmallScreen ? 8 : 10,
-                                        height: isSmallScreen ? 8 : 10,
-                                        decoration: BoxDecoration(
-                                          color: Colors.red[500],
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: Colors.white,
-                                            width: 1.5,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ] else ...[
-                            // Login Button with Alert Functionality
-                            //         GestureDetector(
-                            //           onTap: () {
-                            // showModalBottomSheet(
-                            // context: context,
-                            // isScrollControlled: true,
-                            // backgroundColor: Colors.transparent,
-                            // builder: (context) => LoginBottomSheet(login: 2),
-                            // );
-                            // },
-                            //           child: Container(
-                            //             height: isSmallScreen ? 36 : 40,
-                            //             padding: EdgeInsets.symmetric(horizontal: 16),
-                            //             decoration: BoxDecoration(
-                            //             color: _primaryColor,
-                            //               borderRadius: BorderRadius.circular(20),
-                            //               boxShadow: [
-
-                            //               ],
-                            //             ),
-                            //             child: Row(
-                            //               mainAxisSize: MainAxisSize.min,
-                            //               children: [
-                            //                 Icon(
-                            //                   Icons.login,
-                            //                   color: Colors.white,
-                            //                   size: 13,
-                            //                 ),
-                            //                 SizedBox(width: 6),
-                            //                 Text(
-                            //                   'Login',
-                            //                   style: TextStyle(
-                            //                     color: Colors.white,
-                            //                     fontSize: isSmallScreen ? 12 : 12,
-                            //                     fontWeight: FontWeight.w600,
-                            //                   ),
-                            //                 ),
-                            //               ],
-                            //             ),
-                            //           ),
-                            //         ),
-                          ],
-                        ],
-                      ),
-                    ],
-                  ),
-
-                  // Login Alert Banner (only when not logged in)
-                  if (!isLoggedIn) ...[
-                    SizedBox(height: isSmallScreen ? 12 : 16),
-                    _buildLoginAlertBanner(isSmallScreen),
-                  ],
-
-                  // Search Bar Section
-                  SizedBox(height: isSmallScreen ? 12 : 16),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[50],
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.grey[200]!, width: 1),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.03),
-                          blurRadius: 6,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: TextField(
-                      controller: _searchController,
-                      onChanged: (value) {
-                        setState(() {
-                          _searchText = value;
-                        });
-                      },
-                      decoration: InputDecoration(
-                        hintText: 'Search for buses, flights, hotels...',
-                        hintStyle: TextStyle(
-                          color: Colors.grey[500],
-                          fontSize: isSmallScreen ? 14 : 16,
-                        ),
-                        prefixIcon: Icon(
-                          Icons.search,
-                          color: _primaryColor,
-                          size: isSmallScreen ? 20 : 22,
-                        ),
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(
-                          vertical: isSmallScreen ? 14 : 16,
-                          horizontal: 16,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+          decoration: BoxDecoration(color: _backgroundColor),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: isSmallScreen ? 16 : 24,
+              vertical: 8,
             ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Login Alert Banner (only when not logged in)
+                if (!isLoggedIn) ...[
+                  _buildLoginAlertBanner(isSmallScreen),
+                  const SizedBox(height: 12),
+                ],
+                // Sleek Search Bar
+                _buildPremiumSearchBar(isSmallScreen),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCircleIconButton(IconData icon, {required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Icon(icon, color: _primaryColor, size: 20),
+      ),
+    );
+  }
+
+  Widget _buildProfileAvatar(bool isLoggedIn) {
+    return GestureDetector(
+      onTap: () {
+        if (!isLoggedIn) {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (context) => LoginBottomSheet(login: 2),
+          );
+        } else {
+          // Navigate to account
+        }
+      },
+      child: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: _secondaryColor.withOpacity(0.1),
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: _secondaryColor.withOpacity(0.2),
+            width: 1.5,
+          ),
+        ),
+        child: Icon(
+          isLoggedIn ? Iconsax.user : Iconsax.login,
+          color: _primaryColor,
+          size: 20,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPremiumSearchBar(bool isSmallScreen) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: _searchController,
+        onChanged: (value) {
+          setState(() {
+            _searchText = value;
+          });
+        },
+        decoration: InputDecoration(
+          hintText: 'Where to next?',
+          hintStyle: TextStyle(
+            color: _textLight,
+            fontSize: isSmallScreen ? 14 : 16,
+            fontWeight: FontWeight.w400,
+          ),
+          prefixIcon: Icon(
+            Iconsax.search_normal,
+            color: _secondaryColor,
+            size: 22,
+          ),
+          suffixIcon: _searchText.isNotEmpty
+              ? IconButton(
+                  icon: Icon(Iconsax.close_circle, color: _textLight, size: 20),
+                  onPressed: () {
+                    _searchController.clear();
+                    setState(() => _searchText = '');
+                  },
+                )
+              : null,
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 16,
+            horizontal: 20,
           ),
         ),
       ),
@@ -853,7 +787,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
               decoration: InputDecoration(
                 hintText: 'Search destinations, flights, hotels...',
                 hintStyle: TextStyle(color: _textLight, fontSize: bodyFontSize),
-                prefixIcon: Icon(Icons.search, color: _primaryColor),
+                prefixIcon: Icon(Iconsax.search_normal, color: _primaryColor),
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.symmetric(
                   vertical: isSmallScreen ? 16 : 20,
@@ -861,7 +795,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                 ),
                 suffixIcon: _searchText.isNotEmpty
                     ? IconButton(
-                        icon: Icon(Icons.clear, color: _textLight),
+                        icon: Icon(Iconsax.close_circle, color: _textLight),
                         onPressed: () {
                           setState(() {
                             _searchText = '';
@@ -982,12 +916,190 @@ class _HomeContentPageState extends State<HomeContentPage> {
     HomeDataState state,
   ) {
     if (state.isDestinationsLoading) {
-      return _buildPopularDestinationsLoading(isSmallScreen, isTablet, headingFontSize);
+      return _buildPopularDestinationsLoading(
+        isSmallScreen,
+        isTablet,
+        headingFontSize,
+      );
     }
 
     final destinations = state.popularDestinations ?? [];
     if (destinations.isEmpty) return const SizedBox.shrink();
 
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        vertical: 24,
+        horizontal: isSmallScreen ? 16 : 24,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'TRENDING NOW',
+                    style: TextStyle(
+                      color: _secondaryColor,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Popular Destinations',
+                    style: TextStyle(
+                      fontSize: headingFontSize + 2,
+                      fontWeight: FontWeight.w900,
+                      color: _primaryColor,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 15),
+          SizedBox(
+            height: 150,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              clipBehavior: Clip.none,
+              itemCount: destinations.length,
+              itemBuilder: (context, index) {
+                final destination = destinations[index];
+                return _buildPremiumDestinationCard(
+                  destination,
+                  isSmallScreen,
+                  isTablet,
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPremiumDestinationCard(
+    dynamic destination,
+    bool isSmallScreen,
+    bool isTablet,
+  ) {
+    return Container(
+      width: isSmallScreen ? 160 : 200,
+      margin: const EdgeInsets.only(right: 17),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: _primaryColor.withOpacity(0.12),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.network(
+              destination.image,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) =>
+                  Container(color: Colors.grey[200]),
+            ),
+            // Gradient Overlay
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withOpacity(0.1),
+                    Colors.black.withOpacity(0.8),
+                  ],
+                  stops: const [0.4, 0.6, 1.0],
+                ),
+              ),
+            ),
+            Positioned(
+              left: 16,
+              right: 16,
+              bottom: 16,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(
+                        Iconsax.location,
+                        color: Colors.white,
+                        size: 12,
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          destination.country.toUpperCase(),
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.8),
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 1.0,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    destination.name,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _secondaryColor,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      'From ${destination.price}',
+                      style: TextStyle(
+                        color: _primaryColor,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPopularDestinationsLoading(
+    bool isSmallScreen,
+    bool isTablet,
+    double headingFontSize,
+  ) {
     return Container(
       padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
       child: Column(
@@ -996,20 +1108,23 @@ class _HomeContentPageState extends State<HomeContentPage> {
           Row(
             children: [
               Icon(
-                Icons.trending_up,
+                Iconsax.trend_up,
                 color: _primaryColor,
                 size: headingFontSize,
               ),
               SizedBox(width: 8),
-              Text(
-                'Popular Destinations',
-                style: TextStyle(
-                  fontSize: headingFontSize,
-                  fontWeight: FontWeight.bold,
-                  color: _textPrimary,
+              Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: Container(
+                  height: headingFontSize,
+                  width: 150,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
                 ),
               ),
-              Spacer(),
             ],
           ),
           SizedBox(height: 16),
@@ -1021,132 +1136,17 @@ class _HomeContentPageState extends State<HomeContentPage> {
                 : 130,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: destinations.length,
-              itemBuilder: (context, index) {
-                final destination = destinations[index];
-                return Container(
-                  width: isSmallScreen
-                      ? 170
-                      : isTablet
-                      ? 210
-                      : 190,
-                  margin: EdgeInsets.only(right: 16),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    image: DecorationImage(
-                      image: NetworkImage(destination.image),
-                      fit: BoxFit.cover,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 8,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Stack(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          gradient: LinearGradient(
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
-                            colors: [
-                              Colors.black.withOpacity(0.7),
-                              Colors.transparent,
-                            ],
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        left: 12,
-                        bottom: 12,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              destination.name,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: isSmallScreen ? 14 : 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              destination.country,
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.8),
-                                fontSize: bodyFontSize,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: _secondaryColor,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                'From ${destination.price}',
-                                style: TextStyle(
-                                  color: _primaryColor,
-                                  fontSize: isSmallScreen ? 10 : 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPopularDestinationsLoading(bool isSmallScreen, bool isTablet, double headingFontSize) {
-    return Container(
-      padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.trending_up, color: _primaryColor, size: headingFontSize),
-              SizedBox(width: 8),
-              Shimmer.fromColors(
-                baseColor: Colors.grey[300]!,
-                highlightColor: Colors.grey[100]!,
-                child: Container(
-                  height: headingFontSize,
-                  width: 150,
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4)),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16),
-          SizedBox(
-            height: isSmallScreen ? 130 : isTablet ? 150 : 130,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
               itemCount: 3,
               itemBuilder: (context, index) {
                 return Shimmer.fromColors(
                   baseColor: Colors.grey[300]!,
                   highlightColor: Colors.grey[100]!,
                   child: Container(
-                    width: isSmallScreen ? 170 : isTablet ? 210 : 190,
+                    width: isSmallScreen
+                        ? 170
+                        : isTablet
+                        ? 210
+                        : 190,
                     margin: EdgeInsets.only(right: 16),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -1167,96 +1167,164 @@ class _HomeContentPageState extends State<HomeContentPage> {
     bool isTablet,
     double bodyFontSize,
   ) {
-    return SizedBox(
-      height: isSmallScreen
-          ? 140
-          : isTablet
-          ? 200
-          : 160,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.symmetric(
-          horizontal: isSmallScreen ? 16 : 24,
-          vertical: 16,
-        ),
-        itemCount: _travelOffers.length,
-        itemBuilder: (context, index) {
-          final offer = _travelOffers[index];
-          return Container(
-            width: isSmallScreen
-                ? 280
-                : isTablet
-                ? 350
-                : 320,
-            margin: EdgeInsets.only(right: 16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              image: DecorationImage(
-                image: NetworkImage(offer['image']),
-                fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(
-                  Colors.black.withOpacity(0.3),
-                  BlendMode.darken,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: isSmallScreen ? 16 : 24),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'EXCLUSIVE OFFERS',
+                style: TextStyle(
+                  color: _secondaryColor,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.5,
                 ),
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 10,
-                  offset: Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Stack(
-              children: [
-                Positioned(
-                  left: 20,
-                  bottom: 20,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: _secondaryColor,
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Text(
-                          'SPECIAL OFFER',
-                          style: TextStyle(
-                            color: _primaryColor,
-                            fontSize: isSmallScreen ? 10 : 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        offer['title'],
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: isSmallScreen ? 18 : 22,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        offer['subtitle'],
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.9),
-                          fontSize: bodyFontSize,
-                        ),
-                      ),
-                    ],
+              TextButton(
+                onPressed: () {},
+                child: Text(
+                  'View all',
+                  style: TextStyle(
+                    color: _accentColor,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-              ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        SizedBox(
+          height: isSmallScreen ? 180 : 220,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: EdgeInsets.symmetric(horizontal: isSmallScreen ? 16 : 24),
+            itemCount: _travelOffers.length,
+            clipBehavior: Clip.none,
+            itemBuilder: (context, index) {
+              final offer = _travelOffers[index];
+              return _buildPremiumOfferCard(offer, isSmallScreen);
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPremiumOfferCard(
+    Map<String, dynamic> offer,
+    bool isSmallScreen,
+  ) {
+    return Container(
+      width: isSmallScreen ? 280 : 340,
+      margin: const EdgeInsets.only(right: 20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: _primaryColor.withOpacity(0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Stack(
+          children: [
+            Image.network(
+              offer['image'],
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+              errorBuilder: (context, error, stackTrace) =>
+                  Container(color: Colors.grey[200]),
             ),
-          );
-        },
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    Colors.black.withOpacity(0.7),
+                    Colors.black.withOpacity(0.1),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _successColor.withOpacity(0.9),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Text(
+                      'SAVE 20%',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    offer['title'],
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    offer['subtitle'],
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.8),
+                      fontSize: 12,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: _primaryColor,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Book Now',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1269,66 +1337,48 @@ class _HomeContentPageState extends State<HomeContentPage> {
     double headingFontSize,
     double bodyFontSize,
   ) {
-    final crossAxisCount = isTablet
-        ? 4
-        : isSmallScreen
-        ? 4
-        : 4;
-
     return Container(
-      padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
+      padding: EdgeInsets.symmetric(
+        vertical: 15,
+        horizontal: isSmallScreen ? 16 : 24,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(
-                Icons.travel_explore,
-                color: _primaryColor,
-                size: headingFontSize,
-              ),
-              SizedBox(width: 8),
-              Text(
-                'Travel Services',
-                style: TextStyle(
-                  fontSize: headingFontSize,
-                  fontWeight: FontWeight.bold,
-                  color: _textPrimary,
-                ),
-              ),
-              Spacer(),
-              // GestureDetector(
-              //   onTap: () {
-              //     // Handle view all action
-              //   },
-              //   child: Text(
-              //     'View All',
-              //     style: TextStyle(
-              //       fontSize: bodyFontSize,
-              //       color: _secondaryColor,
-              //       fontWeight: FontWeight.w600,
-              //     ),
-              //   ),
-              // ),
-            ],
+          Text(
+            'OUR SERVICES',
+            style: TextStyle(
+              color: _secondaryColor,
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 2.0,
+            ),
           ),
-          // SizedBox(height: 10),
+          const SizedBox(height: 6),
+          Text(
+            'Explore Travel Options',
+            style: TextStyle(
+              fontSize: headingFontSize + 2,
+              fontWeight: FontWeight.w900,
+              color: _primaryColor,
+            ),
+          ),
+          const SizedBox(height: 20),
           GridView.builder(
             shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: crossAxisCount,
-              crossAxisSpacing: isSmallScreen ? 12 : 16,
-              mainAxisSpacing: isSmallScreen ? 12 : 16,
-              childAspectRatio: isSmallScreen ? 0.7 : 0.7,
+              crossAxisCount: isTablet ? 4 : 4,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 20,
+              childAspectRatio: .6,
             ),
             itemCount: _travelServices.length,
             itemBuilder: (context, index) {
               final service = _travelServices[index];
-              return _buildServiceCard(
+              return _buildPremiumServiceCard(
                 service,
                 isSmallScreen,
-                isTablet,
                 iconSize,
                 bodyFontSize,
               );
@@ -1339,62 +1389,44 @@ class _HomeContentPageState extends State<HomeContentPage> {
     );
   }
 
-  Widget _buildServiceCard(
+  Widget _buildPremiumServiceCard(
     Map<String, dynamic> service,
     bool isSmallScreen,
-    bool isTablet,
     double iconSize,
     double bodyFontSize,
   ) {
     return GestureDetector(
       onTap: () => service['onTap'](context),
-      child: Container(
-        decoration: BoxDecoration(
-          color: _cardColor,
-          borderRadius: BorderRadius.circular(15),
-          boxShadow: [
-            // BoxShadow(
-            //   color: Colors.black.withOpacity(0.05),
-            //   blurRadius: 8,
-            //   offset: Offset(0, 2),
-            // ),
-          ],
-          // border: Border.all(color: service['color'].withOpacity(0.1)),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: EdgeInsets.all(
-                isSmallScreen
-                    ? 12
-                    : isTablet
-                    ? 16
-                    : 14,
-              ),
-              decoration: BoxDecoration(
-                color: service['color'].withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: FaIcon(
-                service['icon'],
-                color: service['color'],
-                size: isSmallScreen ? iconSize - 2 : iconSize - 5,
-              ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: (service['color'] as Color).withOpacity(0.05),
+                  blurRadius: 15,
+                  offset: const Offset(0, 6),
+                ),
+              ],
             ),
-            SizedBox(height: isSmallScreen ? 6 : 8),
-            Text(
-              service['label'],
-              style: TextStyle(
-                fontSize: bodyFontSize - 2,
-                fontWeight: FontWeight.w600,
-
-                color: _textPrimary,
-              ),
-              textAlign: TextAlign.center,
+            child: Icon(service['icon'], color: service['color'], size: 22),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            service['label'],
+            style: TextStyle(
+              fontSize: 9,
+              fontWeight: FontWeight.w600,
+              color: _primaryColor,
+              letterSpacing: 0.2,
             ),
-          ],
-        ),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }
@@ -1408,47 +1440,50 @@ class _HomeContentPageState extends State<HomeContentPage> {
     double bodyFontSize,
   ) {
     return Container(
-      padding: EdgeInsets.all(isSmallScreen ? 16 : 24),
-      color: _cardColor,
+      padding: EdgeInsets.symmetric(
+        vertical: 20,
+        horizontal: isSmallScreen ? 16 : 24,
+      ),
+      decoration: BoxDecoration(color: _backgroundColor),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(Icons.bolt, color: _primaryColor, size: headingFontSize),
-              SizedBox(width: 8),
-              Text(
-                'Quick Services',
-                style: TextStyle(
-                  fontSize: headingFontSize,
-                  fontWeight: FontWeight.bold,
-                  color: _textPrimary,
-                ),
-              ),
-            ],
+          Text(
+            'QUICK TOOLS',
+            style: TextStyle(
+              color: _secondaryColor,
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 2.0,
+            ),
           ),
+          const SizedBox(height: 8),
+          Text(
+            'Utilities & Bills',
+            style: TextStyle(
+              fontSize: headingFontSize + 2,
+              fontWeight: FontWeight.w900,
+              color: _primaryColor,
+            ),
+          ),
+          const SizedBox(height: 20),
           GridView.builder(
             shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: isTablet
-                  ? 4
-                  : isSmallScreen
-                  ? 4
-                  : 4,
-              crossAxisSpacing: isSmallScreen ? 10 : 13,
-              mainAxisSpacing: isSmallScreen ? 10 : 13,
-              childAspectRatio: 0.76,
+              crossAxisCount: 4,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 20,
+              childAspectRatio: 0.80,
             ),
             itemCount: _quickServices.length,
             itemBuilder: (context, index) {
               final service = _quickServices[index];
-              return _buildQuickServiceCard(
+              return _buildPremiumQuickServiceCard(
                 service,
                 isSmallScreen,
-                isTablet,
-                iconSize - 2,
-                bodyFontSize - 2,
+                iconSize,
+                bodyFontSize,
               );
             },
           ),
@@ -1457,53 +1492,44 @@ class _HomeContentPageState extends State<HomeContentPage> {
     );
   }
 
-  Widget _buildQuickServiceCard(
+  Widget _buildPremiumQuickServiceCard(
     Map<String, dynamic> service,
     bool isSmallScreen,
-    bool isTablet,
     double iconSize,
     double bodyFontSize,
   ) {
     return GestureDetector(
-      onTap: service['onTap'],
-      child: Container(
-        decoration: BoxDecoration(
-          color: _backgroundColor,
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: Colors.grey.withOpacity(0.1)),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: EdgeInsets.all(
-                isSmallScreen
-                    ? 10
-                    : isTablet
-                    ? 14
-                    : 12,
-              ),
-              decoration: BoxDecoration(
-                color: service['color'].withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                service['icon'],
-                color: service['color'],
-                size: isSmallScreen ? iconSize - 2 : iconSize,
-              ),
+      onTap: () => service['onTap'](context),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: (service['color'] as Color).withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-            SizedBox(height: isSmallScreen ? 6 : 8),
-            Text(
-              service['label'],
-              style: TextStyle(
-                fontSize: bodyFontSize,
-                fontWeight: FontWeight.w600,
-                color: _textPrimary,
-              ),
+            child: Icon(service['icon'], color: service['color'], size: 22),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            service['label'],
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: _primaryColor,
             ),
-          ],
-        ),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }
@@ -1515,118 +1541,85 @@ class _HomeContentPageState extends State<HomeContentPage> {
   ) {
     return Container(
       margin: EdgeInsets.all(isSmallScreen ? 16 : 24),
-      padding: EdgeInsets.all(isSmallScreen ? 20 : 30),
+      padding: EdgeInsets.all(isSmallScreen ? 24 : 32),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(28),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [_primaryColor, Color(0xFF2D2D2D)],
+          colors: [_primaryColor, const Color(0xFF1E293B)],
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 20,
-            offset: Offset(0, 10),
+            color: _primaryColor.withOpacity(0.2),
+            blurRadius: 25,
+            offset: const Offset(0, 12),
           ),
         ],
       ),
       child: Stack(
         children: [
           Positioned(
-            right: -20,
-            bottom: -20,
+            right: -10,
+            bottom: -10,
             child: Opacity(
-              opacity: 0.1,
+              opacity: 0.05,
               child: Icon(
-                Icons.airplanemode_active,
-                size: isSmallScreen
-                    ? 100
-                    : isTablet
-                    ? 150
-                    : 120,
+                Iconsax.discover,
+                size: isSmallScreen ? 120 : 160,
                 color: Colors.white,
               ),
             ),
           ),
-          Row(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Container(
-                    //   padding: EdgeInsets.symmetric(
-                    //     horizontal: 12,
-                    //     vertical: 6,
-                    //   ),
-                    //   decoration: BoxDecoration(
-                    //     color: _secondaryColor.withOpacity(0.2),
-                    //     borderRadius: BorderRadius.circular(20),
-                    //     border: Border.all(
-                    //       color: _secondaryColor.withOpacity(0.4),
-                    //     ),
-                    //   ),
-                    //   child: Row(
-                    //     mainAxisSize: MainAxisSize.min,
-                    //     children: [
-                    //       Icon(Icons.star, size: 14, color: _secondaryColor),
-                    //       SizedBox(width: 6),
-                    //       Text(
-                    //         'Premium Member',
-                    //         style: TextStyle(
-                    //           color: _secondaryColor,
-                    //           fontSize: isSmallScreen ? 10 : 12,
-                    //           fontWeight: FontWeight.w600,
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-                    SizedBox(height: 12),
-                    Text(
-                      'Travel The World\nWith Confidence',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-
-                        fontWeight: FontWeight.bold,
-                        height: 1.3,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Exclusive deals on flights, hotels and packages. for our premium members',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.9),
-                        fontSize: bodyFontSize,
-                        height: 1.4,
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    // Container(
-                    //   width: 130,
-                    //   height: 40,
-                    //   child: ElevatedButton(
-                    //     onPressed: () {},
-                    //     style: ElevatedButton.styleFrom(
-                    //       backgroundColor: _secondaryColor,
-                    //       foregroundColor: _primaryColor,
-                    //       shape: RoundedRectangleBorder(
-                    //         borderRadius: BorderRadius.circular(20),
-                    //       ),
-                    //       elevation: 2,
-                    //     ),
-                    //     child: Text(
-                    //       'Explore',
-                    //       style: TextStyle(
-                    //         fontWeight: FontWeight.bold,
-                    //         fontSize: bodyFontSize,
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                  ],
+              Text(
+                'GO BEYOND',
+                style: TextStyle(
+                  color: _secondaryColor,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 2.0,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Travel The World\nWith Confidence',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w900,
+                  height: 1.2,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Unlock exclusive deals on curated flights and premium hotel stays.',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.7),
+                  fontSize: 14,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _secondaryColor,
+                  foregroundColor: _primaryColor,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  'Join MT Plus',
+                  style: TextStyle(fontWeight: FontWeight.w900),
                 ),
               ),
             ],
@@ -1648,7 +1641,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.construction, size: 60, color: _secondaryColor),
+              Icon(Iconsax.discover, size: 120, color: Colors.white),
               SizedBox(height: 20),
               Text(
                 '$service Coming Soon!',
