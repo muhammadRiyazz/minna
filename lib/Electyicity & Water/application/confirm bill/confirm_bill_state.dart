@@ -19,8 +19,10 @@ class ConfirmBillState with _$ConfirmBillState {
   const factory ConfirmBillState.billPaymentResponse(
     Map<String, dynamic> responseData,
   ) = _BillPaymentResponse;
-  const factory ConfirmBillState.billPaymentError(String message) =
-      _BillPaymentError;
+  const factory ConfirmBillState.billPaymentError(
+    String message, {
+    String? transactionId,
+  }) = _BillPaymentError;
   const factory ConfirmBillState.refundProcessing() = _RefundProcessing;
   const factory ConfirmBillState.refundSuccess(
     String message,

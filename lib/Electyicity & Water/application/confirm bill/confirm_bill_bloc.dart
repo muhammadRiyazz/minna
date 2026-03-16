@@ -82,6 +82,7 @@ class ConfirmBillBloc extends Bloc<ConfirmBillEvent, ConfirmBillState> {
         emit(
           ConfirmBillState.billPaymentError(
             paymentResult['message'] ?? 'Bill payment failed',
+            transactionId: event.transactionId,
           ),
         );
       }
@@ -161,7 +162,8 @@ class ConfirmBillBloc extends Bloc<ConfirmBillEvent, ConfirmBillState> {
     final userId = preferences.getString('userId') ?? '';
 
     final url = Uri.parse(
-      'https://mttrip.in/bill-payment-create-razorpay-order-api',
+      // 'https://mttrip.in/bill-payment-create-razorpay-order-api',
+      '${baseUrl}bill-payment-create-razorpay-order-api',
     );
 
     try {
@@ -209,7 +211,10 @@ class ConfirmBillBloc extends Bloc<ConfirmBillEvent, ConfirmBillState> {
     final SharedPreferences preferences = await SharedPreferences.getInstance();
     final userId = preferences.getString('userId') ?? '';
 
-    final url = Uri.parse('https://mttrip.in/bill-payment-verify-razorpay-api');
+    final url = Uri.parse(
+      // 'https://mttrip.in/bill-payment-verify-razorpay-api',
+      '${baseUrl}bill-payment-verify-razorpay-api',
+    );
 
     try {
       final response = await http.post(

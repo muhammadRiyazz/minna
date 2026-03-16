@@ -12,6 +12,7 @@ import 'package:minna/comman/pages/log%20in/login_page.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/pages/add%20amount/add_amount.dart';
+import 'package:minna/Electyicity%20&%20Water/pages/payment%20status/payment_status_page.dart';
 
 class BillDetailsPage extends StatefulWidget {
   final String provider;
@@ -165,21 +166,52 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
             _openCheckout(double.parse(bill.billAmount), bill);
           },
           paymentSuccess: (message, receiptId) {
-            _showSuccessBottomSheet(message, receiptId);
+            // We can show a small snackbar or just wait for billPaymentResponse
+            // For now, let's just log it and wait for the verification result
+            log("Payment successful on mobile, waiting for verification...");
           },
           walletBalanceError: (message) {
             _showWalletBalanceBottomSheet(message);
           },
           billPaymentResponse: (responseData) {
-            _showBillPaymentResponseBottomSheet(responseData);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BillPaymentStatusPage(
+                  responseData: responseData,
+                  provider: widget.provider,
+                  consumerId: widget.consumerId,
+                ),
+              ),
+            );
           },
-          billPaymentError: (message) {
-            _showErrorBottomSheet(message);
+          billPaymentError: (message, transactionId) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BillPaymentStatusPage(
+                  responseData: {
+                    'status': 'FAILED',
+                    'statusDesc': message,
+                    'data': {
+                      'billdetails': {
+                        'txnRefId': transactionId,
+                        'responseReason': 'FAILED',
+                      }
+                    },
+                  },
+                  provider: widget.provider,
+                  consumerId: widget.consumerId,
+                ),
+              ),
+            );
           },
           paymentError: (message) {
             _showErrorBottomSheet(message);
           },
           refundProcessing: () {
+            // These can remain as simple bottom sheets or dialogs if preferred,
+            // as they are internal refund/verification states.
             _showRefundProcessingBottomSheet();
           },
           refundSuccess: (message, receiptId) {
@@ -622,111 +654,6 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
     );
   }
 
-  void _showSuccessBottomSheet(String message, String receiptId) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      isDismissible: false,
-      enableDrag: false,
-      builder: (context) => WillPopScope(
-        onWillPop: () async => false,
-        child: Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.check_circle,
-                    color: Colors.green,
-                    size: 50,
-                  ),
-                ),
-                SizedBox(height: 20),
-                Text(
-                  'Payment Successful!',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                  ),
-                ),
-                SizedBox(height: 15),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[50],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    children: [
-                      _buildDetailRow('Provider', widget.provider),
-                      _buildDetailRow('Consumer ID', widget.consumerId),
-                      // _buildDetailRow('Receipt ID', receiptId),
-                      _buildDetailRow('Status', 'Successfully Paid'),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 20),
-                Text(
-                  message,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
-                ),
-                SizedBox(height: 25),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return HomePage();
-                          },
-                        ),
-                        (route) => false,
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text(
-                      'Done',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   void _showRefundProcessingBottomSheet() {
     showModalBottomSheet(
@@ -1276,107 +1203,6 @@ class _BillDetailsPageState extends State<BillDetailsPage> {
     );
   }
 
-  void _showBillPaymentResponseBottomSheet(Map<String, dynamic> responseData) {
-    final status = responseData['status'] ?? 'UNKNOWN';
-    final desc = responseData['statusDesc'] ?? 'Bill payment processed';
-    final isSuccess = status == 'SUCCESS';
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      isDismissible: false,
-      enableDrag: false,
-      builder: (context) => WillPopScope(
-        onWillPop: () async => false,
-        child: Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: (isSuccess ? Colors.green : Colors.red).withOpacity(
-                      0.1,
-                    ),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    isSuccess ? Icons.check_circle : Icons.error_outline,
-                    color: isSuccess ? Colors.green : Colors.red,
-                    size: 50,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  isSuccess ? 'Payment Successful' : 'Payment Failed',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: isSuccess ? Colors.green : Colors.red,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  desc,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-                ),
-                if (!isSuccess) ...[
-                  const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.red.withOpacity(0.05),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.red.withOpacity(0.2)),
-                    ),
-                    child: const Text(
-                      'If money was debited, it will be refunded within 24-48 hours.',
-                      style: TextStyle(color: Colors.red, fontSize: 13),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 32),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomePage()),
-                        (route) => false,
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: isSuccess ? Colors.green : Colors.red,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text('Done'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   Widget _buildShimmer() {
     return SingleChildScrollView(

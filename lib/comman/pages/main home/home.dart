@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:minna/DTH%20&%20Mobile/DTH/pages/dth%20home%20inputs/dht_input_page.dart';
@@ -11,6 +12,9 @@ import 'package:minna/bus/application/location%20fetch/bus_location_fetch_bloc.d
 import 'package:minna/bus/pages/screen%20bus%20home%20/bus_home.dart';
 import 'package:minna/cab/pages/TripSelectionPage/TripSelectionPage.dart';
 import 'package:minna/comman/application/login/login_bloc.dart';
+import 'package:minna/comman/application/home_data/home_data_bloc.dart';
+import 'package:minna/comman/application/home_data/home_data_event.dart';
+import 'package:minna/comman/application/home_data/home_data_state.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/pages/histoy/histoty.dart';
 import 'package:minna/comman/pages/log%20in/login_page.dart';
@@ -19,9 +23,7 @@ import 'package:minna/comman/pages/screen%20my%20account/my_account_page.dart';
 import 'package:minna/flight/presendation/screen%20flight/home_flight.dart';
 import 'package:minna/hotel%20booking/pages/holel%20home%20page/home_page_hotel.dart'
     hide FlightBookingTab;
-import 'package:minna/train/pages/webView.dart';
 import 'package:minna/visa/pages/visa_page.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -137,37 +139,13 @@ class _HomeContentPageState extends State<HomeContentPage> {
     },
   ];
 
-  // Popular Destinations with working image URLs
-  final List<Map<String, dynamic>> _popularDestinations = [
-    {
-      'name': 'Bali',
-      'country': 'Indonesia',
-      'image':
-          'https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-      'price': '\$899',
-    },
-    {
-      'name': 'New York',
-      'country': 'USA',
-      'image':
-          'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-      'price': '\$1,199',
-    },
-    {
-      'name': 'Paris',
-      'country': 'France',
-      'image':
-          'https://media.istockphoto.com/id/1345426734/photo/eiffel-tower-paris-river-seine-sunset-twilight-france.jpg?s=612x612&w=0&k=20&c=I5rAH5d_-Yyag8F0CKzk9vzMr_1rgkAASGTE11YMh9A=',
-      'price': '\$1,299',
-    },
-    {
-      'name': 'Tokyo',
-      'country': 'Japan',
-      'image':
-          'https://i.natgeofe.com/n/eb9f0faa-75bc-47e2-8b14-253031b74125/bigtripjapantokyocrossing.jpg',
-      'price': '\$1,599',
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    context.read<HomeDataBloc>().add(const FetchDestinations());
+    context.read<HomeDataBloc>().add(const FetchVisaCountries());
+  }
+
 
   // Travel Services Data with theme colors
   List<Map<String, dynamic>> get _travelServices => [
@@ -368,11 +346,16 @@ class _HomeContentPageState extends State<HomeContentPage> {
               // _buildSearchSection(isSmallScreen, isTablet, bodyFontSize),
 
               // Popular Destinations - MOVED TO TOP
-              _buildPopularDestinations(
-                isSmallScreen,
-                isTablet,
-                headingFontSize,
-                bodyFontSize,
+              BlocBuilder<HomeDataBloc, HomeDataState>(
+                builder: (context, state) {
+                  return _buildPopularDestinations(
+                    isSmallScreen,
+                    isTablet,
+                    headingFontSize,
+                    bodyFontSize,
+                    state,
+                  );
+                },
               ),
 
               // Travel Offers Banner
@@ -996,7 +979,15 @@ class _HomeContentPageState extends State<HomeContentPage> {
     bool isTablet,
     double headingFontSize,
     double bodyFontSize,
+    HomeDataState state,
   ) {
+    if (state.isDestinationsLoading) {
+      return _buildPopularDestinationsLoading(isSmallScreen, isTablet, headingFontSize);
+    }
+
+    final destinations = state.popularDestinations ?? [];
+    if (destinations.isEmpty) return const SizedBox.shrink();
+
     return Container(
       padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
       child: Column(
@@ -1019,19 +1010,6 @@ class _HomeContentPageState extends State<HomeContentPage> {
                 ),
               ),
               Spacer(),
-              // GestureDetector(
-              //   onTap: () {
-              //     // Handle see all action
-              //   },
-              //   child: Text(
-              //     'See All',
-              //     style: TextStyle(
-              //       fontSize: bodyFontSize,
-              //       color: _secondaryColor,
-              //       fontWeight: FontWeight.w600,
-              //     ),
-              //   ),
-              // ),
             ],
           ),
           SizedBox(height: 16),
@@ -1043,9 +1021,9 @@ class _HomeContentPageState extends State<HomeContentPage> {
                 : 130,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: _popularDestinations.length,
+              itemCount: destinations.length,
               itemBuilder: (context, index) {
-                final destination = _popularDestinations[index];
+                final destination = destinations[index];
                 return Container(
                   width: isSmallScreen
                       ? 170
@@ -1056,7 +1034,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
                     image: DecorationImage(
-                      image: NetworkImage(destination['image']),
+                      image: NetworkImage(destination.image),
                       fit: BoxFit.cover,
                     ),
                     boxShadow: [
@@ -1089,7 +1067,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              destination['name'],
+                              destination.name,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: isSmallScreen ? 14 : 16,
@@ -1097,7 +1075,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                               ),
                             ),
                             Text(
-                              destination['country'],
+                              destination.country,
                               style: TextStyle(
                                 color: Colors.white.withOpacity(0.8),
                                 fontSize: bodyFontSize,
@@ -1114,7 +1092,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
-                                'From ${destination['price']}',
+                                'From ${destination.price}',
                                 style: TextStyle(
                                   color: _primaryColor,
                                   fontSize: isSmallScreen ? 10 : 12,
@@ -1126,6 +1104,54 @@ class _HomeContentPageState extends State<HomeContentPage> {
                         ),
                       ),
                     ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPopularDestinationsLoading(bool isSmallScreen, bool isTablet, double headingFontSize) {
+    return Container(
+      padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.trending_up, color: _primaryColor, size: headingFontSize),
+              SizedBox(width: 8),
+              Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: Container(
+                  height: headingFontSize,
+                  width: 150,
+                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4)),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 16),
+          SizedBox(
+            height: isSmallScreen ? 130 : isTablet ? 150 : 130,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: 3,
+              itemBuilder: (context, index) {
+                return Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    width: isSmallScreen ? 170 : isTablet ? 210 : 190,
+                    margin: EdgeInsets.only(right: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                   ),
                 );
               },
