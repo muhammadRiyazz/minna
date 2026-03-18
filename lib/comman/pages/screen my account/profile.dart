@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:minna/comman/core/api.dart';
@@ -66,10 +67,10 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() => isLoading = true);
     try {
       final response = await http.post(
-        Uri.parse('${baseUrl}profile'),
+        Uri.parse('${baseUrl}mobiprofile'),
         body: {'userId': userId},
       );
-
+      log(response.body.toString());
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['status'] == 'SUCCESS') {
@@ -110,15 +111,17 @@ class _ProfilePageState extends State<ProfilePage> {
     });
 
     try {
-      final response = await http.post(
-        Uri.parse('${baseUrl}profile-update'),
-        body: {
-          'userId': userId,
-          'name': nameController.text.trim(),
-          'email': emailController.text.trim(),
-          'address': addressController.text.trim(),
-        },
-      ).timeout(Duration(seconds: 30));
+      final response = await http
+          .post(
+            Uri.parse('${baseUrl}profile-update'),
+            body: {
+              'userId': userId,
+              'name': nameController.text.trim(),
+              'email': emailController.text.trim(),
+              'address': addressController.text.trim(),
+            },
+          )
+          .timeout(Duration(seconds: 30));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -131,7 +134,9 @@ class _ProfilePageState extends State<ProfilePage> {
             address = addressController.text.trim();
           });
         } else {
-          _showErrorSnackBar(data['statusDesc'] ?? 'Update failed. Please try again.');
+          _showErrorSnackBar(
+            data['statusDesc'] ?? 'Update failed. Please try again.',
+          );
         }
       } else {
         _showErrorSnackBar('Server error: ${response.statusCode}');
@@ -139,7 +144,9 @@ class _ProfilePageState extends State<ProfilePage> {
     } catch (e) {
       debugPrint('Update error: $e');
       if (e is http.ClientException) {
-        _showErrorSnackBar('Network error: Please check your internet connection');
+        _showErrorSnackBar(
+          'Network error: Please check your internet connection',
+        );
       } else {
         _showErrorSnackBar('Update failed. Please try again.');
       }
@@ -380,7 +387,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         _buildReadOnlyField('+91 $phone', Icons.phone_rounded),
 
                         const SizedBox(height: 20),
-                        
+
                         // Name
                         _buildLabel('Full Name *'),
                         const SizedBox(height: 8),
@@ -393,7 +400,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
 
                         const SizedBox(height: 20),
-                        
+
                         // Email
                         _buildLabel('Email Address *'),
                         const SizedBox(height: 8),
@@ -407,13 +414,14 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
 
                         const SizedBox(height: 20),
-                        
+
                         // Address
                         _buildLabel('Delivery Address *'),
                         const SizedBox(height: 8),
                         _buildEditableField(
                           controller: addressController,
-                          hint: 'Enter your complete address (min. 10 characters)',
+                          hint:
+                              'Enter your complete address (min. 10 characters)',
                           icon: Icons.location_on_outlined,
                           validator: _validateAddress,
                           maxLines: 3,
@@ -430,13 +438,16 @@ class _ProfilePageState extends State<ProfilePage> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: _secondaryColor,
                                 foregroundColor: _cardColor,
-                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 elevation: 2,
                                 shadowColor: _secondaryColor.withOpacity(0.3),
-                                disabledBackgroundColor: _secondaryColor.withOpacity(0.5),
+                                disabledBackgroundColor: _secondaryColor
+                                    .withOpacity(0.5),
                               ),
                               child: isUpdating
                                   ? SizedBox(
@@ -448,7 +459,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                       ),
                                     )
                                   : Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Icon(Icons.save_rounded, size: 20),
                                         SizedBox(width: 8),
@@ -543,10 +555,7 @@ class _ProfilePageState extends State<ProfilePage> {
       maxLength: maxLength,
       keyboardType: keyboardType,
       validator: validator,
-      style: TextStyle(
-        color: _textPrimary,
-        fontSize: 14,
-      ),
+      style: TextStyle(color: _textPrimary, fontSize: 14),
       decoration: InputDecoration(
         prefixIcon: Icon(icon, color: _secondaryColor),
         hintText: hint,
@@ -571,7 +580,7 @@ class _ProfilePageState extends State<ProfilePage> {
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: _errorColor, width: 2),
         ),
-        contentPadding:  EdgeInsets.symmetric(
+        contentPadding: EdgeInsets.symmetric(
           horizontal: 16,
           vertical: maxLines > 1 ? 16 : 0,
         ),

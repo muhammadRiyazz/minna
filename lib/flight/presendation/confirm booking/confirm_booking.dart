@@ -20,14 +20,14 @@ import 'package:minna/comman/pages/log%20in/login_page.dart';
 
 class BookingConfirmationScreen extends StatefulWidget {
   const BookingConfirmationScreen({
-    super.key, 
+    super.key,
     required this.flightinfo,
     required this.triptype,
   });
 
   final FFlightOption flightinfo;
   final String triptype;
-  
+
   @override
   State<BookingConfirmationScreen> createState() =>
       _BookingConfirmationScreenState();
@@ -73,14 +73,13 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
   //     log('_calculateCommission -------------');
   //     final baseAmount = widget.flightinfo.flightFares!.first.totalAmount;
 
-   
   //     final travelType = widget.triptype ;
-     
+
   //     _commissionAmount = _commissionService.calculateCommission(
   //       actualAmount: baseAmount??0,
   //       travelType: travelType,
   //     );
-      
+
   //     _totalWithCommission = _commissionService.getTotalAmountWithCommission(
   //       actualAmount: baseAmount??0,
   //       travelType: travelType,
@@ -128,23 +127,23 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
     log("Payment Success: ${response.paymentId}");
-    
+
     setState(() {
       _isPaymentButtonLoading = false;
     });
-    
+
     context.read<BookingBloc>().add(
       BookingEvent.confirmFlightBooking(
         paymentId: response.paymentId!,
         orderId: response.orderId!,
         signature: response.signature!,
-      )
+      ),
     );
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
     log("Payment Error: ${response.code} - ${response.message}");
-    
+
     setState(() {
       _isPaymentButtonLoading = false;
     });
@@ -182,7 +181,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
 
     try {
       // Use total amount with commission for payment
-      final amount = state.totalAmountWithCommission??0;
+      final amount = state.totalAmountWithCommission ?? 0;
       final orderId = await createOrder(amount);
 
       final bookingData = state.bookingdata;
@@ -221,7 +220,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
 
   void _showRefundInitiatedDialog(BuildContext context) {
     if (ModalRoute.of(context)?.isCurrent != true) return;
-    
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -233,7 +232,9 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
             Text("Refund Initiated"),
           ],
         ),
-        content: Text("Your payment has been refunded due to booking failure. The amount will be credited to your account within 3-7 working days."),
+        content: Text(
+          "Your payment has been refunded due to booking failure. The amount will be credited to your account within 3-7 working days.",
+        ),
         actions: [
           TextButton(
             onPressed: () {
@@ -251,15 +252,67 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
     );
   }
 
+  void _showServerErrorBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.error_outline_rounded,
+                color: Colors.red,
+                size: 48,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Connection Error',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Server issue detected. Connection failed. Please try again later.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Close'),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<BookingBloc, BookingState>(
       listener: (context, state) {
-        final currentRefundState = '${state.refundInitiated}_${state.refundFailed}';
-        
+        final currentRefundState =
+            '${state.refundInitiated}_${state.refundFailed}';
+
         if (currentRefundState != _lastRefundState) {
           _lastRefundState = currentRefundState;
-          
+
           if (state.refundInitiated == true) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               _showRefundInitiatedDialog(context);
@@ -267,7 +320,8 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
           }
         }
 
-        if (state.isBookingCompleted == true || state.isBookingConfirmed == true) {
+        if (state.isBookingCompleted == true ||
+            state.isBookingConfirmed == true) {
           _lastRefundState = null;
         }
       },
@@ -283,7 +337,9 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
           backgroundColor: _backgroundColor,
           body: BlocBuilder<BookingBloc, BookingState>(
             builder: (context, state) {
-              if ((state.isBookingCompleted == true || state.bookingFailed == true) && _isPaymentButtonLoading) {
+              if ((state.isBookingCompleted == true ||
+                      state.bookingFailed == true) &&
+                  _isPaymentButtonLoading) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   setState(() {
                     _isPaymentButtonLoading = false;
@@ -295,7 +351,8 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                 return _buildLoadingScreen();
               }
 
-              if (state.isBookingCompleted == true || state.isBookingConfirmed == true) {
+              if (state.isBookingCompleted == true ||
+                  state.isBookingConfirmed == true) {
                 return _buildSuccessUI(state);
               }
 
@@ -308,7 +365,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                 return _buildNoDataScreen();
               }
 
-              return _buildBookingConfirmationUI(state,);
+              return _buildBookingConfirmationUI(state);
             },
           ),
         ),
@@ -334,7 +391,9 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                 children: [
                   Center(
                     child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(_secondaryColor),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        _secondaryColor,
+                      ),
                       strokeWidth: 3,
                     ),
                   ),
@@ -360,10 +419,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
             SizedBox(height: 8),
             Text(
               'Please wait while we process your flight details',
-              style: TextStyle(
-                fontSize: 14,
-                color: _textSecondary,
-              ),
+              style: TextStyle(fontSize: 14, color: _textSecondary),
             ),
           ],
         ),
@@ -412,10 +468,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
             Text(
               'Unable to load booking information.\nPlease try again.',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                color: _textSecondary,
-              ),
+              style: TextStyle(fontSize: 16, color: _textSecondary),
             ),
             SizedBox(height: 32),
             ElevatedButton(
@@ -436,12 +489,13 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
     );
   }
 
-  Widget _buildBookingConfirmationUI(BookingState state, ) {
-    final isProcessing = state.isCreatingOrder == true || 
-                         state.isPaymentProcessing == true ||
-                         state.isConfirmingBooking == true ||
-                         state.isSavingFinalBooking == true ||
-                         state.isRefundProcessing == true;
+  Widget _buildBookingConfirmationUI(BookingState state) {
+    final isProcessing =
+        state.isCreatingOrder == true ||
+        state.isPaymentProcessing == true ||
+        state.isConfirmingBooking == true ||
+        state.isSavingFinalBooking == true ||
+        state.isRefundProcessing == true;
 
     return CustomScrollView(
       slivers: [
@@ -454,10 +508,8 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
           elevation: 4,
           leading: IconButton(
             icon: Icon(Icons.arrow_back_rounded, color: Colors.white),
-            onPressed: () => _showBottomSheetbooking(
-              context: context,
-              state: state,
-            ),
+            onPressed: () =>
+                _showBottomSheetbooking(context: context, state: state),
           ),
           actions: [
             // Timer in actions (top-right corner)
@@ -469,7 +521,9 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: _isTimeExpired ? _errorColor.withOpacity(0.3) : _secondaryColor.withOpacity(0.3),
+                    color: _isTimeExpired
+                        ? _errorColor.withOpacity(0.3)
+                        : _secondaryColor.withOpacity(0.3),
                     blurRadius: 8,
                     offset: Offset(0, 2),
                   ),
@@ -479,7 +533,9 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    _isTimeExpired ? Icons.timer_off_rounded : Icons.timer_rounded,
+                    _isTimeExpired
+                        ? Icons.timer_off_rounded
+                        : Icons.timer_rounded,
                     color: Colors.white,
                     size: 16,
                   ),
@@ -592,7 +648,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
 
         // Fare Breakdown with Commission
         SliverToBoxAdapter(
-          child: _buildEnhancedFareBreakdownWithCommission( state ),
+          child: _buildEnhancedFareBreakdownWithCommission(state),
         ),
 
         // Payment Button Section
@@ -614,7 +670,11 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                     ),
                     child: Column(
                       children: [
-                        Icon(Icons.timer_off_rounded, color: _errorColor, size: 40),
+                        Icon(
+                          Icons.timer_off_rounded,
+                          color: _errorColor,
+                          size: 40,
+                        ),
                         SizedBox(height: 8),
                         Text(
                           'Session Expired',
@@ -628,10 +688,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                         Text(
                           'Your booking session has ended. Please restart the booking process.',
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: _textSecondary,
-                            fontSize: 14,
-                          ),
+                          style: TextStyle(color: _textSecondary, fontSize: 14),
                         ),
                       ],
                     ),
@@ -677,25 +734,21 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
   }
 
   Widget _buildPaymentButton(BookingState state, bool isProcessing) {
-
-
-
-
-
     final bool shouldShowLoading = _isPaymentButtonLoading || isProcessing;
-    
+
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: _primaryColor,
         foregroundColor: Colors.white,
         minimumSize: Size.fromHeight(56),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         elevation: 2,
       ),
-      onPressed: shouldShowLoading ? null : () => _openRazorpayPayment(state),
-      child: shouldShowLoading 
+      onPressed: shouldShowLoading
+          ? null
+          : () => _showServerErrorBottomSheet(context),
+      // onPressed: shouldShowLoading ? null : () => _openRazorpayPayment(state),
+      child: shouldShowLoading
           ? SizedBox(
               width: 24,
               height: 24,
@@ -710,11 +763,8 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                 Icon(Icons.lock_rounded, size: 20),
                 SizedBox(width: 12),
                 Text(
-                  'Pay ₹${state.totalAmountWithCommission! .toStringAsFixed(0)}',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  'Pay ₹${state.totalAmountWithCommission!.toStringAsFixed(0)}',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -733,10 +783,8 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
           elevation: 0,
           leading: IconButton(
             icon: Icon(Icons.arrow_back_rounded, color: Colors.white),
-            onPressed: () => _showBottomSheetbooking(
-              context: context,
-              state: state,
-            ),
+            onPressed: () =>
+                _showBottomSheetbooking(context: context, state: state),
           ),
           flexibleSpace: FlexibleSpaceBar(
             title: Text(
@@ -753,10 +801,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [
-                    _successColor,
-                    Color(0xFF43A047),
-                  ],
+                  colors: [_successColor, Color(0xFF43A047)],
                 ),
               ),
               child: Column(
@@ -768,7 +813,11 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                       color: Colors.white.withOpacity(0.2),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.check_rounded, color: Colors.white, size: 60),
+                    child: Icon(
+                      Icons.check_rounded,
+                      color: Colors.white,
+                      size: 60,
+                    ),
                   ),
                   SizedBox(height: 16),
                   Container(
@@ -812,7 +861,11 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                         color: _successColor,
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(Icons.email_rounded, color: Colors.white, size: 20),
+                      child: Icon(
+                        Icons.email_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                     ),
                     SizedBox(width: 16),
                     Expanded(
@@ -839,7 +892,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
 
                 SizedBox(height: 16),
 
-                _buildEnhancedFareBreakdownWithCommission( state),
+                _buildEnhancedFareBreakdownWithCommission(state),
               ],
               SizedBox(height: 32),
             ],
@@ -904,7 +957,8 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
             elevation: 0,
             leading: IconButton(
               icon: Icon(Icons.arrow_back_rounded, color: Colors.white),
-              onPressed: () => _showBottomSheetbooking(context:  context,state:  state),
+              onPressed: () =>
+                  _showBottomSheetbooking(context: context, state: state),
             ),
             title: Text(
               'Booking Failed',
@@ -940,9 +994,9 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                       size: 50,
                     ),
                   ),
-                  
+
                   SizedBox(height: 20),
-                  
+
                   Text(
                     'Booking Failed',
                     style: TextStyle(
@@ -951,9 +1005,9 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                       color: _primaryColor,
                     ),
                   ),
-                  
+
                   SizedBox(height: 10),
-                  
+
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
@@ -967,9 +1021,9 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                       ),
                     ),
                   ),
-                  
+
                   SizedBox(height: 32),
-                  
+
                   Container(
                     width: double.infinity,
                     padding: EdgeInsets.all(20),
@@ -1055,9 +1109,9 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                       ],
                     ),
                   ),
-                  
+
                   Spacer(),
-                  
+
                   SizedBox(
                     width: double.infinity,
                     height: 56,
@@ -1142,7 +1196,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                 ),
                 SizedBox(width: 8),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12,vertical: 5),
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                   decoration: BoxDecoration(
                     color: _secondaryColor,
                     borderRadius: BorderRadius.circular(12),
@@ -1159,7 +1213,9 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
               ],
             ),
           ),
-          ...passengers.asMap().entries.map((entry) => _buildPassengerExpansionTile(entry.value, entry.key)),
+          ...passengers.asMap().entries.map(
+            (entry) => _buildPassengerExpansionTile(entry.value, entry.key),
+          ),
         ],
       ),
     );
@@ -1168,9 +1224,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
   Widget _buildPassengerExpansionTile(RePassenger passenger, int index) {
     return Container(
       decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(color: Colors.grey.shade200, width: 1),
-        ),
+        border: Border(top: BorderSide(color: Colors.grey.shade200, width: 1)),
       ),
       child: ExpansionTile(
         backgroundColor: _backgroundColor,
@@ -1181,11 +1235,11 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
             shape: BoxShape.circle,
           ),
           child: Icon(
-            passenger.paxType == 'ADT' 
-                ? Icons.person_rounded 
-                : passenger.paxType == 'CHD' 
-                    ? Icons.child_care_rounded 
-                    : Icons.child_friendly_rounded,
+            passenger.paxType == 'ADT'
+                ? Icons.person_rounded
+                : passenger.paxType == 'CHD'
+                ? Icons.child_care_rounded
+                : Icons.child_friendly_rounded,
             color: _secondaryColor,
             size: 20,
           ),
@@ -1199,11 +1253,12 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
           ),
         ),
         subtitle: Text(
-          '${passenger.paxType == 'ADT' ? 'Adult' : passenger.paxType == 'CHD' ? 'Child' : 'Infant'} • ${passenger.nationality}',
-          style: TextStyle(
-            fontSize: 12,
-            color: _textSecondary,
-          ),
+          '${passenger.paxType == 'ADT'
+              ? 'Adult'
+              : passenger.paxType == 'CHD'
+              ? 'Child'
+              : 'Infant'} • ${passenger.nationality}',
+          style: TextStyle(fontSize: 12, color: _textSecondary),
         ),
         children: [
           Container(
@@ -1213,7 +1268,10 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildPassengerDetailRow('Date of Birth:', convertMsDateToFormattedDate(passenger.dob!)),
+                  _buildPassengerDetailRow(
+                    'Date of Birth:',
+                    convertMsDateToFormattedDate(passenger.dob!),
+                  ),
                   _buildPassengerDetailRow('Contact:', passenger.contact ?? ''),
                   _buildPassengerDetailRow('Email:', passenger.email ?? ''),
                   if (passenger.passportNo != null) ...[
@@ -1224,7 +1282,9 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                       decoration: BoxDecoration(
                         color: _secondaryColor.withOpacity(0.05),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: _secondaryColor.withOpacity(0.2)),
+                        border: Border.all(
+                          color: _secondaryColor.withOpacity(0.2),
+                        ),
                       ),
                       child: Row(
                         children: [
@@ -1234,7 +1294,11 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                               color: _secondaryColor,
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(Icons.airplane_ticket_rounded, color: Colors.white, size: 14),
+                            child: Icon(
+                              Icons.airplane_ticket_rounded,
+                              color: Colors.white,
+                              size: 14,
+                            ),
                           ),
                           SizedBox(width: 8),
                           Text(
@@ -1249,9 +1313,18 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                       ),
                     ),
                     SizedBox(height: 12),
-                    _buildPassengerDetailRow('Passport No:', passenger.passportNo!),
-                    _buildPassengerDetailRow('Country of Issue:', passenger.countryOfIssue ?? 'N/A'),
-                    _buildPassengerDetailRow('Expiry Date:', passenger.dateOfExpiry ?? 'N/A'),
+                    _buildPassengerDetailRow(
+                      'Passport No:',
+                      passenger.passportNo!,
+                    ),
+                    _buildPassengerDetailRow(
+                      'Country of Issue:',
+                      passenger.countryOfIssue ?? 'N/A',
+                    ),
+                    _buildPassengerDetailRow(
+                      'Expiry Date:',
+                      passenger.dateOfExpiry ?? 'N/A',
+                    ),
                   ],
                 ],
               ),
@@ -1291,261 +1364,290 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
       ),
     );
   }
-Widget _buildEnhancedFareBreakdownWithCommission(BookingState bookingstate) {
-  final fare = bookingstate.bookingdata!.journey.flightOption.flightFares.first;
-  final passengers = bookingstate.bookingdata!.passengers;
-  
-  // Calculate passenger counts by type
-  final adultCount = passengers.where((p) => p.paxType == 'ADT').length;
-  final childCount = passengers.where((p) => p.paxType == 'CHD').length;
-  final infantCount = passengers.where((p) => p.paxType == 'INF').length;
-  
-  // Calculate base fare totals by passenger type
-  double adultBaseFare = 0;
-  double adultTax = 0;
-  double childBaseFare = 0;
-  double childTax = 0;
-  double infantBaseFare = 0;
-  double infantTax = 0;
-  double totalDiscount = 0;
 
-  // Calculate base fares from fare types
-  for (final fareType in fare.fares) {
-    switch (fareType.ptc) {
-      case 'ADT':
-        adultBaseFare = (fareType.baseFare ?? 0) * adultCount;
-        adultTax = (fareType.tax ?? 0) * adultCount;
-        totalDiscount += (fareType.discount ?? 0) * adultCount;
-        break;
-      case 'CHD':
-        childBaseFare = (fareType.baseFare ?? 0) * childCount;
-        childTax = (fareType.tax ?? 0) * childCount;
-        totalDiscount += (fareType.discount ?? 0) * childCount;
-        break;
-      case 'INF':
-        infantBaseFare = (fareType.baseFare ?? 0) * infantCount;
-        infantTax = (fareType.tax ?? 0) * infantCount;
-        totalDiscount += (fareType.discount ?? 0) * infantCount;
-        break;
+  Widget _buildEnhancedFareBreakdownWithCommission(BookingState bookingstate) {
+    final fare =
+        bookingstate.bookingdata!.journey.flightOption.flightFares.first;
+    final passengers = bookingstate.bookingdata!.passengers;
+
+    // Calculate passenger counts by type
+    final adultCount = passengers.where((p) => p.paxType == 'ADT').length;
+    final childCount = passengers.where((p) => p.paxType == 'CHD').length;
+    final infantCount = passengers.where((p) => p.paxType == 'INF').length;
+
+    // Calculate base fare totals by passenger type
+    double adultBaseFare = 0;
+    double adultTax = 0;
+    double childBaseFare = 0;
+    double childTax = 0;
+    double infantBaseFare = 0;
+    double infantTax = 0;
+    double totalDiscount = 0;
+
+    // Calculate base fares from fare types
+    for (final fareType in fare.fares) {
+      switch (fareType.ptc) {
+        case 'ADT':
+          adultBaseFare = (fareType.baseFare ?? 0) * adultCount;
+          adultTax = (fareType.tax ?? 0) * adultCount;
+          totalDiscount += (fareType.discount ?? 0) * adultCount;
+          break;
+        case 'CHD':
+          childBaseFare = (fareType.baseFare ?? 0) * childCount;
+          childTax = (fareType.tax ?? 0) * childCount;
+          totalDiscount += (fareType.discount ?? 0) * childCount;
+          break;
+        case 'INF':
+          infantBaseFare = (fareType.baseFare ?? 0) * infantCount;
+          infantTax = (fareType.tax ?? 0) * infantCount;
+          totalDiscount += (fareType.discount ?? 0) * infantCount;
+          break;
+      }
     }
-  }
 
-  // Calculate totals
-  double totalBaseFare = adultBaseFare + childBaseFare + infantBaseFare;
-  double totalTax = adultTax + childTax + infantTax;
-  double totalAdditionalCharges = 0;
+    // Calculate totals
+    double totalBaseFare = adultBaseFare + childBaseFare + infantBaseFare;
+    double totalTax = adultTax + childTax + infantTax;
+    double totalAdditionalCharges = 0;
 
-  // Calculate additional charges (baggage, meals, seats)
-  final additionalChargesList = _calculateAdditionalCharges(passengers);
-  totalAdditionalCharges = additionalChargesList.fold(0, (sum, charge) => sum + charge.amount);
+    // Calculate additional charges (baggage, meals, seats)
+    final additionalChargesList = _calculateAdditionalCharges(passengers);
+    totalAdditionalCharges = additionalChargesList.fold(
+      0,
+      (sum, charge) => sum + charge.amount,
+    );
 
-  // Calculate final total
-  double subtotal = totalBaseFare + totalTax + totalAdditionalCharges;
-  double serviceCharge = bookingstate.totalCommission ?? 0;
-  double finalTotal = subtotal + serviceCharge - totalDiscount;
+    // Calculate final total
+    double subtotal = totalBaseFare + totalTax + totalAdditionalCharges;
+    double serviceCharge = bookingstate.totalCommission ?? 0;
+    double finalTotal = subtotal + serviceCharge - totalDiscount;
 
-  return Container(
-    margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-    decoration: BoxDecoration(
-      color: _cardColor,
-      borderRadius: BorderRadius.circular(16),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.05),
-          blurRadius: 10,
-          offset: Offset(0, 4),
-        ),
-      ],
-    ),
-    child: Column(
-      children: [
-        // Header
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.all(20),
-          child: Row(
-            children: [
-              Container(
-                padding: EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: _secondaryColor,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.receipt_rounded,
-                  size: 18,
-                  color: Colors.white,
-                ),
-              ),
-              SizedBox(width: 12),
-              Text(
-                'Fare Breakdown',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: _primaryColor,
-                ),
-              ),
-            ],
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: Offset(0, 4),
           ),
-        ),
-        Divider(height: 1),
-        
-        Padding(
-          padding: EdgeInsets.all(20),
-          child: Column(
-            children: [
-              // Adult Section
-              if (adultCount > 0) _buildPassengerTypeSection(
-                'Adult',
-                adultCount,
-                adultBaseFare / adultCount,
-                adultTax / adultCount,
-              ),
-              
-              // Child Section
-              if (childCount > 0) _buildPassengerTypeSection(
-                'Child',
-                childCount,
-                childBaseFare / childCount,
-                childTax / childCount,
-              ),
-              
-              // Infant Section
-              if (infantCount > 0) _buildPassengerTypeSection(
-                'Infant',
-                infantCount,
-                infantBaseFare / infantCount,
-                infantTax / infantCount,
-              ),
-              
-              // Divider
-              if (adultCount > 0 || childCount > 0 || infantCount > 0)
-                Divider(height: 24, color: Colors.grey.shade300),
-              
-              // Additional Services Section
-              if (additionalChargesList.isNotEmpty) ...[
+        ],
+      ),
+      child: Column(
+        children: [
+          // Header
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(20),
+            child: Row(
+              children: [
                 Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.only(bottom: 12),
-                  child: Text(
-                    'Additional Services',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: _primaryColor,
-                    ),
+                  padding: EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: _secondaryColor,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.receipt_rounded,
+                    size: 18,
+                    color: Colors.white,
                   ),
                 ),
-                
-                Column(
-                  children: additionalChargesList.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final charge = entry.value;
-                    return _buildAdditionalChargeRow(
-                      charge.label,
-                      charge.amount,
-                      index: index + 1,
-                    );
-                  }).toList(),
+                SizedBox(width: 12),
+                Text(
+                  'Fare Breakdown',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: _primaryColor,
+                  ),
                 ),
-                
-                SizedBox(height: 16),
               ],
-              
-              // Summary Section
-              Container(
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: _backgroundColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  children: [
-                    _buildSummaryRow('Total Base Fare', totalBaseFare),
-                    _buildSummaryRow('Total Taxes', totalTax),
-                    
-                    if (totalAdditionalCharges > 0)
-                      _buildSummaryRow('Additional Services', totalAdditionalCharges),
-                    
-                    _buildSummaryRow('Service Charge', serviceCharge, isCommission: true),
-                    
-                    if (totalDiscount > 0)
-                      _buildSummaryRow('Discount', -totalDiscount, isDiscount: true),
-                    
-                    Divider(height: 16, color: Colors.grey.shade400),
-                    
-                    _buildSummaryRow(
-                      'Total Payable',
-                      finalTotal,
-                      isTotal: true,
-                    ),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+          Divider(height: 1),
 
+          Padding(
+            padding: EdgeInsets.all(20),
+            child: Column(
+              children: [
+                // Adult Section
+                if (adultCount > 0)
+                  _buildPassengerTypeSection(
+                    'Adult',
+                    adultCount,
+                    adultBaseFare / adultCount,
+                    adultTax / adultCount,
+                  ),
 
+                // Child Section
+                if (childCount > 0)
+                  _buildPassengerTypeSection(
+                    'Child',
+                    childCount,
+                    childBaseFare / childCount,
+                    childTax / childCount,
+                  ),
 
-// Calculate all additional charges
-List<AdditionalCharge> _calculateAdditionalCharges(List<RePassenger> passengers) {
-  final List<AdditionalCharge> charges = [];
+                // Infant Section
+                if (infantCount > 0)
+                  _buildPassengerTypeSection(
+                    'Infant',
+                    infantCount,
+                    infantBaseFare / infantCount,
+                    infantTax / infantCount,
+                  ),
 
-  for (final passenger in passengers) {
-    final ssr = passenger.ssrAvailability;
-    if (ssr != null) {
-      final passengerName = '${passenger.title} ${passenger.firstName} ${passenger.lastName}';
-      
-      // Baggage charges
-      if (ssr.baggageInfo != null) {
-        for (final baggageInfo in ssr.baggageInfo!) {
-          if (baggageInfo.baggages != null) {
-            for (final baggage in baggageInfo.baggages!) {
-              if (baggage.amount != null && baggage.amount! > 0) {
-                charges.add(AdditionalCharge(
-                  'Extra Baggage - $passengerName',
-                  baggage.amount!,
-                ));
+                // Divider
+                if (adultCount > 0 || childCount > 0 || infantCount > 0)
+                  Divider(height: 24, color: Colors.grey.shade300),
+
+                // Additional Services Section
+                if (additionalChargesList.isNotEmpty) ...[
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.only(bottom: 12),
+                    child: Text(
+                      'Additional Services',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: _primaryColor,
+                      ),
+                    ),
+                  ),
+
+                  Column(
+                    children: additionalChargesList.asMap().entries.map((
+                      entry,
+                    ) {
+                      final index = entry.key;
+                      final charge = entry.value;
+                      return _buildAdditionalChargeRow(
+                        charge.label,
+                        charge.amount,
+                        index: index + 1,
+                      );
+                    }).toList(),
+                  ),
+
+                  SizedBox(height: 16),
+                ],
+
+                // Summary Section
+                Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: _backgroundColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    children: [
+                      _buildSummaryRow('Total Base Fare', totalBaseFare),
+                      _buildSummaryRow('Total Taxes', totalTax),
+
+                      if (totalAdditionalCharges > 0)
+                        _buildSummaryRow(
+                          'Additional Services',
+                          totalAdditionalCharges,
+                        ),
+
+                      _buildSummaryRow(
+                        'Service Charge',
+                        serviceCharge,
+                        isCommission: true,
+                      ),
+
+                      if (totalDiscount > 0)
+                        _buildSummaryRow(
+                          'Discount',
+                          -totalDiscount,
+                          isDiscount: true,
+                        ),
+
+                      Divider(height: 16, color: Colors.grey.shade400),
+
+                      _buildSummaryRow(
+                        'Total Payable',
+                        finalTotal,
+                        isTotal: true,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Calculate all additional charges
+  List<AdditionalCharge> _calculateAdditionalCharges(
+    List<RePassenger> passengers,
+  ) {
+    final List<AdditionalCharge> charges = [];
+
+    for (final passenger in passengers) {
+      final ssr = passenger.ssrAvailability;
+      if (ssr != null) {
+        final passengerName =
+            '${passenger.title} ${passenger.firstName} ${passenger.lastName}';
+
+        // Baggage charges
+        if (ssr.baggageInfo != null) {
+          for (final baggageInfo in ssr.baggageInfo!) {
+            if (baggageInfo.baggages != null) {
+              for (final baggage in baggageInfo.baggages!) {
+                if (baggage.amount != null && baggage.amount! > 0) {
+                  charges.add(
+                    AdditionalCharge(
+                      'Extra Baggage - $passengerName',
+                      baggage.amount!,
+                    ),
+                  );
+                }
               }
             }
           }
         }
-      }
-      
-      // Meal charges
-      if (ssr.mealInfo != null) {
-        for (final mealInfo in ssr.mealInfo!) {
-          if (mealInfo.meals != null) {
-            for (final meal in mealInfo.meals!) {
-              if (meal.amount != null && meal.amount! > 0) {
-                charges.add(AdditionalCharge(
-                  'Meal - ${meal.name} - $passengerName',
-                  meal.amount!,
-                ));
+
+        // Meal charges
+        if (ssr.mealInfo != null) {
+          for (final mealInfo in ssr.mealInfo!) {
+            if (mealInfo.meals != null) {
+              for (final meal in mealInfo.meals!) {
+                if (meal.amount != null && meal.amount! > 0) {
+                  charges.add(
+                    AdditionalCharge(
+                      'Meal - ${meal.name} - $passengerName',
+                      meal.amount!,
+                    ),
+                  );
+                }
               }
             }
           }
         }
-      }
-      
-      // Seat charges
-      if (ssr.seatInfo != null) {
-        for (final seatInfo in ssr.seatInfo!) {
-          if (seatInfo.seats != null) {
-            for (final seat in seatInfo.seats!) {
-              if (seat.fare != null && seat.fare!.isNotEmpty) {
-                final seatFare = double.tryParse(seat.fare!);
-                if (seatFare != null && seatFare > 0) {
-                  charges.add(AdditionalCharge(
-                    'Seat Selection - $passengerName',
-                    seatFare,
-                  ));
+
+        // Seat charges
+        if (ssr.seatInfo != null) {
+          for (final seatInfo in ssr.seatInfo!) {
+            if (seatInfo.seats != null) {
+              for (final seat in seatInfo.seats!) {
+                if (seat.fare != null && seat.fare!.isNotEmpty) {
+                  final seatFare = double.tryParse(seat.fare!);
+                  if (seatFare != null && seatFare > 0) {
+                    charges.add(
+                      AdditionalCharge(
+                        'Seat Selection - $passengerName',
+                        seatFare,
+                      ),
+                    );
+                  }
                 }
               }
             }
@@ -1553,200 +1655,205 @@ List<AdditionalCharge> _calculateAdditionalCharges(List<RePassenger> passengers)
         }
       }
     }
+
+    return charges;
   }
 
-  return charges;
-}
-
-// Build passenger type section (Adult, Child, Infant)
-Widget _buildPassengerTypeSection(String type, int count, double baseFare, double tax) {
-  return Column(
-    children: [
-      // Passenger type header
-      Container(
-        width: double.infinity,
-        padding: EdgeInsets.only(bottom: 8),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              '$type${count > 1 ? ' ($count)' : ''}',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 15,
-                color: _primaryColor,
-              ),
-            ),
-            if (count > 1)
+  // Build passenger type section (Adult, Child, Infant)
+  Widget _buildPassengerTypeSection(
+    String type,
+    int count,
+    double baseFare,
+    double tax,
+  ) {
+    return Column(
+      children: [
+        // Passenger type header
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.only(bottom: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
               Text(
-                '× $count',
+                '$type${count > 1 ? ' ($count)' : ''}',
                 style: TextStyle(
-                  fontSize: 12,
-                  color: _textSecondary,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                  color: _primaryColor,
                 ),
               ),
-          ],
-        ),
-      ),
-      
-      // Base Fare
-      _buildFareRow('Base Fare', baseFare, count),
-      
-      // Taxes
-      _buildFareRow('Taxes', tax, count),
-      
-      SizedBox(height: 12),
-    ],
-  );
-}
-
-// Build individual fare row
-Widget _buildFareRow(String label, double amount, int passengerCount) {
-  final totalAmount = amount * passengerCount;
-  
-  return Padding(
-    padding: EdgeInsets.symmetric(vertical: 4),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            color: _textPrimary,
-            fontWeight: FontWeight.w500,
+              if (count > 1)
+                Text(
+                  '× $count',
+                  style: TextStyle(fontSize: 12, color: _textSecondary),
+                ),
+            ],
           ),
         ),
-        Row(
-          children: [
-            if (passengerCount > 1) ...[
-              Text(
-                '₹${amount.toStringAsFixed(2)}',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: _textSecondary,
-                ),
-              ),
-              Text(
-                ' × $passengerCount',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: _textSecondary,
-                ),
-              ),
-              SizedBox(width: 8),
-            ],
-            Text(
-              '₹${totalAmount.toStringAsFixed(2)}',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: _textPrimary,
-              ),
-            ),
-          ],
-        ),
-      ],
-    ),
-  );
-}
 
-// Build additional charge row
-Widget _buildAdditionalChargeRow(String label, double amount, {required int index}) {
-  return Padding(
-    padding: EdgeInsets.symmetric(vertical: 6),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Expanded(
-          child: Row(
+        // Base Fare
+        _buildFareRow('Base Fare', baseFare, count),
+
+        // Taxes
+        _buildFareRow('Taxes', tax, count),
+
+        SizedBox(height: 12),
+      ],
+    );
+  }
+
+  // Build individual fare row
+  Widget _buildFareRow(String label, double amount, int passengerCount) {
+    final totalAmount = amount * passengerCount;
+
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              color: _textPrimary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          Row(
             children: [
-              Container(
-                width: 20,
-                height: 20,
-                decoration: BoxDecoration(
-                  color: _secondaryColor.withOpacity(0.1),
-                  shape: BoxShape.circle,
+              if (passengerCount > 1) ...[
+                Text(
+                  '₹${amount.toStringAsFixed(2)}',
+                  style: TextStyle(fontSize: 12, color: _textSecondary),
                 ),
-                child: Center(
-                  child: Text(
-                    index.toString(),
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                      color: _secondaryColor,
+                Text(
+                  ' × $passengerCount',
+                  style: TextStyle(fontSize: 12, color: _textSecondary),
+                ),
+                SizedBox(width: 8),
+              ],
+              Text(
+                '₹${totalAmount.toStringAsFixed(2)}',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: _textPrimary,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Build additional charge row
+  Widget _buildAdditionalChargeRow(
+    String label,
+    double amount, {
+    required int index,
+  }) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Row(
+              children: [
+                Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: _secondaryColor.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text(
+                      index.toString(),
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        color: _secondaryColor,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: _textPrimary,
-                    fontWeight: FontWeight.w500,
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: _textPrimary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        SizedBox(width: 8),
-        Text(
-          '₹${amount.toStringAsFixed(2)}',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: _textPrimary,
+          SizedBox(width: 8),
+          Text(
+            '₹${amount.toStringAsFixed(2)}',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: _textPrimary,
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
-// Build summary row
-Widget _buildSummaryRow(String label, double amount, {
-  bool isDiscount = false,
-  bool isCommission = false,
-  bool isTotal = false,
-}) {
-  final isNegative = amount < 0;
-  final displayAmount = isNegative ? -amount : amount;
-  
-  return Padding(
-    padding: EdgeInsets.symmetric(vertical: 6),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: isTotal ? 15 : 14,
-            fontWeight: isTotal ? FontWeight.w700 : FontWeight.w500,
-            color: isDiscount ? _successColor : 
-                  (isCommission ? _secondaryColor : 
-                  (isTotal ? _primaryColor : _textPrimary)),
+  // Build summary row
+  Widget _buildSummaryRow(
+    String label,
+    double amount, {
+    bool isDiscount = false,
+    bool isCommission = false,
+    bool isTotal = false,
+  }) {
+    final isNegative = amount < 0;
+    final displayAmount = isNegative ? -amount : amount;
+
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: isTotal ? 15 : 14,
+              fontWeight: isTotal ? FontWeight.w700 : FontWeight.w500,
+              color: isDiscount
+                  ? _successColor
+                  : (isCommission
+                        ? _secondaryColor
+                        : (isTotal ? _primaryColor : _textPrimary)),
+            ),
           ),
-        ),
-        Text(
-          '${isNegative ? '-' : ''}₹${displayAmount.toStringAsFixed(2)}',
-          style: TextStyle(
-            fontSize: isTotal ? 16 : 14,
-            fontWeight: isTotal ? FontWeight.w800 : FontWeight.w600,
-            color: isDiscount ? _successColor : 
-                  (isCommission ? _secondaryColor : 
-                  (isTotal ? _secondaryColor : _textPrimary)),
+          Text(
+            '${isNegative ? '-' : ''}₹${displayAmount.toStringAsFixed(2)}',
+            style: TextStyle(
+              fontSize: isTotal ? 16 : 14,
+              fontWeight: isTotal ? FontWeight.w800 : FontWeight.w600,
+              color: isDiscount
+                  ? _successColor
+                  : (isCommission
+                        ? _secondaryColor
+                        : (isTotal ? _secondaryColor : _textPrimary)),
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 }
 
 Future<dynamic> _showBottomSheetbooking({
@@ -1789,12 +1896,21 @@ Future<dynamic> _showBottomSheetbooking({
                   color: secondaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.check_circle_rounded, color: secondaryColor, size: 40),
+                child: Icon(
+                  Icons.check_circle_rounded,
+                  color: secondaryColor,
+                  size: 40,
+                ),
               ),
               SizedBox(height: 16),
               Text(
-                'Booking Completed Successfully!',textAlign:TextAlign.center ,
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: primaryColor),
+                'Booking Completed Successfully!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  color: primaryColor,
+                ),
               ),
               SizedBox(height: 12),
               Container(
@@ -1841,7 +1957,11 @@ Future<dynamic> _showBottomSheetbooking({
                   color: secondaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.error_outline_rounded, color: errorColor, size: 40),
+                child: Icon(
+                  Icons.error_outline_rounded,
+                  color: errorColor,
+                  size: 40,
+                ),
               ),
               SizedBox(height: 16),
               Text(
@@ -1853,8 +1973,9 @@ Future<dynamic> _showBottomSheetbooking({
                 ),
               ),
               SizedBox(height: 12),
-               Text(
-                'Are you sure you want to go back?',textAlign: TextAlign.center,
+              Text(
+                'Are you sure you want to go back?',
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 13,
@@ -1893,11 +2014,16 @@ Future<dynamic> _showBottomSheetbooking({
                   color: secondaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.flight_takeoff_rounded, color: secondaryColor, size: 40),
+                child: Icon(
+                  Icons.flight_takeoff_rounded,
+                  color: secondaryColor,
+                  size: 40,
+                ),
               ),
               SizedBox(height: 16),
               Text(
-                'Are you sure you want to go back?',textAlign: TextAlign.center,
+                'Are you sure you want to go back?',
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 15,
@@ -1966,7 +2092,9 @@ String convertMsDateToFormattedDate(String msDate) {
       "${date.year}";
 
   return formattedDate;
-}class AdditionalCharge {
+}
+
+class AdditionalCharge {
   final String label;
   final double amount;
 

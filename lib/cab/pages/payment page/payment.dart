@@ -28,7 +28,8 @@ class BookingConfirmationPage extends StatefulWidget {
   final String bookingId;
 
   @override
-  State<BookingConfirmationPage> createState() => _BookingConfirmationPageState();
+  State<BookingConfirmationPage> createState() =>
+      _BookingConfirmationPageState();
 }
 
 class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
@@ -76,10 +77,11 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_remainingSeconds > 0) {
         _remainingSeconds--;
-        
+
         final newDisplayTime = _formatTime(_remainingSeconds);
-        final shouldRebuild = _displayTime != newDisplayTime || _remainingSeconds <= 10;
-        
+        final shouldRebuild =
+            _displayTime != newDisplayTime || _remainingSeconds <= 10;
+
         if (shouldRebuild) {
           _displayTime = newDisplayTime;
           if (mounted) {
@@ -106,7 +108,8 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
         final fare = state.data.cabRate?.fare;
         if (fare != null) {
           final amount = double.parse(fare.totalAmount.toString());
-          final calculated = await commissionProvider.calculateAmountWithCommission(amount);
+          final calculated = await commissionProvider
+              .calculateAmountWithCommission(amount);
           setState(() {
             _amountWithCommission = calculated;
             _commissionLoading = false;
@@ -209,7 +212,11 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
                     color: _errorColor.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.timer_off_rounded, size: 40, color: _errorColor),
+                  child: Icon(
+                    Icons.timer_off_rounded,
+                    size: 40,
+                    color: _errorColor,
+                  ),
                 ),
                 const SizedBox(height: 20),
                 Text(
@@ -224,10 +231,7 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
                 Text(
                   "Your booking time has expired. Please try again.",
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: _textSecondary,
-                  ),
+                  style: TextStyle(fontSize: 16, color: _textSecondary),
                 ),
                 const SizedBox(height: 24),
                 SizedBox(
@@ -256,113 +260,106 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
   }
 
   void _onWillPop() async {
-   showBottomSheetbooking(
+    showBottomSheetbooking(
       context: context,
       timer: _timer,
-      busORFlight: 
-       'This cabs seems popular! Hurry, book before it’s gone.',
+      busORFlight: 'This cabs seems popular! Hurry, book before it’s gone.',
       primaryColor: _primaryColor,
       secondaryColor: _secondaryColor,
     );
-
   }
-void _onBookNow(String amount) async {
-  log("_onBookNow -----");
-  context.read<ConfirmBookingBloc>().add(
-    ConfirmBookingEvent.startLoading(),
-  );
 
-  try {
-    final orderId = await createOrder(double.parse(amount));
-    if (orderId == null) {
-      log("orderId creating error");
-      context.read<ConfirmBookingBloc>().add(
-        ConfirmBookingEvent.stopLoading(),
-      );
-
-      _showCustomSnackbar("Failed to create order. Please try again.", isError: true);
-      return;
-    }
-
-    setState(() {
-      _orderId = orderId;
-    });
-
-    final passenger = widget.requestData;
-    log(passenger.toString());
-
-    // ✅ Extract traveller details safely
-    final traveller = passenger['traveller'] ?? {};
-    final primaryContact = traveller['primaryContact'] ?? {};
-
-    final firstName = traveller['firstName'] ?? '';
-    final lastName = traveller['lastName'] ?? '';
-    final name = ('$firstName $lastName').trim().isNotEmpty ? '$firstName $lastName' : 'Passenger';
-
-    final phone = primaryContact['number']?.toString() ?? '0000000000';
-    final email = traveller['email'] ?? 'email@example.com';
-
-    // ✅ Razorpay payment options with updated theme
-    var options = {
-      'key': razorpaykey,
-      'amount': (double.parse(amount) * 100).toString(),
-      'name': 'MT Trip', // Your brand name
-      'description': 'Cab Booking Payment',
-      'order_id': orderId,
-      // 'image': 'https://i.ibb.co/your-image-id/mtlogo.jpg', // Your logo
-      'prefill': {
-        'contact': phone, 
-        'email': email,
-        'name': name,
-      },
-      'theme': {
-        'color': '#D4AF37', // Gold for buttons and text
-        'backdrop_color': '#000000', // Black background
-      },
-      'notes': {
-        'contact': phone,
-        'email': email,
-        'name': name,
-        'booking_type': 'Cab Booking',
-        'service': 'MT Trip Cab Service',
-      },
-    };
-
-    // Platform-specific configurations
-    if (Theme.of(context).platform == TargetPlatform.iOS) {
-      options['ios'] = {
-        'hide_top_bar': false,
-      };
-    }
-
-    if (Theme.of(context).platform == TargetPlatform.android) {
-      options['android'] = {
-        'hide_logo': false,
-        'send_sms_hash': true,
-      };
-    }
+  void _onBookNow(String amount) async {
+    log("_onBookNow -----");
+    context.read<ConfirmBookingBloc>().add(ConfirmBookingEvent.startLoading());
 
     try {
-      _razorpay.open(options);
+      final orderId = await createOrder(double.parse(amount));
+      if (orderId == null) {
+        log("orderId creating error");
+        context.read<ConfirmBookingBloc>().add(
+          ConfirmBookingEvent.stopLoading(),
+        );
+
+        _showCustomSnackbar(
+          "Failed to create order. Please try again.",
+          isError: true,
+        );
+        return;
+      }
+
+      setState(() {
+        _orderId = orderId;
+      });
+
+      final passenger = widget.requestData;
+      log(passenger.toString());
+
+      // ✅ Extract traveller details safely
+      final traveller = passenger['traveller'] ?? {};
+      final primaryContact = traveller['primaryContact'] ?? {};
+
+      final firstName = traveller['firstName'] ?? '';
+      final lastName = traveller['lastName'] ?? '';
+      final name = ('$firstName $lastName').trim().isNotEmpty
+          ? '$firstName $lastName'
+          : 'Passenger';
+
+      final phone = primaryContact['number']?.toString() ?? '0000000000';
+      final email = traveller['email'] ?? 'email@example.com';
+
+      // ✅ Razorpay payment options with updated theme
+      var options = {
+        'key': razorpaykey,
+        'amount': (double.parse(amount) * 100).toString(),
+        'name': 'MT Trip', // Your brand name
+        'description': 'Cab Booking Payment',
+        'order_id': orderId,
+        // 'image': 'https://i.ibb.co/your-image-id/mtlogo.jpg', // Your logo
+        'prefill': {'contact': phone, 'email': email, 'name': name},
+        'theme': {
+          'color': '#D4AF37', // Gold for buttons and text
+          'backdrop_color': '#000000', // Black background
+        },
+        'notes': {
+          'contact': phone,
+          'email': email,
+          'name': name,
+          'booking_type': 'Cab Booking',
+          'service': 'MT Trip Cab Service',
+        },
+      };
+
+      // Platform-specific configurations
+      if (Theme.of(context).platform == TargetPlatform.iOS) {
+        options['ios'] = {'hide_top_bar': false};
+      }
+
+      if (Theme.of(context).platform == TargetPlatform.android) {
+        options['android'] = {'hide_logo': false, 'send_sms_hash': true};
+      }
+
+      try {
+        _razorpay.open(options);
+      } catch (e) {
+        log("Razorpay Error: $e");
+        context.read<ConfirmBookingBloc>().add(
+          ConfirmBookingEvent.stopLoading(),
+        );
+        // _showCustomSnackbar("Payment error: $e", isError: true);
+      }
     } catch (e) {
-      log("Razorpay Error: $e");
-      context.read<ConfirmBookingBloc>().add(
-        ConfirmBookingEvent.stopLoading(),
-      );
-      // _showCustomSnackbar("Payment error: $e", isError: true);
+      log("Error in _onBookNow: $e");
+      context.read<ConfirmBookingBloc>().add(ConfirmBookingEvent.stopLoading());
+      // _showCustomSnackbar("An error occurred: $e", isError: true);
     }
-  } catch (e) {
-    log("Error in _onBookNow: $e");
-    context.read<ConfirmBookingBloc>().add(
-      ConfirmBookingEvent.stopLoading(),
-    );
-    // _showCustomSnackbar("An error occurred: $e", isError: true);
   }
-}
 
   void _showCustomSnackbar(String message, {bool isError = false}) {
     final color = isError ? _errorColor : _successColor;
-    final icon = isError ? Icons.error_outline_rounded : Icons.check_circle_rounded;
+    final icon = isError
+        ? Icons.error_outline_rounded
+        : Icons.check_circle_rounded;
 
     final snackBar = SnackBar(
       margin: const EdgeInsets.fromLTRB(16, 20, 16, 10),
@@ -377,7 +374,10 @@ void _onBookNow(String amount) async {
           Expanded(
             child: Text(
               message,
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],
@@ -386,6 +386,57 @@ void _onBookNow(String amount) async {
 
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  void _showServerErrorBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.error_outline_rounded,
+                color: Colors.red,
+                size: 48,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Connection Error',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Server issue detected. Connection failed. Please try again later.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Close'),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -397,66 +448,100 @@ void _onBookNow(String amount) async {
             state.whenOrNull(
               refundProcessing:
                   (orderId, transactionId, amount, tableid, bookingid) {
-                // Show processing dialog
-              },
-              paymentSavedFailed: (message, orderId, transactionId, amount, tableid, shouldRefund, bookingid) {
-                if (shouldRefund) {
-                  context.read<ConfirmBookingBloc>().add(
-                    ConfirmBookingEvent.initiateRefund(
-                      orderId: orderId,
-                      transactionId: transactionId,
-                      amount: amount,
-                      tableid: tableid,
-                      bookingid: bookingid,
-                    ),
-                  );
-                }
-              },
-              refundInitiated: (message, orderId, transactionId, amount, tableid, bookingid) {
-                log('Navigate to refund initiated page');
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>  ScreenRefundInitiated(),
-                  ),
-                );
-              },
-              refundFailed: (message, orderId, transactionId, amount, tableid, bookingid) {
-                log('Navigate to failed page with refund failure');
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>  ScreenFailTicket(),
-                  ),
-                );
-              },
-              error: (message, shouldRefund, orderId, transactionId, amount, tableid, bookingid) {
-                if (shouldRefund) {
-                  context.read<ConfirmBookingBloc>().add(
-                    ConfirmBookingEvent.initiateRefund(
-                      orderId: orderId,
-                      transactionId: transactionId,
-                      amount: amount,
-                      tableid: tableid,
-                      bookingid: bookingid,
-                    ),
-                  );
-                } else {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text("Error"),
-                      content: Text(message),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text("OK"),
+                    // Show processing dialog
+                  },
+              paymentSavedFailed:
+                  (
+                    message,
+                    orderId,
+                    transactionId,
+                    amount,
+                    tableid,
+                    shouldRefund,
+                    bookingid,
+                  ) {
+                    if (shouldRefund) {
+                      context.read<ConfirmBookingBloc>().add(
+                        ConfirmBookingEvent.initiateRefund(
+                          orderId: orderId,
+                          transactionId: transactionId,
+                          amount: amount,
+                          tableid: tableid,
+                          bookingid: bookingid,
                         ),
-                      ],
-                    ),
-                  );
-                }
-              },
+                      );
+                    }
+                  },
+              refundInitiated:
+                  (
+                    message,
+                    orderId,
+                    transactionId,
+                    amount,
+                    tableid,
+                    bookingid,
+                  ) {
+                    log('Navigate to refund initiated page');
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ScreenRefundInitiated(),
+                      ),
+                    );
+                  },
+              refundFailed:
+                  (
+                    message,
+                    orderId,
+                    transactionId,
+                    amount,
+                    tableid,
+                    bookingid,
+                  ) {
+                    log('Navigate to failed page with refund failure');
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ScreenFailTicket(),
+                      ),
+                    );
+                  },
+              error:
+                  (
+                    message,
+                    shouldRefund,
+                    orderId,
+                    transactionId,
+                    amount,
+                    tableid,
+                    bookingid,
+                  ) {
+                    if (shouldRefund) {
+                      context.read<ConfirmBookingBloc>().add(
+                        ConfirmBookingEvent.initiateRefund(
+                          orderId: orderId,
+                          transactionId: transactionId,
+                          amount: amount,
+                          tableid: tableid,
+                          bookingid: bookingid,
+                        ),
+                      );
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text("Error"),
+                          content: Text(message),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text("OK"),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  },
               success: (data) {
                 log('Navigate to success page');
                 Navigator.pushReplacement(
@@ -474,10 +559,10 @@ void _onBookNow(String amount) async {
         ),
       ],
       child: WillPopScope(
-        onWillPop:()async{
-           _onWillPop();
+        onWillPop: () async {
+          _onWillPop();
 
-           return false;
+          return false;
         },
         child: Scaffold(
           backgroundColor: _backgroundColor,
@@ -496,9 +581,14 @@ void _onBookNow(String amount) async {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
-                    color: _remainingSeconds <= 60 ? _errorColor.withOpacity(0.9) : _secondaryColor.withOpacity(0.9),
+                    color: _remainingSeconds <= 60
+                        ? _errorColor.withOpacity(0.9)
+                        : _secondaryColor.withOpacity(0.9),
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
@@ -530,7 +620,6 @@ void _onBookNow(String amount) async {
             backgroundColor: _primaryColor,
             foregroundColor: Colors.white,
             elevation: 0,
-           
           ),
           body: BlocBuilder<HoldCabBloc, HoldCabState>(
             builder: (context, state) {
@@ -600,7 +689,11 @@ void _onBookNow(String amount) async {
                     color: _secondaryColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(Icons.route_rounded, color: _secondaryColor, size: 22),
+                  child: Icon(
+                    Icons.route_rounded,
+                    color: _secondaryColor,
+                    size: 22,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -615,20 +708,15 @@ void _onBookNow(String amount) async {
             ),
             const SizedBox(height: 20),
 
-            if (bookingData.tripType == 1)
-              _buildOneWayTrip(bookingData),
+            if (bookingData.tripType == 1) _buildOneWayTrip(bookingData),
 
-            if (bookingData.tripType == 2)
-              _buildRoundTrip(bookingData),
+            if (bookingData.tripType == 2) _buildRoundTrip(bookingData),
 
-            if (bookingData.tripType == 3)
-              _buildMultiCityTrip(bookingData),
+            if (bookingData.tripType == 3) _buildMultiCityTrip(bookingData),
 
-            if (bookingData.tripType == 4)
-              _buildAirportTransfer(bookingData),
+            if (bookingData.tripType == 4) _buildAirportTransfer(bookingData),
 
-            if (bookingData.tripType == 10)
-              _buildDayRental(bookingData),
+            if (bookingData.tripType == 10) _buildDayRental(bookingData),
 
             const SizedBox(height: 20),
             Divider(height: 1, color: Colors.grey.shade200),
@@ -685,10 +773,7 @@ void _onBookNow(String amount) async {
 
   Widget _buildOneWayTrip(BookingData bookingData) {
     final route = bookingData.routes.first;
-    return _buildRouteCard(
-      route.source.address,
-      route.destination.address,
-    );
+    return _buildRouteCard(route.source.address, route.destination.address);
   }
 
   Widget _buildRoundTrip(BookingData bookingData) {
@@ -717,7 +802,9 @@ void _onBookNow(String amount) async {
         final index = entry.key;
         final route = entry.value;
         return Padding(
-          padding: EdgeInsets.only(bottom: index < bookingData.routes.length - 1 ? 12 : 0),
+          padding: EdgeInsets.only(
+            bottom: index < bookingData.routes.length - 1 ? 12 : 0,
+          ),
           child: _buildRouteCard(
             route.source.address,
             route.destination.address,
@@ -795,10 +882,7 @@ void _onBookNow(String amount) async {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 8),
-                    Container(
-                      height: 1,
-                      color: Colors.grey.shade300,
-                    ),
+                    Container(height: 1, color: Colors.grey.shade300),
                     const SizedBox(height: 8),
                     Text(
                       destination,
@@ -902,7 +986,11 @@ void _onBookNow(String amount) async {
                     color: _secondaryColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(Icons.directions_car_rounded, color: _secondaryColor, size: 22),
+                  child: Icon(
+                    Icons.directions_car_rounded,
+                    color: _secondaryColor,
+                    size: 22,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -984,9 +1072,15 @@ void _onBookNow(String amount) async {
                               "${cab.seatingCapacity} Seats",
                               Icons.people_alt_rounded,
                             ),
-                            _buildFeatureChip("${cab.bagCapacity} Bags", Icons.luggage_rounded),
+                            _buildFeatureChip(
+                              "${cab.bagCapacity} Bags",
+                              Icons.luggage_rounded,
+                            ),
                             if (cab.isAssured == "1")
-                              _buildFeatureChip("Assured", Icons.verified_rounded),
+                              _buildFeatureChip(
+                                "Assured",
+                                Icons.verified_rounded,
+                              ),
                           ],
                         ),
                       ],
@@ -1014,8 +1108,6 @@ void _onBookNow(String amount) async {
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
-
-          
         ],
       ),
       child: Padding(
@@ -1031,7 +1123,11 @@ void _onBookNow(String amount) async {
                     color: _secondaryColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(Icons.receipt_long_rounded, color: _secondaryColor, size: 22),
+                  child: Icon(
+                    Icons.receipt_long_rounded,
+                    color: _secondaryColor,
+                    size: 22,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -1057,7 +1153,10 @@ void _onBookNow(String amount) async {
               if (fare.airportFee > 0)
                 _buildFareRow("Airport Fee", "₹${fare.airportFee}"),
               if (fare.additionalCharge > 0)
-                _buildFareRow("Additional Charges", "₹${fare.additionalCharge}"),
+                _buildFareRow(
+                  "Additional Charges",
+                  "₹${fare.additionalCharge}",
+                ),
               const SizedBox(height: 12),
               Divider(height: 1, color: Colors.grey.shade300),
               const SizedBox(height: 16),
@@ -1071,7 +1170,10 @@ void _onBookNow(String amount) async {
                       "₹${(_amountWithCommission! - double.parse(fare.totalAmount.toString())).toStringAsFixed(0)}",
                     ),
                     const SizedBox(height: 12),
-                    _buildTotalRow("Total Amount", "₹${_amountWithCommission!.toStringAsFixed(0)}"),
+                    _buildTotalRow(
+                      "Total Amount",
+                      "₹${_amountWithCommission!.toStringAsFixed(0)}",
+                    ),
                   ],
                 ),
             ],
@@ -1128,12 +1230,15 @@ void _onBookNow(String amount) async {
                   onPressed: (_isTimerExpired || state is ConfirmBookingLoading)
                       ? null
                       : () {
-                          _onBookNow(
-                            _amountWithCommission!.toStringAsFixed(0).toString(),
-                          );
+                          _showServerErrorBottomSheet(context);
+                          // _onBookNow(
+                          //   _amountWithCommission!.toStringAsFixed(0).toString(),
+                          // );
                         },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _isTimerExpired ? Colors.grey : _primaryColor,
+                    backgroundColor: _isTimerExpired
+                        ? Colors.grey
+                        : _primaryColor,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
@@ -1147,7 +1252,9 @@ void _onBookNow(String amount) async {
                           height: 24,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
                           ),
                         )
                       : Row(
@@ -1156,7 +1263,9 @@ void _onBookNow(String amount) async {
                             Icon(Icons.lock_rounded, size: 20),
                             const SizedBox(width: 12),
                             Text(
-                              _isTimerExpired ? "TIME EXPIRED" : "PROCEED TO PAYMENT",
+                              _isTimerExpired
+                                  ? "TIME EXPIRED"
+                                  : "PROCEED TO PAYMENT",
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -1236,10 +1345,7 @@ void _onBookNow(String amount) async {
         children: [
           Text(
             "Calculating...",
-            style: TextStyle(
-              fontSize: 14,
-              color: _textSecondary,
-            ),
+            style: TextStyle(fontSize: 14, color: _textSecondary),
           ),
           SizedBox(
             width: 20,
@@ -1294,7 +1400,11 @@ void _onBookNow(String amount) async {
                 color: _errorColor.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.error_outline_rounded, size: 48, color: _errorColor),
+              child: Icon(
+                Icons.error_outline_rounded,
+                size: 48,
+                color: _errorColor,
+              ),
             ),
             const SizedBox(height: 24),
             Text(
@@ -1309,10 +1419,7 @@ void _onBookNow(String amount) async {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                color: _textSecondary,
-              ),
+              style: TextStyle(fontSize: 16, color: _textSecondary),
             ),
             const SizedBox(height: 24),
             SizedBox(

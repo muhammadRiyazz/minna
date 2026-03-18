@@ -16,6 +16,8 @@ Future<void> bookNow({
   required String paymentId,
   required double amount,
 }) async {
+
+  
   try {
     log('Starting booking process for blockKey: $blockKey');
     

@@ -7,6 +7,7 @@ import 'package:minna/comman/pages/screen%20my%20account/about%20us.dart';
 import 'package:minna/comman/pages/screen%20my%20account/contact%20us.dart';
 import 'package:minna/comman/pages/screen%20my%20account/profile.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MyAccountPage extends StatefulWidget {
   const MyAccountPage({super.key});
@@ -173,14 +174,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
                   //     _showComingSoonBottomSheet(context, "Rate Our App");
                   //   },
                   // ),
-                  _buildAccountOption(
-                    Icons.share_outlined,
-                    'Share App',
-                    'Invite friends to MT Trip',
-                    () {
-                      _showComingSoonBottomSheet(context, "Share App");
-                    },
-                  ),
+
       
                   // Legal
                   _buildSectionTitle('LEGAL'),
@@ -188,16 +182,22 @@ class _MyAccountPageState extends State<MyAccountPage> {
                     Icons.security_outlined,
                     'Privacy Policy',
                     'How we protect your data',
-                    () {
-                      _showComingSoonBottomSheet(context, "Privacy Policy");
+                    () async {
+                      final Uri url = Uri.parse('https://mttrip.in/privacy-policy');
+                      if (!await launchUrl(url)) {
+                        debugPrint('Could not launch $url');
+                      }
                     },
                   ),
                   _buildAccountOption(
                     Icons.description_outlined,
                     'Terms of Service',
                     'Our terms and conditions',
-                    () {
-                      _showComingSoonBottomSheet(context, "Terms of Service");
+                    () async {
+                      final Uri url = Uri.parse('https://mttrip.in/terms-and-conditions');
+                      if (!await launchUrl(url)) {
+                        debugPrint('Could not launch $url');
+                      }
                     },
                   ),
       

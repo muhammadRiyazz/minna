@@ -9,7 +9,8 @@ import 'package:minna/comman/core/api.dart';
 import 'package:minna/comman/functions/create_order_id.dart';
 import 'package:minna/hotel%20booking/application/hotel/hotel_booking_confirm_bloc.dart';
 import 'package:minna/hotel%20booking/domain/authentication/authendication.dart';
-import 'package:minna/hotel%20booking/domain/hotel%20list/hotel_list.dart' hide CancelPolicy;
+import 'package:minna/hotel%20booking/domain/hotel%20list/hotel_list.dart'
+    hide CancelPolicy;
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:minna/comman/application/login/login_bloc.dart';
 import 'package:minna/comman/pages/log%20in/login_page.dart';
@@ -22,13 +23,12 @@ class HotelBookingConfirmationPage extends StatefulWidget {
   final List<List<Map<String, dynamic>>>? roomPassengers;
   final String bookingId;
   final PreBookResponseWithAuth preBookResponse;
-   
 
   const HotelBookingConfirmationPage({
     super.key,
     required this.prebookId,
     required this.room,
- 
+
     required this.hotel,
     required this.passengers,
     required this.roomPassengers,
@@ -37,10 +37,12 @@ class HotelBookingConfirmationPage extends StatefulWidget {
   });
 
   @override
-  State<HotelBookingConfirmationPage> createState() => _HotelBookingConfirmationPageState();
+  State<HotelBookingConfirmationPage> createState() =>
+      _HotelBookingConfirmationPageState();
 }
 
-class _HotelBookingConfirmationPageState extends State<HotelBookingConfirmationPage> {
+class _HotelBookingConfirmationPageState
+    extends State<HotelBookingConfirmationPage> {
   late Timer _timer;
   int _remainingSeconds = 8 * 60; // 8 minutes
   bool _isTimerExpired = false;
@@ -79,10 +81,11 @@ class _HotelBookingConfirmationPageState extends State<HotelBookingConfirmationP
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_remainingSeconds > 0) {
         _remainingSeconds--;
-        
+
         final newDisplayTime = _formatTime(_remainingSeconds);
-        final shouldRebuild = _displayTime != newDisplayTime || _remainingSeconds <= 10;
-        
+        final shouldRebuild =
+            _displayTime != newDisplayTime || _remainingSeconds <= 10;
+
         if (shouldRebuild) {
           _displayTime = newDisplayTime;
           if (mounted) {
@@ -106,38 +109,42 @@ class _HotelBookingConfirmationPageState extends State<HotelBookingConfirmationP
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
   }
 
- void _handlePaymentSuccess(PaymentSuccessResponse response) async {
-  log("Hotel Payment Success: ${response.paymentId}");
-  
-  try {
-    final bookingRequest = await _generateBookingRequest();
-    final totalAmount = _getTotalAmount();
-    final netAmount = _getNetAmount();
-    final totalRooms = widget.roomPassengers?.length ?? 1;
-    final isSingleRoom = totalRooms == 1;
+  void _handlePaymentSuccess(PaymentSuccessResponse response) async {
+    log("Hotel Payment Success: ${response.paymentId}");
 
-    log("Booking Request Mode: ${isSingleRoom ? 'Single Room (5)' : 'Multi Room (1)'}");
-    log("Net Amount (for API): $netAmount");
-    log("Total Amount (charged): $totalAmount");
-    log("Booking Request: ${jsonEncode(bookingRequest)}");
+    try {
+      final bookingRequest = await _generateBookingRequest();
+      final totalAmount = _getTotalAmount();
+      final netAmount = _getNetAmount();
+      final totalRooms = widget.roomPassengers?.length ?? 1;
+      final isSingleRoom = totalRooms == 1;
 
-    context.read<HotelBookingConfirmBloc>().add(
-      HotelBookingConfirmEvent.paymentDone(
-        prebookId: widget.prebookId,
-        orderId: response.orderId ?? _orderId ?? '',
-        transactionId: response.paymentId ?? '',
-        bookingId: widget.bookingId,
-        amount: totalAmount, // Pass the total amount (with taxes) for processing
-        bookingRequest: bookingRequest,
-      ),
-    );
+      log(
+        "Booking Request Mode: ${isSingleRoom ? 'Single Room (5)' : 'Multi Room (1)'}",
+      );
+      log("Net Amount (for API): $netAmount");
+      log("Total Amount (charged): $totalAmount");
+      log("Booking Request: ${jsonEncode(bookingRequest)}");
 
-    _timer.cancel();
-  } catch (e) {
-    log("Error in payment success handler: $e");
-    // Handle error appropriately
+      context.read<HotelBookingConfirmBloc>().add(
+        HotelBookingConfirmEvent.paymentDone(
+          prebookId: widget.prebookId,
+          orderId: response.orderId ?? _orderId ?? '',
+          transactionId: response.paymentId ?? '',
+          bookingId: widget.bookingId,
+          amount:
+              totalAmount, // Pass the total amount (with taxes) for processing
+          bookingRequest: bookingRequest,
+        ),
+      );
+
+      _timer.cancel();
+    } catch (e) {
+      log("Error in payment success handler: $e");
+      // Handle error appropriately
+    }
   }
-}
+
   void _handlePaymentError(PaymentFailureResponse response) async {
     log("Hotel Payment Failed: ${response.message}");
 
@@ -184,7 +191,11 @@ class _HotelBookingConfirmationPageState extends State<HotelBookingConfirmationP
                     color: _errorColor.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.timer_off_rounded, size: 40, color: _errorColor),
+                  child: Icon(
+                    Icons.timer_off_rounded,
+                    size: 40,
+                    color: _errorColor,
+                  ),
                 ),
                 SizedBox(height: 20),
                 Text(
@@ -199,10 +210,7 @@ class _HotelBookingConfirmationPageState extends State<HotelBookingConfirmationP
                 Text(
                   "Your hotel booking time has expired. Please try again.",
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: _textSecondary,
-                  ),
+                  style: TextStyle(fontSize: 16, color: _textSecondary),
                 ),
                 SizedBox(height: 24),
                 SizedBox(
@@ -236,62 +244,119 @@ class _HotelBookingConfirmationPageState extends State<HotelBookingConfirmationP
     );
   }
 
-double _getTotalAmount() {
-  final preBookRoom = widget.preBookResponse.preBookResponse.hotelResult.firstOrNull?.rooms.firstOrNull;
-  if (preBookRoom != null) {
-    // This returns the TOTAL amount (room fare + taxes)
-    return preBookRoom.totalFare + preBookRoom.totalTax;
-  }
-  // Fallback to widget.room data
-  return widget.room.totalFare + widget.room.totalTax;
-}
-
-// Add a new method to get just the net amount (room fare without taxes)
-double _getNetAmount() {
-  final preBookRoom = widget.preBookResponse.preBookResponse.hotelResult.firstOrNull?.rooms.firstOrNull;
-  if (preBookRoom != null) {
-    // This returns just the NET amount (room fare without taxes)
-    return preBookRoom.totalFare;
-  }
-  // Fallback to widget.room data
-  return widget.room.totalFare;
-}
-
-Future<Map<String, dynamic>> _generateBookingRequest() async {
-  final hotelRoomsDetails = <Map<String, dynamic>>[];
-  final totalRooms = widget.roomPassengers?.length ?? 1;
-  final isSingleRoom = totalRooms == 1;
-
-  // Get hotel result from prebook response
-  final hotelResult = widget.preBookResponse.preBookResponse.hotelResult.firstOrNull;
-  if (hotelResult == null) {
-    throw Exception("No hotel result found in prebook response");
+  double _getTotalAmount() {
+    final preBookRoom = widget
+        .preBookResponse
+        .preBookResponse
+        .hotelResult
+        .firstOrNull
+        ?.rooms
+        .firstOrNull;
+    if (preBookRoom != null) {
+      // This returns the TOTAL amount (room fare + taxes)
+      return preBookRoom.totalFare + preBookRoom.totalTax;
+    }
+    // Fallback to widget.room data
+    return widget.room.totalFare + widget.room.totalTax;
   }
 
-  // Get the correct prebook room to calculate net amount
-  final preBookRoom = widget.preBookResponse.preBookResponse.hotelResult.firstOrNull?.rooms.firstOrNull;
-  
-  // Calculate amounts
-  final roomFare = preBookRoom?.totalFare ?? widget.room.totalFare;
-  final roomTax = preBookRoom?.totalTax ?? widget.room.totalTax;
-  final netAmount = roomFare; // Net amount is room fare without taxes
-  final totalAmount = roomFare + roomTax;
-
-  // Get required authentication fields
-  final tokenId = widget.preBookResponse.tokenId;
-  final agencyId = widget.preBookResponse.agencyId;
-  final traceId = ""; // Using empty string as per your code
-
-  if (tokenId == null || tokenId.isEmpty) {
-    throw Exception("TokenId is required for booking");
+  // Add a new method to get just the net amount (room fare without taxes)
+  double _getNetAmount() {
+    final preBookRoom = widget
+        .preBookResponse
+        .preBookResponse
+        .hotelResult
+        .firstOrNull
+        ?.rooms
+        .firstOrNull;
+    if (preBookRoom != null) {
+      // This returns just the NET amount (room fare without taxes)
+      return preBookRoom.totalFare;
+    }
+    // Fallback to widget.room data
+    return widget.room.totalFare;
   }
 
-  // Build passenger data
-  if (widget.roomPassengers != null) {
-    for (final room in widget.roomPassengers!) {
+  Future<Map<String, dynamic>> _generateBookingRequest() async {
+    final hotelRoomsDetails = <Map<String, dynamic>>[];
+    final totalRooms = widget.roomPassengers?.length ?? 1;
+    final isSingleRoom = totalRooms == 1;
+
+    // Get hotel result from prebook response
+    final hotelResult =
+        widget.preBookResponse.preBookResponse.hotelResult.firstOrNull;
+    if (hotelResult == null) {
+      throw Exception("No hotel result found in prebook response");
+    }
+
+    // Get the correct prebook room to calculate net amount
+    final preBookRoom = widget
+        .preBookResponse
+        .preBookResponse
+        .hotelResult
+        .firstOrNull
+        ?.rooms
+        .firstOrNull;
+
+    // Calculate amounts
+    final roomFare = preBookRoom?.totalFare ?? widget.room.totalFare;
+    final roomTax = preBookRoom?.totalTax ?? widget.room.totalTax;
+    final netAmount = roomFare; // Net amount is room fare without taxes
+    final totalAmount = roomFare + roomTax;
+
+    // Get required authentication fields
+    final tokenId = widget.preBookResponse.tokenId;
+    final agencyId = widget.preBookResponse.agencyId;
+    final traceId = ""; // Using empty string as per your code
+
+    if (tokenId == null || tokenId.isEmpty) {
+      throw Exception("TokenId is required for booking");
+    }
+
+    // Build passenger data
+    if (widget.roomPassengers != null) {
+      for (final room in widget.roomPassengers!) {
+        final hotelPassengers = <Map<String, dynamic>>[];
+
+        for (final passenger in room) {
+          hotelPassengers.add({
+            "Title": passenger['Title'] ?? "Mr.",
+            "FirstName": passenger['FirstName'] ?? "",
+            "MiddleName": passenger['MiddleName'] ?? "",
+            "LastName": passenger['LastName'] ?? "",
+            "Email": passenger['Email'] ?? null,
+            "PaxType": passenger['PaxType'] ?? 1,
+            "LeadPassenger": passenger['LeadPassenger'] ?? false,
+            "Age": passenger['Age'] ?? 0,
+            "PassportNo":
+                passenger['PassportNo'] ?? passenger['Passport'] ?? null,
+            "PassportIssueDate": passenger['PassportIssueDate'] ?? null,
+            "PassportExpDate": passenger['PassportExpDate'] ?? null,
+            "Phoneno": passenger['Phoneno'] ?? passenger['Phone'] ?? null,
+            "PaxId": passenger['PaxId'] ?? 0,
+            "GSTCompanyAddress": passenger['GSTCompanyAddress'] ?? null,
+            "GSTCompanyContactNumber":
+                passenger['GSTCompanyContactNumber'] ?? null,
+            "GSTCompanyName": passenger['GSTCompanyName'] ?? null,
+            "GSTNumber": passenger['GSTNumber'] ?? null,
+            "GSTCompanyEmail": passenger['GSTCompanyEmail'] ?? null,
+            "PAN": passenger['PAN'] ?? null,
+          });
+        }
+
+        // Ensure at least one passenger is marked as LeadPassenger
+        if (hotelPassengers.isNotEmpty &&
+            !hotelPassengers.any((p) => p['LeadPassenger'] == true)) {
+          hotelPassengers[0]['LeadPassenger'] = true;
+        }
+
+        hotelRoomsDetails.add({"HotelPassenger": hotelPassengers});
+      }
+    } else {
+      // Fallback to single room structure
       final hotelPassengers = <Map<String, dynamic>>[];
-      
-      for (final passenger in room) {
+
+      for (final passenger in widget.passengers) {
         hotelPassengers.add({
           "Title": passenger['Title'] ?? "Mr.",
           "FirstName": passenger['FirstName'] ?? "",
@@ -301,99 +366,65 @@ Future<Map<String, dynamic>> _generateBookingRequest() async {
           "PaxType": passenger['PaxType'] ?? 1,
           "LeadPassenger": passenger['LeadPassenger'] ?? false,
           "Age": passenger['Age'] ?? 0,
-          "PassportNo": passenger['PassportNo'] ?? passenger['Passport'] ?? null,
+          "PassportNo":
+              passenger['PassportNo'] ?? passenger['Passport'] ?? null,
           "PassportIssueDate": passenger['PassportIssueDate'] ?? null,
           "PassportExpDate": passenger['PassportExpDate'] ?? null,
           "Phoneno": passenger['Phoneno'] ?? passenger['Phone'] ?? null,
           "PaxId": passenger['PaxId'] ?? 0,
           "GSTCompanyAddress": passenger['GSTCompanyAddress'] ?? null,
-          "GSTCompanyContactNumber": passenger['GSTCompanyContactNumber'] ?? null,
+          "GSTCompanyContactNumber":
+              passenger['GSTCompanyContactNumber'] ?? null,
           "GSTCompanyName": passenger['GSTCompanyName'] ?? null,
           "GSTNumber": passenger['GSTNumber'] ?? null,
           "GSTCompanyEmail": passenger['GSTCompanyEmail'] ?? null,
           "PAN": passenger['PAN'] ?? null,
         });
       }
-      
+
       // Ensure at least one passenger is marked as LeadPassenger
-      if (hotelPassengers.isNotEmpty && !hotelPassengers.any((p) => p['LeadPassenger'] == true)) {
+      if (hotelPassengers.isNotEmpty &&
+          !hotelPassengers.any((p) => p['LeadPassenger'] == true)) {
         hotelPassengers[0]['LeadPassenger'] = true;
       }
-      
-      hotelRoomsDetails.add({
-        "HotelPassenger": hotelPassengers,
-      });
+
+      hotelRoomsDetails.add({"HotelPassenger": hotelPassengers});
     }
-  } else {
-    // Fallback to single room structure
-    final hotelPassengers = <Map<String, dynamic>>[];
-    
-    for (final passenger in widget.passengers) {
-      hotelPassengers.add({
-        "Title": passenger['Title'] ?? "Mr.",
-        "FirstName": passenger['FirstName'] ?? "",
-        "MiddleName": passenger['MiddleName'] ?? "",
-        "LastName": passenger['LastName'] ?? "",
-        "Email": passenger['Email'] ?? null,
-        "PaxType": passenger['PaxType'] ?? 1,
-        "LeadPassenger": passenger['LeadPassenger'] ?? false,
-        "Age": passenger['Age'] ?? 0,
-        "PassportNo": passenger['PassportNo'] ?? passenger['Passport'] ?? null,
-        "PassportIssueDate": passenger['PassportIssueDate'] ?? null,
-        "PassportExpDate": passenger['PassportExpDate'] ?? null,
-        "Phoneno": passenger['Phoneno'] ?? passenger['Phone'] ?? null,
-        "PaxId": passenger['PaxId'] ?? 0,
-        "GSTCompanyAddress": passenger['GSTCompanyAddress'] ?? null,
-        "GSTCompanyContactNumber": passenger['GSTCompanyContactNumber'] ?? null,
-        "GSTCompanyName": passenger['GSTCompanyName'] ?? null,
-        "GSTNumber": passenger['GSTNumber'] ?? null,
-        "GSTCompanyEmail": passenger['GSTCompanyEmail'] ?? null,
-        "PAN": passenger['PAN'] ?? null,
-      });
+
+    // Base booking request - COMMON for both modes
+    final bookingRequest = <String, dynamic>{
+      "BookingCode": widget.room.bookingCode,
+      "IsVoucherBooking": true,
+      "GuestNationality": "IN",
+      "EndUserIp": "192.168.9.119",
+      "HotelRoomsDetails": hotelRoomsDetails,
+      "NetAmount": netAmount, // Add NetAmount for ALL bookings
+    };
+
+    // Determine booking mode
+    final requestedBookingMode = isSingleRoom ? 5 : 1;
+    bookingRequest["RequestedBookingMode"] = requestedBookingMode;
+
+    if (isSingleRoom) {
+      // For single room bookings (Mode 5)
+      bookingRequest["ClientReferenceId"] = _generateClientReferenceId();
+      log("Single Room Booking (Mode 5) - NetAmount: $netAmount");
+    } else {
+      // For multi-room bookings (Mode 1)
+      // Based on the API documentation you provided, Mode 1 needs these additional fields
+      bookingRequest["TokenId"] = tokenId;
+      bookingRequest["TraceId"] = traceId;
+      bookingRequest["AgencyId"] = agencyId; // Use default if not provided
+      log(
+        "Multi-Room Booking (Mode 1) - NetAmount: $netAmount, TokenId: $tokenId, AgencyId: ${agencyId}",
+      );
     }
-    
-    // Ensure at least one passenger is marked as LeadPassenger
-    if (hotelPassengers.isNotEmpty && !hotelPassengers.any((p) => p['LeadPassenger'] == true)) {
-      hotelPassengers[0]['LeadPassenger'] = true;
-    }
-    
-    hotelRoomsDetails.add({
-      "HotelPassenger": hotelPassengers,
-    });
+
+    // Log the final request for debugging
+    log("Generated Booking Request: ${jsonEncode(bookingRequest)}");
+
+    return bookingRequest;
   }
-
-  // Base booking request - COMMON for both modes
-  final bookingRequest = <String, dynamic>{
-    "BookingCode": widget.room.bookingCode,
-    "IsVoucherBooking": true,
-    "GuestNationality": "IN",
-    "EndUserIp": "192.168.9.119",
-    "HotelRoomsDetails": hotelRoomsDetails,
-    "NetAmount": netAmount, // Add NetAmount for ALL bookings
-  };
-
-  // Determine booking mode
-  final requestedBookingMode = isSingleRoom ? 5 : 1;
-  bookingRequest["RequestedBookingMode"] = requestedBookingMode;
-
-  if (isSingleRoom) {
-    // For single room bookings (Mode 5)
-    bookingRequest["ClientReferenceId"] = _generateClientReferenceId();
-    log("Single Room Booking (Mode 5) - NetAmount: $netAmount");
-  } else {
-    // For multi-room bookings (Mode 1)
-    // Based on the API documentation you provided, Mode 1 needs these additional fields
-    bookingRequest["TokenId"] = tokenId;
-    bookingRequest["TraceId"] = traceId;
-    bookingRequest["AgencyId"] = agencyId; // Use default if not provided
-    log("Multi-Room Booking (Mode 1) - NetAmount: $netAmount, TokenId: $tokenId, AgencyId: ${agencyId}");
-  }
-
-  // Log the final request for debugging
-  log("Generated Booking Request: ${jsonEncode(bookingRequest)}");
-
-  return bookingRequest;
-}
 
   String _generateClientReferenceId() {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
@@ -424,7 +455,11 @@ Future<Map<String, dynamic>> _generateBookingRequest() async {
                     color: _warningColor.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.exit_to_app_rounded, color: _warningColor, size: 30),
+                  child: Icon(
+                    Icons.exit_to_app_rounded,
+                    color: _warningColor,
+                    size: 30,
+                  ),
                 ),
                 SizedBox(height: 16),
                 Text(
@@ -439,10 +474,7 @@ Future<Map<String, dynamic>> _generateBookingRequest() async {
                 Text(
                   "Are you sure you want to exit the booking process?",
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: _textSecondary,
-                    fontSize: 15,
-                  ),
+                  style: TextStyle(color: _textSecondary, fontSize: 15),
                 ),
                 SizedBox(height: 24),
                 Row(
@@ -460,7 +492,10 @@ Future<Map<String, dynamic>> _generateBookingRequest() async {
                         ),
                         child: Text(
                           "Continue Booking",
-                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                          ),
                         ),
                       ),
                     ),
@@ -468,7 +503,9 @@ Future<Map<String, dynamic>> _generateBookingRequest() async {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.of(context).popUntil((route) => route.isFirst);
+                          Navigator.of(
+                            context,
+                          ).popUntil((route) => route.isFirst);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _primaryColor,
@@ -480,7 +517,10 @@ Future<Map<String, dynamic>> _generateBookingRequest() async {
                         ),
                         child: Text(
                           "Exit",
-                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                          ),
                         ),
                       ),
                     ),
@@ -496,60 +536,28 @@ Future<Map<String, dynamic>> _generateBookingRequest() async {
     return shouldExit ?? false;
   }
 
-void _onProceedToPayment() async {
-  final isLoggedIn = context.read<LoginBloc>().state.isLoggedIn ?? false;
+  void _onProceedToPayment() async {
+    final isLoggedIn = context.read<LoginBloc>().state.isLoggedIn ?? false;
 
-  if (!isLoggedIn) {
-    await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => const LoginBottomSheet(login: 1),
-    );
-
-    // Re-check login status after bottom sheet is closed
-    final newLoginState = context.read<LoginBloc>().state;
-    if (newLoginState.isLoggedIn != true) {
-      return;
-    }
-  }
-
-  if (_isTimerExpired) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("Booking time has expired. Please try again."),
-        backgroundColor: _errorColor,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-    );
-    return;
-  }
-
-  context.read<HotelBookingConfirmBloc>().add(
-    HotelBookingConfirmEvent.startLoading(),
-  );
-
-  try {
-    // Get the TOTAL amount (room fare + taxes) for Razorpay
-    final totalAmount = _getTotalAmount();
-    final netAmount = _getNetAmount();
-    final totalRooms = widget.roomPassengers?.length ?? 1;
-    final isSingleRoom = totalRooms == 1;
-    
-    log("Payment Details - Total Amount: $totalAmount, Net Amount: $netAmount, Mode: ${isSingleRoom ? 'Single' : 'Multi'}");
-
-    final orderId = await createOrder(totalAmount);
-    
-    if (orderId == null) {
-      log("Order ID creation failed");
-      context.read<HotelBookingConfirmBloc>().add(
-        HotelBookingConfirmEvent.stopLoading(),
+    if (!isLoggedIn) {
+      await showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => const LoginBottomSheet(login: 1),
       );
-      
+
+      // Re-check login status after bottom sheet is closed
+      final newLoginState = context.read<LoginBloc>().state;
+      if (newLoginState.isLoggedIn != true) {
+        return;
+      }
+    }
+
+    if (_isTimerExpired) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Failed to create order. Please try again."),
+          content: Text("Booking time has expired. Please try again."),
           backgroundColor: _errorColor,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -558,57 +566,97 @@ void _onProceedToPayment() async {
       return;
     }
 
-    setState(() {
-      _orderId = orderId;
-    });
-
-    final leadPassenger = _getLeadPassenger();
-    final name = "${leadPassenger['Title']} ${leadPassenger['FirstName']} ${leadPassenger['LastName']}".trim();
-    final phone = leadPassenger['Phone'] ?? leadPassenger['Phoneno'] ?? '';
-    final email = leadPassenger['Email'] ?? '';
-
-    var options = {
-      'key': razorpaykey,
-      'amount': (totalAmount * 100).toInt(), // Charge TOTAL amount (with taxes)
-      'name': 'MT Hotels',
-      'order_id': orderId,
-      'description': 'Hotel Booking - ${widget.hotel.hotelDetails.hotelName}',
-      'prefill': {'contact': phone, 'email': email, 'name': name},
-      'theme': {'color': '#000000'}
-    };
+    context.read<HotelBookingConfirmBloc>().add(
+      HotelBookingConfirmEvent.startLoading(),
+    );
 
     try {
-      _razorpay.open(options);
+      // Get the TOTAL amount (room fare + taxes) for Razorpay
+      final totalAmount = _getTotalAmount();
+      final netAmount = _getNetAmount();
+      final totalRooms = widget.roomPassengers?.length ?? 1;
+      final isSingleRoom = totalRooms == 1;
+
+      log(
+        "Payment Details - Total Amount: $totalAmount, Net Amount: $netAmount, Mode: ${isSingleRoom ? 'Single' : 'Multi'}",
+      );
+
+      final orderId = await createOrder(totalAmount);
+
+      if (orderId == null) {
+        log("Order ID creation failed");
+        context.read<HotelBookingConfirmBloc>().add(
+          HotelBookingConfirmEvent.stopLoading(),
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Failed to create order. Please try again."),
+            backgroundColor: _errorColor,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        );
+        return;
+      }
+
+      setState(() {
+        _orderId = orderId;
+      });
+
+      final leadPassenger = _getLeadPassenger();
+      final name =
+          "${leadPassenger['Title']} ${leadPassenger['FirstName']} ${leadPassenger['LastName']}"
+              .trim();
+      final phone = leadPassenger['Phone'] ?? leadPassenger['Phoneno'] ?? '';
+      final email = leadPassenger['Email'] ?? '';
+
+      var options = {
+        'key': razorpaykey,
+        'amount': (totalAmount * 100)
+            .toInt(), // Charge TOTAL amount (with taxes)
+        'name': 'MT Hotels',
+        'order_id': orderId,
+        'description': 'Hotel Booking - ${widget.hotel.hotelDetails.hotelName}',
+        'prefill': {'contact': phone, 'email': email, 'name': name},
+        'theme': {'color': '#000000'},
+      };
+
+      try {
+        _razorpay.open(options);
+      } catch (e) {
+        log("Razorpay Error: $e");
+        context.read<HotelBookingConfirmBloc>().add(
+          HotelBookingConfirmEvent.stopLoading(),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Payment error: ${e.toString()}"),
+            backgroundColor: _errorColor,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        );
+      }
     } catch (e) {
-      log("Razorpay Error: $e");
+      log("Error in payment process: $e");
       context.read<HotelBookingConfirmBloc>().add(
         HotelBookingConfirmEvent.stopLoading(),
       );
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Payment error: ${e.toString()}"),
+          content: Text("An error occurred: ${e.toString()}"),
           backgroundColor: _errorColor,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       );
     }
-  } catch (e) {
-    
-    log("Error in payment process: $e");
-    context.read<HotelBookingConfirmBloc>().add(
-      HotelBookingConfirmEvent.stopLoading(),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("An error occurred: ${e.toString()}"),
-        backgroundColor: _errorColor,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-    );
   }
-}
 
   Map<String, dynamic> _getLeadPassenger() {
     // Find lead passenger from all rooms
@@ -619,9 +667,60 @@ void _onProceedToPayment() async {
         }
       }
     }
-    
+
     // Return first passenger as fallback
     return widget.passengers.first;
+  }
+
+  void _showServerErrorBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.error_outline_rounded,
+                color: Colors.red,
+                size: 48,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Connection Error',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Server issue detected. Connection failed. Please try again later.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Close'),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -629,60 +728,87 @@ void _onProceedToPayment() async {
     final totalAmount = _getTotalAmount();
     final totalRooms = widget.roomPassengers?.length ?? 1;
     final totalGuests = widget.passengers.length;
-    final preBookRoom = widget.preBookResponse.preBookResponse.hotelResult.firstOrNull?.rooms.firstOrNull;
+    final preBookRoom = widget
+        .preBookResponse
+        .preBookResponse
+        .hotelResult
+        .firstOrNull
+        ?.rooms
+        .firstOrNull;
 
     return MultiBlocListener(
       listeners: [
         BlocListener<HotelBookingConfirmBloc, HotelBookingConfirmState>(
           listener: (context, state) {
             state.whenOrNull(
-              success: (data, bookingId, confirmationNo, bookingRefNo, booktableId) {
-                log("Hotel Booking Success - BookingId: $bookingId, ConfirmationNo: $confirmationNo");
-                // Navigate to success page
-                // Navigator.pushReplacement(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => HotelBookingSuccessPage(
-                //       bookingId: bookingId,
-                //       confirmationNo: confirmationNo,
-                //       bookingRefNo: bookingRefNo,
-                //       hotelName: widget.hotel.hotelDetails.hotelName,
-                //       amount: totalAmount,
-                //     ),
-                //   ),
-                // );
-              },
+              success:
+                  (data, bookingId, confirmationNo, bookingRefNo, booktableId) {
+                    log(
+                      "Hotel Booking Success - BookingId: $bookingId, ConfirmationNo: $confirmationNo",
+                    );
+                    // Navigate to success page
+                    // Navigator.pushReplacement(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => HotelBookingSuccessPage(
+                    //       bookingId: bookingId,
+                    //       confirmationNo: confirmationNo,
+                    //       bookingRefNo: bookingRefNo,
+                    //       hotelName: widget.hotel.hotelDetails.hotelName,
+                    //       amount: totalAmount,
+                    //     ),
+                    //   ),
+                    // );
+                  },
               paymentFailed: (message, orderId, bookingId) {
                 _showPaymentFailedSheet();
               },
-              refundInitiated: (message, orderId, transactionId, amount, tableId, bookingId) {
-                _showRefundInitiatedSheet(context);
-              },
-              refundFailed: (message, orderId, transactionId, amount, bookingId) {
-                _showContactSupportSheet(context);
-              },
-              error: (message, shouldRefund, orderId, transactionId, amount, booktableId, bookingId) {
-                if (shouldRefund) {
-                  log("Initiating refund for order: $orderId");
-                  context.read<HotelBookingConfirmBloc>().add(
-                    HotelBookingConfirmEvent.initiateRefund(
-                      orderId: orderId,
-                      transactionId: transactionId,
-                      amount: amount,
-                      booktableId: booktableId,
-                      bookingId: bookingId,
-                    ),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(message),
-                      backgroundColor: _errorColor,
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
-                }
-              },
+              refundInitiated:
+                  (
+                    message,
+                    orderId,
+                    transactionId,
+                    amount,
+                    tableId,
+                    bookingId,
+                  ) {
+                    _showRefundInitiatedSheet(context);
+                  },
+              refundFailed:
+                  (message, orderId, transactionId, amount, bookingId) {
+                    _showContactSupportSheet(context);
+                  },
+              error:
+                  (
+                    message,
+                    shouldRefund,
+                    orderId,
+                    transactionId,
+                    amount,
+                    booktableId,
+                    bookingId,
+                  ) {
+                    if (shouldRefund) {
+                      log("Initiating refund for order: $orderId");
+                      context.read<HotelBookingConfirmBloc>().add(
+                        HotelBookingConfirmEvent.initiateRefund(
+                          orderId: orderId,
+                          transactionId: transactionId,
+                          amount: amount,
+                          booktableId: booktableId,
+                          bookingId: bookingId,
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(message),
+                          backgroundColor: _errorColor,
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    }
+                  },
             );
           },
         ),
@@ -705,7 +831,10 @@ void _onProceedToPayment() async {
                       elevation: 4,
                       shadowColor: Colors.black.withOpacity(0.3),
                       leading: IconButton(
-                        icon: Icon(Icons.arrow_back_rounded, color: Colors.white),
+                        icon: Icon(
+                          Icons.arrow_back_rounded,
+                          color: Colors.white,
+                        ),
                         onPressed: () => _onWillPop(),
                       ),
                       title: Text(
@@ -721,7 +850,10 @@ void _onProceedToPayment() async {
                         preferredSize: Size.fromHeight(60),
                         child: Container(
                           color: _primaryColor,
-                          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -733,14 +865,21 @@ void _onProceedToPayment() async {
                                 ),
                               ),
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
                                 decoration: BoxDecoration(
                                   color: Colors.white.withOpacity(0.2),
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Row(
                                   children: [
-                                    Icon(Icons.timer, color: Colors.white, size: 18),
+                                    Icon(
+                                      Icons.timer,
+                                      color: Colors.white,
+                                      size: 18,
+                                    ),
                                     SizedBox(width: 8),
                                     Text(
                                       _displayTime,
@@ -772,7 +911,8 @@ void _onProceedToPayment() async {
                             _buildGuestSummary(),
                             SizedBox(height: 16),
                             _buildPriceBreakdown(preBookRoom),
-                            if (preBookRoom?.cancelPolicies.isNotEmpty == true) ...[
+                            if (preBookRoom?.cancelPolicies.isNotEmpty ==
+                                true) ...[
                               SizedBox(height: 16),
                               _buildCancellationPolicy(preBookRoom!),
                             ],
@@ -824,7 +964,11 @@ void _onProceedToPayment() async {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.location_on_rounded, color: _secondaryColor, size: 16),
+                Icon(
+                  Icons.location_on_rounded,
+                  color: _secondaryColor,
+                  size: 16,
+                ),
                 SizedBox(width: 6),
                 Expanded(
                   child: Text(
@@ -837,7 +981,11 @@ void _onProceedToPayment() async {
             SizedBox(height: 8),
             Row(
               children: [
-                Icon(Icons.room_service_rounded, color: _secondaryColor, size: 16),
+                Icon(
+                  Icons.room_service_rounded,
+                  color: _secondaryColor,
+                  size: 16,
+                ),
                 SizedBox(width: 6),
                 Text(
                   '${widget.roomPassengers?.length ?? 1} Room${(widget.roomPassengers?.length ?? 1) > 1 ? 's' : ''}',
@@ -870,7 +1018,10 @@ void _onProceedToPayment() async {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 10),
-            _buildSectionHeader('Booking Details', Icons.calendar_month_rounded),
+            _buildSectionHeader(
+              'Booking Details',
+              Icons.calendar_month_rounded,
+            ),
             GridView.count(
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
@@ -879,16 +1030,8 @@ void _onProceedToPayment() async {
               mainAxisSpacing: 12,
               childAspectRatio: 1.8,
               children: [
-                _buildDetailItem(
-                  'Check-in',
-                  '14:00',
-                  Icons.login_rounded,
-                ),
-                _buildDetailItem(
-                  'Check-out',
-                  '12:00',
-                  Icons.logout_rounded,
-                ),
+                _buildDetailItem('Check-in', '14:00', Icons.login_rounded),
+                _buildDetailItem('Check-out', '12:00', Icons.logout_rounded),
                 _buildDetailItem(
                   'Duration',
                   '1 Night',
@@ -910,7 +1053,9 @@ void _onProceedToPayment() async {
             SizedBox(height: 12),
             _buildDetailItem(
               'Meal Plan',
-              widget.room.mealType.isNotEmpty ? widget.room.mealType : 'Not Included',
+              widget.room.mealType.isNotEmpty
+                  ? widget.room.mealType
+                  : 'Not Included',
               Icons.restaurant_rounded,
             ),
           ],
@@ -994,10 +1139,7 @@ void _onProceedToPayment() async {
             SizedBox(height: 12),
             Text(
               '$totalGuests guest${totalGuests > 1 ? 's' : ''} across $totalRooms room${totalRooms > 1 ? 's' : ''}',
-              style: TextStyle(
-                fontSize: 15,
-                color: _textPrimary,
-              ),
+              style: TextStyle(fontSize: 15, color: _textPrimary),
             ),
             SizedBox(height: 8),
             if (widget.roomPassengers != null)
@@ -1008,10 +1150,7 @@ void _onProceedToPayment() async {
                   padding: EdgeInsets.only(top: 8),
                   child: Text(
                     'Room ${roomIndex + 1}: ${room.length} guest${room.length > 1 ? 's' : ''}',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: _textSecondary,
-                    ),
+                    style: TextStyle(fontSize: 13, color: _textSecondary),
                   ),
                 );
               }),
@@ -1061,7 +1200,11 @@ void _onProceedToPayment() async {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.check_circle_rounded, color: _successColor, size: 20),
+                    Icon(
+                      Icons.check_circle_rounded,
+                      color: _successColor,
+                      size: 20,
+                    ),
                     SizedBox(width: 12),
                     Expanded(
                       child: Text(
@@ -1140,7 +1283,7 @@ void _onProceedToPayment() async {
           children: [
             _buildSectionHeader('Cancellation Policy', Icons.policy_rounded),
             SizedBox(height: 10),
-            
+
             if (preBookRoom.cancelPolicies.isEmpty)
               Text(
                 'Free cancellation available',
@@ -1153,18 +1296,24 @@ void _onProceedToPayment() async {
             else
               Column(
                 children: [
-                  if (preBookRoom.cancelPolicies.isNotEmpty && 
+                  if (preBookRoom.cancelPolicies.isNotEmpty &&
                       preBookRoom.cancelPolicies.first.cancellationCharge == 0)
                     Container(
                       padding: EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: _successColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: _successColor.withOpacity(0.3)),
+                        border: Border.all(
+                          color: _successColor.withOpacity(0.3),
+                        ),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.check_circle_rounded, color: _successColor, size: 18),
+                          Icon(
+                            Icons.check_circle_rounded,
+                            color: _successColor,
+                            size: 18,
+                          ),
                           SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -1183,7 +1332,8 @@ void _onProceedToPayment() async {
                   ...preBookRoom.cancelPolicies.asMap().entries.map((entry) {
                     final index = entry.key;
                     final policy = entry.value;
-                    final isLast = index == preBookRoom.cancelPolicies.length - 1;
+                    final isLast =
+                        index == preBookRoom.cancelPolicies.length - 1;
 
                     return Container(
                       margin: EdgeInsets.only(bottom: isLast ? 0 : 12),
@@ -1224,12 +1374,18 @@ void _onProceedToPayment() async {
                       decoration: BoxDecoration(
                         color: _warningColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: _warningColor.withOpacity(0.3)),
+                        border: Border.all(
+                          color: _warningColor.withOpacity(0.3),
+                        ),
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.info_outline_rounded, color: _warningColor, size: 16),
+                          Icon(
+                            Icons.info_outline_rounded,
+                            color: _warningColor,
+                            size: 16,
+                          ),
                           SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -1343,11 +1499,17 @@ void _onProceedToPayment() async {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: (_isTimerExpired || state is HotelBookingConfirmLoading)
+                  onPressed:
+                      (_isTimerExpired || state is HotelBookingConfirmLoading)
                       ? null
-                      : _onProceedToPayment,
+                      : () {
+                          _showServerErrorBottomSheet(context);
+                          // _onProceedToPayment();
+                        },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _isTimerExpired ? Colors.grey : _primaryColor,
+                    backgroundColor: _isTimerExpired
+                        ? Colors.grey
+                        : _primaryColor,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
@@ -1360,7 +1522,9 @@ void _onProceedToPayment() async {
                           height: 24,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
                           ),
                         )
                       : Row(
@@ -1369,7 +1533,9 @@ void _onProceedToPayment() async {
                             Icon(Icons.payment_rounded, size: 22),
                             SizedBox(width: 12),
                             Text(
-                              _isTimerExpired ? "TIME EXPIRED" : "PROCEED TO PAYMENT",
+                              _isTimerExpired
+                                  ? "TIME EXPIRED"
+                                  : "PROCEED TO PAYMENT",
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
@@ -1410,7 +1576,11 @@ void _onProceedToPayment() async {
                     color: _errorColor.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.error_outline_rounded, size: 40, color: _errorColor),
+                  child: Icon(
+                    Icons.error_outline_rounded,
+                    size: 40,
+                    color: _errorColor,
+                  ),
                 ),
                 SizedBox(height: 20),
                 Text(
@@ -1425,10 +1595,7 @@ void _onProceedToPayment() async {
                 Text(
                   "Your payment could not be processed. Please try again or use a different payment method.",
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: _textSecondary,
-                  ),
+                  style: TextStyle(fontSize: 16, color: _textSecondary),
                 ),
                 SizedBox(height: 24),
                 SizedBox(
@@ -1498,7 +1665,11 @@ void _onProceedToPayment() async {
                 CircleAvatar(
                   radius: 50,
                   backgroundColor: _secondaryColor.withOpacity(0.1),
-                  child: Icon(Icons.check_circle_rounded, color: _secondaryColor, size: 60),
+                  child: Icon(
+                    Icons.check_circle_rounded,
+                    color: _secondaryColor,
+                    size: 60,
+                  ),
                 ),
                 const SizedBox(height: 30),
                 const Text(
@@ -1535,7 +1706,11 @@ void _onProceedToPayment() async {
                           color: _successColor.withOpacity(0.2),
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(Icons.credit_card_rounded, color: _successColor, size: 28),
+                        child: Icon(
+                          Icons.credit_card_rounded,
+                          color: _successColor,
+                          size: 28,
+                        ),
                       ),
                       SizedBox(width: 16),
                       Expanded(
@@ -1567,7 +1742,8 @@ void _onProceedToPayment() async {
                 ),
                 const Spacer(),
                 ElevatedButton(
-                  onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
+                  onPressed: () =>
+                      Navigator.of(context).popUntil((route) => route.isFirst),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
                     foregroundColor: Colors.white,
@@ -1617,7 +1793,11 @@ void _onProceedToPayment() async {
               CircleAvatar(
                 radius: 45,
                 backgroundColor: _secondaryColor.withOpacity(0.1),
-                child: const Icon(Icons.error_outline_rounded, color: Colors.orange, size: 60),
+                child: const Icon(
+                  Icons.error_outline_rounded,
+                  color: Colors.orange,
+                  size: 60,
+                ),
               ),
               const SizedBox(height: 25),
               const Text(
@@ -1654,7 +1834,11 @@ void _onProceedToPayment() async {
                         color: _successColor.withOpacity(0.2),
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(Icons.credit_card_rounded, color: _successColor, size: 28),
+                      child: Icon(
+                        Icons.credit_card_rounded,
+                        color: _successColor,
+                        size: 28,
+                      ),
                     ),
                     SizedBox(width: 16),
                     Expanded(
@@ -1686,7 +1870,8 @@ void _onProceedToPayment() async {
               ),
               const Spacer(),
               ElevatedButton(
-                onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
+                onPressed: () =>
+                    Navigator.of(context).popUntil((route) => route.isFirst),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
                   foregroundColor: Colors.white,
