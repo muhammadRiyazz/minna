@@ -1,8 +1,10 @@
 import 'dart:convert';
 
-RePriceResponse flightBookingResponseFromJson(String str) => RePriceResponse.fromJson(json.decode(str));
+RePriceResponse flightBookingResponseFromJson(String str) =>
+    RePriceResponse.fromJson(json.decode(str));
 
-String flightBookingResponseToJson(RePriceResponse data) => json.encode(data.toJson());
+String flightBookingResponseToJson(RePriceResponse data) =>
+    json.encode(data.toJson());
 
 class RePriceResponse {
   ReJourneyData? journy;
@@ -19,20 +21,29 @@ class RePriceResponse {
     this.passengers,
   });
 
-  factory RePriceResponse.fromJson(Map<String, dynamic> json) => RePriceResponse(
-    journy: json["Journy"] == null ? null : ReJourneyData.fromJson(json["Journy"]),
-    errors: json["Errors"],
-    tripMode: json["TripMode"],
-    ssrAvailability: json["SSRAvailability"],
-    passengers: json["Passengers"] == null ? [] : List<RePassenger>.from(json["Passengers"]!.map((x) => RePassenger.fromJson(x))),
-  );
+  factory RePriceResponse.fromJson(Map<String, dynamic> json) =>
+      RePriceResponse(
+        journy: json["Journy"] == null
+            ? null
+            : ReJourneyData.fromJson(json["Journy"]),
+        errors: json["Errors"],
+        tripMode: json["TripMode"],
+        ssrAvailability: json["SSRAvailability"],
+        passengers: json["Passengers"] == null
+            ? []
+            : List<RePassenger>.from(
+                json["Passengers"]!.map((x) => RePassenger.fromJson(x)),
+              ),
+      );
 
   Map<String, dynamic> toJson() => {
     "Journy": journy?.toJson(),
     "Errors": errors,
     "TripMode": tripMode,
     "SSRAvailability": ssrAvailability,
-    "Passengers": passengers == null ? [] : List<dynamic>.from(passengers!.map((x) => x.toJson())),
+    "Passengers": passengers == null
+        ? []
+        : List<dynamic>.from(passengers!.map((x) => x.toJson())),
   };
 }
 
@@ -51,7 +62,9 @@ class ReJourneyData {
 
   factory ReJourneyData.fromJson(Map<String, dynamic> json) => ReJourneyData(
     flightOptions: json["FlightOptions"],
-    flightOption: json["FlightOption"] == null ? null : ReFlightOption.fromJson(json["FlightOption"]),
+    flightOption: json["FlightOption"] == null
+        ? null
+        : ReFlightOption.fromJson(json["FlightOption"]),
     hostTokens: json["HostTokens"],
     errors: json["Errors"],
   );
@@ -98,8 +111,16 @@ class ReFlightOption {
     crsPnr: json["CrsPnr"],
     providerCode: json["ProviderCode"],
     availableSeat: json["AvailableSeat"],
-    flightFares: json["FlightFares"] == null ? [] : List<ReFlightFare>.from(json["FlightFares"]!.map((x) => ReFlightFare.fromJson(x))),
-    flightLegs: json["FlightLegs"] == null ? [] : List<ReFlightLeg>.from(json["FlightLegs"]!.map((x) => ReFlightLeg.fromJson(x))),
+    flightFares: json["FlightFares"] == null
+        ? []
+        : List<ReFlightFare>.from(
+            json["FlightFares"]!.map((x) => ReFlightFare.fromJson(x)),
+          ),
+    flightLegs: json["FlightLegs"] == null
+        ? []
+        : List<ReFlightLeg>.from(
+            json["FlightLegs"]!.map((x) => ReFlightLeg.fromJson(x)),
+          ),
     seatEnabled: json["SeatEnabled"],
     reprice: json["Reprice"],
     ffNoEnabled: json["FFNoEnabled"],
@@ -112,8 +133,12 @@ class ReFlightOption {
     "CrsPnr": crsPnr,
     "ProviderCode": providerCode,
     "AvailableSeat": availableSeat,
-    "FlightFares": flightFares == null ? [] : List<dynamic>.from(flightFares!.map((x) => x.toJson())),
-    "FlightLegs": flightLegs == null ? [] : List<dynamic>.from(flightLegs!.map((x) => x.toJson())),
+    "FlightFares": flightFares == null
+        ? []
+        : List<dynamic>.from(flightFares!.map((x) => x.toJson())),
+    "FlightLegs": flightLegs == null
+        ? []
+        : List<dynamic>.from(flightLegs!.map((x) => x.toJson())),
     "SeatEnabled": seatEnabled,
     "Reprice": reprice,
     "FFNoEnabled": ffNoEnabled,
@@ -152,7 +177,9 @@ class ReFlightFare {
   });
 
   factory ReFlightFare.fromJson(Map<String, dynamic> json) => ReFlightFare(
-    fares: json["Fares"] == null ? [] : List<ReFare>.from(json["Fares"]!.map((x) => ReFare.fromJson(x))),
+    fares: json["Fares"] == null
+        ? []
+        : List<ReFare>.from(json["Fares"]!.map((x) => ReFare.fromJson(x))),
     fid: json["FID"],
     refundableInfo: json["RefundableInfo"],
     fareKey: json["FareKey"],
@@ -168,7 +195,9 @@ class ReFlightFare {
   );
 
   Map<String, dynamic> toJson() => {
-    "Fares": fares == null ? [] : List<dynamic>.from(fares!.map((x) => x.toJson())),
+    "Fares": fares == null
+        ? []
+        : List<dynamic>.from(fares!.map((x) => x.toJson())),
     "FID": fid,
     "RefundableInfo": refundableInfo,
     "FareKey": fareKey,
@@ -191,20 +220,18 @@ class ReFare {
   double? discount;
   List<ReSplitup>? splitup;
 
-  ReFare({
-    this.ptc,
-    this.baseFare,
-    this.tax,
-    this.discount,
-    this.splitup,
-  });
+  ReFare({this.ptc, this.baseFare, this.tax, this.discount, this.splitup});
 
   factory ReFare.fromJson(Map<String, dynamic> json) => ReFare(
     ptc: json["PTC"],
     baseFare: json["BaseFare"]?.toDouble(),
     tax: json["Tax"]?.toDouble(),
     discount: json["Discount"]?.toDouble(),
-    splitup: json["Splitup"] == null ? [] : List<ReSplitup>.from(json["Splitup"]!.map((x) => ReSplitup.fromJson(x))),
+    splitup: json["Splitup"] == null
+        ? []
+        : List<ReSplitup>.from(
+            json["Splitup"]!.map((x) => ReSplitup.fromJson(x)),
+          ),
   );
 
   Map<String, dynamic> toJson() => {
@@ -212,7 +239,9 @@ class ReFare {
     "BaseFare": baseFare,
     "Tax": tax,
     "Discount": discount,
-    "Splitup": splitup == null ? [] : List<dynamic>.from(splitup!.map((x) => x.toJson())),
+    "Splitup": splitup == null
+        ? []
+        : List<dynamic>.from(splitup!.map((x) => x.toJson())),
   };
 }
 
@@ -220,20 +249,12 @@ class ReSplitup {
   String? category;
   double? amount;
 
-  ReSplitup({
-    this.category,
-    this.amount,
-  });
+  ReSplitup({this.category, this.amount});
 
-  factory ReSplitup.fromJson(Map<String, dynamic> json) => ReSplitup(
-    category: json["Category"],
-    amount: json["Amount"]?.toDouble(),
-  );
+  factory ReSplitup.fromJson(Map<String, dynamic> json) =>
+      ReSplitup(category: json["Category"], amount: json["Amount"]?.toDouble());
 
-  Map<String, dynamic> toJson() => {
-    "Category": category,
-    "Amount": amount,
-  };
+  Map<String, dynamic> toJson() => {"Category": category, "Amount": amount};
 }
 
 class ReFlightLeg {
@@ -340,7 +361,7 @@ class RePassenger {
   String? email;
   String? address;
   String? nationality;
-  String? countryCode;
+  int? countryCode;
   dynamic passportNo;
   String? countryOfIssue;
   String? dateOfExpiry;
@@ -381,7 +402,7 @@ class RePassenger {
     firstName: json["FirstName"],
     lastName: json["LastName"],
     dob: json["DOB"],
-    countryCode: json["CountryCode"],
+    countryCode: safeToInt(json["CountryCode"]),
     contact: json["Contact"],
     email: json["Email"],
     address: json["Address"],
@@ -393,7 +414,9 @@ class RePassenger {
     ticketNo: json["TicketNo"],
     ticketNoReturn: json["TicketNo_Return"],
     pinCode: json["PinCode"],
-    ssrAvailability: json["SSRAvailability"] == null ? null : ReSsrAvailability.fromJson(json["SSRAvailability"]),
+    ssrAvailability: json["SSRAvailability"] == null
+        ? null
+        : ReSsrAvailability.fromJson(json["SSRAvailability"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -407,7 +430,7 @@ class RePassenger {
     "Contact": contact,
     "Email": email,
     "Address": address,
-    "CountryCode":countryCode,
+    "CountryCode": countryCode,
     "Nationality": nationality,
     "PassportNo": passportNo,
     "CountryOfIssue": countryOfIssue,
@@ -425,22 +448,37 @@ class ReSsrAvailability {
   List<ReBaggageInfo>? baggageInfo;
   List<ReSeatInfo>? seatInfo;
 
-  ReSsrAvailability({
-    this.mealInfo,
-    this.baggageInfo,
-    this.seatInfo,
-  });
+  ReSsrAvailability({this.mealInfo, this.baggageInfo, this.seatInfo});
 
-  factory ReSsrAvailability.fromJson(Map<String, dynamic> json) => ReSsrAvailability(
-    mealInfo: json["MealInfo"] == null ? [] : List<ReMealInfo>.from(json["MealInfo"]!.map((x) => ReMealInfo.fromJson(x))),
-    baggageInfo: json["BaggageInfo"] == null ? [] : List<ReBaggageInfo>.from(json["BaggageInfo"]!.map((x) => ReBaggageInfo.fromJson(x))),
-    seatInfo: json["SeatInfo"] == null ? [] : List<ReSeatInfo>.from(json["SeatInfo"]!.map((x) => ReSeatInfo.fromJson(x))),
-  );
+  factory ReSsrAvailability.fromJson(Map<String, dynamic> json) =>
+      ReSsrAvailability(
+        mealInfo: json["MealInfo"] == null
+            ? []
+            : List<ReMealInfo>.from(
+                json["MealInfo"]!.map((x) => ReMealInfo.fromJson(x)),
+              ),
+        baggageInfo: json["BaggageInfo"] == null
+            ? []
+            : List<ReBaggageInfo>.from(
+                json["BaggageInfo"]!.map((x) => ReBaggageInfo.fromJson(x)),
+              ),
+        seatInfo: json["SeatInfo"] == null
+            ? []
+            : List<ReSeatInfo>.from(
+                json["SeatInfo"]!.map((x) => ReSeatInfo.fromJson(x)),
+              ),
+      );
 
   Map<String, dynamic> toJson() => {
-    "MealInfo": mealInfo == null ? [] : List<dynamic>.from(mealInfo!.map((x) => x.toJson())),
-    "BaggageInfo": baggageInfo == null ? [] : List<dynamic>.from(baggageInfo!.map((x) => x.toJson())),
-    "SeatInfo": seatInfo == null ? [] : List<dynamic>.from(seatInfo!.map((x) => x.toJson())),
+    "MealInfo": mealInfo == null
+        ? []
+        : List<dynamic>.from(mealInfo!.map((x) => x.toJson())),
+    "BaggageInfo": baggageInfo == null
+        ? []
+        : List<dynamic>.from(baggageInfo!.map((x) => x.toJson())),
+    "SeatInfo": seatInfo == null
+        ? []
+        : List<dynamic>.from(seatInfo!.map((x) => x.toJson())),
   };
 }
 
@@ -449,22 +487,24 @@ class ReBaggageInfo {
   dynamic baggageKey;
   List<ReBaggage>? baggages;
 
-  ReBaggageInfo({
-    this.tripMode,
-    this.baggageKey,
-    this.baggages,
-  });
+  ReBaggageInfo({this.tripMode, this.baggageKey, this.baggages});
 
   factory ReBaggageInfo.fromJson(Map<String, dynamic> json) => ReBaggageInfo(
     tripMode: json["TripMode"],
     baggageKey: json["BaggageKey"],
-    baggages: json["Baggages"] == null ? [] : List<ReBaggage>.from(json["Baggages"]!.map((x) => ReBaggage.fromJson(x))),
+    baggages: json["Baggages"] == null
+        ? []
+        : List<ReBaggage>.from(
+            json["Baggages"]!.map((x) => ReBaggage.fromJson(x)),
+          ),
   );
 
   Map<String, dynamic> toJson() => {
     "TripMode": tripMode,
     "BaggageKey": baggageKey,
-    "Baggages": baggages == null ? [] : List<dynamic>.from(baggages!.map((x) => x.toJson())),
+    "Baggages": baggages == null
+        ? []
+        : List<dynamic>.from(baggages!.map((x) => x.toJson())),
   };
 }
 
@@ -513,22 +553,22 @@ class ReMealInfo {
   dynamic tripMode;
   List<ReMeal>? meals;
 
-  ReMealInfo({
-    this.mealKey,
-    this.tripMode,
-    this.meals,
-  });
+  ReMealInfo({this.mealKey, this.tripMode, this.meals});
 
   factory ReMealInfo.fromJson(Map<String, dynamic> json) => ReMealInfo(
     mealKey: json["MealKey"],
     tripMode: json["TripMode"],
-    meals: json["Meals"] == null ? [] : List<ReMeal>.from(json["Meals"]!.map((x) => ReMeal.fromJson(x))),
+    meals: json["Meals"] == null
+        ? []
+        : List<ReMeal>.from(json["Meals"]!.map((x) => ReMeal.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
     "MealKey": mealKey,
     "TripMode": tripMode,
-    "Meals": meals == null ? [] : List<dynamic>.from(meals!.map((x) => x.toJson())),
+    "Meals": meals == null
+        ? []
+        : List<dynamic>.from(meals!.map((x) => x.toJson())),
   };
 }
 
@@ -571,16 +611,18 @@ class ReMeal {
 class ReSeatInfo {
   List<ReSeat>? seats;
 
-  ReSeatInfo({
-    this.seats,
-  });
+  ReSeatInfo({this.seats});
 
   factory ReSeatInfo.fromJson(Map<String, dynamic> json) => ReSeatInfo(
-    seats: json["Seats"] == null ? [] : List<ReSeat>.from(json["Seats"]!.map((x) => ReSeat.fromJson(x))),
+    seats: json["Seats"] == null
+        ? []
+        : List<ReSeat>.from(json["Seats"]!.map((x) => ReSeat.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
-    "Seats": seats == null ? [] : List<dynamic>.from(seats!.map((x) => x.toJson())),
+    "Seats": seats == null
+        ? []
+        : List<dynamic>.from(seats!.map((x) => x.toJson())),
   };
 }
 
@@ -591,13 +633,7 @@ class ReSeat {
   String? fare;
   dynamic currency;
 
-  ReSeat({
-    this.ptc,
-    this.seatKey,
-    this.legKey,
-    this.fare,
-    this.currency,
-  });
+  ReSeat({this.ptc, this.seatKey, this.legKey, this.fare, this.currency});
 
   factory ReSeat.fromJson(Map<String, dynamic> json) => ReSeat(
     ptc: json["PTC"],
@@ -614,4 +650,12 @@ class ReSeat {
     "Fare": fare,
     "Currency": currency,
   };
+}
+
+int? safeToInt(dynamic value) {
+  if (value == null) return null;
+  if (value is int) return value;
+  if (value is String) return int.tryParse(value);
+  if (value is double) return value.toInt();
+  return null;
 }

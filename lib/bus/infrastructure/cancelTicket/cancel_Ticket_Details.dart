@@ -31,11 +31,40 @@ Future<http.Response?> cancelDetails({required String tin}) async {
       "franch_id": "",
     };
 
+
+
+
+
+
     log("Sending cancellation request to: $url");
     final response = await http.post(Uri.parse(url), body: requestBody);
 
     log("Cancellation response received: ${response.statusCode}");
     log("Response body: ${response.body}");
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     return response;
   } catch (e, stackTrace) {

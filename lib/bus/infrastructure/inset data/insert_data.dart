@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:minna/bus/application/change%20location/location_bloc.dart';
+import 'package:minna/bus/domain/BlockTicket/block_respo.dart';
 import 'package:minna/bus/domain/BlockTicket/block_ticket_request_modal.dart';
 import 'package:http/http.dart';
 import 'package:minna/comman/core/api.dart';
@@ -15,6 +16,7 @@ Future<Response> addTicketDetals({
   required String droppingPoint,
   required LocationState locationState,
   required List<Seat> selectedseatslist,
+  required BlockResponse blockResponse,
 }) async {
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   final userId = sharedPreferences.getString('userId') ?? '';
@@ -60,7 +62,9 @@ Future<Response> addTicketDetals({
     ),
     "user_id": userId,
     "franch_id": '',
+    "blockKey": jsonEncode(blockResponse.toJson()),
   };
+
 
   Response resToBackend = await post(
     Uri.parse(urlFromBackend),

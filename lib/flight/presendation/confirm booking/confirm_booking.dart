@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:minna/comman/core/api.dart';
-import 'package:minna/comman/functions/create_order_id.dart';
-import 'package:minna/comman/pages/main%20home/home.dart';
+import 'package:minna/comman/pages/main home/home.dart';
 import 'package:minna/flight/application/booking/booking_bloc.dart';
 import 'package:minna/flight/domain/fare%20request%20and%20respo/fare_respo.dart';
 import 'package:minna/flight/domain/reprice%20/reprice_respo.dart';
@@ -39,7 +41,6 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
   final Color _textLight = Color(0xFF999999);
   final Color _errorColor = Color(0xFFE53935);
   final Color _successColor = Color(0xFF4CAF50);
-  final Color _warningColor = Color(0xFFFF9800);
 
   // Timer variables
   late Timer _timer;
@@ -48,7 +49,6 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
   Set<int> expandedIndexes = {};
   late Razorpay _razorpay;
   bool _isPaymentButtonLoading = false;
-  String? _lastRefundState;
 
   // Commission service
   // final FlightCommissionService _commissionService = FlightCommissionService();
@@ -128,7 +128,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
     });
 
     context.read<BookingBloc>().add(
-      BookingEvent.confirmFlightBooking(
+      BookingEvent.verifyFlightPayment(
         paymentId: response.paymentId!,
         orderId: response.orderId!,
         signature: response.signature!,
@@ -146,6 +146,51 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
 
   void _handleExternalWallet(ExternalWalletResponse response) {
     log("External Wallet: ${response.walletName}");
+  }
+
+  Future<String?> _createFlightOrder(BookingState state) async {
+    try {
+      log('Creating flight order with body: ${state.bookingdata!.toJson()}');
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? userId = prefs.getString('userId');
+
+      final Map<String, String> body = {
+        'userId': userId ?? '',
+        'bookingPayload': jsonEncode(state.bookingdata!.toJson()),
+        'commission': state.totalCommission.toString(),
+        'totalFare':
+            ((state.totalAmountWithCommission ?? 0) -
+                    (state.totalCommission ?? 0))
+                .toStringAsFixed(2),
+      };
+
+      log('Creating flight order with body: $body');
+
+      final response = await http.post(
+        Uri.parse('https://mttrip.in/create-razorpay-order-for-flight'),
+        body: body,
+      );
+
+      log('Flight order response: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['status'] == true) {
+          return data['order_id'];
+        } else {
+          log(
+            'Error from create-razorpay-order-for-flight: ${data['message']}',
+          );
+          return null;
+        }
+      } else {
+        log('HTTP Error in _createFlightOrder: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      log('Exception in _createFlightOrder: $e');
+      return null;
+    }
   }
 
   void _openRazorpayPayment(BookingState state) async {
@@ -177,7 +222,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
     try {
       // Use total amount with commission for payment
       final amount = state.totalAmountWithCommission ?? 0;
-      final orderId = await createOrder(amount);
+      final orderId = await _createFlightOrder(state);
 
       final bookingData = state.bookingdata;
       if (bookingData == null) {
@@ -213,111 +258,13 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
     }
   }
 
-  void _showRefundInitiatedDialog(BuildContext context) {
-    if (ModalRoute.of(context)?.isCurrent != true) return;
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            Icon(Icons.check_circle, color: _successColor),
-            SizedBox(width: 8),
-            Text("Refund Initiated"),
-          ],
-        ),
-        content: Text(
-          "Your payment has been refunded due to booking failure. The amount will be credited to your account within 3-7 working days.",
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (_) => HomePage()),
-                (route) => false,
-              );
-            },
-            child: Text("OK", style: TextStyle(color: _primaryColor)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showServerErrorBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.error_outline_rounded,
-                color: Colors.red,
-                size: 48,
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Connection Error',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                'Server issue detected. Connection failed. Please try again later.',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Close'),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocListener<BookingBloc, BookingState>(
       listener: (context, state) {
-        final currentRefundState =
-            '${state.refundInitiated}_${state.refundFailed}';
-
-        if (currentRefundState != _lastRefundState) {
-          _lastRefundState = currentRefundState;
-
-          if (state.refundInitiated == true) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              _showRefundInitiatedDialog(context);
-            });
-          }
-        }
-
         if (state.isBookingCompleted == true ||
             state.isBookingConfirmed == true) {
-          _lastRefundState = null;
+          // Additional success handling if needed
         }
       },
       child: WillPopScope(
@@ -489,8 +436,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
         state.isCreatingOrder == true ||
         state.isPaymentProcessing == true ||
         state.isConfirmingBooking == true ||
-        state.isSavingFinalBooking == true ||
-        state.isRefundProcessing == true;
+        state.isSavingFinalBooking == true;
 
     return CustomScrollView(
       slivers: [
@@ -724,7 +670,6 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
     if (state.isPaymentProcessing == true) return 'Processing payment...';
     if (state.isConfirmingBooking == true) return 'Confirming your booking...';
     if (state.isSavingFinalBooking == true) return 'Saving booking details...';
-    if (state.isRefundProcessing == true) return 'Processing refund...';
     return 'Processing...';
   }
 
@@ -739,10 +684,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         elevation: 2,
       ),
-      onPressed: shouldShowLoading
-          ? null
-          : () => _showServerErrorBottomSheet(context),
-      // onPressed: shouldShowLoading ? null : () => _openRazorpayPayment(state),
+      onPressed: shouldShowLoading ? null : () => _openRazorpayPayment(state),
       child: shouldShowLoading
           ? SizedBox(
               width: 24,
@@ -1028,79 +970,26 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                     ),
                     child: Column(
                       children: [
-                        if (state.refundInitiated == true) ...[
-                          Icon(
-                            Icons.check_circle_rounded,
-                            color: _successColor,
-                            size: 40,
-                          ),
-                          SizedBox(height: 12),
-                          Text(
-                            'Refund Initiated',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: _successColor,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            'Your payment is being refunded and will be processed within 3-7 working days.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: _textSecondary,
-                            ),
-                          ),
-                        ] else if (state.refundFailed == true) ...[
-                          Icon(
-                            Icons.warning_rounded,
-                            color: _warningColor,
-                            size: 40,
-                          ),
-                          SizedBox(height: 12),
-                          Text(
-                            'Refund Issue',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: _warningColor,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            'Please contact support for assistance with your refund.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: _textSecondary,
-                            ),
-                          ),
-                        ] else ...[
-                          Icon(
-                            Icons.security_rounded,
+                        Icon(
+                          Icons.security_rounded,
+                          color: _secondaryColor,
+                          size: 40,
+                        ),
+                        SizedBox(height: 12),
+                        Text(
+                          'Payment Protected',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
                             color: _secondaryColor,
-                            size: 40,
                           ),
-                          SizedBox(height: 12),
-                          Text(
-                            'Payment Protected',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: _secondaryColor,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            'Your payment is secure and will be automatically refunded if deducted.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: _textSecondary,
-                            ),
-                          ),
-                        ],
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Your payment is secure. Please contact support if you face any issues.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 14, color: _textSecondary),
+                        ),
                       ],
                     ),
                   ),

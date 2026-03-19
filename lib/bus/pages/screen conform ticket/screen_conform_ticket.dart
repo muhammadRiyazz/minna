@@ -43,7 +43,6 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
   late double totalFare;
   late double updatedFare;
   late double updatedServiceTax;
-
   late String _blockId;
   bool _isBooking = false;
   bool _isLoading = false;
@@ -320,6 +319,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
       final locationState = context.read<LocationBloc>().state;
 
       final response = await addTicketDetals(
+        blockResponse: widget.blockResponse,
         locationState: locationState,
         alldata: widget.alldata,
         boardingpoint: widget.alldata.boardingPointID!,
@@ -517,7 +517,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
       final saveResult = await savePaymentDetails(
         orderId: response.orderId ?? '',
         status: 1,
-        table: "bus_blockrequest",
+        table: "bus_webdata",
         tableid: _blockId,
         transactionId: response.paymentId ?? '',
       );
@@ -612,7 +612,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
         await savePaymentDetails(
           orderId: _orderId!,
           status: 2,
-          table: "bus_blockrequest",
+          table: "bus_webdata",
           tableid: _blockId,
           transactionId: _paymentId ?? '',
         );
@@ -1330,8 +1330,8 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
           child: ElevatedButton(
             onPressed: isEnabled
                 ? () {
-                    _showServerErrorBottomSheet(context);
-                    // _onBookNow();
+                    // _showServerErrorBottomSheet(context);
+                    _onBookNow();
                   }
                 : null,
             style: ElevatedButton.styleFrom(

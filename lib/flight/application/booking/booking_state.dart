@@ -27,14 +27,10 @@ class BookingState with _$BookingState {
     bool? isPaymentProcessing,
     bool? isConfirmingBooking,
     bool? isSavingFinalBooking,
-    bool? isRefundProcessing,
     
     // Status Flags
     bool? paymentFailed,
     bool? bookingFailed,
-    bool? refundRequired,
-    bool? refundInitiated,
-    bool? refundFailed,
     bool? isBookingCompleted,
     
     // Temporary data
@@ -59,12 +55,8 @@ class BookingState with _$BookingState {
     isPaymentProcessing: false,
     isConfirmingBooking: false,
     isSavingFinalBooking: false,
-    isRefundProcessing: false,
     paymentFailed: false,
     bookingFailed: false,
-    refundRequired: false,
-    refundInitiated: false,
-    refundFailed: false,
     isBookingCompleted: false,
     tempBookingId: null,
     tempAmount: null,
