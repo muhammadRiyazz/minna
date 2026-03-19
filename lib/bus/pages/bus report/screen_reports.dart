@@ -309,25 +309,27 @@ class _ScreenReportState extends State<ScreenReport> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _backgroundColor,
-      appBar: AppBar(toolbarHeight: 40,
+      appBar: AppBar(
         title: Text(
           'Bus Reports',
           style: TextStyle(
             color: Colors.white,
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.5,
           ),
         ),
-        backgroundColor: _secondaryColor.withOpacity(0.4),
-        iconTheme: IconThemeData(color: Colors.white),
-        centerTitle: true,
+        backgroundColor: _primaryColor,
         elevation: 0,
+        centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.white),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh_rounded, size: 22),
+            icon: Icon(Icons.refresh_rounded, size: 24),
             onPressed: _fetchReports,
             tooltip: 'Refresh',
           ),
+          SizedBox(width: 8),
         ],
       ),
       body: RefreshIndicator(
@@ -338,7 +340,7 @@ class _ScreenReportState extends State<ScreenReport> {
             ? _buildShimmerLoading()
             : _isError
                 ? _buildErrorState()
-                : _lastFiveBookings.isEmpty
+                : _reportData.isEmpty
                     ? _buildEmptyState()
                     : _buildSuccessState(),
       ),
@@ -350,85 +352,92 @@ class _ScreenReportState extends State<ScreenReport> {
     final totalBookings = _totalValidBookings;
 
     return ListView(
+      padding: EdgeInsets.symmetric(vertical: 16),
       children: [
-       
-                  if(totalBookings<4)
-                   SizedBox(height: 10,),
-                   if(totalBookings>4)
-                   
-                     Align(alignment: AlignmentGeometry.topRight,
-                      child: TextButton(
-
-
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => BusAllBookingsPage(
-                                allBookings: _reportData,
-                              ),
-                            ),
-                          );
-                        },
-                        style: TextButton.styleFrom(
-                          foregroundColor: _secondaryColor,
-                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'View More',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 10,
-                              ),
-                            ),
-                            SizedBox(width: 4),
-                            Icon(Icons.arrow_forward_rounded, size: 10),
-                          ],
+        if (totalBookings > 5)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Recent Bookings',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: _textPrimary,
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BusAllBookingsPage(
+                          allBookings: _reportData,
                         ),
                       ),
+                    );
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: _secondaryColor,
+                    padding: EdgeInsets.symmetric(horizontal: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
-             
-       Expanded(
-         child: Padding(
- padding: EdgeInsets.symmetric(horizontal: 10),           child: Column(
-            
-            children:List.generate( lastFiveBookings.length, (index) {
-             
-            final item = lastFiveBookings[index];
-                  return _buildBusTripCard(item);
-           
-           },),),
-         ),
-       )
-        // Bookings List
-        // Expanded(
-        //   child: ListView.builder(
-        //     padding: EdgeInsets.symmetric(horizontal: 10),
-        //     itemCount:,
-        //     itemBuilder: (context, index) {
-             
-        //     },
-        //   ),
-        // ),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        'View All',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
+                        ),
+                      ),
+                      SizedBox(width: 4),
+                      Icon(Icons.arrow_forward_ios_rounded, size: 12),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          )
+        else
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              'Your Bookings',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: _textPrimary,
+              ),
+            ),
+          ),
+        SizedBox(height: 12),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            children: lastFiveBookings.map((item) => _buildBusTripCard(item)).toList(),
+          ),
+        ),
       ],
     );
   }
 
   Widget _buildBusTripCard(BusTicketReport item) {
     final statusColor = _getStatusColor(item.status);
-    final formattedDate = DateFormat('MMM dd, yyyy').format(DateTime.parse(item.date));
+    final formattedDate = DateFormat('EEE, d MMM yyyy').format(DateTime.parse(item.date));
 
     return Container(
-      margin: EdgeInsets.only(bottom: 10),
+      margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: _cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withOpacity(0.06),
             blurRadius: 20,
             offset: Offset(0, 8),
           ),
@@ -449,209 +458,44 @@ class _ScreenReportState extends State<ScreenReport> {
               ),
             );
           },
-          borderRadius: BorderRadius.circular(20),
-          child: Padding(
-            padding: EdgeInsets.all(14.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header Row with Ticket ID and Date
-                Row(
+          borderRadius: BorderRadius.circular(24),
+          child: Column(
+            children: [
+              // Header Section
+              Padding(
+                padding: EdgeInsets.fromLTRB(20, 20, 20, 16),
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Flexible(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'TICKET REFERENCE',
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: _textSecondary,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 1.0,
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            item.ticketNo,
-                            style: TextStyle(
-                              color: _textPrimary,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: _secondaryColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        formattedDate,
-                        style: TextStyle(
-                          color: _secondaryColor,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 15),
-
-                // Route Information Card
-                Container(
-                  padding: EdgeInsets.all(13),
-                  decoration: BoxDecoration(
-                    color: _backgroundColor,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.grey.shade200),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'FROM',
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: _textSecondary,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 1.0,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              item.source,
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8),
-                        child: Column(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: _secondaryColor.withOpacity(0.1),
-                                shape: BoxShape.circle,
-                                border: Border.all(color: _secondaryColor.withOpacity(0.3), width: 2),
-                              ),
-                              child: Icon(
-                                Icons.arrow_forward_rounded,
-                                color: _secondaryColor,
-                                size: 16,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              'TO',
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: _textSecondary,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 1.0,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              item.destination,
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                              ),
-                              textAlign: TextAlign.end,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 12),
-
-                // Footer Information
-                Row(
-                  children: [
-                    // Seats Info
-                    Row(
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          padding: EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: _secondaryColor.withOpacity(0.1),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.event_seat_rounded,
-                            color: _secondaryColor,
-                            size: 14,
+                        Text(
+                          'TICKET NO',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: _textLight,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1.2,
                           ),
                         ),
-                        SizedBox(width: 6),
+                        SizedBox(height: 4),
                         Text(
-                          '${item.seatDetails.length} seat${item.seatDetails.length > 1 ? 's' : ''}',
+                          item.ticketNo,
                           style: TextStyle(
-                            fontSize: 12,
-                            color: _textSecondary,
-                            fontWeight: FontWeight.w600,
+                            color: _textPrimary,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(width: 16),
-                    // Block Key
-                    Row(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: _secondaryColor.withOpacity(0.1),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.confirmation_number_rounded,
-                            color: _secondaryColor,
-                            size: 14,
-                          ),
-                        ),
-                        SizedBox(width: 6),
-                        Text(
-                          item.blockKey,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: _textSecondary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Spacer(),
-                    // Status Badge
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: statusColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: statusColor.withOpacity(0.3)),
+                        color: statusColor.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(100),
+                        border: Border.all(color: statusColor.withOpacity(0.2)),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -664,23 +508,204 @@ class _ScreenReportState extends State<ScreenReport> {
                               shape: BoxShape.circle,
                             ),
                           ),
-                          SizedBox(width: 6),
+                          SizedBox(width: 8),
                           Text(
                             item.status.toUpperCase(),
                             style: TextStyle(
-                              fontSize: 8,
+                              fontSize: 10,
                               color: statusColor,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 0.5,
                             ),
                           ),
                         ],
                       ),
                     ),
-                   
                   ],
                 ),
-              ],
-            ),
+              ),
+
+              // Route & Date Section
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: _backgroundColor,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.grey.shade100),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item.source,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w800,
+                                  color: _textPrimary,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              SizedBox(height: 2),
+                              Text(
+                                'Source',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: _textSecondary,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: Container(
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: _secondaryColor.withOpacity(0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.directions_bus_filled_rounded,
+                              color: _secondaryColor,
+                              size: 18,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                item.destination,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w800,
+                                  color: _textPrimary,
+                                ),
+                                textAlign: TextAlign.end,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              SizedBox(height: 2),
+                              Text(
+                                'Destination',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: _textSecondary,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Row(
+                        children: List.generate(
+                          15,
+                          (index) => Expanded(
+                            child: Container(
+                              height: 1,
+                              color: index % 2 == 0 
+                                  ? Colors.grey.withOpacity(0.3) 
+                                  : Colors.transparent,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.calendar_month_rounded, size: 14, color: _textSecondary),
+                            SizedBox(width: 6),
+                            Text(
+                              formattedDate,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: _textSecondary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Icon(Icons.event_seat_rounded, size: 14, color: _textSecondary),
+                            SizedBox(width: 6),
+                            Text(
+                              '${item.seatDetails.length} Seat${item.seatDetails.length > 1 ? 's' : ''}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: _textSecondary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              // Footer Section
+              Padding(
+                padding: EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'AMOUNT PAID',
+                          style: TextStyle(
+                            fontSize: 9,
+                            color: _textLight,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          '₹${item.totalFare}',
+                          style: TextStyle(
+                            color: _secondaryColor,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Spacer(),
+                    Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: _primaryColor,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        Icons.arrow_forward_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
