@@ -39,16 +39,7 @@ mixin _$DthConfirmEvent {
       String callbackId,
     )
     paymentFailed,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      String amount,
-      String phoneNo,
-      String callbackId,
-    )
-    initiateRefund,
     required TResult Function() resetStates,
-    required TResult Function() markRefundAttempted,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
@@ -72,16 +63,7 @@ mixin _$DthConfirmEvent {
       String callbackId,
     )?
     paymentFailed,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      String amount,
-      String phoneNo,
-      String callbackId,
-    )?
-    initiateRefund,
     TResult? Function()? resetStates,
-    TResult? Function()? markRefundAttempted,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
@@ -105,41 +87,26 @@ mixin _$DthConfirmEvent {
       String callbackId,
     )?
     paymentFailed,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      String amount,
-      String phoneNo,
-      String callbackId,
-    )?
-    initiateRefund,
     TResult Function()? resetStates,
-    TResult Function()? markRefundAttempted,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(ProceedWithPayment value) proceedWithPayment,
     required TResult Function(PaymentFailed value) paymentFailed,
-    required TResult Function(InitiateRefund value) initiateRefund,
     required TResult Function(ResetStates value) resetStates,
-    required TResult Function(MarkRefundAttempted value) markRefundAttempted,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(ProceedWithPayment value)? proceedWithPayment,
     TResult? Function(PaymentFailed value)? paymentFailed,
-    TResult? Function(InitiateRefund value)? initiateRefund,
     TResult? Function(ResetStates value)? resetStates,
-    TResult? Function(MarkRefundAttempted value)? markRefundAttempted,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(ProceedWithPayment value)? proceedWithPayment,
     TResult Function(PaymentFailed value)? paymentFailed,
-    TResult Function(InitiateRefund value)? initiateRefund,
     TResult Function(ResetStates value)? resetStates,
-    TResult Function(MarkRefundAttempted value)? markRefundAttempted,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
 }
@@ -350,16 +317,7 @@ class _$ProceedWithPaymentImpl implements ProceedWithPayment {
       String callbackId,
     )
     paymentFailed,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      String amount,
-      String phoneNo,
-      String callbackId,
-    )
-    initiateRefund,
     required TResult Function() resetStates,
-    required TResult Function() markRefundAttempted,
   }) {
     return proceedWithPayment(
       phoneNo,
@@ -396,16 +354,7 @@ class _$ProceedWithPaymentImpl implements ProceedWithPayment {
       String callbackId,
     )?
     paymentFailed,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      String amount,
-      String phoneNo,
-      String callbackId,
-    )?
-    initiateRefund,
     TResult? Function()? resetStates,
-    TResult? Function()? markRefundAttempted,
   }) {
     return proceedWithPayment?.call(
       phoneNo,
@@ -442,16 +391,7 @@ class _$ProceedWithPaymentImpl implements ProceedWithPayment {
       String callbackId,
     )?
     paymentFailed,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      String amount,
-      String phoneNo,
-      String callbackId,
-    )?
-    initiateRefund,
     TResult Function()? resetStates,
-    TResult Function()? markRefundAttempted,
     required TResult orElse(),
   }) {
     if (proceedWithPayment != null) {
@@ -474,9 +414,7 @@ class _$ProceedWithPaymentImpl implements ProceedWithPayment {
   TResult map<TResult extends Object?>({
     required TResult Function(ProceedWithPayment value) proceedWithPayment,
     required TResult Function(PaymentFailed value) paymentFailed,
-    required TResult Function(InitiateRefund value) initiateRefund,
     required TResult Function(ResetStates value) resetStates,
-    required TResult Function(MarkRefundAttempted value) markRefundAttempted,
   }) {
     return proceedWithPayment(this);
   }
@@ -486,9 +424,7 @@ class _$ProceedWithPaymentImpl implements ProceedWithPayment {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(ProceedWithPayment value)? proceedWithPayment,
     TResult? Function(PaymentFailed value)? paymentFailed,
-    TResult? Function(InitiateRefund value)? initiateRefund,
     TResult? Function(ResetStates value)? resetStates,
-    TResult? Function(MarkRefundAttempted value)? markRefundAttempted,
   }) {
     return proceedWithPayment?.call(this);
   }
@@ -498,9 +434,7 @@ class _$ProceedWithPaymentImpl implements ProceedWithPayment {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(ProceedWithPayment value)? proceedWithPayment,
     TResult Function(PaymentFailed value)? paymentFailed,
-    TResult Function(InitiateRefund value)? initiateRefund,
     TResult Function(ResetStates value)? resetStates,
-    TResult Function(MarkRefundAttempted value)? markRefundAttempted,
     required TResult orElse(),
   }) {
     if (proceedWithPayment != null) {
@@ -695,16 +629,7 @@ class _$PaymentFailedImpl implements PaymentFailed {
       String callbackId,
     )
     paymentFailed,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      String amount,
-      String phoneNo,
-      String callbackId,
-    )
-    initiateRefund,
     required TResult Function() resetStates,
-    required TResult Function() markRefundAttempted,
   }) {
     return paymentFailed(
       orderId,
@@ -739,16 +664,7 @@ class _$PaymentFailedImpl implements PaymentFailed {
       String callbackId,
     )?
     paymentFailed,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      String amount,
-      String phoneNo,
-      String callbackId,
-    )?
-    initiateRefund,
     TResult? Function()? resetStates,
-    TResult? Function()? markRefundAttempted,
   }) {
     return paymentFailed?.call(
       orderId,
@@ -783,16 +699,7 @@ class _$PaymentFailedImpl implements PaymentFailed {
       String callbackId,
     )?
     paymentFailed,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      String amount,
-      String phoneNo,
-      String callbackId,
-    )?
-    initiateRefund,
     TResult Function()? resetStates,
-    TResult Function()? markRefundAttempted,
     required TResult orElse(),
   }) {
     if (paymentFailed != null) {
@@ -813,9 +720,7 @@ class _$PaymentFailedImpl implements PaymentFailed {
   TResult map<TResult extends Object?>({
     required TResult Function(ProceedWithPayment value) proceedWithPayment,
     required TResult Function(PaymentFailed value) paymentFailed,
-    required TResult Function(InitiateRefund value) initiateRefund,
     required TResult Function(ResetStates value) resetStates,
-    required TResult Function(MarkRefundAttempted value) markRefundAttempted,
   }) {
     return paymentFailed(this);
   }
@@ -825,9 +730,7 @@ class _$PaymentFailedImpl implements PaymentFailed {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(ProceedWithPayment value)? proceedWithPayment,
     TResult? Function(PaymentFailed value)? paymentFailed,
-    TResult? Function(InitiateRefund value)? initiateRefund,
     TResult? Function(ResetStates value)? resetStates,
-    TResult? Function(MarkRefundAttempted value)? markRefundAttempted,
   }) {
     return paymentFailed?.call(this);
   }
@@ -837,9 +740,7 @@ class _$PaymentFailedImpl implements PaymentFailed {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(ProceedWithPayment value)? proceedWithPayment,
     TResult Function(PaymentFailed value)? paymentFailed,
-    TResult Function(InitiateRefund value)? initiateRefund,
     TResult Function(ResetStates value)? resetStates,
-    TResult Function(MarkRefundAttempted value)? markRefundAttempted,
     required TResult orElse(),
   }) {
     if (paymentFailed != null) {
@@ -870,321 +771,6 @@ abstract class PaymentFailed implements DthConfirmEvent {
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$PaymentFailedImplCopyWith<_$PaymentFailedImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$InitiateRefundImplCopyWith<$Res> {
-  factory _$$InitiateRefundImplCopyWith(
-    _$InitiateRefundImpl value,
-    $Res Function(_$InitiateRefundImpl) then,
-  ) = __$$InitiateRefundImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({
-    String orderId,
-    String transactionId,
-    String amount,
-    String phoneNo,
-    String callbackId,
-  });
-}
-
-/// @nodoc
-class __$$InitiateRefundImplCopyWithImpl<$Res>
-    extends _$DthConfirmEventCopyWithImpl<$Res, _$InitiateRefundImpl>
-    implements _$$InitiateRefundImplCopyWith<$Res> {
-  __$$InitiateRefundImplCopyWithImpl(
-    _$InitiateRefundImpl _value,
-    $Res Function(_$InitiateRefundImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of DthConfirmEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? orderId = null,
-    Object? transactionId = null,
-    Object? amount = null,
-    Object? phoneNo = null,
-    Object? callbackId = null,
-  }) {
-    return _then(
-      _$InitiateRefundImpl(
-        orderId: null == orderId
-            ? _value.orderId
-            : orderId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        transactionId: null == transactionId
-            ? _value.transactionId
-            : transactionId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        amount: null == amount
-            ? _value.amount
-            : amount // ignore: cast_nullable_to_non_nullable
-                  as String,
-        phoneNo: null == phoneNo
-            ? _value.phoneNo
-            : phoneNo // ignore: cast_nullable_to_non_nullable
-                  as String,
-        callbackId: null == callbackId
-            ? _value.callbackId
-            : callbackId // ignore: cast_nullable_to_non_nullable
-                  as String,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-
-class _$InitiateRefundImpl implements InitiateRefund {
-  const _$InitiateRefundImpl({
-    required this.orderId,
-    required this.transactionId,
-    required this.amount,
-    required this.phoneNo,
-    required this.callbackId,
-  });
-
-  @override
-  final String orderId;
-  @override
-  final String transactionId;
-  @override
-  final String amount;
-  @override
-  final String phoneNo;
-  @override
-  final String callbackId;
-
-  @override
-  String toString() {
-    return 'DthConfirmEvent.initiateRefund(orderId: $orderId, transactionId: $transactionId, amount: $amount, phoneNo: $phoneNo, callbackId: $callbackId)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$InitiateRefundImpl &&
-            (identical(other.orderId, orderId) || other.orderId == orderId) &&
-            (identical(other.transactionId, transactionId) ||
-                other.transactionId == transactionId) &&
-            (identical(other.amount, amount) || other.amount == amount) &&
-            (identical(other.phoneNo, phoneNo) || other.phoneNo == phoneNo) &&
-            (identical(other.callbackId, callbackId) ||
-                other.callbackId == callbackId));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    orderId,
-    transactionId,
-    amount,
-    phoneNo,
-    callbackId,
-  );
-
-  /// Create a copy of DthConfirmEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$InitiateRefundImplCopyWith<_$InitiateRefundImpl> get copyWith =>
-      __$$InitiateRefundImplCopyWithImpl<_$InitiateRefundImpl>(
-        this,
-        _$identity,
-      );
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(
-      String phoneNo,
-      String operator,
-      String amount,
-      String subcriberNo,
-      String orderId,
-      String transactionId,
-      int paymentStatus,
-      String callbackId,
-    )
-    proceedWithPayment,
-    required TResult Function(
-      String orderId,
-      String phoneNo,
-      String operator,
-      String amount,
-      String subcriberNo,
-      String callbackId,
-    )
-    paymentFailed,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      String amount,
-      String phoneNo,
-      String callbackId,
-    )
-    initiateRefund,
-    required TResult Function() resetStates,
-    required TResult Function() markRefundAttempted,
-  }) {
-    return initiateRefund(orderId, transactionId, amount, phoneNo, callbackId);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(
-      String phoneNo,
-      String operator,
-      String amount,
-      String subcriberNo,
-      String orderId,
-      String transactionId,
-      int paymentStatus,
-      String callbackId,
-    )?
-    proceedWithPayment,
-    TResult? Function(
-      String orderId,
-      String phoneNo,
-      String operator,
-      String amount,
-      String subcriberNo,
-      String callbackId,
-    )?
-    paymentFailed,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      String amount,
-      String phoneNo,
-      String callbackId,
-    )?
-    initiateRefund,
-    TResult? Function()? resetStates,
-    TResult? Function()? markRefundAttempted,
-  }) {
-    return initiateRefund?.call(
-      orderId,
-      transactionId,
-      amount,
-      phoneNo,
-      callbackId,
-    );
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(
-      String phoneNo,
-      String operator,
-      String amount,
-      String subcriberNo,
-      String orderId,
-      String transactionId,
-      int paymentStatus,
-      String callbackId,
-    )?
-    proceedWithPayment,
-    TResult Function(
-      String orderId,
-      String phoneNo,
-      String operator,
-      String amount,
-      String subcriberNo,
-      String callbackId,
-    )?
-    paymentFailed,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      String amount,
-      String phoneNo,
-      String callbackId,
-    )?
-    initiateRefund,
-    TResult Function()? resetStates,
-    TResult Function()? markRefundAttempted,
-    required TResult orElse(),
-  }) {
-    if (initiateRefund != null) {
-      return initiateRefund(
-        orderId,
-        transactionId,
-        amount,
-        phoneNo,
-        callbackId,
-      );
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(ProceedWithPayment value) proceedWithPayment,
-    required TResult Function(PaymentFailed value) paymentFailed,
-    required TResult Function(InitiateRefund value) initiateRefund,
-    required TResult Function(ResetStates value) resetStates,
-    required TResult Function(MarkRefundAttempted value) markRefundAttempted,
-  }) {
-    return initiateRefund(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(ProceedWithPayment value)? proceedWithPayment,
-    TResult? Function(PaymentFailed value)? paymentFailed,
-    TResult? Function(InitiateRefund value)? initiateRefund,
-    TResult? Function(ResetStates value)? resetStates,
-    TResult? Function(MarkRefundAttempted value)? markRefundAttempted,
-  }) {
-    return initiateRefund?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(ProceedWithPayment value)? proceedWithPayment,
-    TResult Function(PaymentFailed value)? paymentFailed,
-    TResult Function(InitiateRefund value)? initiateRefund,
-    TResult Function(ResetStates value)? resetStates,
-    TResult Function(MarkRefundAttempted value)? markRefundAttempted,
-    required TResult orElse(),
-  }) {
-    if (initiateRefund != null) {
-      return initiateRefund(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class InitiateRefund implements DthConfirmEvent {
-  const factory InitiateRefund({
-    required final String orderId,
-    required final String transactionId,
-    required final String amount,
-    required final String phoneNo,
-    required final String callbackId,
-  }) = _$InitiateRefundImpl;
-
-  String get orderId;
-  String get transactionId;
-  String get amount;
-  String get phoneNo;
-  String get callbackId;
-
-  /// Create a copy of DthConfirmEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$InitiateRefundImplCopyWith<_$InitiateRefundImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -1251,16 +837,7 @@ class _$ResetStatesImpl implements ResetStates {
       String callbackId,
     )
     paymentFailed,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      String amount,
-      String phoneNo,
-      String callbackId,
-    )
-    initiateRefund,
     required TResult Function() resetStates,
-    required TResult Function() markRefundAttempted,
   }) {
     return resetStates();
   }
@@ -1288,16 +865,7 @@ class _$ResetStatesImpl implements ResetStates {
       String callbackId,
     )?
     paymentFailed,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      String amount,
-      String phoneNo,
-      String callbackId,
-    )?
-    initiateRefund,
     TResult? Function()? resetStates,
-    TResult? Function()? markRefundAttempted,
   }) {
     return resetStates?.call();
   }
@@ -1325,16 +893,7 @@ class _$ResetStatesImpl implements ResetStates {
       String callbackId,
     )?
     paymentFailed,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      String amount,
-      String phoneNo,
-      String callbackId,
-    )?
-    initiateRefund,
     TResult Function()? resetStates,
-    TResult Function()? markRefundAttempted,
     required TResult orElse(),
   }) {
     if (resetStates != null) {
@@ -1348,9 +907,7 @@ class _$ResetStatesImpl implements ResetStates {
   TResult map<TResult extends Object?>({
     required TResult Function(ProceedWithPayment value) proceedWithPayment,
     required TResult Function(PaymentFailed value) paymentFailed,
-    required TResult Function(InitiateRefund value) initiateRefund,
     required TResult Function(ResetStates value) resetStates,
-    required TResult Function(MarkRefundAttempted value) markRefundAttempted,
   }) {
     return resetStates(this);
   }
@@ -1360,9 +917,7 @@ class _$ResetStatesImpl implements ResetStates {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(ProceedWithPayment value)? proceedWithPayment,
     TResult? Function(PaymentFailed value)? paymentFailed,
-    TResult? Function(InitiateRefund value)? initiateRefund,
     TResult? Function(ResetStates value)? resetStates,
-    TResult? Function(MarkRefundAttempted value)? markRefundAttempted,
   }) {
     return resetStates?.call(this);
   }
@@ -1372,9 +927,7 @@ class _$ResetStatesImpl implements ResetStates {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(ProceedWithPayment value)? proceedWithPayment,
     TResult Function(PaymentFailed value)? paymentFailed,
-    TResult Function(InitiateRefund value)? initiateRefund,
     TResult Function(ResetStates value)? resetStates,
-    TResult Function(MarkRefundAttempted value)? markRefundAttempted,
     required TResult orElse(),
   }) {
     if (resetStates != null) {
@@ -1389,219 +942,15 @@ abstract class ResetStates implements DthConfirmEvent {
 }
 
 /// @nodoc
-abstract class _$$MarkRefundAttemptedImplCopyWith<$Res> {
-  factory _$$MarkRefundAttemptedImplCopyWith(
-    _$MarkRefundAttemptedImpl value,
-    $Res Function(_$MarkRefundAttemptedImpl) then,
-  ) = __$$MarkRefundAttemptedImplCopyWithImpl<$Res>;
-}
-
-/// @nodoc
-class __$$MarkRefundAttemptedImplCopyWithImpl<$Res>
-    extends _$DthConfirmEventCopyWithImpl<$Res, _$MarkRefundAttemptedImpl>
-    implements _$$MarkRefundAttemptedImplCopyWith<$Res> {
-  __$$MarkRefundAttemptedImplCopyWithImpl(
-    _$MarkRefundAttemptedImpl _value,
-    $Res Function(_$MarkRefundAttemptedImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of DthConfirmEvent
-  /// with the given fields replaced by the non-null parameter values.
-}
-
-/// @nodoc
-
-class _$MarkRefundAttemptedImpl implements MarkRefundAttempted {
-  const _$MarkRefundAttemptedImpl();
-
-  @override
-  String toString() {
-    return 'DthConfirmEvent.markRefundAttempted()';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$MarkRefundAttemptedImpl);
-  }
-
-  @override
-  int get hashCode => runtimeType.hashCode;
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(
-      String phoneNo,
-      String operator,
-      String amount,
-      String subcriberNo,
-      String orderId,
-      String transactionId,
-      int paymentStatus,
-      String callbackId,
-    )
-    proceedWithPayment,
-    required TResult Function(
-      String orderId,
-      String phoneNo,
-      String operator,
-      String amount,
-      String subcriberNo,
-      String callbackId,
-    )
-    paymentFailed,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      String amount,
-      String phoneNo,
-      String callbackId,
-    )
-    initiateRefund,
-    required TResult Function() resetStates,
-    required TResult Function() markRefundAttempted,
-  }) {
-    return markRefundAttempted();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(
-      String phoneNo,
-      String operator,
-      String amount,
-      String subcriberNo,
-      String orderId,
-      String transactionId,
-      int paymentStatus,
-      String callbackId,
-    )?
-    proceedWithPayment,
-    TResult? Function(
-      String orderId,
-      String phoneNo,
-      String operator,
-      String amount,
-      String subcriberNo,
-      String callbackId,
-    )?
-    paymentFailed,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      String amount,
-      String phoneNo,
-      String callbackId,
-    )?
-    initiateRefund,
-    TResult? Function()? resetStates,
-    TResult? Function()? markRefundAttempted,
-  }) {
-    return markRefundAttempted?.call();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(
-      String phoneNo,
-      String operator,
-      String amount,
-      String subcriberNo,
-      String orderId,
-      String transactionId,
-      int paymentStatus,
-      String callbackId,
-    )?
-    proceedWithPayment,
-    TResult Function(
-      String orderId,
-      String phoneNo,
-      String operator,
-      String amount,
-      String subcriberNo,
-      String callbackId,
-    )?
-    paymentFailed,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      String amount,
-      String phoneNo,
-      String callbackId,
-    )?
-    initiateRefund,
-    TResult Function()? resetStates,
-    TResult Function()? markRefundAttempted,
-    required TResult orElse(),
-  }) {
-    if (markRefundAttempted != null) {
-      return markRefundAttempted();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(ProceedWithPayment value) proceedWithPayment,
-    required TResult Function(PaymentFailed value) paymentFailed,
-    required TResult Function(InitiateRefund value) initiateRefund,
-    required TResult Function(ResetStates value) resetStates,
-    required TResult Function(MarkRefundAttempted value) markRefundAttempted,
-  }) {
-    return markRefundAttempted(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(ProceedWithPayment value)? proceedWithPayment,
-    TResult? Function(PaymentFailed value)? paymentFailed,
-    TResult? Function(InitiateRefund value)? initiateRefund,
-    TResult? Function(ResetStates value)? resetStates,
-    TResult? Function(MarkRefundAttempted value)? markRefundAttempted,
-  }) {
-    return markRefundAttempted?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(ProceedWithPayment value)? proceedWithPayment,
-    TResult Function(PaymentFailed value)? paymentFailed,
-    TResult Function(InitiateRefund value)? initiateRefund,
-    TResult Function(ResetStates value)? resetStates,
-    TResult Function(MarkRefundAttempted value)? markRefundAttempted,
-    required TResult orElse(),
-  }) {
-    if (markRefundAttempted != null) {
-      return markRefundAttempted(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class MarkRefundAttempted implements DthConfirmEvent {
-  const factory MarkRefundAttempted() = _$MarkRefundAttemptedImpl;
-}
-
-/// @nodoc
 mixin _$DthConfirmState {
   bool get isLoading => throw _privateConstructorUsedError;
   String? get rechargeStatus => throw _privateConstructorUsedError;
-  String? get refundStatus => throw _privateConstructorUsedError;
   String? get paymentSavedStatus => throw _privateConstructorUsedError;
   String? get orderId => throw _privateConstructorUsedError;
   String? get transactionId => throw _privateConstructorUsedError;
   String? get amount => throw _privateConstructorUsedError;
+  String? get actualStatus => throw _privateConstructorUsedError;
   String? get errorMessage => throw _privateConstructorUsedError;
-  bool? get shouldRefund => throw _privateConstructorUsedError;
-  bool get isRefundInProgress => throw _privateConstructorUsedError;
-  bool get hasRefundBeenAttempted => throw _privateConstructorUsedError;
   bool get hasRechargeFailedHandled => throw _privateConstructorUsedError;
   bool get hasPaymentSaveFailedHandled => throw _privateConstructorUsedError;
 
@@ -1622,15 +971,12 @@ abstract class $DthConfirmStateCopyWith<$Res> {
   $Res call({
     bool isLoading,
     String? rechargeStatus,
-    String? refundStatus,
     String? paymentSavedStatus,
     String? orderId,
     String? transactionId,
     String? amount,
+    String? actualStatus,
     String? errorMessage,
-    bool? shouldRefund,
-    bool isRefundInProgress,
-    bool hasRefundBeenAttempted,
     bool hasRechargeFailedHandled,
     bool hasPaymentSaveFailedHandled,
   });
@@ -1653,15 +999,12 @@ class _$DthConfirmStateCopyWithImpl<$Res, $Val extends DthConfirmState>
   $Res call({
     Object? isLoading = null,
     Object? rechargeStatus = freezed,
-    Object? refundStatus = freezed,
     Object? paymentSavedStatus = freezed,
     Object? orderId = freezed,
     Object? transactionId = freezed,
     Object? amount = freezed,
+    Object? actualStatus = freezed,
     Object? errorMessage = freezed,
-    Object? shouldRefund = freezed,
-    Object? isRefundInProgress = null,
-    Object? hasRefundBeenAttempted = null,
     Object? hasRechargeFailedHandled = null,
     Object? hasPaymentSaveFailedHandled = null,
   }) {
@@ -1674,10 +1017,6 @@ class _$DthConfirmStateCopyWithImpl<$Res, $Val extends DthConfirmState>
             rechargeStatus: freezed == rechargeStatus
                 ? _value.rechargeStatus
                 : rechargeStatus // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            refundStatus: freezed == refundStatus
-                ? _value.refundStatus
-                : refundStatus // ignore: cast_nullable_to_non_nullable
                       as String?,
             paymentSavedStatus: freezed == paymentSavedStatus
                 ? _value.paymentSavedStatus
@@ -1695,22 +1034,14 @@ class _$DthConfirmStateCopyWithImpl<$Res, $Val extends DthConfirmState>
                 ? _value.amount
                 : amount // ignore: cast_nullable_to_non_nullable
                       as String?,
+            actualStatus: freezed == actualStatus
+                ? _value.actualStatus
+                : actualStatus // ignore: cast_nullable_to_non_nullable
+                      as String?,
             errorMessage: freezed == errorMessage
                 ? _value.errorMessage
                 : errorMessage // ignore: cast_nullable_to_non_nullable
                       as String?,
-            shouldRefund: freezed == shouldRefund
-                ? _value.shouldRefund
-                : shouldRefund // ignore: cast_nullable_to_non_nullable
-                      as bool?,
-            isRefundInProgress: null == isRefundInProgress
-                ? _value.isRefundInProgress
-                : isRefundInProgress // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            hasRefundBeenAttempted: null == hasRefundBeenAttempted
-                ? _value.hasRefundBeenAttempted
-                : hasRefundBeenAttempted // ignore: cast_nullable_to_non_nullable
-                      as bool,
             hasRechargeFailedHandled: null == hasRechargeFailedHandled
                 ? _value.hasRechargeFailedHandled
                 : hasRechargeFailedHandled // ignore: cast_nullable_to_non_nullable
@@ -1737,15 +1068,12 @@ abstract class _$$DthConfirmStateImplCopyWith<$Res>
   $Res call({
     bool isLoading,
     String? rechargeStatus,
-    String? refundStatus,
     String? paymentSavedStatus,
     String? orderId,
     String? transactionId,
     String? amount,
+    String? actualStatus,
     String? errorMessage,
-    bool? shouldRefund,
-    bool isRefundInProgress,
-    bool hasRefundBeenAttempted,
     bool hasRechargeFailedHandled,
     bool hasPaymentSaveFailedHandled,
   });
@@ -1767,15 +1095,12 @@ class __$$DthConfirmStateImplCopyWithImpl<$Res>
   $Res call({
     Object? isLoading = null,
     Object? rechargeStatus = freezed,
-    Object? refundStatus = freezed,
     Object? paymentSavedStatus = freezed,
     Object? orderId = freezed,
     Object? transactionId = freezed,
     Object? amount = freezed,
+    Object? actualStatus = freezed,
     Object? errorMessage = freezed,
-    Object? shouldRefund = freezed,
-    Object? isRefundInProgress = null,
-    Object? hasRefundBeenAttempted = null,
     Object? hasRechargeFailedHandled = null,
     Object? hasPaymentSaveFailedHandled = null,
   }) {
@@ -1788,10 +1113,6 @@ class __$$DthConfirmStateImplCopyWithImpl<$Res>
         rechargeStatus: freezed == rechargeStatus
             ? _value.rechargeStatus
             : rechargeStatus // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        refundStatus: freezed == refundStatus
-            ? _value.refundStatus
-            : refundStatus // ignore: cast_nullable_to_non_nullable
                   as String?,
         paymentSavedStatus: freezed == paymentSavedStatus
             ? _value.paymentSavedStatus
@@ -1809,22 +1130,14 @@ class __$$DthConfirmStateImplCopyWithImpl<$Res>
             ? _value.amount
             : amount // ignore: cast_nullable_to_non_nullable
                   as String?,
+        actualStatus: freezed == actualStatus
+            ? _value.actualStatus
+            : actualStatus // ignore: cast_nullable_to_non_nullable
+                  as String?,
         errorMessage: freezed == errorMessage
             ? _value.errorMessage
             : errorMessage // ignore: cast_nullable_to_non_nullable
                   as String?,
-        shouldRefund: freezed == shouldRefund
-            ? _value.shouldRefund
-            : shouldRefund // ignore: cast_nullable_to_non_nullable
-                  as bool?,
-        isRefundInProgress: null == isRefundInProgress
-            ? _value.isRefundInProgress
-            : isRefundInProgress // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        hasRefundBeenAttempted: null == hasRefundBeenAttempted
-            ? _value.hasRefundBeenAttempted
-            : hasRefundBeenAttempted // ignore: cast_nullable_to_non_nullable
-                  as bool,
         hasRechargeFailedHandled: null == hasRechargeFailedHandled
             ? _value.hasRechargeFailedHandled
             : hasRechargeFailedHandled // ignore: cast_nullable_to_non_nullable
@@ -1844,15 +1157,12 @@ class _$DthConfirmStateImpl implements _DthConfirmState {
   const _$DthConfirmStateImpl({
     required this.isLoading,
     this.rechargeStatus,
-    this.refundStatus,
     this.paymentSavedStatus,
     this.orderId,
     this.transactionId,
     this.amount,
+    this.actualStatus,
     this.errorMessage,
-    this.shouldRefund,
-    this.isRefundInProgress = false,
-    this.hasRefundBeenAttempted = false,
     this.hasRechargeFailedHandled = false,
     this.hasPaymentSaveFailedHandled = false,
   });
@@ -1862,8 +1172,6 @@ class _$DthConfirmStateImpl implements _DthConfirmState {
   @override
   final String? rechargeStatus;
   @override
-  final String? refundStatus;
-  @override
   final String? paymentSavedStatus;
   @override
   final String? orderId;
@@ -1872,15 +1180,9 @@ class _$DthConfirmStateImpl implements _DthConfirmState {
   @override
   final String? amount;
   @override
+  final String? actualStatus;
+  @override
   final String? errorMessage;
-  @override
-  final bool? shouldRefund;
-  @override
-  @JsonKey()
-  final bool isRefundInProgress;
-  @override
-  @JsonKey()
-  final bool hasRefundBeenAttempted;
   @override
   @JsonKey()
   final bool hasRechargeFailedHandled;
@@ -1890,7 +1192,7 @@ class _$DthConfirmStateImpl implements _DthConfirmState {
 
   @override
   String toString() {
-    return 'DthConfirmState(isLoading: $isLoading, rechargeStatus: $rechargeStatus, refundStatus: $refundStatus, paymentSavedStatus: $paymentSavedStatus, orderId: $orderId, transactionId: $transactionId, amount: $amount, errorMessage: $errorMessage, shouldRefund: $shouldRefund, isRefundInProgress: $isRefundInProgress, hasRefundBeenAttempted: $hasRefundBeenAttempted, hasRechargeFailedHandled: $hasRechargeFailedHandled, hasPaymentSaveFailedHandled: $hasPaymentSaveFailedHandled)';
+    return 'DthConfirmState(isLoading: $isLoading, rechargeStatus: $rechargeStatus, paymentSavedStatus: $paymentSavedStatus, orderId: $orderId, transactionId: $transactionId, amount: $amount, actualStatus: $actualStatus, errorMessage: $errorMessage, hasRechargeFailedHandled: $hasRechargeFailedHandled, hasPaymentSaveFailedHandled: $hasPaymentSaveFailedHandled)';
   }
 
   @override
@@ -1902,22 +1204,16 @@ class _$DthConfirmStateImpl implements _DthConfirmState {
                 other.isLoading == isLoading) &&
             (identical(other.rechargeStatus, rechargeStatus) ||
                 other.rechargeStatus == rechargeStatus) &&
-            (identical(other.refundStatus, refundStatus) ||
-                other.refundStatus == refundStatus) &&
             (identical(other.paymentSavedStatus, paymentSavedStatus) ||
                 other.paymentSavedStatus == paymentSavedStatus) &&
             (identical(other.orderId, orderId) || other.orderId == orderId) &&
             (identical(other.transactionId, transactionId) ||
                 other.transactionId == transactionId) &&
             (identical(other.amount, amount) || other.amount == amount) &&
+            (identical(other.actualStatus, actualStatus) ||
+                other.actualStatus == actualStatus) &&
             (identical(other.errorMessage, errorMessage) ||
                 other.errorMessage == errorMessage) &&
-            (identical(other.shouldRefund, shouldRefund) ||
-                other.shouldRefund == shouldRefund) &&
-            (identical(other.isRefundInProgress, isRefundInProgress) ||
-                other.isRefundInProgress == isRefundInProgress) &&
-            (identical(other.hasRefundBeenAttempted, hasRefundBeenAttempted) ||
-                other.hasRefundBeenAttempted == hasRefundBeenAttempted) &&
             (identical(
                   other.hasRechargeFailedHandled,
                   hasRechargeFailedHandled,
@@ -1936,15 +1232,12 @@ class _$DthConfirmStateImpl implements _DthConfirmState {
     runtimeType,
     isLoading,
     rechargeStatus,
-    refundStatus,
     paymentSavedStatus,
     orderId,
     transactionId,
     amount,
+    actualStatus,
     errorMessage,
-    shouldRefund,
-    isRefundInProgress,
-    hasRefundBeenAttempted,
     hasRechargeFailedHandled,
     hasPaymentSaveFailedHandled,
   );
@@ -1965,15 +1258,12 @@ abstract class _DthConfirmState implements DthConfirmState {
   const factory _DthConfirmState({
     required final bool isLoading,
     final String? rechargeStatus,
-    final String? refundStatus,
     final String? paymentSavedStatus,
     final String? orderId,
     final String? transactionId,
     final String? amount,
+    final String? actualStatus,
     final String? errorMessage,
-    final bool? shouldRefund,
-    final bool isRefundInProgress,
-    final bool hasRefundBeenAttempted,
     final bool hasRechargeFailedHandled,
     final bool hasPaymentSaveFailedHandled,
   }) = _$DthConfirmStateImpl;
@@ -1983,8 +1273,6 @@ abstract class _DthConfirmState implements DthConfirmState {
   @override
   String? get rechargeStatus;
   @override
-  String? get refundStatus;
-  @override
   String? get paymentSavedStatus;
   @override
   String? get orderId;
@@ -1993,13 +1281,9 @@ abstract class _DthConfirmState implements DthConfirmState {
   @override
   String? get amount;
   @override
+  String? get actualStatus;
+  @override
   String? get errorMessage;
-  @override
-  bool? get shouldRefund;
-  @override
-  bool get isRefundInProgress;
-  @override
-  bool get hasRefundBeenAttempted;
   @override
   bool get hasRechargeFailedHandled;
   @override

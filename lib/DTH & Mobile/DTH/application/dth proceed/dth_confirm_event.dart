@@ -22,15 +22,5 @@ class DthConfirmEvent with _$DthConfirmEvent {
     required String callbackId,
   }) = PaymentFailed;
 
-  const factory DthConfirmEvent.initiateRefund({
-    required String orderId,
-    required String transactionId,
-    required String amount,
-    required String phoneNo,
-    required String callbackId,
-  }) = InitiateRefund;
-
   const factory DthConfirmEvent.resetStates() = ResetStates;
-
-  const factory DthConfirmEvent.markRefundAttempted() = MarkRefundAttempted;
 }

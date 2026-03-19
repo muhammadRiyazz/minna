@@ -48,10 +48,15 @@ class TransactionModel {
         return Colors.green;
       case 'pending':
       case 'accepted':
+      case 'in process':
+      case 'on hold':
         return Colors.orange;
       case 'system failed':
       case 'operator failed':
+      case 'failed':
         return Colors.red;
+      case 'refunded':
+        return Colors.blue;
       default:
         return Colors.grey;
     }
@@ -63,10 +68,15 @@ class TransactionModel {
         return Icons.check_circle;
       case 'pending':
       case 'accepted':
-        return Icons.pending;
+      case 'in process':
+      case 'on hold':
+        return Icons.hourglass_empty_rounded;
       case 'system failed':
       case 'operator failed':
+      case 'failed':
         return Icons.error;
+      case 'refunded':
+        return Icons.undo_rounded;
       default:
         return Icons.help;
     }

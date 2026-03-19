@@ -20,15 +20,5 @@ class RechargeProceedEvent with _$RechargeProceedEvent {
     required String callbackId,
   }) = PaymentFailed;
 
-  const factory RechargeProceedEvent.initiateRefund({
-    required String orderId,
-    required String transactionId,
-    required String amount,
-    required String phoneNo,
-    required String callbackId,
-  }) = InitiateRefund;
-
   const factory RechargeProceedEvent.resetStates() = ResetStates;
-
-  const factory RechargeProceedEvent.markRefundAttempted() = MarkRefundAttempted;
 }

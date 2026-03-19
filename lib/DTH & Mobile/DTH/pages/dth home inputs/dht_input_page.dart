@@ -222,8 +222,6 @@ class _DTHInputPageState extends State<DTHInputPage> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your subscriber ID';
-                          } else if (!value.startsWith('0')) {
-                            return 'Subscriber ID should start with 0';
                           } else if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
                             return 'Subscriber ID should contain only numbers';
                           } else if (value.length < 10) {

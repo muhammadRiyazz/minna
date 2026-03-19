@@ -14,14 +14,7 @@ class RechargeProceedBloc
     extends Bloc<RechargeProceedEvent, RechargeProceedState> {
   RechargeProceedBloc() : super(RechargeProceedState.initial()) {
     on<ProceedWithPayment>((event, emit) async {
-      emit(
-        state.copyWith(
-          isLoading: true,
-          hasRefundBeenAttempted: false,
-          hasRechargeFailedHandled: false,
-          hasPaymentSaveFailedHandled: false,
-        ),
-      );
+      emit(state.copyWith(isLoading: true));
 
       // First save payment details
       final paymentSaved = await _savePaymentDetails(
@@ -29,6 +22,7 @@ class RechargeProceedBloc
         event.transactionId,
         event.amount,
         event.paymentStatus,
+        event.callbackId,
       );
 
       if (!paymentSaved) {
@@ -36,11 +30,9 @@ class RechargeProceedBloc
           state.copyWith(
             isLoading: false,
             paymentSavedStatus: 'PAYMENT_SAVED_FAILED',
-            shouldRefund: true,
             orderId: event.orderId,
             transactionId: event.transactionId,
             amount: event.amount,
-            hasPaymentSaveFailedHandled: true,
           ),
         );
         return;
@@ -68,11 +60,11 @@ class RechargeProceedBloc
           state.copyWith(
             isLoading: false,
             rechargeStatus: "SUCCESS",
-            hasRechargeFailedHandled: false,
+            actualStatus: rechargeResult['actualStatus'],
+            errorMessage: rechargeResult['message'],
           ),
         );
       } else {
-        bool shouldRefund = rechargeResult['shouldRefund'] ?? true;
         String errorMessage = rechargeResult['message'] ?? 'Recharge failed';
 
         log("rechargeStatus FAILED: $errorMessage");
@@ -81,19 +73,18 @@ class RechargeProceedBloc
           state.copyWith(
             isLoading: false,
             rechargeStatus: 'FAILED',
-            shouldRefund: shouldRefund,
-            hasRechargeFailedHandled: true,
-            // errorMessage: errorMessage,
+            actualStatus: rechargeResult['actualStatus'],
+            errorMessage: errorMessage,
           ),
         );
       }
     });
 
     on<PaymentFailed>((event, emit) async {
-      emit(state.copyWith(isLoading: true, hasRefundBeenAttempted: false));
+      emit(state.copyWith(isLoading: true));
 
       // Save failed payment details
-      await _savePaymentDetails(event.orderId, '', event.amount, 0);
+      await _savePaymentDetails(event.orderId, '', event.amount, 0,event.callbackId);
 
       emit(
         state.copyWith(
@@ -105,70 +96,8 @@ class RechargeProceedBloc
       );
     });
 
-    on<InitiateRefund>((event, emit) async {
-      log("InitiateRefund - Starting refund process");
-
-      // Check if refund has already been attempted
-      if (state.hasRefundBeenAttempted) {
-        log("Refund already attempted, skipping...");
-        return;
-      }
-
-      emit(
-        state.copyWith(
-          isLoading: true,
-          isRefundInProgress: true,
-          hasRefundBeenAttempted: true,
-        ),
-      );
-
-      try {
-        
-        final refundSuccess = await _processRefund(
-          event.orderId,
-          event.transactionId,
-          event.amount,
-          event.callbackId,
-        );
-
-        if (refundSuccess) {
-          emit(
-            state.copyWith(
-              isLoading: false,
-              isRefundInProgress: false,
-              refundStatus: 'REFUND_INITIATED',
-              hasRefundBeenAttempted: true,
-            ),
-          );
-        } else {
-          emit(
-            state.copyWith(
-              isLoading: false,
-              isRefundInProgress: false,
-              refundStatus: 'REFUND_FAILED',
-              hasRefundBeenAttempted: true,
-            ),
-          );
-        }
-      } catch (e) {
-        log('Refund error: $e');
-        emit(
-          state.copyWith(
-            isLoading: false,
-            isRefundInProgress: false,
-            refundStatus: 'REFUND_FAILED',
-            hasRefundBeenAttempted: true,
-          ),
-        );
-      }
-    });
-
     on<ResetStates>((event, emit) {
       emit(RechargeProceedState.initial());
-    });
-
-    on<MarkRefundAttempted>((event, emit) {
-      emit(state.copyWith(hasRefundBeenAttempted: true));
     });
   }
 
@@ -190,7 +119,6 @@ class RechargeProceedBloc
         "amount": amount,
         "mobNumber": phoneNo,
       };
-
 
       log("Mobile recharge request: ${body.toString()}");
 
@@ -231,56 +159,69 @@ class RechargeProceedBloc
                 ? Map<String, dynamic>.from(json['data'])
                 : {};
 
-            final rechargeStatus = data['rechargeStatus']?.toString() ?? '';
-
-            // Check for successful recharge status - including PENDING/ACCEPTED
-            if (rechargeStatus.toUpperCase() == 'SUCCESS' ||
-                rechargeStatus.toLowerCase() == 'success'
-
-            // rechargeStatus.contains('ACCEPTED') ||
-            // rechargeStatus.contains('PENDING')
-           
-           
-           
-           
-            ) {
-              return {'success': true, 'message': 'Mobile recharge successful'};
-            } else {
-              // Recharge failed but API call was successful
-              final statusDesc =
-                  json['statusDesc']?.toString() ?? 'Recharge failed';
-              final responseData = data['responseData'];
-
-              String detailedError = statusDesc;
-
-              // Extract detailed error from nested responseData
-              if (responseData is Map) {
-                final responseDataMap = Map<String, dynamic>.from(responseData);
-                detailedError =
-                    responseDataMap['STATUSMSG']?.toString() ?? statusDesc;
-              } else if (responseData is String && responseData.isNotEmpty) {
-                try {
-                  final responseJson = jsonDecode(responseData);
-                  final responseJsonMap = Map<String, dynamic>.from(
-                    responseJson,
-                  );
-                  detailedError =
-                      responseJsonMap['STATUSMSG']?.toString() ?? statusDesc;
-                } catch (e) {
-                  log('Error parsing responseData string: $e');
-                }
+            final responseData = data['responseData'];
+            Map<String, dynamic> responseDataMap = {};
+            if (responseData is Map) {
+              responseDataMap = Map<String, dynamic>.from(responseData);
+            } else if (responseData is String && responseData.isNotEmpty) {
+              try {
+                responseDataMap = Map<String, dynamic>.from(
+                  jsonDecode(responseData),
+                );
+              } catch (e) {
+                log('Error parsing responseData string: $e');
               }
-
-              return {
-                'success': false,
-                'shouldRefund': true,
-                'message': detailedError,
-              };
             }
+
+            final int trnStatus =
+                int.tryParse(responseDataMap['TRNSTATUS']?.toString() ?? '') ??
+                0;
+            String actualStatus = 'Unknown';
+            bool isSuccess = false;
+
+            // Mapping TRNSTATUS as requested
+            switch (trnStatus) {
+              case 1:
+                actualStatus = "SUCCESS";
+                isSuccess = true;
+                break;
+              case 2:
+                actualStatus = "Operator Failed";
+                break;
+              case 3:
+                actualStatus = "System Failed";
+                break;
+              case 4:
+                actualStatus = "On Hold";
+                isSuccess = true; // Still "Success" in terms of API acceptance
+                break;
+              case 5:
+                actualStatus = "Refunded";
+                break;
+              case 6:
+                actualStatus = "In Process";
+                isSuccess = true; // Still "Success" in terms of API acceptance
+                break;
+              default:
+                actualStatus = data['rechargeStatus']?.toString() ?? 'FAILED';
+                isSuccess = actualStatus.toUpperCase() == 'SUCCESS';
+            }
+
+            final statusDesc =
+                responseDataMap['STATUSMSG']?.toString() ??
+                responseDataMap['TRNSTATUSDESC']?.toString() ??
+                json['statusDesc']?.toString() ??
+                'Recharge failed';
+
+            return {
+              'success': isSuccess,
+              'actualStatus': actualStatus,
+              'message': statusDesc,
+            };
           } else {
             return {
               'success': false,
-              'shouldRefund': true,
+              'actualStatus': 'FAILED',
               'message': 'No data received from recharge API',
             };
           }
@@ -288,13 +229,9 @@ class RechargeProceedBloc
           // API call failed
           final statusDesc =
               json['statusDesc']?.toString() ?? 'Something went wrong';
-          final statusCode = json['statusCode'] ?? 1;
-
-          // Determine if we should refund based on error type
-
           return {
             'success': false,
-            'shouldRefund': true,
+            'actualStatus': 'FAILED',
             'message': statusDesc,
           };
         }
@@ -321,22 +258,22 @@ class RechargeProceedBloc
     String transactionId,
     String amount,
     int status,
+    String insterId,
+
   ) async {
     log("_savePaymentDetails ---");
     try {
       final url = Uri.parse('${baseUrl}paysave');
-      SharedPreferences preferences = await SharedPreferences.getInstance();
-      final userId = preferences.getString('userId') ?? '';
 
       final body = {
-        "id": userId,
+        "id": insterId,
         "order_id": orderId,
         "transaction_id": transactionId,
         "status": status.toString(),
         "table": "mm_mobilerecharge",
       };
 
-      // log('request body--- ${body.toString()}');
+      log('request body--- ${body.toString()}');
       final response = await http.post(
         url,
         // headers: {'Content-Type': 'application/json'},
@@ -356,53 +293,6 @@ class RechargeProceedBloc
       return false;
     } catch (e) {
       log('Save payment error: $e');
-      return false;
-    }
-  }
-
-  Future<bool> _processRefund(
-    String orderId,
-    String transactionId,
-    String amount,
-    String tableId,
-  ) async {
-    log("_processRefund--- orderId: $orderId, transactionId: $transactionId");
-
-    try {
-      final url = Uri.parse('${baseUrl}payrefund');
-
-      final body = {
-        "id": tableId,
-        "transaction_id": transactionId,
-        'amount': amount,
-        "table": "mm_mobilerecharge",
-      };
-
-      log("Refund request body: ${body.toString()}");
-
-      final response = await http.post(url, body: body);
-      log('_processRefund response body: ${response.body.toString()}');
-
-      if (response.statusCode == 200) {
-        try {
-          final jsonResponse =
-              jsonDecode(response.body) as Map<String, dynamic>;
-          bool success =
-              jsonResponse['status'] == 'SUCCESS' ||
-              jsonResponse['status'] == 'success';
-
-          log("Refund API success: $success");
-          return success;
-        } catch (e) {
-          log('Error parsing refund response: $e');
-          return false;
-        }
-      }
-
-      log("Refund API failed with status: ${response.statusCode}");
-      return false;
-    } catch (e) {
-      log('Refund processing error: $e');
       return false;
     }
   }

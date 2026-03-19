@@ -25,6 +25,7 @@ import 'package:minna/flight/presendation/screen%20flight/home_flight.dart';
 import 'package:minna/hotel%20booking/pages/holel%20home%20page/home_page_hotel.dart'
     hide FlightBookingTab;
 import 'package:minna/visa/pages/visa_page.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -287,6 +288,21 @@ class _HomeContentPageState extends State<HomeContentPage> {
     },
   ];
 
+  // Combined Services for Search
+  List<Map<String, dynamic>> get _allSearchableServices => [
+    ..._travelServices,
+    ..._quickServices,
+  ];
+
+  List<Map<String, dynamic>> get _filteredServices {
+    if (_searchText.isEmpty) return [];
+    return _allSearchableServices.where((service) {
+      final label = service['label'].toString().toLowerCase();
+      final query = _searchText.toLowerCase();
+      return label.contains(query);
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
@@ -327,76 +343,85 @@ class _HomeContentPageState extends State<HomeContentPage> {
               },
             ),
             Expanded(
-              child: NestedScrollView(
-                headerSliverBuilder: (context, innerBoxIsScrolled) {
-                  return [
-                    BlocBuilder<LoginBloc, LoginState>(
-                      builder: (context, state) {
-                        return _buildDynamicAppBar(
-                          isSmallScreen,
-                          isTablet,
-                          titleFontSize,
-                          state,
-                        );
-                      },
-                    ),
-                  ];
-                },
-                body: SingleChildScrollView(
-                  physics: const ClampingScrollPhysics(),
-                  child: Column(
-                    children: [
-                      // Search Section
-                      // _buildSearchSection(isSmallScreen, isTablet, bodyFontSize),
+              child: Stack(
+                children: [
+                  NestedScrollView(
+                    headerSliverBuilder: (context, innerBoxIsScrolled) {
+                      return [
+                        BlocBuilder<LoginBloc, LoginState>(
+                          builder: (context, state) {
+                            return _buildDynamicAppBar(
+                              isSmallScreen,
+                              isTablet,
+                              titleFontSize,
+                              state,
+                            );
+                          },
+                        ),
+                      ];
+                    },
+                    body: SingleChildScrollView(
+                      physics: const ClampingScrollPhysics(),
+                      child: Column(
+                        children: [
+                          // Popular Destinations - MOVED TO TOP
+                          BlocBuilder<HomeDataBloc, HomeDataState>(
+                            builder: (context, state) {
+                              return _buildPopularDestinations(
+                                isSmallScreen,
+                                isTablet,
+                                headingFontSize,
+                                bodyFontSize,
+                                state,
+                              );
+                            },
+                          ),
 
-                      // Popular Destinations - MOVED TO TOP
-                      BlocBuilder<HomeDataBloc, HomeDataState>(
-                        builder: (context, state) {
-                          return _buildPopularDestinations(
+                          // Travel Offers Banner
+
+                          // Travel Services Grid
+                          _buildTravelServicesSection(
+                            context,
                             isSmallScreen,
                             isTablet,
+                            iconSize,
                             headingFontSize,
                             bodyFontSize,
-                            state,
-                          );
-                        },
-                      ),
+                          ),
+                          // _buildOffersBanner(isSmallScreen, isTablet, bodyFontSize),
 
-                      // Travel Offers Banner
+                          // Quick Services
+                          _buildQuickServicesSection(
+                            context,
+                            isSmallScreen,
+                            isTablet,
+                            iconSize,
+                            headingFontSize,
+                            bodyFontSize,
+                          ),
 
-                      // Travel Services Grid
-                      _buildTravelServicesSection(
-                        context,
-                        isSmallScreen,
-                        isTablet,
-                        iconSize,
-                        headingFontSize,
-                        bodyFontSize,
+                          // Promo Banner
+                          _buildPromoBanner(
+                            isSmallScreen,
+                            isTablet,
+                            bodyFontSize,
+                          ),
+                          SizedBox(
+                            height: isSmallScreen
+                                ? 20
+                                : isTablet
+                                ? 40
+                                : 30,
+                          ),
+                        ],
                       ),
-                      // _buildOffersBanner(isSmallScreen, isTablet, bodyFontSize),
-
-                      // Quick Services
-                      _buildQuickServicesSection(
-                        context,
-                        isSmallScreen,
-                        isTablet,
-                        iconSize,
-                        headingFontSize,
-                        bodyFontSize,
-                      ),
-
-                      // Promo Banner
-                      _buildPromoBanner(isSmallScreen, isTablet, bodyFontSize),
-                      SizedBox(
-                        height: isSmallScreen
-                            ? 20
-                            : isTablet
-                            ? 40
-                            : 30,
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+
+                  // Search Results Overlay
+                  if (_searchText.isNotEmpty)
+                    _buildSearchResultsOverlay(isSmallScreen),
+                ],
               ),
             ),
           ],
@@ -452,13 +477,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
             ],
           ),
           // Profile Actions
-          Row(
-            children: [
-              _buildCircleIconButton(Iconsax.notification, onTap: () {}),
-              const SizedBox(width: 12),
-              _buildProfileAvatar(isLoggedIn),
-            ],
-          ),
+          Row(children: [_buildProfileAvatar(isLoggedIn)]),
         ],
       ),
     );
@@ -512,27 +531,6 @@ class _HomeContentPageState extends State<HomeContentPage> {
     );
   }
 
-  Widget _buildCircleIconButton(IconData icon, {required VoidCallback onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Icon(icon, color: _primaryColor, size: 20),
-      ),
-    );
-  }
-
   Widget _buildProfileAvatar(bool isLoggedIn) {
     return GestureDetector(
       onTap: () {
@@ -544,7 +542,10 @@ class _HomeContentPageState extends State<HomeContentPage> {
             builder: (context) => LoginBottomSheet(login: 2),
           );
         } else {
-          // Navigate to account
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const MyAccountPage()),
+          );
         }
       },
       child: Container(
@@ -588,7 +589,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
           });
         },
         decoration: InputDecoration(
-          hintText: 'Where to next?',
+          hintText: 'Search for recharge, bill, travel...',
           hintStyle: TextStyle(
             color: _textLight,
             fontSize: isSmallScreen ? 14 : 16,
@@ -616,6 +617,117 @@ class _HomeContentPageState extends State<HomeContentPage> {
         ),
       ),
     );
+  }
+
+  Widget _buildSearchResultsOverlay(bool isSmallScreen) {
+    final results = _filteredServices;
+
+    return Positioned.fill(
+      child: GestureDetector(
+        onTap: () => setState(() {
+          _searchController.clear();
+          _searchText = '';
+        }),
+        child: Container(
+          color: Colors.black.withOpacity(0.3),
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.all(16),
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: results.isEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Iconsax.search_status,
+                              color: _textLight,
+                              size: 40,
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'No services found for "$_searchText"',
+                              style: TextStyle(
+                                color: _textSecondary,
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      )
+                    : Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: results.map((service) {
+                          return ListTile(
+                            leading: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: (service['color'] as Color).withOpacity(
+                                  0.1,
+                                ),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                service['icon'] as IconData,
+                                color: service['color'] as Color,
+                                size: 20,
+                              ),
+                            ),
+                            title: Text(
+                              service['label'] as String,
+                              style: TextStyle(
+                                color: _textPrimary,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            subtitle: Text(
+                              _getServiceCategory(service['label'] as String),
+                              style: TextStyle(color: _textLight, fontSize: 12),
+                            ),
+                            trailing: Icon(
+                              Iconsax.arrow_right_3,
+                              color: _textLight,
+                              size: 16,
+                            ),
+                            onTap: () {
+                              setState(() {
+                                _searchController.clear();
+                                _searchText = '';
+                              });
+                              (service['onTap'] as Function(BuildContext))(
+                                context,
+                              );
+                            },
+                          );
+                        }).toList(),
+                      ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _getServiceCategory(String label) {
+    if (['Mobile', 'DTH'].contains(label)) return 'Manage Service';
+    if (['Electricity', 'Water'].contains(label)) return 'Utility Service';
+    return 'Travel Service';
   }
 
   // Login Alert Banner Widget
@@ -989,108 +1101,343 @@ class _HomeContentPageState extends State<HomeContentPage> {
     bool isSmallScreen,
     bool isTablet,
   ) {
+    return GestureDetector(
+      onTap: () => _showDestinationDetailsBottomSheet(context, destination),
+      child: Container(
+        width: isSmallScreen ? 160 : 200,
+        margin: const EdgeInsets.only(right: 17),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: _primaryColor.withOpacity(0.12),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.network(
+                destination.image,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    Container(color: Colors.grey[200]),
+              ),
+              // Gradient Overlay
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.1),
+                      Colors.black.withOpacity(0.8),
+                    ],
+                    stops: const [0.4, 0.6, 1.0],
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 16,
+                right: 16,
+                bottom: 16,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(
+                          Iconsax.location,
+                          color: Colors.white,
+                          size: 12,
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            destination.country.toUpperCase(),
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.8),
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 1.0,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      destination.name,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _secondaryColor,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        'From ${destination.price}',
+                        style: TextStyle(
+                          color: _primaryColor,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showDestinationDetailsBottomSheet(
+    BuildContext context,
+    dynamic destination,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _buildDestinationDetailsSheet(context, destination),
+    );
+  }
+
+  Widget _buildDestinationDetailsSheet(
+    BuildContext context,
+    dynamic destination,
+  ) {
+    const String supportNumber = "+919656666556";
+
     return Container(
-      width: isSmallScreen ? 160 : 200,
-      margin: const EdgeInsets.only(right: 17),
+      height: MediaQuery.of(context).size.height * 0.85,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        color: _backgroundColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         boxShadow: [
           BoxShadow(
-            color: _primaryColor.withOpacity(0.12),
+            color: Colors.black.withOpacity(0.2),
             blurRadius: 20,
-            offset: const Offset(0, 10),
+            offset: const Offset(0, -5),
           ),
         ],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.network(
-              destination.image,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) =>
-                  Container(color: Colors.grey[200]),
-            ),
-            // Gradient Overlay
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.1),
-                    Colors.black.withOpacity(0.8),
-                  ],
-                  stops: const [0.4, 0.6, 1.0],
+      child: Column(
+        children: [
+          // Header with Image
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(32),
+                ),
+                child: Image.network(
+                  destination.image,
+                  height: 290,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    height: 300,
+                    width: double.infinity,
+                    color: Colors.grey[200],
+                    child: Icon(
+                      Iconsax.image,
+                      color: Colors.grey[400],
+                      size: 50,
+                    ),
+                  ),
                 ),
               ),
-            ),
-            Positioned(
-              left: 16,
-              right: 16,
-              bottom: 16,
+              Positioned(
+                top: 20,
+                right: 20,
+                child: GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.close,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 20,
+                left: 24,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _secondaryColor,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        destination.country,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      destination.name,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        shadows: [
+                          Shadow(
+                            blurRadius: 10,
+                            color: Colors.black,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Icon(
-                        Iconsax.location,
-                        color: Colors.white,
-                        size: 12,
-                      ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          destination.country.toUpperCase(),
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.8),
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 1.0,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Starting from',
+                            style: TextStyle(color: _textLight, fontSize: 14),
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                          Text(
+                            '₹${destination.price}',
+                            style: TextStyle(
+                              color: _primaryColor,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: _secondaryColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Icon(
+                          Iconsax.star5,
+                          color: _secondaryColor,
+                          size: 24,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 24),
                   Text(
-                    destination.name,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
+                    'Plan Your Perfect Trip',
+                    style: TextStyle(
+                      color: _primaryColor,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
+                  const SizedBox(height: 12),
+                  Text(
+                    'Experience the beauty of ${destination.name}. Book your dream vacation with MT TRIP and get exclusive offers and world-class service.',
+                    style: TextStyle(
+                      color: _textSecondary,
+                      fontSize: 15,
+                      height: 1.6,
                     ),
-                    decoration: BoxDecoration(
-                      color: _secondaryColor,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      'From ${destination.price}',
-                      style: TextStyle(
-                        color: _primaryColor,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w900,
+                  ),
+                  const SizedBox(height: 32),
+                  // Premium Call Button
+                  SizedBox(
+                    width: double.infinity,
+                    height: 60,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final Uri telUri = Uri.parse('tel:$supportNumber');
+                        if (await canLaunchUrl(telUri)) {
+                          await launchUrl(telUri);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _primaryColor,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        elevation: 4,
+                        shadowColor: _primaryColor.withOpacity(0.4),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.phone_in_talk_rounded,
+                            size: 22,
+                            color: _secondaryColor,
+                          ),
+                          const SizedBox(width: 12),
+                          const Text(
+                            'Call for Booking',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
+                  const SizedBox(height: 24),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -1600,26 +1947,6 @@ class _HomeContentPageState extends State<HomeContentPage> {
                   color: Colors.white.withOpacity(0.7),
                   fontSize: 14,
                   height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _secondaryColor,
-                  foregroundColor: _primaryColor,
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text(
-                  'Join MT Plus',
-                  style: TextStyle(fontWeight: FontWeight.w900),
                 ),
               ),
             ],

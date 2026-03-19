@@ -12,14 +12,8 @@ part 'dth_confirm_bloc.freezed.dart';
 
 class DthConfirmBloc extends Bloc<DthConfirmEvent, DthConfirmState> {
   DthConfirmBloc() : super(DthConfirmState.initial()) {
-    
     on<ProceedWithPayment>((event, emit) async {
-      emit(state.copyWith(
-        isLoading: true,
-        hasRefundBeenAttempted: false,
-        hasRechargeFailedHandled: false,
-        hasPaymentSaveFailedHandled: false,
-      ));
+      emit(state.copyWith(isLoading: true));
 
       // First save payment details
       final paymentSaved = await _savePaymentDetails(
@@ -27,27 +21,30 @@ class DthConfirmBloc extends Bloc<DthConfirmEvent, DthConfirmState> {
         event.transactionId,
         event.amount,
         event.paymentStatus,
+        event.callbackId,
       );
 
       if (!paymentSaved) {
-        emit(state.copyWith(
-          isLoading: false,
-          paymentSavedStatus: 'PAYMENT_SAVED_FAILED',
-          shouldRefund: true,
-          orderId: event.orderId,
-          transactionId: event.transactionId,
-          amount: event.amount,
-          hasPaymentSaveFailedHandled: true,
-        ));
+        emit(
+          state.copyWith(
+            isLoading: false,
+            paymentSavedStatus: 'PAYMENT_SAVED_FAILED',
+            orderId: event.orderId,
+            transactionId: event.transactionId,
+            amount: event.amount,
+          ),
+        );
         return;
       }
 
-      emit(state.copyWith(
-        paymentSavedStatus: 'PAYMENT_SAVED_SUCCESS',
-        orderId: event.orderId,
-        transactionId: event.transactionId,
-        amount: event.amount,
-      ));
+      emit(
+        state.copyWith(
+          paymentSavedStatus: 'PAYMENT_SAVED_SUCCESS',
+          orderId: event.orderId,
+          transactionId: event.transactionId,
+          amount: event.amount,
+        ),
+      );
 
       // Now proceed with DTH recharge
       final rechargeResult = await _processDthRecharge(
@@ -58,36 +55,18 @@ class DthConfirmBloc extends Bloc<DthConfirmEvent, DthConfirmState> {
         event.callbackId,
       );
 
-      if (rechargeResult['success']) {
-        emit(
-          state.copyWith(
-            isLoading: false,
-            rechargeStatus: "SUCCESS",
-            hasRechargeFailedHandled: false,
-          ),
-        );
-      } else {
-        // Check if we should refund based on the error type
-        bool shouldRefund = rechargeResult['shouldRefund'] ?? true;
-        String errorMessage = rechargeResult['message'] ?? 'Recharge failed';
-        
-        log("DTH rechargeStatus FAILED: $errorMessage");
-        
-        emit(state.copyWith(
+      emit(
+        state.copyWith(
           isLoading: false,
-          rechargeStatus: 'FAILED',
-          shouldRefund: shouldRefund,
-          hasRechargeFailedHandled: true,
-          errorMessage: errorMessage,
-        ));
-      }
+          rechargeStatus: rechargeResult['success'] ? "SUCCESS" : "FAILED",
+          actualStatus: rechargeResult['actualStatus'],
+          errorMessage: rechargeResult['message'],
+        ),
+      );
     });
 
     on<PaymentFailed>((event, emit) async {
-      emit(state.copyWith(
-        isLoading: true,
-        hasRefundBeenAttempted: false,
-      ));
+      emit(state.copyWith(isLoading: true));
 
       // Save failed payment details
       await _savePaymentDetails(
@@ -95,212 +74,176 @@ class DthConfirmBloc extends Bloc<DthConfirmEvent, DthConfirmState> {
         '',
         event.amount,
         0,
+        event.callbackId,
       );
 
-      emit(state.copyWith(
-        isLoading: false,
-        paymentSavedStatus: 'PAYMENT_FAILED',
-        orderId: event.orderId,
-        amount: event.amount,
-      ));
-    });
-
-    on<InitiateRefund>((event, emit) async {
-      log("DTH InitiateRefund - Starting refund process");
-      
-      // Check if refund has already been attempted
-      if (state.hasRefundBeenAttempted) {
-        log("DTH Refund already attempted, skipping...");
-        return;
-      }
-
-      emit(state.copyWith(
-        isLoading: true,
-        isRefundInProgress: true,
-        hasRefundBeenAttempted: true,
-      ));
-
-      try {
-        final refundSuccess = await _processRefund(
-          event.orderId,
-          event.transactionId,
-          event.amount,
-          event.callbackId,
-        );
-
-        if (refundSuccess) {
-          emit(state.copyWith(
-            isLoading: false,
-            isRefundInProgress: false,
-            refundStatus: 'REFUND_INITIATED',
-            hasRefundBeenAttempted: true,
-          ));
-        } else {
-          emit(state.copyWith(
-            isLoading: false,
-            isRefundInProgress: false,
-            refundStatus: 'REFUND_FAILED',
-            hasRefundBeenAttempted: true,
-          ));
-        }
-      } catch (e) {
-        log('DTH Refund error: $e');
-        emit(state.copyWith(
+      emit(
+        state.copyWith(
           isLoading: false,
-          isRefundInProgress: false,
-          refundStatus: 'REFUND_FAILED',
-          hasRefundBeenAttempted: true,
-        ));
-      }
+          paymentSavedStatus: 'PAYMENT_FAILED',
+          orderId: event.orderId,
+          amount: event.amount,
+        ),
+      );
     });
 
     on<ResetStates>((event, emit) {
       emit(DthConfirmState.initial());
     });
-
-    on<MarkRefundAttempted>((event, emit) {
-      emit(state.copyWith(hasRefundBeenAttempted: true));
-    });
   }
 
- Future<Map<String, dynamic>> _processDthRecharge(
-  String phoneNo,
-  String operator,
-  String amount,
-  String subcriberNo,
-  String callbackId,
-) async {
-  try {
-    final url = Uri.parse('${baseUrl}dth-recharge');
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    final userId = preferences.getString('userId') ?? '';
+  Future<Map<String, dynamic>> _processDthRecharge(
+    String phoneNo,
+    String operator,
+    String amount,
+    String subcriberNo,
+    String callbackId,
+  ) async {
+    try {
+      final url = Uri.parse('${baseUrl}dth-recharges');
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      final userId = preferences.getString('userId') ?? '';
 
-    final body = {
-      "insertid": callbackId,
-      "userId": userId,
-      "mobNumber": phoneNo,
-      "operator": operator,
-      "amount": amount,
-      "subcriberNo": subcriberNo,
-    };
+      final body = {
+        "insertid": callbackId,
+        "userId": userId,
+        "mobNumber": phoneNo,
+        "operator": operator,
+        "amount": amount,
+        "subcriberNo": subcriberNo,
+      };
 
-    log("DTH recharge request: ${body.toString()}");
-    
-    final response = await http.post(url, body: body);
-    
-    log("DTH recharge response status: ${response.statusCode}");
-    log("DTH recharge response body: ${response.body}");
+      log("DTH recharge request: ${body.toString()}");
 
-    if (response.statusCode == 200) {
-      dynamic responseData = jsonDecode(response.body);
-      
-      // Handle both List and Map response formats with proper type casting
-      Map<String, dynamic> json;
-      if (responseData is List) {
-        // If response is a list, take the first element and cast it
-        json = responseData.isNotEmpty ? 
-              Map<String, dynamic>.from(responseData[0]) : {};
-        log("DTH response is List, using first element");
-      } else if (responseData is Map) {
-        // Cast Map<dynamic, dynamic> to Map<String, dynamic>
-        json = Map<String, dynamic>.from(responseData);
-        log("DTH response is Map");
-      } else {
-        return {
-          'success': false,
-          'shouldRefund': true,
-          'message': 'Invalid response format'
-        };
-      }
+      final response = await http.post(url, body: body);
 
-      log("Parsed DTH response: $json");
-      
-      // Check if the API call was successful
-      if (json['status'] == 'SUCCESS' && json['statusCode'] == 0) {
-        // Check the actual recharge status in data
-        if (json['data'] != null) {
-          // Cast data to Map<String, dynamic>
-          final Map<String, dynamic> data = json['data'] is Map 
-              ? Map<String, dynamic>.from(json['data']) 
+      log("DTH recharge response status: ${response.statusCode}");
+      log("DTH recharge response body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        dynamic responseData = jsonDecode(response.body);
+
+        // Handle both List and Map response formats with proper type casting
+        Map<String, dynamic> json;
+        if (responseData is List) {
+          // If response is a list, take the first element and cast it
+          json = responseData.isNotEmpty
+              ? Map<String, dynamic>.from(responseData[0])
               : {};
-          
-          final rechargeStatus = data['rechargeStatus']?.toString() ?? '';
-          
-          // Check for successful recharge status
-          if (rechargeStatus.toUpperCase() == 'SUCCESS' || 
-              rechargeStatus.toLowerCase() == 'success' ||
-              rechargeStatus.toLowerCase() == 'completed') {
-            return {
-              'success': true,
-              'message': 'DTH recharge successful'
-            };
-          } else {
-            // Recharge failed but API call was successful
-            final statusDesc = json['statusDesc']?.toString() ?? 'Recharge failed';
-            final responseData = data['responseData'];
-            
-            String detailedError = statusDesc;
-            
-            // Extract detailed error from nested responseData
-            if (responseData is Map) {
-              final responseDataMap = Map<String, dynamic>.from(responseData);
-              detailedError = responseDataMap['STATUSMSG']?.toString() ?? statusDesc;
-            } else if (responseData is String && responseData.isNotEmpty) {
-              try {
-                final responseJson = jsonDecode(responseData);
-                final responseJsonMap = Map<String, dynamic>.from(responseJson);
-                detailedError = responseJsonMap['STATUSMSG']?.toString() ?? statusDesc;
-              } catch (e) {
-                log('Error parsing responseData string: $e');
-              }
-            }
-            
-            // bool shouldRefund = _shouldRefundBasedOnError(detailedError);
-            
-            return {
-              'success': false,
-              'shouldRefund': true,
-              'message': detailedError
-            };
-          }
+          log("DTH response is List, using first element");
+        } else if (responseData is Map) {
+          // Cast Map<dynamic, dynamic> to Map<String, dynamic>
+          json = Map<String, dynamic>.from(responseData);
+          log("DTH response is Map");
         } else {
           return {
             'success': false,
             'shouldRefund': true,
-            'message': 'No data received from recharge API'
+            'message': 'Invalid response format',
+          };
+        }
+
+        log("Parsed DTH response: $json");
+
+        // Check if the API call was successful
+        if (json['status'] == 'SUCCESS' && json['statusCode'] == 0) {
+          // Check the actual recharge status in data
+          if (json['data'] != null) {
+            final Map<String, dynamic> data = json['data'] is Map
+                ? Map<String, dynamic>.from(json['data'])
+                : {};
+
+            final responseData = data['responseData'];
+            Map<String, dynamic> responseDataMap = {};
+
+            if (responseData is Map) {
+              responseDataMap = Map<String, dynamic>.from(responseData);
+            } else if (responseData is String && responseData.isNotEmpty) {
+              try {
+                responseDataMap = Map<String, dynamic>.from(
+                  jsonDecode(responseData),
+                );
+              } catch (e) {
+                log('Error parsing responseData string: $e');
+              }
+            }
+
+            final int trnStatus =
+                int.tryParse(responseDataMap['TRNSTATUS']?.toString() ?? '') ??
+                0;
+            String actualStatus = 'Unknown';
+            bool isSuccess = false;
+
+            switch (trnStatus) {
+              case 1:
+                actualStatus = 'SUCCESS';
+                isSuccess = true;
+                break;
+              case 2:
+                actualStatus = 'Operator Failed';
+                break;
+              case 3:
+                actualStatus = 'System Failed';
+                break;
+              case 4:
+                actualStatus = 'On Hold';
+                break;
+              case 5:
+                actualStatus = 'Refunded';
+                break;
+              case 6:
+                actualStatus = 'In Process';
+                break;
+              default:
+                actualStatus = data['rechargeStatus']?.toString() ?? 'Pending';
+                isSuccess = actualStatus.toUpperCase() == 'SUCCESS';
+            }
+
+            final statusDesc =
+                responseDataMap['STATUSMSG']?.toString() ??
+                responseDataMap['TRNSTATUSDESC']?.toString() ??
+                json['statusDesc']?.toString() ??
+                'Recharge failed';
+
+            return {
+              'success': isSuccess,
+              'actualStatus': actualStatus,
+              'message': statusDesc,
+            };
+          } else {
+            return {
+              'success': false,
+              'actualStatus': 'FAILED',
+              'message': 'No data received from recharge API',
+            };
+          }
+        } else {
+          // API call failed
+          final statusDesc =
+              json['statusDesc']?.toString() ?? 'Something went wrong';
+          return {
+            'success': false,
+            'actualStatus': 'FAILED',
+            'message': statusDesc,
           };
         }
       } else {
-        // API call failed
-        final statusDesc = json['statusDesc']?.toString() ?? 'Something went wrong';
-        final statusCode = json['statusCode'] ?? 1;
-        
-        // Determine if we should refund based on error type
-        // bool shouldRefund = _shouldRefundBasedOnError(statusDesc);
-        
+        // HTTP error
         return {
           'success': false,
           'shouldRefund': true,
-          'message': statusDesc
+          'message': 'Network error: ${response.statusCode}',
         };
       }
-    } else {
-      // HTTP error
+    } catch (e) {
+      log('DTH recharge error: $e');
       return {
         'success': false,
         'shouldRefund': true,
-        'message': 'Network error: ${response.statusCode}'
+        'message': 'Connection error: ${e.toString()}',
       };
     }
-  } catch (e) {
-    log('DTH recharge error: $e');
-    return {
-      'success': false,
-      'shouldRefund': true,
-      'message': 'Connection error: ${e.toString()}'
-    };
   }
-}
 
   // bool _shouldRefundBasedOnError(String errorMessage) {
   //   if (errorMessage.isEmpty) return true;
@@ -321,7 +264,7 @@ class DthConfirmBloc extends Bloc<DthConfirmEvent, DthConfirmState> {
 
   //   // Convert to lowercase for case-insensitive matching
   //   final lowerError = errorMessage.toLowerCase();
-    
+
   //   // Check if this is a user input error (no refund)
   //   for (final error in noRefundErrors) {
   //     if (lowerError.contains(error)) {
@@ -329,7 +272,7 @@ class DthConfirmBloc extends Bloc<DthConfirmEvent, DthConfirmState> {
   //       return false;
   //     }
   //   }
-    
+
   //   // Default to refund for system/technical errors
   //   log("Refund needed for system error: $errorMessage");
   //   return true;
@@ -340,24 +283,25 @@ class DthConfirmBloc extends Bloc<DthConfirmEvent, DthConfirmState> {
     String transactionId,
     String amount,
     int status,
+    String insterId,
   ) async {
     log("DTH _savePaymentDetails ---");
     try {
       final url = Uri.parse('${baseUrl}paysave');
-      SharedPreferences preferences = await SharedPreferences.getInstance();
-      final userId = preferences.getString('userId') ?? '';
 
       final body = {
-        "id": userId,
+        "id": insterId,
         "order_id": orderId,
         "transaction_id": transactionId,
         "status": status.toString(),
         "table": "mm_mobilerecharge", // Fixed table name
       };
-      
+
       log('DTH payment save request: ${body.toString()}');
       final response = await http.post(url, body: body);
-      log('DTH payment save response: ${response.statusCode} - ${response.body}');
+      log(
+        'DTH payment save response: ${response.statusCode} - ${response.body}',
+      );
 
       if (response.statusCode == 200) {
         try {
@@ -372,52 +316,6 @@ class DthConfirmBloc extends Bloc<DthConfirmEvent, DthConfirmState> {
       return false;
     } catch (e) {
       log('DTH Save payment error: $e');
-      return false;
-    }
-  }
-
-  Future<bool> _processRefund(
-    String orderId,
-    String transactionId,
-    String amount,
-    String tableId,
-  ) async {
-    log("DTH _processRefund--- orderId: $orderId, transactionId: $transactionId, tableId: $tableId");
-    
-    try {
-      final url = Uri.parse('${baseUrl}payrefund');
-
-      final body = {
-        "id": tableId,
-        "transaction_id": transactionId,
-        'amount': amount,
-        "table": "mm_mobilerecharge", // Fixed table name
-      };
-      
-      log("DTH Refund request: ${body.toString()}");
-      
-      final response = await http.post(url, body: body);
-      log('DTH Refund response: ${response.statusCode} - ${response.body}');
-
-      if (response.statusCode == 200) {
-        try {
-          final jsonResponse = jsonDecode(response.body);
-          bool success = jsonResponse['status'] == 'SUCCESS' || 
-                         jsonResponse['status'] == 'success';
-          
-          log("DTH Refund API success: $success");
-          return success;
-        } catch (e) {
-          log('Error parsing refund response: $e');
-          return false;
-        }
-      }
-      
-      log("DTH Refund API failed with status: ${response.statusCode}");
-      return false;
-      
-    } catch (e) {
-      log('DTH Refund processing error: $e');
       return false;
     }
   }

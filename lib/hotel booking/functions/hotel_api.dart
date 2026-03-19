@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:http/http.dart' as http;
+import 'package:minna/comman/core/api.dart';
 import 'package:minna/hotel%20booking/core/core.dart';
 import 'package:minna/hotel%20booking/domain/Nation%20and%20city/city.dart';
 import 'package:minna/hotel%20booking/domain/Nation%20and%20city/nation';
@@ -27,7 +28,6 @@ class ApiException implements Exception {
 
 
 class HotelApiService {
-  static const String _baseUrl = 'http://tictechnologies.in/stage/minna';
 
   final http.Client _client;
 
@@ -57,7 +57,7 @@ class HotelApiService {
       //   rooms: rooms,
       // );
 
-      final url = Uri.parse('$_baseUrl/hotel-api-search');
+      final url = Uri.parse('$baseUrl/hotel-api-search');
       log('📡 API URL: $url');
 
      final response = await _client.post(

@@ -8,7 +8,7 @@ Future<String?> createOrder(double amount) async {
   try {
     log("createOrder---");
     final response = await http.post(
-      Uri.parse("${baseUrl}createOrderStage"),
+      Uri.parse("${baseUrl}createOrder"),
       body: {"amount": (amount * 100).toStringAsFixed(0)},
     );
     log(response.body);
