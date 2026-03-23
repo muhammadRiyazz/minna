@@ -33,7 +33,7 @@ class BBBookingRequest {
   Map<String, dynamic> toJson() {
     return {
       'Journy': journey.toJson(),
-      'Errors': errors,
+      'Errors': errors == null || (errors is List && errors.isEmpty) ? null : errors,
       'Token': token,
       'UserId': userId,
       'TripMode': tripMode,
@@ -66,10 +66,10 @@ class BBJourney {
 
   Map<String, dynamic> toJson() {
     return {
-      'FlightOptions': flightOptions,
+      'FlightOptions': flightOptions.isEmpty ? null : flightOptions,
       'FlightOption': flightOption.toJson(),
-      'HostTokens': hostTokens,
-      'Errors': errors,
+      'HostTokens': hostTokens.isEmpty ? null : hostTokens,
+      'Errors': errors.isEmpty ? null : errors,
     };
   }
 }
@@ -126,7 +126,7 @@ class BBFlightOption {
       'Key': key,
       'TicketingCarrier': ticketingCarrier,
       'ApiType': apiType,
-      'CrsPnr': crsPnr,
+      'CrsPnr': (crsPnr == null || crsPnr == "") ? null : crsPnr,
       'ProviderCode': providerCode,
       'AvailableSeat': availableSeat,
       'FlightFares': flightFares.map((x) => x.toJson()).toList(),

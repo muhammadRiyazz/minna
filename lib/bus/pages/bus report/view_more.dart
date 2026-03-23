@@ -791,6 +791,7 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
                   count: item.seatDetails.length,
                   tin: item.ticketNo,
                   blocid: item.slNo,
+                  transactionId: item.transactionId,
                 ),
               ),
             );

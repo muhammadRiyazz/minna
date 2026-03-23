@@ -135,6 +135,7 @@ class ConfirmBookingBloc extends Bloc<ConfirmBookingEvent, ConfirmBookingState> 
         } else {
           log("❌ cab-status save failed: ${saveJson["message"]}"); 
           emit(ConfirmBookingError(
+            
             message:  "Failed to save booking. Please try again.",
             shouldRefund: false,
             orderId: event.orderId,
@@ -159,7 +160,10 @@ class ConfirmBookingBloc extends Bloc<ConfirmBookingEvent, ConfirmBookingState> 
     } else {
       log("❌ confirmBookingResponse.success == false, initiating failed save + refund");
       try {  final saveResponse = await http.post(
+
+
           Uri.parse('${baseUrl}cab-status'),
+
           body: {
             "booking_id": event.tableid.toString(),
             "type": "failure",

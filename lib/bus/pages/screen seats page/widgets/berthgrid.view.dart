@@ -72,8 +72,11 @@ class _BerthGridViewState extends State<BerthGridView> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const SizedBox(height: 100),
-                        Lottie.asset('asset/90333-error.json',
-                            width: 120, height: 120),
+                        Lottie.asset(
+                          'asset/90333-error.json',
+                          width: 120,
+                          height: 120,
+                        ),
                         const SizedBox(height: 16),
                         Text(
                           'No Seats Available',
@@ -112,9 +115,8 @@ class _BerthGridViewState extends State<BerthGridView> {
                     ),
                   ),
           ),
-                    _buildSeatInfoSection(),
-                    SizedBox(height: 10,)
-
+          _buildSeatInfoSection(),
+          SizedBox(height: 10),
         ],
       ),
     );
@@ -238,59 +240,69 @@ class _BerthGridViewState extends State<BerthGridView> {
     required bool isSelected,
   }) {
     bool sleeper = width == '2' || length == '2';
-    double containerHeight = sleeper ? 60 : 50;
+    double containerHeight = sleeper ? 100 : 52;
+    double containerWidth = 44;
 
     return Padding(
       padding: EdgeInsets.only(top: sleeper ? 0 : 8),
       child: Container(
         margin: const EdgeInsets.all(4),
-        width: 45,
+        width: containerWidth,
         height: containerHeight,
         decoration: BoxDecoration(
-          color: fillColor,
-          borderRadius: BorderRadius.circular(6.0),
+          color: isSelected ? borderColor : fillColor,
+          borderRadius: BorderRadius.circular(sleeper ? 4 : 8),
           border: Border.all(
-            color: borderColor,
-            width: 1
+            color: isSelected ? borderColor : borderColor.withOpacity(0.8),
+            width: 1.5,
           ),
-          // boxShadow: isSelected
-          //     ? [
-          //         BoxShadow(
-          //           color: widget.secondaryColor.withOpacity(0.3),
-          //           blurRadius: 8,
-          //           spreadRadius: 1,
-          //         ),
-          //       ]
-          //     : null,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              offset: const Offset(0, 2),
+              blurRadius: 4,
+            ),
+          ],
         ),
         child: Column(
           children: [
             if (sleeper) ...[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: seatColor,
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(2),
-                      topRight: Radius.circular(2),
-                    ),
-                  ),
-                  height: 15,
-                  width: double.infinity,
+              // Sleeper "Pillow" section
+              Container(
+                margin: const EdgeInsets.all(4),
+                height: 14,
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? Colors.white.withOpacity(0.3)
+                      : borderColor.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ] else ...[
+              // Seater "Headrest" section
+              Container(
+                margin: const EdgeInsets.only(top: 5, left: 6, right: 6),
+                height: 8,
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? Colors.white.withOpacity(0.3)
+                      : borderColor.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              const Spacer(),
+              // Seater "Cushion" indicator
+              Container(
+                margin: const EdgeInsets.only(bottom: 6, left: 8, right: 8),
+                height: 3,
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? Colors.white.withOpacity(0.2)
+                      : borderColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
             ],
-            const Spacer(),
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration: BoxDecoration(
-                color: seatColor,
-                borderRadius: BorderRadius.circular(2),
-              ),
-              height: 6,
-              width: double.infinity,
-            ),
           ],
         ),
       ),
@@ -328,16 +340,20 @@ class _BerthGridViewState extends State<BerthGridView> {
                 Row(
                   children: [
                     Container(
-                      
-                      
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
-                        
-                        color: widget.secondaryColor.withOpacity(0.1)),
+
+                        color: widget.secondaryColor.withOpacity(0.1),
+                      ),
                       child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(Icons.info_outline, color: widget.secondaryColor, size: 15),
-                    )),
+                        padding: const EdgeInsets.all(8.0),
+                        child: Icon(
+                          Icons.info_outline,
+                          color: widget.secondaryColor,
+                          size: 15,
+                        ),
+                      ),
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       'Seat Information',
@@ -356,40 +372,36 @@ class _BerthGridViewState extends State<BerthGridView> {
               ],
             ),
           ),
-          
 
-          
           if (showSeatInfo) ...[
-SizedBox(height: 10,),
-Divider(height: 25,),
+            SizedBox(height: 10),
+            Divider(height: 25),
 
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
-Row(
-mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
- children: [
-
-    Text(
-                      'Seat Types',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: widget.textPrimary,
-                      ),
-                    ),
-   Row(children: [
-
- Text(
+              children: [
+                Text(
+                  'Seat Types',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: widget.textPrimary,
+                  ),
+                ),
+                Row(
+                  children: [
+                    Text(
                       'Seater',
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
                         color: widget.textPrimary,
                       ),
-                    ), 
-                    
-                    SizedBox(width: 10,),
-                    
+                    ),
+
+                    SizedBox(width: 10),
+
                     Text(
                       'Sleeper ',
                       style: TextStyle(
@@ -398,14 +410,13 @@ mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         color: widget.textPrimary,
                       ),
                     ),
+                  ],
+                ),
+              ],
+            ),
+            Divider(height: 25),
 
-   ],),
- ],
-),
-Divider(height: 25,),
-
-
-                        _buildBerthTypeInfo(),
+            _buildBerthTypeInfo(),
 
             // const SizedBox(height: 16),
             // _buildSeatTypeIndicators(),
@@ -415,8 +426,6 @@ Divider(height: 25,),
       ),
     );
   }
-
- 
 
   Widget _buildIndicatorItem(Color color, String title, String subtitle) {
     return Row(
@@ -445,10 +454,7 @@ Divider(height: 25,),
             ),
             Text(
               subtitle,
-              style: TextStyle(
-                fontSize: 10,
-                color: widget.textSecondary,
-              ),
+              style: TextStyle(fontSize: 10, color: widget.textSecondary),
             ),
           ],
         ),
@@ -456,111 +462,53 @@ Divider(height: 25,),
     );
   }
 
-Widget _buildBerthTypeInfo() {
-  return Column(
-    children: [
-      seatinfoRow(
-        txt: 'Available'
-        ,colorinfo: widget.primaryColor
-      ),seatinfoRow(
-        txt: 'Available only for male passenger'
-        ,colorinfo:Colors.blue
-      ),seatinfoRow(
-        txt: 'Already booked'
-        ,colorinfo: Colors.grey
-      ),seatinfoRow(
-        txt: 'Selected by you'
-        ,colorinfo: widget.secondaryColor
-      ),seatinfoRow(
-        txt: 'Available only for female passenger'
-        ,colorinfo:Colors.pink
-      ),
-    ],
-  );
-}
-
-Widget seatinfoRow(
-
-
-  {required String txt,
-      required Color colorinfo,
-
-  
-  }
-) {
-  return 
-  
-  Padding(
-    padding: const EdgeInsets.all(8.0),
-    child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-        Expanded(child: Text(txt,style: TextStyle(fontSize: 12),)),
-    
-    
-    
-            Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-
-              
-              children: [
-        
-        SeaterIn(colorinfo: colorinfo),
-        SizedBox(width: 
-        10),
-            // Sleeper Section
-            SleaperIn(colorinfo:colorinfo),
-            ],)
-            // Seater Section
-          
-          ],
+  Widget _buildBerthTypeInfo() {
+    return Column(
+      children: [
+        seatinfoRow(txt: 'Available', colorinfo: widget.primaryColor),
+        seatinfoRow(
+          txt: 'Available only for male passenger',
+          colorinfo: Colors.blue,
         ),
-  );
-}
+        seatinfoRow(txt: 'Already booked', colorinfo: Colors.grey),
+        seatinfoRow(txt: 'Selected by you', colorinfo: widget.secondaryColor),
+        seatinfoRow(
+          txt: 'Available only for female passenger',
+          colorinfo: Colors.pink,
+        ),
+      ],
+    );
+  }
 
-}
-
-class SleaperIn extends StatelessWidget {
-  const SleaperIn({
-    super.key,
-    required this.colorinfo,
-  });
-
-    final Color colorinfo;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(6),
-      decoration: BoxDecoration(
-        border: Border.all(color:colorinfo.withOpacity(0.4)),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Column(
+  Widget seatinfoRow({required String txt, required Color colorinfo}) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-            height: 7,
-            width: 25,
-            color: colorinfo,
+          Expanded(child: Text(txt, style: TextStyle(fontSize: 12))),
+
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+
+            children: [
+              SeaterIn(colorinfo: colorinfo),
+              SizedBox(width: 10),
+              // Sleeper Section
+              SleaperIn(colorinfo: colorinfo),
+            ],
           ),
-          const SizedBox(height: 14),
-          Container(
-            height: 3,
-            width: 20,
-            color: colorinfo,
-          ),
+
+          // Seater Section
         ],
       ),
     );
   }
 }
 
-class SeaterIn extends StatelessWidget {
-  const SeaterIn({
-    super.key,
-    required this.colorinfo,
-  });
+class SleaperIn extends StatelessWidget {
+  const SleaperIn({super.key, required this.colorinfo});
 
   final Color colorinfo;
 
@@ -574,13 +522,32 @@ class SeaterIn extends StatelessWidget {
       ),
       child: Column(
         children: [
-         
+          Container(height: 7, width: 25, color: colorinfo),
+          const SizedBox(height: 14),
+          Container(height: 3, width: 20, color: colorinfo),
+        ],
+      ),
+    );
+  }
+}
+
+class SeaterIn extends StatelessWidget {
+  const SeaterIn({super.key, required this.colorinfo});
+
+  final Color colorinfo;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        border: Border.all(color: colorinfo.withOpacity(0.4)),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Column(
+        children: [
           const SizedBox(height: 15),
-          Container(
-            height: 3,
-            width: 20,
-            color: colorinfo,
-          ),
+          Container(height: 3, width: 20, color: colorinfo),
         ],
       ),
     );

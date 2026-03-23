@@ -34,10 +34,18 @@ class CancelSuccesModal {
       );
 
   Map<String, dynamic> toJson() => {
+
+
+
+    
         "cancellationCharge": cancellationCharge,
         "refundAmount": refundAmount,
         "refundServiceTax": refundServiceTax,
         "serviceTaxOnCancellationCharge": serviceTaxOnCancellationCharge,
         "tin": tin,
+
+
+
+
       };
 }

@@ -19,12 +19,14 @@ class TicketDetails extends StatefulWidget {
   final String tin;
   final int count;
   final String blocid;
+  final String transactionId;
 
   const TicketDetails({
     super.key,
     required this.tin,
     required this.count,
     required this.blocid,
+    required this.transactionId,
   });
 
   @override
@@ -895,6 +897,9 @@ class _TicketDetailsState extends State<TicketDetails> {
               seats: ticketMoreData!.inventoryItems,
               tin: ticketMoreData!.tin,
               blocid: widget.blocid,
+              paymentId: widget.transactionId.isNotEmpty 
+                  ? widget.transactionId 
+                  : (responseJson?['transaction_id'] ?? ''),
             ),
           ),
         );

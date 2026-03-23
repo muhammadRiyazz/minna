@@ -24,6 +24,7 @@ class BusTicketReport {
   List<SeatDetails> seatDetails;
   String totalFare;
   String status;
+  String transactionId;
 
   BusTicketReport({
     required this.slNo,
@@ -37,6 +38,7 @@ class BusTicketReport {
     required this.seatDetails,
     required this.totalFare,
     required this.status,
+    required this.transactionId,
   });
 
   factory BusTicketReport.fromJson(Map<String, dynamic> json) {
@@ -66,6 +68,7 @@ class BusTicketReport {
       seatDetails: List<SeatDetails>.from(seatDetailsList),
       totalFare: json['Total_Fare'] ?? '',
       status: json['status'] ?? '',
+      transactionId: json['transaction_id'] ?? '',
     );
   }
 
@@ -81,6 +84,7 @@ class BusTicketReport {
     "SeatDetails": jsonEncode(seatDetails.map((x) => x.toJson()).toList()),
     "Total_Fare": totalFare,
     "status": status,
+    "transaction_id": transactionId,
   };
 }
 

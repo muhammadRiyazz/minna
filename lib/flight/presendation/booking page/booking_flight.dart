@@ -211,9 +211,9 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
     if (bookingState.isRepriceCompleted && _waitingForReprice) {
       // _showSuccessMessage('Flight details updated successfully!');
       _navigateToConfirmationScreen(flightOption, tripType);
-      log(
-        ' flightOption ------------------------ _handleRepriceCompletion ========== ${flightOption.toJson().toString()}',
-      );
+      // log(
+      //   ' flightOption ------------------------ _handleRepriceCompletion ========== ${flightOption.toJson().toString()}',
+      // );
     } else if (bookingState.bookingError != null && _waitingForReprice) {
       setState(() {
         _isSubmitting = false;
@@ -422,7 +422,7 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
 
 
 
-              
+
               final FFlightResponse flightResponse = state.respo!;
               final flightOption = flightResponse.journey?.flightOption;
               final searchState = context.read<SearchDataBloc>().state;

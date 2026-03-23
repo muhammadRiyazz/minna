@@ -58,9 +58,9 @@ class SearchDataBloc extends Bloc<SearchDataEvent, SearchDataState> {
 
   void _handleFromOrTo(FromOrTo event, Emitter<SearchDataState> emit) {
     if (event.fromOrTo == 'from') {
-      emit(state.copyWith(from: event.airport));
+      emit(state.copyWith(from: event.airport, airports: []));
     } else {
-      emit(state.copyWith(to: event.airport));
+      emit(state.copyWith(to: event.airport, airports: []));
     }
   }
 
@@ -68,7 +68,7 @@ class SearchDataBloc extends Bloc<SearchDataEvent, SearchDataState> {
     ClearSearchAirports event,
     Emitter<SearchDataState> emit,
   ) async {
-    emit(state.copyWith(isLoading: true));
+    emit(state.copyWith(isLoading: false, airports: []));
   }
 
   void _handlePassengers(Passengers event, Emitter<SearchDataState> emit) {
@@ -79,10 +79,10 @@ class SearchDataBloc extends Bloc<SearchDataEvent, SearchDataState> {
     GetAirports event,
     Emitter<SearchDataState> emit,
   ) async {
-    // Here you would typically:
-    // 1. Set loading state
-    // 2. Fetch airports from repository
-    // 3. Update state with results
+    if (event.searchKey.isEmpty) {
+      emit(state.copyWith(isLoading: false, airports: []));
+      return;
+    }
     emit(state.copyWith(isLoading: true));
 
     // Mock implementation - replace with actual API call

@@ -70,12 +70,12 @@ class Journy {
 
   Map<String, dynamic> toJson() => {
     "FlightOptions":
-        flightOptions == null
-            ? []
+        flightOptions == null || flightOptions!.isEmpty
+            ? null
             : List<dynamic>.from(flightOptions!.map((x) => x.toJson())),
     "FlightOption": flightOption,
-    "HostTokens": hostTokens,
-    "Errors": errors,
+    "HostTokens": hostTokens == null || (hostTokens is List && hostTokens.isEmpty) ? null : hostTokens,
+    "Errors": errors == null || (errors is List && errors.isEmpty) ? null : errors,
   };
 
   Journy copyWith({
@@ -568,14 +568,28 @@ class FreeBaggage {
   String? adtBaggage;
   String? chdBaggage;
   String? infBaggage;
+  String? adtHandBaggage;
+  String? chdHandBaggage;
+  String? infHandBaggage;
 
-  FreeBaggage({this.fid, this.adtBaggage, this.chdBaggage, this.infBaggage});
+  FreeBaggage({
+    this.fid,
+    this.adtBaggage,
+    this.chdBaggage,
+    this.infBaggage,
+    this.adtHandBaggage,
+    this.chdHandBaggage,
+    this.infHandBaggage,
+  });
 
   factory FreeBaggage.fromJson(Map<String, dynamic> json) => FreeBaggage(
-    fid: json["FID"],
-    adtBaggage: json["Adt_Baggage"],
-    chdBaggage: json["Chd_Baggage"],
-    infBaggage: json["Inf_Baggage"],
+    fid: json["FID"]?.toString(),
+    adtBaggage: json["Adt_Baggage"]?.toString(),
+    chdBaggage: json["ChdBaggage"]?.toString() ?? json["Chd_Baggage"]?.toString(),
+    infBaggage: json["InfBaggage"]?.toString() ?? json["Inf_Baggage"]?.toString(),
+    adtHandBaggage: json["Adt_HandBaggage"]?.toString(),
+    chdHandBaggage: json["Chd_HandBaggage"]?.toString(),
+    infHandBaggage: json["Inf_HandBaggage"]?.toString(),
   );
 
   Map<String, dynamic> toJson() => {
@@ -583,6 +597,9 @@ class FreeBaggage {
     "Adt_Baggage": adtBaggage,
     "Chd_Baggage": chdBaggage,
     "Inf_Baggage": infBaggage,
+    "Adt_HandBaggage": adtHandBaggage,
+    "Chd_HandBaggage": chdHandBaggage,
+    "Inf_HandBaggage": infHandBaggage,
   };
 
   FreeBaggage copyWith({

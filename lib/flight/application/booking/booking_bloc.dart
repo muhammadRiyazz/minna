@@ -21,8 +21,11 @@ part 'booking_bloc.freezed.dart';
 class BookingBloc extends Bloc<BookingEvent, BookingState> {
   BookingBloc() : super(BookingState.initial()) {
     on<_GetRePrice>(_onGetRePrice);
+    
     on<_VerifyFlightPayment>(_onVerifyPayment);
+
     on<_ResetBooking>(_onResetBooking);
+
   }
 
   Future<void> _onGetRePrice(
@@ -139,7 +142,12 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
                 arrivalTerminal: element.arrivalTerminal ?? '',
                 departureTerminal: element.departureTerminal ?? '',
                 freeBaggages: element.freeBaggages ?? [],
-
+                carrier: element.carrier,
+                distance: element.distance,
+                airlinePNR: element.airlinePNR,
+                rbd: element.rbd,
+                mealKey: element.mealKey,
+                baggageKey: element.baggageKey,
                 type: element.type ?? '',
                 key: element.key ?? '',
                 origin: element.origin ?? '',
@@ -257,20 +265,38 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
         if (rflightLegs != null) {
           for (var element in rflightLegs) {
             bbflightLegs.add(
+
               BBFlightLeg(
+
                 arrivalTerminal: element.arrivalTerminal ?? '',
                 departureTerminal: element.departureTerminal ?? '',
+                freeBaggages: element.freeBaggages ?? [],
+                carrier: element.carrier,
+                distance: safeToDouble(element.distance),
+                airlinePNR: element.airlinePnr,
+
+                rbd: element.rbd,
+
+                mealKey: element.mealKey,
+
+                baggageKey: element.baggageKey,
 
                 type: element.type ?? '',
+
                 key: element.key ?? '',
+
                 origin: element.origin ?? '',
+
                 destination: element.destination ?? '',
+
                 departureTime: element.departureTime ?? '',
+
                 arrivalTime: element.arrivalTime ?? '',
+
                 flightNo: element.flightNo ?? '',
+
                 airlineCode: element.airlineCode ?? '',
-                distance: element.distance ?? 0,
-                freeBaggages: element.freeBaggages ?? [],
+
               ),
             );
           }
@@ -283,11 +309,16 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
               BBFlightFare(
                 fares: element.fares ?? [],
                 fid: element.fid ?? '',
+                refundableInfo: element.refundableInfo,
                 fareKey: element.fareKey ?? "",
                 aprxTotalBaseFare: safeToDouble(element.aprxTotalBaseFare),
                 aprxTotalTax: safeToDouble(element.aprxTotalTax),
                 totalDiscount: safeToDouble(element.totalDiscount),
+                extrafare: element.extrafare,
                 aprxTotalAmount: safeToDouble(element.aprxTotalAmount),
+                currency: element.currency,
+                fareType: element.fareType,
+                fareName: element.fareName,
                 totalAmount: safeToDouble(element.totalAmount),
               ),
             );
@@ -298,6 +329,8 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
           journey: BBJourney(
             flightOptions: [],
             flightOption: BBFlightOption(
+              crsPnr: respo.journy?.flightOption?.crsPnr ?? '',
+              providerCode: respo.journy?.flightOption?.providerCode ?? '',
               key: respo.journy?.flightOption?.key ?? '',
               ticketingCarrier:
                   respo.journy?.flightOption?.ticketingCarrier ?? '',
@@ -333,6 +366,15 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
         for (var element in fFlightOption.flightLegs!) {
           bbflightLegs.add(
             BBFlightLeg(
+              arrivalTerminal: element.arrivalTerminal ?? '',
+              departureTerminal: element.departureTerminal ?? '',
+              freeBaggages: element.freeBaggages ?? [],
+              carrier: element.carrier,
+              distance: safeToDouble(element.distance),
+              airlinePNR: element.airlinePNR,
+              rbd: element.rbd,
+              mealKey: element.mealKey,
+              baggageKey: element.baggageKey,
               type: element.type ?? '',
               key: element.key ?? '',
               origin: element.origin ?? '',
@@ -341,8 +383,6 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
               arrivalTime: element.arrivalTime ?? '',
               flightNo: element.flightNo ?? '',
               airlineCode: element.airlineCode ?? '',
-              distance: element.distance ?? 0,
-              freeBaggages: element.freeBaggages ?? [],
             ),
           );
         }
@@ -352,11 +392,16 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
             BBFlightFare(
               fares: element.fares ?? [],
               fid: element.fid ?? '',
+              refundableInfo: element.refundableInfo,
               fareKey: element.fareKey ?? "",
               aprxTotalBaseFare: safeToDouble(element.aprxTotalBaseFare),
               aprxTotalTax: safeToDouble(element.aprxTotalTax),
               totalDiscount: safeToDouble(element.totalDiscount),
+              extrafare: element.extrafare,
               aprxTotalAmount: safeToDouble(element.aprxTotalAmount),
+              currency: element.currency,
+              fareType: element.fareType,
+              fareName: element.fareName,
               totalAmount: safeToDouble(element.totalAmount),
             ),
           );

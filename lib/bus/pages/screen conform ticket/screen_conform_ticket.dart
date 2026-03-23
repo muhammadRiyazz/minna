@@ -638,7 +638,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
         transactionId: paymentId,
         amount: _getCurrentFare(),
         tableId: _blockId,
-        table: 'bus_blockrequest',
+        table: 'bus_webdata',
       );
 
       if (mounted) {

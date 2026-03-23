@@ -454,6 +454,7 @@ class _ScreenReportState extends State<ScreenReport> {
                   count: item.seatDetails.length,
                   tin: item.ticketNo,
                   blocid: item.slNo,
+                  transactionId: item.transactionId,
                 ),
               ),
             );

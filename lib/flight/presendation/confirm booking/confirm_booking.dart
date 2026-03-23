@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
+import 'package:minna/flight/infrastracture/booking%20confirm/booking.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:minna/comman/core/api.dart';
 import 'package:minna/comman/pages/main home/home.dart';
@@ -684,7 +685,11 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         elevation: 2,
       ),
-      onPressed: shouldShowLoading ? null : () => _openRazorpayPayment(state),
+      onPressed:
+          // () {
+          //   bookingConfirmApi(state.bookingdata!);
+          // },
+          shouldShowLoading ? null : () => _openRazorpayPayment(state),
       child: shouldShowLoading
           ? SizedBox(
               width: 24,

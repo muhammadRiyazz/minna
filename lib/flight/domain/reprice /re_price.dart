@@ -462,11 +462,11 @@ class RFlightOption {
         'Key': key,
         'TicketingCarrier': ticketingCarrier,
         'ApiType': apiType,
-        'CrsPnr': crsPnr,
+        'CrsPnr': (crsPnr == null || crsPnr == "") ? null : crsPnr,
         'ProviderCode': providerCode,
         'SeatEnabled': seatEnabled,
         'Reprice': reprice,
-        'FfNoEnabled': ffNoEnabled,
+        'FFNoEnabled': ffNoEnabled,
         'AvailableSeat': availableSeat,
         'FlightFares': flightFares.map((e) => e.toJson()).toList(),
         'FlightLegs': flightLegs.map((e) => e.toJson()).toList(),
@@ -570,7 +570,7 @@ class PFlightLeg {
   final String flightNo;
   final String airlineCode;
   final String? carrier;
-  final int? distance;
+  final double? distance;
   final dynamic optionalServiceIndicators;
   final dynamic segmentRefKey;
   final String? mealKey;

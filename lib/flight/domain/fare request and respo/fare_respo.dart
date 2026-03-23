@@ -413,8 +413,9 @@ class FFlightLeg {
         parsedFreeBaggages = List<FreeBaggage>.from(
           (json['FreeBaggages'] as List).map((x) {
             if (x is String) return FreeBaggage(adtBaggage: x);
-            // handle other map cases if they exist
-            // For simplicity, we just convert the map values to strings
+            if (x is Map<String, dynamic>) return FreeBaggage.fromJson(x);
+            // Fallback for other map types
+            if (x is Map) return FreeBaggage.fromJson(Map<String, dynamic>.from(x));
             return FreeBaggage(adtBaggage: x.toString());
           }),
         );
