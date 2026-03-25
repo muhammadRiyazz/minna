@@ -1,8 +1,3 @@
-
-
-
-
-
 import 'package:minna/bus/application/busListfetch/bus_list_fetch_bloc.dart';
 import 'package:minna/bus/application/busListfetch/bus_list_fetch_state.dart';
 import 'package:minna/bus/application/change%20location/location_bloc.dart';
@@ -68,8 +63,8 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
                 children: [
                   IconButton(
                     icon: Icon(
-                      Icons.filter_alt_rounded, 
-                      color: hasActiveFilters ? _secondaryColor : Colors.white
+                      Icons.filter_alt_rounded,
+                      color: hasActiveFilters ? _secondaryColor : Colors.white,
                     ),
                     onPressed: () {
                       _showFilterBottomSheet(context, state);
@@ -93,7 +88,6 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
               );
             },
           ),
-       
         ],
       ),
       body: BlocConsumer<BusListFetchBloc, BusListFetchState>(
@@ -158,8 +152,8 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
 
   bool _hasActiveFilters() {
     return _currentFilterState.busTypes.any((element) => element) ||
-           _currentFilterState.departureTimes.any((element) => element) ||
-           _currentFilterState.arrivalTimes.any((element) => element);
+        _currentFilterState.departureTimes.any((element) => element) ||
+        _currentFilterState.arrivalTimes.any((element) => element);
   }
 
   Widget _buildErrorWidget(BuildContext context, LocationState selectedData) {
@@ -201,10 +195,7 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
             Text(
               'We couldn\'t load the bus list. Please try again.',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: _textSecondary,
-              ),
+              style: TextStyle(fontSize: 14, color: _textSecondary),
             ),
             SizedBox(height: 24),
             ElevatedButton(
@@ -227,10 +218,7 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
               ),
               child: Text(
                 'Try Again',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
               ),
             ),
           ],
@@ -291,7 +279,11 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
     );
   }
 
-  Widget _buildTripList(BuildContext context, BusListFetchState state, LocationState selectedData) {
+  Widget _buildTripList(
+    BuildContext context,
+    BusListFetchState state,
+    LocationState selectedData,
+  ) {
     return Column(
       children: [
         // Route Header
@@ -399,7 +391,7 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
           ),
         ),
         SizedBox(height: 16),
-        
+
         // Trip Count and Filter Indicator
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -431,11 +423,17 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
                     decoration: BoxDecoration(
                       color: _secondaryColor.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: _secondaryColor.withOpacity(0.3)),
+                      border: Border.all(
+                        color: _secondaryColor.withOpacity(0.3),
+                      ),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.filter_alt_rounded, size: 12, color: _secondaryColor),
+                        Icon(
+                          Icons.filter_alt_rounded,
+                          size: 12,
+                          color: _secondaryColor,
+                        ),
                         SizedBox(width: 4),
                         Text(
                           'Filters Active',
@@ -453,13 +451,13 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
           ),
         ),
         SizedBox(height: 12),
-        
+
         // Trip List
         Expanded(
           child: ListView.builder(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             itemCount: state.availableTrips!.length,
-        itemBuilder: (context, index) {
+            itemBuilder: (context, index) {
               final startfare = faredecode(
                 fare: state.availableTrips![index].fareDetails,
               );
@@ -519,9 +517,9 @@ class FilterState {
     List<bool>? busTypes,
     List<bool>? departureTimes,
     List<bool>? arrivalTimes,
-  })  : busTypes = busTypes ?? [false, false, false, false],
-        departureTimes = departureTimes ?? [false, false, false, false],
-        arrivalTimes = arrivalTimes ?? [false, false, false, false];
+  }) : busTypes = busTypes ?? [false, false, false, false],
+       departureTimes = departureTimes ?? [false, false, false, false],
+       arrivalTimes = arrivalTimes ?? [false, false, false, false];
 
   FilterState copyWith({
     List<bool>? busTypes,
@@ -537,8 +535,8 @@ class FilterState {
 
   bool get hasActiveFilters {
     return busTypes.any((element) => element) ||
-           departureTimes.any((element) => element) ||
-           arrivalTimes.any((element) => element);
+        departureTimes.any((element) => element) ||
+        arrivalTimes.any((element) => element);
   }
 }
 
@@ -599,7 +597,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
               border: Border(
-                bottom: BorderSide(color: widget.backgroundColor.withOpacity(0.5)),
+                bottom: BorderSide(
+                  color: widget.backgroundColor.withOpacity(0.5),
+                ),
               ),
             ),
             child: Row(
@@ -620,13 +620,13 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               ],
             ),
           ),
-          
+
           Expanded(
             child: SingleChildScrollView(
               padding: EdgeInsets.all(10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                
+
                 children: [
                   // Bus Types
                   _buildFilterSection(
@@ -639,13 +639,18 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       });
                     },
                   ),
-                  
+
                   SizedBox(height: 24),
-                  
+
                   // Departure Times
                   _buildFilterSection(
                     title: 'Departure Times',
-                    options: ['Before 6 am', '6 am to 12 pm', '12 pm to 6 pm', 'After 6 pm'],
+                    options: [
+                      'Before 6 am',
+                      '6 am to 12 pm',
+                      '12 pm to 6 pm',
+                      'After 6 pm',
+                    ],
                     selectedOptions: _filterState.departureTimes,
                     onOptionChanged: (index, value) {
                       setState(() {
@@ -653,13 +658,18 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       });
                     },
                   ),
-                  
+
                   SizedBox(height: 24),
-                  
+
                   // Arrival Times
                   _buildFilterSection(
                     title: 'Arrival Times',
-                    options: ['Before 6 am', '6 am to 12 pm', '12 pm to 6 pm', 'After 6 pm'],
+                    options: [
+                      'Before 6 am',
+                      '6 am to 12 pm',
+                      '12 pm to 6 pm',
+                      'After 6 pm',
+                    ],
                     selectedOptions: _filterState.arrivalTimes,
                     onOptionChanged: (index, value) {
                       setState(() {
@@ -671,7 +681,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               ),
             ),
           ),
-          
+
           // Action Buttons
           Container(
             padding: EdgeInsets.all(16),
@@ -695,7 +705,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      side: BorderSide(color: widget.textSecondary.withOpacity(0.3)),
+                      side: BorderSide(
+                        color: widget.textSecondary.withOpacity(0.3),
+                      ),
                     ),
                     child: Text('Reset All'),
                   ),
@@ -755,14 +767,18 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               selectedColor: widget.secondaryColor.withOpacity(0.2),
               checkmarkColor: widget.secondaryColor,
               labelStyle: TextStyle(
-                color: selectedOptions[index] ? widget.secondaryColor : widget.textPrimary,
-                fontWeight: selectedOptions[index] ? FontWeight.w600 : FontWeight.normal,
+                color: selectedOptions[index]
+                    ? widget.secondaryColor
+                    : widget.textPrimary,
+                fontWeight: selectedOptions[index]
+                    ? FontWeight.w600
+                    : FontWeight.normal,
               ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
                 // side: BorderSide(
-                //   color: selectedOptions[index] 
-                //       ? widget.secondaryColor 
+                //   color: selectedOptions[index]
+                //       ? widget.secondaryColor
                 //       : widget.textSecondary.withOpacity(0.3),
                 // ),
               ),
@@ -776,9 +792,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   void _applyFilters(BuildContext context) {
     // Update the parent widget with new filter state
     widget.onFiltersChanged(_filterState);
-    
+
     final busBloc = context.read<BusListFetchBloc>();
-    
+
     busBloc.add(
       FilterConform(
         sleeper: _filterState.busTypes[0],
@@ -796,7 +812,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
         availableTrips: widget.availableTrips,
       ),
     );
-    
+
     Navigator.pop(context);
   }
 }
@@ -896,7 +912,7 @@ class BusListloadingPage extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: 16),
-                
+
                 // Divider
                 Container(
                   width: double.infinity,
@@ -904,7 +920,7 @@ class BusListloadingPage extends StatelessWidget {
                   color: Colors.white,
                 ),
                 SizedBox(height: 16),
-                
+
                 // Time section
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -950,7 +966,9 @@ class BusListloadingPage extends StatelessWidget {
                               color: Colors.white,
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                              ),
                               child: Container(
                                 width: 16,
                                 height: 16,
@@ -994,7 +1012,7 @@ class BusListloadingPage extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: 16),
-                
+
                 // Divider
                 Container(
                   width: double.infinity,
@@ -1002,7 +1020,7 @@ class BusListloadingPage extends StatelessWidget {
                   color: Colors.white,
                 ),
                 SizedBox(height: 16),
-                
+
                 // Bottom section: Seats and button
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

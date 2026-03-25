@@ -46,7 +46,8 @@ class _ReportListScreenState extends State<ReportListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _backgroundColor,
-      appBar: AppBar(toolbarHeight: 40,
+      appBar: AppBar(
+        toolbarHeight: 40,
         title: Text(
           'Flight Reports',
           style: TextStyle(
@@ -76,10 +77,13 @@ class _ReportListScreenState extends State<ReportListScreen> {
             return _buildErrorState(snapshot.error.toString());
           } else if (snapshot.hasData) {
             final response = snapshot.data!;
-            if (response.status == 'SUCCESS') {
+            if (response.status) {
+              // status is now bool
               return _buildSuccessState(response);
             } else {
-              return _buildFailureState(response.statusDesc);
+              return _buildFailureState(
+                response.message,
+              ); // statusDesc is now message
             }
           } else {
             return _buildEmptyState();
@@ -219,10 +223,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
             Text(
               'There was an issue fetching your reports.\n'
               'Please check your connection and try again.',
-              style: TextStyle(
-                color: _textSecondary,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: _textSecondary, fontSize: 14),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 15),
@@ -280,10 +281,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
             SizedBox(height: 8),
             Text(
               message,
-              style: TextStyle(
-                color: _textSecondary,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: _textSecondary, fontSize: 14),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 15),
@@ -341,10 +339,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
             SizedBox(height: 8),
             Text(
               'You have no flight reports at the moment',
-              style: TextStyle(
-                color: _textSecondary,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: _textSecondary, fontSize: 14),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 15),
@@ -355,19 +350,34 @@ class _ReportListScreenState extends State<ReportListScreen> {
   }
 
   Widget _buildSuccessState(ReportResponse response) {
-    final reports = response.data ?? [];
-    
-    // Filter out reports with invalid response data
-    final validReports = reports.where((report) => report.response != null).toList();
-    
-    if (validReports.isEmpty) {
+    final reports = response.data?.bookings ?? [];
+
+    // Filter out reports with valid flight response (confirmed bookings)
+    // or just show all bookings. The original code filtered for non-null response.
+    final validReports = reports
+        .where((report) => report.response != null)
+        .toList();
+
+    if (validReports.isEmpty && reports.isNotEmpty) {
+      // If we have reports but none have a full flight_response yet (e.g. INITIATED)
+      // we might still want to show them.
+    }
+
+    final displayReports = validReports.isEmpty ? reports : validReports;
+
+    if (displayReports.isEmpty) {
       return _buildEmptyState();
     }
 
-    // Sort by created date (newest first) and take only last 4 bookings
-    validReports.sort((a, b) => b.createdDate.compareTo(a.createdDate));
-    final displayBookings = validReports.take(4).toList();
-    final totalBookings = validReports.length;
+    // Sort by bookingId descending (newest first) since createdDate is missing
+    displayReports.sort((a, b) {
+      int idA = int.tryParse(a.bookingId) ?? 0;
+      int idB = int.tryParse(b.bookingId) ?? 0;
+      return idB.compareTo(idA);
+    });
+
+    final displayBookings = displayReports.take(4).toList();
+    final totalBookings = displayReports.length;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -375,9 +385,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // View More Button - Only show if there are more than 4 bookings
-
-               if (totalBookings < 4)
-     SizedBox(height: 13,),
+          if (totalBookings < 4) SizedBox(height: 13),
           if (totalBookings > 4)
             Align(
               alignment: Alignment.centerRight,
@@ -386,9 +394,8 @@ class _ReportListScreenState extends State<ReportListScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => FlightAllReportsPage(
-                        allReports: validReports,
-                      ),
+                      builder: (context) =>
+                          FlightAllReportsPage(allReports: validReports),
                     ),
                   );
                 },
@@ -481,7 +488,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
                           ),
                           SizedBox(height: 2),
                           Text(
-                            report.alhindPnr ?? 'N/A',
+                            report.pnr ?? 'ID: ${report.bookingId}',
                             style: TextStyle(
                               color: _textPrimary,
                               fontSize: 14,
@@ -493,13 +500,16 @@ class _ReportListScreenState extends State<ReportListScreen> {
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: _secondaryColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        '₹${report.amount}',
+                        '₹${report.totalAmount}',
                         style: TextStyle(
                           color: _secondaryColor,
                           fontSize: 14,
@@ -546,7 +556,11 @@ class _ReportListScreenState extends State<ReportListScreen> {
                               SizedBox(height: 6),
                               Row(
                                 children: [
-                                  Icon(Icons.calendar_today, size: 12, color: _secondaryColor),
+                                  Icon(
+                                    Icons.calendar_today,
+                                    size: 12,
+                                    color: _secondaryColor,
+                                  ),
                                   SizedBox(width: 4),
                                   Text(
                                     _formatDate(firstLeg.departureTime),
@@ -570,7 +584,10 @@ class _ReportListScreenState extends State<ReportListScreen> {
                                 decoration: BoxDecoration(
                                   color: _secondaryColor.withOpacity(0.1),
                                   shape: BoxShape.circle,
-                                  border: Border.all(color: _secondaryColor.withOpacity(0.3), width: 2),
+                                  border: Border.all(
+                                    color: _secondaryColor.withOpacity(0.3),
+                                    width: 2,
+                                  ),
                                 ),
                                 child: Icon(
                                   Icons.arrow_forward_rounded,
@@ -607,7 +624,11 @@ class _ReportListScreenState extends State<ReportListScreen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
-                                  Icon(Icons.calendar_today, size: 12, color: _secondaryColor),
+                                  Icon(
+                                    Icons.calendar_today,
+                                    size: 12,
+                                    color: _secondaryColor,
+                                  ),
                                   SizedBox(width: 4),
                                   Text(
                                     _formatDate(lastLeg.arrivalTime),
@@ -636,10 +657,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
                     child: Center(
                       child: Text(
                         'No flight route available',
-                        style: TextStyle(
-                          color: _textSecondary,
-                          fontSize: 14,
-                        ),
+                        style: TextStyle(color: _textSecondary, fontSize: 14),
                       ),
                     ),
                   ),
@@ -703,8 +721,11 @@ class _ReportListScreenState extends State<ReportListScreen> {
                     ),
                     Spacer(),
                     // Booking date
+                    // Travel date (fallback to first leg departure time)
                     Text(
-                      _formatDate(report.createdDate),
+                      firstLeg != null
+                          ? _formatDate(firstLeg.departureTime)
+                          : 'Booking ID: ${report.bookingId}',
                       style: TextStyle(
                         fontSize: 10,
                         color: _textSecondary,

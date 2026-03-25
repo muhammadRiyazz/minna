@@ -3,51 +3,73 @@ import 'dart:convert';
 import 'dart:developer';
 
 class ReportResponse {
-  final String status;
-  final int statusCode;
-  final String statusDesc;
-  final List<ReportData>? data;
+  final bool status;
+  final String message;
+  final ReportDataWrapper? data;
 
   ReportResponse({
     required this.status,
-    required this.statusCode,
-    required this.statusDesc,
+    required this.message,
     this.data,
   });
 
   factory ReportResponse.fromJson(Map<String, dynamic> json) {
     return ReportResponse(
-      status: json['status'] ?? '',
-      statusCode: json['statusCode'] ?? 0,
-      statusDesc: json['statusDesc'] ?? '',
-      data: json['data'] != null
+      status: json['status'] == true, // Handle bool directly
+      message: json['message']?.toString() ?? '',
+      data: json['data'] != null ? ReportDataWrapper.fromJson(json['data']) : null,
+    );
+  }
+}
+
+class ReportDataWrapper {
+  final int totalRecords;
+  final List<ReportData> bookings;
+
+  ReportDataWrapper({
+    required this.totalRecords,
+    required this.bookings,
+  });
+
+  factory ReportDataWrapper.fromJson(Map<String, dynamic> json) {
+    return ReportDataWrapper(
+      totalRecords: json['total_records'] ?? 0,
+      bookings: json['bookings'] != null
           ? List<ReportData>.from(
-              json['data'].map((x) => ReportData.fromJson(x)))
-          : null,
+              (json['bookings'] as List).map((x) => ReportData.fromJson(x)))
+          : [],
     );
   }
 }
 
 class ReportData {
-  final String id;
-  final String? alhindPnr;
+  final String bookingId;
+  final String? pnr;
+  final String bookingStatus;
+  final String paymentStatus;
+  final String? paymentId;
+  final String? orderId;
   final String amount;
-  final String createdDate;
-  final String createdTime;
+  final String totalAmount;
+  final String commission;
   final ResponseData? response;
 
   ReportData({
-    required this.id,
-    required this.alhindPnr,
+    required this.bookingId,
+    required this.pnr,
+    required this.bookingStatus,
+    required this.paymentStatus,
+    required this.paymentId,
+    required this.orderId,
     required this.amount,
-    required this.createdDate,
-    required this.createdTime,
-    required this.response,
+    required this.totalAmount,
+    required this.commission,
+    this.response,
   });
 
   factory ReportData.fromJson(Map<String, dynamic> json) {
-    // Parse the response field if it's a string
-    dynamic responseData = json['response'];
+    // Parse the flight_response field if it's a string
+    dynamic responseData = json['flight_response'];
     ResponseData? parsedResponse;
     
     if (responseData != null && responseData is String && responseData.isNotEmpty) {
@@ -63,11 +85,15 @@ class ReportData {
     }
 
     return ReportData(
-      id: json['id']?.toString() ?? '',
-      alhindPnr: json['AlhindPnr']?.toString(),
-      amount: json['Amount']?.toString() ?? '',
-      createdDate: json['created_date']?.toString() ?? '',
-      createdTime: json['created_time']?.toString() ?? '',
+      bookingId: json['booking_id']?.toString() ?? '',
+      pnr: json['pnr']?.toString(),
+      bookingStatus: json['booking_status']?.toString() ?? '',
+      paymentStatus: json['payment_status']?.toString() ?? '',
+      paymentId: json['payment_id']?.toString(),
+      orderId: json['order_id']?.toString(),
+      amount: json['amount']?.toString() ?? '',
+      totalAmount: json['total_amount']?.toString() ?? '',
+      commission: json['commission']?.toString() ?? '',
       response: parsedResponse,
     );
   }

@@ -351,6 +351,9 @@ class _ScreenCancelInfoState extends State<ScreenCancelInfo> {
       if (refundJson["status"] == "success") {
         // ✅ Refund Success, Now call refundPayment
         log('Cancellation update success, initiating refund call...');
+        bool refundSuccess = false;
+        String? refundMessage;
+
         try {
           final double refundAmount =
               double.tryParse(cancelSuccesData!.refundAmount) ?? 0.0;
@@ -362,28 +365,27 @@ class _ScreenCancelInfoState extends State<ScreenCancelInfo> {
             table: 'bus_webdata',
           );
 
-          log(
-            'Refund processing result: ${refundResult['success']} - ${refundResult['message']}',
-          );
+          refundSuccess = refundResult['success'] ?? false;
+          refundMessage = refundResult['message'];
 
-          if (!refundResult['success']) {
-            showAppSnackBar(
-              context,
-              "Cancellation successful but refund initiation failed: ${refundResult['message']}. Please contact support.",
-              bgColor: Colors.orange,
-              icon: Icons.warning_rounded,
-            );
-          }
+          log(
+            'Refund processing result: $refundSuccess - $refundMessage',
+          );
         } catch (refundError) {
           log('Error during refundPayment call: $refundError');
+          refundSuccess = false;
+          refundMessage = refundError.toString();
         }
 
         if (!mounted) return;
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                ScreenCancelSucces(cancelSuccesdata: cancelSuccesData!),
+            builder: (context) => ScreenCancelSucces(
+              cancelSuccesdata: cancelSuccesData!,
+              refundSuccess: refundSuccess,
+              refundMessage: refundMessage,
+            ),
           ),
         );
       } else {

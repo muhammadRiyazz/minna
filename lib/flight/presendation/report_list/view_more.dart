@@ -87,7 +87,8 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
     if (_isSearchActive && _searchController.text.isNotEmpty) {
       final query = _searchController.text.toLowerCase();
       filteredList = filteredList.where((report) => 
-          (report.alhindPnr?.toLowerCase().contains(query) ?? false) ||
+          (report.pnr?.toLowerCase().contains(query) ?? false) ||
+          (report.bookingId.toLowerCase().contains(query)) ||
           (report.response?.journey.flightOption.flightLegs.any((leg) => 
             leg.origin.toLowerCase().contains(query) || 
             leg.destination.toLowerCase().contains(query)) ?? false) ||
@@ -248,7 +249,9 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
       
       _filteredReports = _originalReports.where((report) {
         try {
-          final reportDate = DateTime.parse(report.createdDate);
+          String? dateStr = report.response?.journey.flightOption.flightLegs.firstOrNull?.departureTime;
+          if (dateStr == null) return false;
+          final reportDate = DateTime.parse(dateStr);
           return (reportDate.isAtSameMomentAs(startDateTime) || reportDate.isAfter(startDateTime)) &&
                  (reportDate.isAtSameMomentAs(endDateTime) || reportDate.isBefore(endDateTime));
         } catch (e) {
@@ -709,7 +712,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                           ),
                           SizedBox(height: 4),
                           Text(
-                            report.alhindPnr ?? 'N/A',
+                            report.pnr ?? 'ID: ${report.bookingId}',
                             style: TextStyle(
                               color: _textPrimary,
                               fontSize: 13,
@@ -740,7 +743,9 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                         ),
                         SizedBox(height: 4),
                         Text(
-                          _formatDate(report.createdDate),
+                          report.response != null && report.response!.journey.flightOption.flightLegs.isNotEmpty
+                            ? _formatDate(report.response!.journey.flightOption.flightLegs.first.departureTime)
+                            : 'N/A',
                           style: TextStyle(
                             color: _textLight,
                             fontSize: 10,

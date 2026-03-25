@@ -19,14 +19,14 @@ Future<Map<String, dynamic>> refundPayment({
       body: {
         'id': tableId,
         'transaction_id': transactionId,
-        'amount':  (amount* 100).toString(),
+        'amount': amount.toString(),
         'table': table
       },
     );
     log( {
         'id': tableId,
         'transaction_id': transactionId,
-        'amount':  (amount* 100).toString(),
+        'amount': amount.toString(),
         'table': table
       }.toString());
     log('Refund API response: ${response.statusCode}, ${response.body}');
