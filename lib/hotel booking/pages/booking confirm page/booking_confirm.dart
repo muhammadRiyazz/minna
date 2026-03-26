@@ -1537,7 +1537,7 @@ class _HotelBookingConfirmationPageState
                                   ? "TIME EXPIRED"
                                   : "PROCEED TO PAYMENT",
                               style: TextStyle(
-                                fontSize: 14,
+                                //       fontSize: 14,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),

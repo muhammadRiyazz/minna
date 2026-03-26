@@ -111,15 +111,39 @@ class _HomeContentPageState extends State<HomeContentPage> {
 
   // Color Theme - Consistent throughout
   // Color Theme - Refined for Premium Experience
-  final Color _primaryColor = const Color(0xFF0F172A); // Dark Indigo/Slate
-  final Color _secondaryColor = const Color(0xFFE2B059); // Sophisticated Gold
+  final Color _primaryColor = const Color(0xFF003875); // Deep Ocean Blue
+  final Color _secondaryColor = const Color(0xFFFFB703); // Premium Gold/Amber
   final Color _accentColor = const Color(0xFF3B82F6); // Vibrant Blue
-  final Color _backgroundColor = const Color(0xFFFBFBFE);
+  final Color _backgroundColor = const Color(0xFFF8FAFC);
   final Color _cardColor = Colors.white;
   final Color _textPrimary = const Color(0xFF0F172A);
   final Color _textSecondary = const Color(0xFF64748B);
   final Color _textLight = const Color(0xFF94A3B8);
   final Color _successColor = const Color(0xFF10B981);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   // Travel Offers Data with working image URLs
   final List<Map<String, dynamic>> _travelOffers = [
@@ -155,7 +179,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     {
       'label': 'Flights',
       'icon': Iconsax.airplane,
-      'color': Color(0xFFD4AF37), // Gold
+      'color': Color(0xFF003875), // Gold
       'onTap': (BuildContext context) {
         Navigator.push(
           context,
@@ -166,7 +190,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     {
       'label': 'Hotels',
       'icon': Iconsax.building,
-      'color': Color(0xFFD4AF37), // Gold
+      'color': Color(0xFF003875), // Gold
       'onTap': (BuildContext context) {
         Navigator.push(
           context,
@@ -177,7 +201,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     {
       'label': 'Bus',
       'icon': Iconsax.bus,
-      'color': Color(0xFFD4AF37), // Gold
+      'color': Color(0xFF003875), // Gold
       'onTap': (BuildContext context) {
         context.read<BusLocationFetchBloc>().add(const GetData());
 
@@ -190,7 +214,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     {
       'label': 'Cabs',
       'icon': Iconsax.car,
-      'color': Color(0xFFD4AF37), // Gold
+      'color': Color(0xFF003875), // Gold
       'onTap': (BuildContext context) {
         Navigator.push(
           context,
@@ -201,7 +225,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     {
       'label': 'Visa',
       'icon': Iconsax.global,
-      'color': Color(0xFFD4AF37), // Gold
+      'color': Color(0xFF003875), // Gold
       'onTap': (BuildContext context) {
         Navigator.push(
           context,
@@ -212,7 +236,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     {
       'label': 'Airport Cabs',
       'icon': Iconsax.car,
-      'color': Color(0xFFD4AF37), // Gold
+      'color': Color(0xFF003875), // Gold
       'onTap': (BuildContext context) {
         Navigator.push(
           context,
@@ -223,7 +247,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     {
       'label': 'Train',
       'icon': Iconsax.bus,
-      'color': Color(0xFFD4AF37), // Gold
+      'color': Color(0xFF003875), // Gold
       'onTap': (BuildContext context) {
         _showComingSoonBottomSheet(context, "Train");
       },
@@ -231,7 +255,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     {
       'label': 'Cruise',
       'icon': Iconsax.ship,
-      'color': Color(0xFFD4AF37), // Gold
+      'color': Color(0xFF003875), // Gold
       'onTap': (BuildContext context) {
         _showComingSoonBottomSheet(context, "Cruise");
       },
@@ -243,7 +267,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     {
       'icon': Iconsax.mobile,
       'label': 'Mobile',
-      'color': Color(0xFFD4AF37), // Gold
+      'color': Color(0xFF003875), // Gold
       'onTap': (BuildContext context) {
         context.read<OperatorsBloc>().add(const OperatorsEvent.getop());
         Navigator.push(
@@ -255,7 +279,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     {
       'icon': Iconsax.monitor,
       'label': 'DTH',
-      'color': Color(0xFFD4AF37), // Gold
+      'color': Color(0xFF003875), // Gold
       'onTap': (BuildContext context) {
         context.read<OperatorsBloc>().add(const OperatorsEvent.getDTHop());
         Navigator.push(
@@ -267,7 +291,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     {
       'icon': Iconsax.flash,
       'label': 'Electricity',
-      'color': Color(0xFFD4AF37), // Gold
+      'color': Color(0xFF003875), // Gold
       'onTap': (BuildContext context) {
         Navigator.push(
           context,
@@ -278,7 +302,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     {
       'icon': Iconsax.drop,
       'label': 'Water',
-      'color': Color(0xFFD4AF37), // Gold
+      'color': Color(0xFF003875), // Gold
       'onTap': (BuildContext context) {
         Navigator.push(
           context,
@@ -309,7 +333,6 @@ class _HomeContentPageState extends State<HomeContentPage> {
     final bool isSmallScreen = screenSize.width < 360;
     final bool isTablet = screenSize.width > 600;
 
-    // Responsive sizing
     final double iconSize = isSmallScreen
         ? 18
         : isTablet
@@ -334,96 +357,94 @@ class _HomeContentPageState extends State<HomeContentPage> {
     return Scaffold(
       backgroundColor: _backgroundColor,
       body: SafeArea(
-        child: Column(
+        top: false,
+        child: Stack(
           children: [
-            // Fixed Static Main Header
-            BlocBuilder<LoginBloc, LoginState>(
-              builder: (context, state) {
-                return _buildStaticBrandingHeader(isSmallScreen, state);
-              },
-            ),
-            Expanded(
-              child: Stack(
+            SingleChildScrollView(
+              physics: const ClampingScrollPhysics(),
+              child: Column(
                 children: [
-                  NestedScrollView(
-                    headerSliverBuilder: (context, innerBoxIsScrolled) {
-                      return [
-                        BlocBuilder<LoginBloc, LoginState>(
-                          builder: (context, state) {
-                            return _buildDynamicAppBar(
-                              isSmallScreen,
-                              isTablet,
-                              titleFontSize,
-                              state,
-                            );
-                          },
-                        ),
-                      ];
-                    },
-                    body: SingleChildScrollView(
-                      physics: const ClampingScrollPhysics(),
-                      child: Column(
+                  BlocBuilder<LoginBloc, LoginState>(
+                    builder: (context, state) {
+                      final bool isLoggedIn = state.isLoggedIn ?? false;
+                      return Column(
                         children: [
-                          // Popular Destinations - MOVED TO TOP
-                          BlocBuilder<HomeDataBloc, HomeDataState>(
-                            builder: (context, state) {
-                              return _buildPopularDestinations(
-                                isSmallScreen,
-                                isTablet,
-                                headingFontSize,
-                                bodyFontSize,
-                                state,
-                              );
-                            },
-                          ),
-
-                          // Travel Offers Banner
-
-                          // Travel Services Grid
-                          _buildTravelServicesSection(
-                            context,
+                          _buildIntegratedHeader(
                             isSmallScreen,
                             isTablet,
-                            iconSize,
-                            headingFontSize,
-                            bodyFontSize,
+                            titleFontSize,
+                            state,
                           ),
-                          // _buildOffersBanner(isSmallScreen, isTablet, bodyFontSize),
-
-                          // Quick Services
-                          _buildQuickServicesSection(
-                            context,
-                            isSmallScreen,
-                            isTablet,
-                            iconSize,
-                            headingFontSize,
-                            bodyFontSize,
+                          Transform.translate(
+                            offset: const Offset(0, -28),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: isSmallScreen ? 16 : 24,
+                              ),
+                              child: _buildPremiumSearchBar(isSmallScreen),
+                            ),
                           ),
-
-                          // Promo Banner
-                          _buildPromoBanner(
-                            isSmallScreen,
-                            isTablet,
-                            bodyFontSize,
-                          ),
-                          SizedBox(
-                            height: isSmallScreen
-                                ? 20
-                                : isTablet
-                                ? 40
-                                : 30,
-                          ),
+                          if (!isLoggedIn)
+                            Transform.translate(
+                              offset: const Offset(0, -14),
+                              child: _buildLoginAlertBanner(isSmallScreen),
+                            ),
                         ],
-                      ),
-                    ),
+                      );
+                    },
                   ),
 
-                  // Search Results Overlay
-                  if (_searchText.isNotEmpty)
-                    _buildSearchResultsOverlay(isSmallScreen),
+                  // const SizedBox(height: 20),
+                  // Popular Destinations
+                  BlocBuilder<HomeDataBloc, HomeDataState>(
+                    builder: (context, state) {
+                      return _buildPopularDestinations(
+                        isSmallScreen,
+                        isTablet,
+                        headingFontSize,
+                        bodyFontSize,
+                        state,
+                      );
+                    },
+                  ),
+
+                  // Offers Carousel Top
+                  // _buildOffersCarousel(isSmallScreen, isTablet, bodyFontSize),
+
+                  // Travel Services
+                  _buildTravelServicesSection(
+                    context,
+                    isSmallScreen,
+                    isTablet,
+                    iconSize,
+                    headingFontSize,
+                    bodyFontSize,
+                  ),
+
+                  // Utility Hub
+                  _buildUtilityHubSection(
+                    context,
+                    isSmallScreen,
+                    isTablet,
+                    iconSize,
+                    headingFontSize,
+                    bodyFontSize,
+                  ),
+
+                  // Promo Banner
+                  _buildPromoBanner(isSmallScreen, isTablet, bodyFontSize),
+                  SizedBox(
+                    height: isSmallScreen
+                        ? 20
+                        : isTablet
+                        ? 40
+                        : 30,
+                  ),
                 ],
               ),
             ),
+            if (_searchText.isNotEmpty)
+              _buildSearchResultsOverlay(isSmallScreen),
           ],
         ),
       ),
@@ -507,7 +528,21 @@ class _HomeContentPageState extends State<HomeContentPage> {
       titleSpacing: 0,
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
-          decoration: BoxDecoration(color: _backgroundColor),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.03),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          margin: EdgeInsets.symmetric(
+            horizontal: isSmallScreen ? 16 : 24,
+            vertical: 12,
+          ),
           child: Padding(
             padding: EdgeInsets.symmetric(
               horizontal: isSmallScreen ? 16 : 24,
@@ -528,6 +563,143 @@ class _HomeContentPageState extends State<HomeContentPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildIntegratedHeader(
+    bool isSmallScreen,
+    bool isTablet,
+    double titleFontSize,
+    LoginState state,
+  ) {
+    final isLoggedIn = state.isLoggedIn ?? false;
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: _primaryColor,
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(36)),
+        boxShadow: [
+          BoxShadow(
+            color: _primaryColor.withOpacity(0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            isSmallScreen ? 16 : 24,
+            isSmallScreen ? 16 : 24,
+            isSmallScreen ? 16 : 24,
+            24,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          isLoggedIn ? 'Welcome back,' : 'Hello, Traveler!',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.8),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Where to next?',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: titleFontSize + 4,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  _buildProfileAvatar(isLoggedIn),
+                ],
+              ),
+              const SizedBox(
+                height: 40,
+              ), // Padding to account for the overlapping search bar
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  PageController _pageController = PageController(viewportFraction: 0.9);
+  int _currentOfferPage = 0;
+
+  Widget _buildOffersCarousel(
+    bool isSmallScreen,
+    bool isTablet,
+    double bodyFontSize,
+  ) {
+    if (_travelOffers.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      children: [
+        SizedBox(
+          height: isSmallScreen ? 160 : 200,
+          child: PageView.builder(
+            controller: _pageController,
+            onPageChanged: (int page) {
+              setState(() {
+                _currentOfferPage = page;
+              });
+            },
+            itemCount: _travelOffers.length,
+            itemBuilder: (context, index) {
+              final offer = _travelOffers[index];
+              return AnimatedBuilder(
+                animation: _pageController,
+                builder: (context, child) {
+                  double value = 1.0;
+                  if (_pageController.position.haveDimensions) {
+                    value = _pageController.page! - index;
+                    value = (1 - (value.abs() * 0.2)).clamp(0.0, 1.0);
+                  }
+                  return Center(
+                    child: Transform.scale(scale: value, child: child),
+                  );
+                },
+                child: _buildPremiumOfferCard(offer, isSmallScreen, true),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(_travelOffers.length, (index) {
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              height: 8,
+              width: _currentOfferPage == index ? 24 : 8,
+              decoration: BoxDecoration(
+                color: _currentOfferPage == index
+                    ? _secondaryColor
+                    : _textLight.withOpacity(0.4),
+                borderRadius: BorderRadius.circular(4),
+              ),
+            );
+          }),
+        ),
+      ],
     );
   }
 
@@ -552,16 +724,13 @@ class _HomeContentPageState extends State<HomeContentPage> {
         width: 44,
         height: 44,
         decoration: BoxDecoration(
-          color: _secondaryColor.withOpacity(0.1),
+          color: Colors.white.withOpacity(0.15),
           shape: BoxShape.circle,
-          border: Border.all(
-            color: _secondaryColor.withOpacity(0.2),
-            width: 1.5,
-          ),
+          border: Border.all(color: Colors.white.withOpacity(0.3), width: 1.5),
         ),
         child: Icon(
           isLoggedIn ? Iconsax.user : Iconsax.login,
-          color: _primaryColor,
+          color: Colors.white,
           size: 20,
         ),
       ),
@@ -572,7 +741,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -743,6 +912,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
       },
       child: Container(
         width: double.infinity,
+        margin: EdgeInsets.symmetric(horizontal: isSmallScreen ? 16 : 24),
         padding: EdgeInsets.symmetric(
           horizontal: isSmallScreen ? 16 : 20,
           vertical: isSmallScreen ? 12 : 16,
@@ -1040,7 +1210,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
 
     return Padding(
       padding: EdgeInsets.symmetric(
-        vertical: 24,
+        vertical: 10,
         horizontal: isSmallScreen ? 16 : 24,
       ),
       child: Column(
@@ -1065,16 +1235,17 @@ class _HomeContentPageState extends State<HomeContentPage> {
                   Text(
                     'Popular Destinations',
                     style: TextStyle(
-                      fontSize: headingFontSize + 2,
+                      fontSize: headingFontSize + 4,
                       fontWeight: FontWeight.w900,
                       color: _primaryColor,
+                      letterSpacing: -0.5,
                     ),
                   ),
                 ],
               ),
             ],
           ),
-          const SizedBox(height: 15),
+          const SizedBox(height: 20),
           SizedBox(
             height: 150,
             child: ListView.builder(
@@ -1564,11 +1735,14 @@ class _HomeContentPageState extends State<HomeContentPage> {
 
   Widget _buildPremiumOfferCard(
     Map<String, dynamic> offer,
-    bool isSmallScreen,
-  ) {
+    bool isSmallScreen, [
+    bool isCarousel = false,
+  ]) {
     return Container(
-      width: isSmallScreen ? 280 : 340,
-      margin: const EdgeInsets.only(right: 20),
+      width: double.infinity,
+      margin: isCarousel
+          ? const EdgeInsets.symmetric(horizontal: 4)
+          : const EdgeInsets.only(right: 20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
@@ -1686,12 +1860,13 @@ class _HomeContentPageState extends State<HomeContentPage> {
   ) {
     return Container(
       padding: EdgeInsets.symmetric(
-        vertical: 15,
+        // vertical: 18,
         horizontal: isSmallScreen ? 16 : 24,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          SizedBox(height: 20),
           Text(
             'OUR SERVICES',
             style: TextStyle(
@@ -1710,15 +1885,16 @@ class _HomeContentPageState extends State<HomeContentPage> {
               color: _primaryColor,
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
           GridView.builder(
+            padding: EdgeInsets.all(0),
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: isTablet ? 4 : 4,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 20,
-              childAspectRatio: .6,
+              crossAxisCount: 4,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 16,
+              childAspectRatio: 0.8,
             ),
             itemCount: _travelServices.length,
             itemBuilder: (context, index) {
@@ -1748,19 +1924,23 @@ class _HomeContentPageState extends State<HomeContentPage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: const EdgeInsets.all(18),
+            padding: EdgeInsets.all(isSmallScreen ? 14 : 18),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: (service['color'] as Color).withOpacity(0.05),
-                  blurRadius: 15,
-                  offset: const Offset(0, 6),
+                  color: _primaryColor.withOpacity(0.06),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
-            child: Icon(service['icon'], color: service['color'], size: 22),
+            child: Icon(
+              service['icon'],
+              color: service['color'],
+              size: isSmallScreen ? 20 : 24,
+            ),
           ),
           const SizedBox(height: 12),
           Text(
@@ -1778,7 +1958,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     );
   }
 
-  Widget _buildQuickServicesSection(
+  Widget _buildUtilityHubSection(
     BuildContext context,
     bool isSmallScreen,
     bool isTablet,
@@ -1791,7 +1971,21 @@ class _HomeContentPageState extends State<HomeContentPage> {
         vertical: 20,
         horizontal: isSmallScreen ? 16 : 24,
       ),
-      decoration: BoxDecoration(color: _backgroundColor),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      margin: EdgeInsets.symmetric(
+        horizontal: isSmallScreen ? 16 : 24,
+        vertical: 12,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1819,9 +2013,9 @@ class _HomeContentPageState extends State<HomeContentPage> {
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 4,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 20,
-              childAspectRatio: 0.80,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 16,
+              childAspectRatio: 0.75,
             ),
             itemCount: _quickServices.length,
             itemBuilder: (context, index) {
@@ -1850,19 +2044,16 @@ class _HomeContentPageState extends State<HomeContentPage> {
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: _backgroundColor, // Soft grey background inside white card
               shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: (service['color'] as Color).withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
             ),
-            child: Icon(service['icon'], color: service['color'], size: 22),
+            child: Icon(
+              service['icon'],
+              color: service['color'],
+              size: isSmallScreen ? 18 : 22,
+            ),
           ),
           const SizedBox(height: 10),
           Text(
@@ -1894,7 +2085,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [_primaryColor, const Color(0xFF1E293B)],
+          colors: [_primaryColor, Color(0xFF001F45)],
         ),
         boxShadow: [
           BoxShadow(

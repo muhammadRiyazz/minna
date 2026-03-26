@@ -17,8 +17,10 @@ class ApiException implements Exception {
     if (statusCode == 401) return 'Authentication failed. Please try again.';
     if (statusCode == 404) return 'Resource not found.';
     if (statusCode == 500) return 'Server error. Please try again later.';
-    if (message.contains('timeout')) return 'Request timeout. Check your connection.';
-    if (message.contains('socket')) return 'Network error. Check your internet connection.';
+    if (message.contains('timeout'))
+      return 'Request timeout. Check your connection.';
+    if (message.contains('socket'))
+      return 'Network error. Check your internet connection.';
     return message;
   }
 
@@ -26,9 +28,7 @@ class ApiException implements Exception {
   String toString() => 'ApiException: $message (Status: $statusCode)';
 }
 
-
 class HotelApiService {
-
   final http.Client _client;
 
   HotelApiService({http.Client? client}) : _client = client ?? http.Client();
@@ -40,7 +40,6 @@ class HotelApiService {
     required String checkOut,
     required List<Map<String, dynamic>> rooms,
   }) async {
-
     try {
       log('🔍 Hotel Search Request:');
       log('   Country: $country');
@@ -60,25 +59,17 @@ class HotelApiService {
       final url = Uri.parse('$baseUrl/hotel-api-search');
       log('📡 API URL: $url');
 
-     final response = await _client.post(
-  url,
+      final response = await _client.post(
+        url,
 
-  body: {
-    "country": country,
-    "city": city,
-    "CheckIn": checkIn,
-    "CheckOut": checkOut,
-    "rooms": jsonEncode(rooms) , 
-  },
-);
-
-
-
-
-
-
-
-
+        body: {
+          "country": country,
+          "city": city,
+          "CheckIn": checkIn,
+          "CheckOut": checkOut,
+          "rooms": jsonEncode(rooms),
+        },
+      );
 
       log('📡 Response body: ${response.body}');
 
@@ -103,36 +94,45 @@ class HotelApiService {
     }
   }
   // final http.Client _client = http.Client();
-  
+
   // Basic Authentication credentials for static APIs
- 
+
   // Base64 encoded authorization header
-  String get _basicAuth => 'Basic ${base64Encode(utf8.encode('$hotelusername:$hoteluserpass'))}';
+  String get _basicAuth =>
+      'Basic ${base64Encode(utf8.encode('$hotelusername:$hoteluserpass'))}';
 
   Future<List<CountryModel>> getCountries() async {
     log("getCountries----");
-    
+
     try {
       final response = await _client.get(
-        Uri.parse('http://api.tbotechnology.in/TBOHolidays_HotelAPI/CountryList'),
+        Uri.parse(
+          'http://api.tbotechnology.in/TBOHolidays_HotelAPI/CountryList',
+        ),
         headers: {
           'Authorization': _basicAuth,
           'Content-Type': 'application/json',
         },
       );
-      
+
       log(response.body);
-      
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['Status']['Code'] == 200) {
           final List<dynamic> countryList = data['CountryList'];
-          return countryList.map((json) => CountryModel.fromJson(json)).toList();
+          return countryList
+              .map((json) => CountryModel.fromJson(json))
+              .toList();
         } else {
-          throw Exception('Failed to load countries: ${data['Status']['Description']}');
+          throw Exception(
+            'Failed to load countries: ${data['Status']['Description']}',
+          );
         }
       } else {
-        throw Exception('Failed to load countries: Status code ${response.statusCode}');
+        throw Exception(
+          'Failed to load countries: Status code ${response.statusCode}',
+        );
       }
     } catch (e) {
       log(e.toString());
@@ -142,7 +142,7 @@ class HotelApiService {
 
   Future<List<HotelCityHotel>> getCities(String countryCode) async {
     log("getCities----");
-    
+
     try {
       final response = await _client.post(
         Uri.parse('http://api.tbotechnology.in/TBOHolidays_HotelAPI/CityList'),
@@ -152,19 +152,23 @@ class HotelApiService {
         },
         body: json.encode({'CountryCode': countryCode}),
       );
-      
+
       log(response.body);
-      
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['Status']['Code'] == 200) {
           final List<dynamic> cityList = data['CityList'];
           return cityList.map((json) => HotelCityHotel.fromJson(json)).toList();
         } else {
-          throw Exception('Failed to load cities: ${data['Status']['Description']}');
+          throw Exception(
+            'Failed to load cities: ${data['Status']['Description']}',
+          );
         }
       } else {
-        throw Exception('Failed to load cities: Status code ${response.statusCode}');
+        throw Exception(
+          'Failed to load cities: Status code ${response.statusCode}',
+        );
       }
     } catch (e) {
       log(e.toString());

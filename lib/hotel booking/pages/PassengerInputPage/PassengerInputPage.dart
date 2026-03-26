@@ -31,7 +31,7 @@ class PassengerInputPage extends StatefulWidget {
 class _PassengerInputPageState extends State<PassengerInputPage> {
   final _formKey = GlobalKey<FormState>();
   final AuthApiService _apiService = AuthApiService();
-  
+
   List<List<Map<String, dynamic>>> roomPassengers = [];
   bool _isSubmitting = false;
 
@@ -66,12 +66,12 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
       final children = roomConfig['children'] as int? ?? 0;
       final totalPassengers = adults + children;
       final childrenAges = roomConfig['childrenAges'] as List<int>? ?? [];
-      
+
       _roomValidations[roomIndex] = {};
-      
+
       // Create passenger list for this room
       List<Map<String, dynamic>> passengers = [];
-      
+
       // Add adults
       for (int i = 0; i < adults; i++) {
         passengers.add({
@@ -88,7 +88,7 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
         });
         _roomValidations[roomIndex]![i] = false;
       }
-      
+
       // Add children
       for (int i = 0; i < children; i++) {
         final childAge = i < childrenAges.length ? childrenAges[i] : 0;
@@ -106,29 +106,35 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
         });
         _roomValidations[roomIndex]![adults + i] = false;
       }
-      
+
       return passengers;
     });
   }
 
-  ValidationInfo get _validationInfo => widget.preBookResponse.preBookResponse.validationInfo ?? ValidationInfo(
-    panMandatory: false,
-    passportMandatory: false,
-    corporateBookingAllowed: false,
-    panCountRequired: 0,
-    samePaxNameAllowed: true,
-    spaceAllowed: true,
-    specialCharAllowed: false,
-    paxNameMinLength: 0,
-    paxNameMaxLength: 50,
-    charLimit: true,
-    packageFare: false,
-    packageDetailsMandatory: false,
-    departureDetailsMandatory: false,
-    gstAllowed: false,
-  );
+  ValidationInfo get _validationInfo =>
+      widget.preBookResponse.preBookResponse.validationInfo ??
+      ValidationInfo(
+        panMandatory: false,
+        passportMandatory: false,
+        corporateBookingAllowed: false,
+        panCountRequired: 0,
+        samePaxNameAllowed: true,
+        spaceAllowed: true,
+        specialCharAllowed: false,
+        paxNameMinLength: 0,
+        paxNameMaxLength: 50,
+        charLimit: true,
+        packageFare: false,
+        packageDetailsMandatory: false,
+        departureDetailsMandatory: false,
+        gstAllowed: false,
+      );
 
-  void _updatePassengerValidation(int roomIndex, int passengerIndex, bool isValid) {
+  void _updatePassengerValidation(
+    int roomIndex,
+    int passengerIndex,
+    bool isValid,
+  ) {
     setState(() {
       _roomValidations[roomIndex] ??= {};
       _roomValidations[roomIndex]![passengerIndex] = isValid;
@@ -137,10 +143,14 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
 
   bool get _allPassengersValid {
     if (roomPassengers.isEmpty) return false;
-    
+
     for (int roomIndex = 0; roomIndex < roomPassengers.length; roomIndex++) {
       final room = roomPassengers[roomIndex];
-      for (int passengerIndex = 0; passengerIndex < room.length; passengerIndex++) {
+      for (
+        int passengerIndex = 0;
+        passengerIndex < room.length;
+        passengerIndex++
+      ) {
         if (_roomValidations[roomIndex]?[passengerIndex] != true) {
           return false;
         }
@@ -151,7 +161,11 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
 
   bool _isRoomValid(int roomIndex) {
     final room = roomPassengers[roomIndex];
-    for (int passengerIndex = 0; passengerIndex < room.length; passengerIndex++) {
+    for (
+      int passengerIndex = 0;
+      passengerIndex < room.length;
+      passengerIndex++
+    ) {
       if (_roomValidations[roomIndex]?[passengerIndex] != true) {
         return false;
       }
@@ -205,16 +219,13 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
                 ),
               ),
               centerTitle: true,
-              background: Container(
-                color: _primaryColor,
-              ),
+              background: Container(color: _primaryColor),
             ),
           ),
 
           // SliverToBoxAdapter(
           //   child: _buildValidationRequirements(),
           // ),
-
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, roomIndex) => _buildRoomSection(roomIndex),
@@ -222,9 +233,7 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
             ),
           ),
 
-          SliverToBoxAdapter(
-            child: _buildSubmitButton(),
-          ),
+          SliverToBoxAdapter(child: _buildSubmitButton()),
 
           SliverToBoxAdapter(child: SizedBox(height: 30)),
         ],
@@ -234,7 +243,7 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
 
   Widget _buildValidationRequirements() {
     final requirements = <String>[];
-    
+
     if (_validationInfo.panMandatory) {
       requirements.add('PAN card details are mandatory');
     }
@@ -242,7 +251,9 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
       requirements.add('Passport details are mandatory');
     }
     if (_validationInfo.paxNameMinLength > 0) {
-      requirements.add('Name must be at least ${_validationInfo.paxNameMinLength} characters');
+      requirements.add(
+        'Name must be at least ${_validationInfo.paxNameMinLength} characters',
+      );
     }
     if (!_validationInfo.specialCharAllowed) {
       requirements.add('Special characters not allowed in names');
@@ -266,7 +277,11 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
         children: [
           Row(
             children: [
-              Icon(Icons.info_outline_rounded, color: _secondaryColor, size: 18),
+              Icon(
+                Icons.info_outline_rounded,
+                color: _secondaryColor,
+                size: 18,
+              ),
               SizedBox(width: 8),
               Text(
                 'Important Requirements',
@@ -281,16 +296,17 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
           SizedBox(height: 8),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: requirements.map((req) => Padding(
-              padding: EdgeInsets.only(bottom: 4),
-              child: Text(
-                '• $req',
-                style: TextStyle(
-                  color: _textSecondary,
-                  fontSize: 12,
-                ),
-              ),
-            )).toList(),
+            children: requirements
+                .map(
+                  (req) => Padding(
+                    padding: EdgeInsets.only(bottom: 4),
+                    child: Text(
+                      '• $req',
+                      style: TextStyle(color: _textSecondary, fontSize: 12),
+                    ),
+                  ),
+                )
+                .toList(),
           ),
         ],
       ),
@@ -303,14 +319,14 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
     final children = roomConfig['children'] as int? ?? 0;
     final totalPassengers = adults + children;
     final isRoomValid = _isRoomValid(roomIndex);
-    final roomName = roomIndex < widget.room.name.length 
-        ? widget.room.name[roomIndex] 
+    final roomName = roomIndex < widget.room.name.length
+        ? widget.room.name[roomIndex]
         : 'Room ${roomIndex + 1}';
 
-    return Container(padding: EdgeInsets.symmetric(horizontal: 5),
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 5),
       // margin: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        
         color: _cardColor,
         // borderRadius: BorderRadius.circular(16),
         boxShadow: [
@@ -373,7 +389,10 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
                           ),
                           SizedBox(width: 8),
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: _backgroundColor,
                               borderRadius: BorderRadius.circular(4),
@@ -396,12 +415,12 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
               ],
             ),
             SizedBox(height: 16),
-Divider(),
+            Divider(),
             ...roomPassengers[roomIndex].asMap().entries.map((entry) {
               final passengerIndex = entry.key;
               final passenger = entry.value;
               final isAdult = passenger['PaxType'] == 1;
-              
+
               return Padding(
                 padding: const EdgeInsets.only(bottom: 20),
                 child: _buildPassengerForm(roomIndex, passengerIndex, isAdult),
@@ -417,26 +436,19 @@ Divider(),
               ),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.info_outline_rounded,
-                    color: _textLight,
-                    size: 16,
-                  ),
+                  Icon(Icons.info_outline_rounded, color: _textLight, size: 16),
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'Total $totalPassengers passenger${totalPassengers > 1 ? 's' : ''} (${adults} adult${adults > 1 ? 's' : ''}${children > 0 ? ', ${children} child${children > 1 ? 'ren' : ''}' : ''})',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: _textSecondary,
-                      ),
+                      style: TextStyle(fontSize: 12, color: _textSecondary),
                     ),
                   ),
                 ],
               ),
             ),
 
-            if (roomIndex < roomPassengers.length - 1) 
+            if (roomIndex < roomPassengers.length - 1)
               Divider(height: 30, color: Colors.grey.shade200),
           ],
         ),
@@ -449,10 +461,14 @@ Divider(),
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: isValid ? _successColor.withOpacity(0.1) : _errorColor.withOpacity(0.1),
+        color: isValid
+            ? _successColor.withOpacity(0.1)
+            : _errorColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(6),
         border: Border.all(
-          color: isValid ? _successColor.withOpacity(0.3) : _errorColor.withOpacity(0.3),
+          color: isValid
+              ? _successColor.withOpacity(0.3)
+              : _errorColor.withOpacity(0.3),
         ),
       ),
       child: Row(
@@ -499,7 +515,9 @@ Divider(),
               Container(
                 padding: EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: isAdult ? _secondaryColor.withOpacity(0.1) : _warningColor.withOpacity(0.1),
+                  color: isAdult
+                      ? _secondaryColor.withOpacity(0.1)
+                      : _warningColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
@@ -524,11 +542,17 @@ Divider(),
                           ),
                         ),
                         SizedBox(width: 8),
-                        _buildPassengerValidationIndicator(roomIndex, passengerIndex),
+                        _buildPassengerValidationIndicator(
+                          roomIndex,
+                          passengerIndex,
+                        ),
                         if (isLeadPassenger) ...[
                           SizedBox(width: 8),
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: _secondaryColor.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(4),
@@ -546,7 +570,10 @@ Divider(),
                         if (!isAdult) ...[
                           SizedBox(width: 8),
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: _warningColor.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(4),
@@ -586,7 +613,9 @@ Divider(),
                 SizedBox(height: 12),
                 _buildAgeField(roomIndex, passengerIndex, isAdult),
                 if (isAdult) SizedBox(height: 12),
-                if (isAdult && (_validationInfo.panMandatory || _validationInfo.passportMandatory))
+                if (isAdult &&
+                    (_validationInfo.panMandatory ||
+                        _validationInfo.passportMandatory))
                   _buildDocumentsSection(roomIndex, passengerIndex),
               ],
             ),
@@ -604,10 +633,14 @@ Divider(),
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 6, vertical: 1),
       decoration: BoxDecoration(
-        color: isValid ? _successColor.withOpacity(0.1) : _errorColor.withOpacity(0.1),
+        color: isValid
+            ? _successColor.withOpacity(0.1)
+            : _errorColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(4),
         border: Border.all(
-          color: isValid ? _successColor.withOpacity(0.3) : _errorColor.withOpacity(0.3),
+          color: isValid
+              ? _successColor.withOpacity(0.3)
+              : _errorColor.withOpacity(0.3),
         ),
       ),
       child: Text(
@@ -624,9 +657,9 @@ Divider(),
   void _validatePassengerForm(int roomIndex, int passengerIndex) {
     final passenger = roomPassengers[roomIndex][passengerIndex];
     final isAdult = passenger['PaxType'] == 1;
-    
+
     bool isValid = true;
-    
+
     if (passenger['FirstName']?.isEmpty ?? true) isValid = false;
     if (passenger['LastName']?.isEmpty ?? true) isValid = false;
     if (isAdult) {
@@ -634,21 +667,24 @@ Divider(),
       if (passenger['Phone']?.isEmpty ?? true) isValid = false;
     }
     if ((passenger['Age'] ?? 0) <= 0) isValid = false;
-    
+
     if (isAdult) {
-      if (_validationInfo.panMandatory && (passenger['PAN']?.isEmpty ?? true)) isValid = false;
-      if (_validationInfo.passportMandatory && (passenger['Passport']?.isEmpty ?? true)) isValid = false;
-      
+      if (_validationInfo.panMandatory && (passenger['PAN']?.isEmpty ?? true))
+        isValid = false;
+      if (_validationInfo.passportMandatory &&
+          (passenger['Passport']?.isEmpty ?? true))
+        isValid = false;
+
       if (passenger['Email']?.isNotEmpty == true) {
         final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
         if (!emailRegex.hasMatch(passenger['Email'])) isValid = false;
       }
-      
+
       if (passenger['Phone']?.isNotEmpty == true) {
         if (passenger['Phone'].length < 8) isValid = false;
       }
     }
-    
+
     _updatePassengerValidation(roomIndex, passengerIndex, isValid);
   }
 
@@ -689,13 +725,21 @@ Divider(),
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Full Name', style: TextStyle(color: _textSecondary, fontWeight: FontWeight.w500, fontSize: 14)),
+        Text(
+          'Full Name',
+          style: TextStyle(
+            color: _textSecondary,
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+          ),
+        ),
         SizedBox(height: 8),
         Row(
           children: [
             Expanded(
               child: TextFormField(
-                initialValue: roomPassengers[roomIndex][passengerIndex]['FirstName'],
+                initialValue:
+                    roomPassengers[roomIndex][passengerIndex]['FirstName'],
                 decoration: InputDecoration(
                   labelText: 'First Name',
                   labelStyle: TextStyle(fontSize: 13),
@@ -709,12 +753,16 @@ Divider(),
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide(color: Colors.grey[300]!),
                   ),
-                  prefixIcon: Icon(Icons.person_outline_rounded, color: _textLight),
+                  prefixIcon: Icon(
+                    Icons.person_outline_rounded,
+                    color: _textLight,
+                  ),
                 ),
                 validator: (value) => _validateName(value, 'First Name'),
                 onChanged: (value) {
                   setState(() {
-                    roomPassengers[roomIndex][passengerIndex]['FirstName'] = value;
+                    roomPassengers[roomIndex][passengerIndex]['FirstName'] =
+                        value;
                   });
                   _validatePassengerForm(roomIndex, passengerIndex);
                 },
@@ -723,7 +771,8 @@ Divider(),
             SizedBox(width: 12),
             Expanded(
               child: TextFormField(
-                initialValue: roomPassengers[roomIndex][passengerIndex]['LastName'],
+                initialValue:
+                    roomPassengers[roomIndex][passengerIndex]['LastName'],
                 decoration: InputDecoration(
                   labelText: 'Last Name',
                   labelStyle: TextStyle(fontSize: 13),
@@ -741,7 +790,8 @@ Divider(),
                 validator: (value) => _validateName(value, 'Last Name'),
                 onChanged: (value) {
                   setState(() {
-                    roomPassengers[roomIndex][passengerIndex]['LastName'] = value;
+                    roomPassengers[roomIndex][passengerIndex]['LastName'] =
+                        value;
                   });
                   _validatePassengerForm(roomIndex, passengerIndex);
                 },
@@ -757,7 +807,14 @@ Divider(),
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Contact Information', style: TextStyle(color: _textSecondary, fontWeight: FontWeight.w500, fontSize: 14)),
+        Text(
+          'Contact Information',
+          style: TextStyle(
+            color: _textSecondary,
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+          ),
+        ),
         SizedBox(height: 8),
         TextFormField(
           initialValue: roomPassengers[roomIndex][passengerIndex]['Email'],
@@ -778,8 +835,10 @@ Divider(),
           ),
           keyboardType: TextInputType.emailAddress,
           validator: (value) {
-            if (value == null || value.isEmpty) return 'Please enter your email';
-            if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) return 'Please enter a valid email';
+            if (value == null || value.isEmpty)
+              return 'Please enter your email';
+            if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value))
+              return 'Please enter a valid email';
             return null;
           },
           onChanged: (value) {
@@ -810,7 +869,8 @@ Divider(),
           keyboardType: TextInputType.phone,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           validator: (value) {
-            if (value == null || value.isEmpty) return 'Please enter phone number';
+            if (value == null || value.isEmpty)
+              return 'Please enter phone number';
             if (value.length < 8) return 'Enter valid phone number';
             return null;
           },
@@ -827,7 +887,8 @@ Divider(),
 
   Widget _buildAgeField(int roomIndex, int passengerIndex, bool isAdult) {
     return TextFormField(
-      initialValue: roomPassengers[roomIndex][passengerIndex]['Age']?.toString(),
+      initialValue: roomPassengers[roomIndex][passengerIndex]['Age']
+          ?.toString(),
       decoration: InputDecoration(
         labelText: isAdult ? 'Age' : 'Child Age',
         labelStyle: TextStyle(fontSize: 13),
@@ -849,14 +910,16 @@ Divider(),
       validator: (value) {
         if (value == null || value.isEmpty) return 'Please enter age';
         final age = int.tryParse(value);
-        if (age == null || age < 0 || age > 120) return 'Please enter valid age';
+        if (age == null || age < 0 || age > 120)
+          return 'Please enter valid age';
         if (!isAdult && age >= 18) return 'Child age must be below 18';
         if (isAdult && age < 18) return 'Adult age must be 18 or above';
         return null;
       },
       onChanged: (value) {
         setState(() {
-          roomPassengers[roomIndex][passengerIndex]['Age'] = int.tryParse(value) ?? 0;
+          roomPassengers[roomIndex][passengerIndex]['Age'] =
+              int.tryParse(value) ?? 0;
         });
         _validatePassengerForm(roomIndex, passengerIndex);
       },
@@ -867,7 +930,14 @@ Divider(),
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Additional Documents', style: TextStyle(color: _textSecondary, fontWeight: FontWeight.w500, fontSize: 14)),
+        Text(
+          'Additional Documents',
+          style: TextStyle(
+            color: _textSecondary,
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+          ),
+        ),
         SizedBox(height: 8),
         if (_validationInfo.panMandatory)
           TextFormField(
@@ -888,7 +958,9 @@ Divider(),
               prefixIcon: Icon(Icons.credit_card_rounded, color: _textLight),
             ),
             validator: (value) {
-              if (_validationInfo.panMandatory && (value == null || value.isEmpty)) return 'PAN number is mandatory';
+              if (_validationInfo.panMandatory &&
+                  (value == null || value.isEmpty))
+                return 'PAN number is mandatory';
               return null;
             },
             onChanged: (value) {
@@ -915,10 +987,15 @@ Divider(),
                 borderRadius: BorderRadius.circular(8),
                 borderSide: BorderSide(color: Colors.grey[300]!),
               ),
-              prefixIcon: Icon(Icons.airplane_ticket_rounded, color: _textLight),
+              prefixIcon: Icon(
+                Icons.airplane_ticket_rounded,
+                color: _textLight,
+              ),
             ),
             validator: (value) {
-              if (_validationInfo.passportMandatory && (value == null || value.isEmpty)) return 'Passport number is mandatory';
+              if (_validationInfo.passportMandatory &&
+                  (value == null || value.isEmpty))
+                return 'Passport number is mandatory';
               return null;
             },
             onChanged: (value) {
@@ -948,7 +1025,14 @@ Divider(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Lead Passenger', style: TextStyle(color: _textPrimary, fontWeight: FontWeight.w600, fontSize: 14)),
+                Text(
+                  'Lead Passenger',
+                  style: TextStyle(
+                    color: _textPrimary,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
                 SizedBox(height: 2),
                 Text(
                   'This passenger will receive all booking communications',
@@ -963,11 +1047,15 @@ Divider(),
               setState(() {
                 if (value) {
                   for (int i = 0; i < roomPassengers[roomIndex].length; i++) {
-                    roomPassengers[roomIndex][i]['LeadPassenger'] = (i == passengerIndex);
+                    roomPassengers[roomIndex][i]['LeadPassenger'] =
+                        (i == passengerIndex);
                   }
                 } else {
-                  roomPassengers[roomIndex][passengerIndex]['LeadPassenger'] = false;
-                  if (!roomPassengers[roomIndex].any((p) => p['LeadPassenger'])) {
+                  roomPassengers[roomIndex][passengerIndex]['LeadPassenger'] =
+                      false;
+                  if (!roomPassengers[roomIndex].any(
+                    (p) => p['LeadPassenger'],
+                  )) {
                     roomPassengers[roomIndex][0]['LeadPassenger'] = true;
                   }
                 }
@@ -983,7 +1071,10 @@ Divider(),
   Widget _buildSubmitButton() {
     final isFormValid = _allPassengersValid;
     final totalRooms = roomPassengers.length;
-    final totalPassengers = roomPassengers.fold(0, (sum, room) => sum + room.length);
+    final totalPassengers = roomPassengers.fold(
+      0,
+      (sum, room) => sum + room.length,
+    );
 
     return Container(
       margin: EdgeInsets.all(16),
@@ -1007,7 +1098,9 @@ Divider(),
             style: ElevatedButton.styleFrom(
               backgroundColor: isFormValid ? _primaryColor : Colors.grey[400],
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               padding: EdgeInsets.symmetric(vertical: 18),
               elevation: 2,
               minimumSize: Size(double.infinity, 50),
@@ -1045,23 +1138,26 @@ Divider(),
     if (value == null || value.isEmpty) {
       return 'Please enter $fieldName';
     }
-    
+
     if (!_validationInfo.spaceAllowed && value.contains(' ')) {
       return 'Spaces are not allowed in $fieldName';
     }
-    
-    if (!_validationInfo.specialCharAllowed && _containsSpecialCharacters(value)) {
+
+    if (!_validationInfo.specialCharAllowed &&
+        _containsSpecialCharacters(value)) {
       return 'Special characters are not allowed in $fieldName';
     }
-    
-    if (_validationInfo.paxNameMinLength > 0 && value.length < _validationInfo.paxNameMinLength) {
+
+    if (_validationInfo.paxNameMinLength > 0 &&
+        value.length < _validationInfo.paxNameMinLength) {
       return '$fieldName must be at least ${_validationInfo.paxNameMinLength} characters';
     }
-    
-    if (_validationInfo.charLimit && value.length > _validationInfo.paxNameMaxLength) {
+
+    if (_validationInfo.charLimit &&
+        value.length > _validationInfo.paxNameMaxLength) {
       return '$fieldName must be less than ${_validationInfo.paxNameMaxLength} characters';
     }
-    
+
     return null;
   }
 
@@ -1072,7 +1168,9 @@ Divider(),
 
   void _submitForm() {
     if (!_allPassengersValid) {
-      _showValidationError('Please complete all passenger details in all rooms before proceeding');
+      _showValidationError(
+        'Please complete all passenger details in all rooms before proceeding',
+      );
       return;
     }
 
@@ -1084,7 +1182,9 @@ Divider(),
       final allNames = <String>[];
       for (final room in roomPassengers) {
         for (final passenger in room) {
-          final name = '${passenger['FirstName']} ${passenger['LastName']}'.toLowerCase().trim();
+          final name = '${passenger['FirstName']} ${passenger['LastName']}'
+              .toLowerCase()
+              .trim();
           if (name.isNotEmpty) {
             allNames.add(name);
           }
@@ -1101,13 +1201,23 @@ Divider(),
     }
 
     if (_validationInfo.panCountRequired > 0) {
-      final panCount = roomPassengers.fold(0, (count, room) => 
-        count + room.where((p) => p['PaxType'] == 1 && (p['PAN'] as String).isNotEmpty).length);
+      final panCount = roomPassengers.fold(
+        0,
+        (count, room) =>
+            count +
+            room
+                .where(
+                  (p) => p['PaxType'] == 1 && (p['PAN'] as String).isNotEmpty,
+                )
+                .length,
+      );
       if (panCount < _validationInfo.panCountRequired) {
         setState(() {
           _isSubmitting = false;
         });
-        _showValidationError('PAN details required for ${_validationInfo.panCountRequired} adult passenger(s)');
+        _showValidationError(
+          'PAN details required for ${_validationInfo.panCountRequired} adult passenger(s)',
+        );
         return;
       }
     }

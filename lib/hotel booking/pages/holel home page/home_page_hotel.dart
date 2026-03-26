@@ -23,10 +23,10 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
   String? selectedCityCode;
   DateTime checkInDate = DateTime.now();
   DateTime checkOutDate = DateTime.now().add(const Duration(days: 1));
-  
+
   // Updated to support multiple rooms
   List<Map<String, dynamic>> rooms = [
-    {'adults': 2, 'children': 0, 'childrenAges': <int>[]}
+    {'adults': 2, 'children': 0, 'childrenAges': <int>[]},
   ];
 
   List<HotelCityHotel> cities = [];
@@ -39,11 +39,14 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
 
   // Format date getters
   String get formattedCheckIn => DateFormat('MMM dd, yyyy').format(checkInDate);
-  String get formattedCheckOut => DateFormat('MMM dd, yyyy').format(checkOutDate);
-  
+  String get formattedCheckOut =>
+      DateFormat('MMM dd, yyyy').format(checkOutDate);
+
   // Calculate totals from rooms
-  int get totalAdults => rooms.fold(0, (sum, room) => sum + (room['adults'] as int));
-  int get totalChildren => rooms.fold(0, (sum, room) => sum + (room['children'] as int));
+  int get totalAdults =>
+      rooms.fold(0, (sum, room) => sum + (room['adults'] as int));
+  int get totalChildren =>
+      rooms.fold(0, (sum, room) => sum + (room['children'] as int));
   List<int> get allChildrenAges {
     final ages = <int>[];
     for (final room in rooms) {
@@ -79,7 +82,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
 
   Future<void> fetchCountries() async {
     if (_countriesLoaded && countries.isNotEmpty) return;
-    
+
     setState(() => isLoadingCountries = true);
     try {
       countries = await apiService.getCountries();
@@ -97,7 +100,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
       // Find the CountryModel by name
       final country = countries.firstWhere((c) => c.name == countryName);
       cities = await apiService.getCities(country.code);
-      
+
       if (cities.isNotEmpty) {
         selectedCity = cities.first.name;
         selectedCityCode = cities.first.code;
@@ -146,7 +149,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
 
   void _showCityBottomSheet() {
     if (selectedCountry == null || isLoadingCities) return;
-    
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -293,10 +296,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [
-                      _primaryColor,
-                      Color(0xFF1A1A1A),
-                    ],
+                    colors: [_primaryColor, Color(0xFF1A1A1A)],
                     stops: [0.0, 1.0],
                   ),
                 ),
@@ -344,7 +344,6 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
                   const SizedBox(height: 20),
                   _buildSearchButton(),
                   const SizedBox(height: 20),
-                
                 ],
               ),
             ),
@@ -361,10 +360,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            _primaryColor,
-            Color(0xFF1A1A1A),
-          ],
+          colors: [_primaryColor, Color(0xFF1A1A1A)],
         ),
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
@@ -384,11 +380,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
               borderRadius: BorderRadius.circular(16),
               // border: Border.all(color: _secondaryColor.withOpacity(0.4), width: 1),
             ),
-            child: Icon(
-              Iconsax.building_3,
-              color: _secondaryColor,
-              size: 22,
-            ),
+            child: Icon(Iconsax.building_3, color: _secondaryColor, size: 22),
           ),
           SizedBox(width: 15),
           Expanded(
@@ -447,18 +439,20 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
             onTap: _showCountryBottomSheet,
           ),
           const SizedBox(height: 16),
-          
+
           // City Card
           _buildLocationCard(
             title: "City",
-            value: selectedCity ?? (isLoadingCities ? "Loading cities..." : "Select City"),
+            value:
+                selectedCity ??
+                (isLoadingCities ? "Loading cities..." : "Select City"),
             icon: Iconsax.buildings,
             isLoading: isLoadingCities,
             onTap: _showCityBottomSheet,
             isDisabled: selectedCountry == null || isLoadingCities,
           ),
           const SizedBox(height: 16),
-          
+
           // Dates and Guests Row
           Row(
             children: [
@@ -482,7 +476,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
             ],
           ),
           const SizedBox(height: 16),
-          
+
           // Guests Card
           _buildLocationCard(
             title: "Guests & Rooms",
@@ -514,7 +508,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
             color: isDisabled ? _borderColor : _secondaryColor.withOpacity(0.3),
-            width: isDisabled ? 0: 1,
+            width: isDisabled ? 0 : 1,
           ),
         ),
         child: Row(
@@ -522,7 +516,9 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: isDisabled ? _borderColor : _secondaryColor.withOpacity(0.1),
+                color: isDisabled
+                    ? _borderColor
+                    : _secondaryColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(14),
                 // border: Border.all(color: _secondaryColor.withOpacity(0.2), width: 1),
               ),
@@ -592,21 +588,14 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
         decoration: BoxDecoration(
           color: _cardColor,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(
-            color: _secondaryColor.withOpacity(0.3),
-            width: 1,
-          ),
+          border: Border.all(color: _secondaryColor.withOpacity(0.3), width: 1),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Icon(
-                  icon,
-                  color: _secondaryColor,
-                  size: 16,
-                ),
+                Icon(icon, color: _secondaryColor, size: 16),
                 SizedBox(width: 10),
                 Text(
                   title,
@@ -635,11 +624,12 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
   }
 
   Widget _buildSearchButton() {
-    final isEnabled = selectedCountry != null && 
-                     selectedCity != null && 
-                     selectedCityCode != null && 
-                     !isLoadingCities;
-    
+    final isEnabled =
+        selectedCountry != null &&
+        selectedCity != null &&
+        selectedCityCode != null &&
+        !isLoadingCities;
+
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
@@ -673,11 +663,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Iconsax.search_normal_1,
-              size: 22,
-              color:  Colors.white,
-            ),
+            Icon(Iconsax.search_normal_1, size: 22, color: Colors.white),
             const SizedBox(width: 12),
             Text(
               "Search Hotels",
@@ -685,7 +671,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 0.3,
-                color:  Colors.white,
+                color: Colors.white,
               ),
             ),
           ],
@@ -693,8 +679,6 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
       ),
     );
   }
-
- 
 }
 
 // City Bottom Sheet
@@ -738,7 +722,9 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
     setState(() {
       filteredCities = query.isEmpty
           ? List.from(widget.cities)
-          : widget.cities.where((c) => c.name.toLowerCase().contains(query)).toList();
+          : widget.cities
+                .where((c) => c.name.toLowerCase().contains(query))
+                .toList();
     });
   }
 
@@ -751,7 +737,7 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
-    
+
     return Container(
       height: screenHeight * 0.85,
       decoration: BoxDecoration(
@@ -760,7 +746,10 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
           topLeft: Radius.circular(32),
           topRight: Radius.circular(32),
         ),
-        border: Border.all(color: widget.secondaryColor.withOpacity(0.1), width: 1),
+        border: Border.all(
+          color: widget.secondaryColor.withOpacity(0.1),
+          width: 1,
+        ),
       ),
       child: Column(
         children: [
@@ -806,7 +795,10 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
                       ),
                       if (widget.selectedCity != null)
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             color: widget.secondaryColor.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
@@ -827,7 +819,7 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
               ],
             ),
           ),
-          
+
           // Search field
           Padding(
             padding: EdgeInsets.all(20),
@@ -847,91 +839,113 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
                 decoration: InputDecoration(
                   hintText: "Search cities...",
                   hintStyle: TextStyle(color: Colors.grey[500]),
-                  prefixIcon: Icon(Iconsax.search_normal, color: widget.secondaryColor),
+                  prefixIcon: Icon(
+                    Iconsax.search_normal,
+                    color: widget.secondaryColor,
+                  ),
                   filled: true,
                   fillColor: Colors.white,
-                
-                  contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 18,
+                  ),
                 ),
               ),
             ),
           ),
-          
+
           // Cities list
           Expanded(
             child: widget.isLoading
                 ? _buildShimmerList()
                 : filteredCities.isEmpty
-                    ? _buildEmptyState()
-                    : ListView.builder(
-                        padding: EdgeInsets.only(bottom: 24, left: 24, right: 24),
-                        itemCount: filteredCities.length,
-                        itemBuilder: (context, index) {
-                          final city = filteredCities[index];
-                          final isSelected = city.name == widget.selectedCity;
-                          
-                          return Padding(
-                            padding: EdgeInsets.only(bottom: 12),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: () => widget.onCitySelected(city.name, city.code),
+                ? _buildEmptyState()
+                : ListView.builder(
+                    padding: EdgeInsets.only(bottom: 24, left: 24, right: 24),
+                    itemCount: filteredCities.length,
+                    itemBuilder: (context, index) {
+                      final city = filteredCities[index];
+                      final isSelected = city.name == widget.selectedCity;
+
+                      return Padding(
+                        padding: EdgeInsets.only(bottom: 12),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () =>
+                                widget.onCitySelected(city.name, city.code),
+                            borderRadius: BorderRadius.circular(16),
+                            child: Container(
+                              padding: EdgeInsets.all(18),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? widget.secondaryColor.withOpacity(0.1)
+                                    : Colors.white,
                                 borderRadius: BorderRadius.circular(16),
-                                child: Container(
-                                  padding: EdgeInsets.all(18),
-                                  decoration: BoxDecoration(
-                                    color: isSelected ? widget.secondaryColor.withOpacity(0.1) : Colors.white,
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(
-                                      color: isSelected ? widget.secondaryColor.withOpacity(0.0) : Color(0xFFF0F0F0),
-                                      width:  1,
-                                    ),
-                                  
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        width: 40,
-                                        height: 40,
-                                        decoration: BoxDecoration(
-                                          color: isSelected ? widget.secondaryColor.withOpacity(0.15) : Color(0xFFFAFAFA),
-                                          borderRadius: BorderRadius.circular(12),
-                                          border: Border.all(
-                                            color: isSelected ? widget.secondaryColor.withOpacity(0.3) : Color(0xFFF0F0F0),
-                                            width: 1,
-                                          ),
-                                        ),
-                                        child: Icon(
-                                          Iconsax.buildings,
-                                          color: isSelected ? widget.secondaryColor : Color(0xFF999999),
-                                          size: 20,
-                                        ),
-                                      ),
-                                      SizedBox(width: 16),
-                                      Expanded(
-                                        child: Text(
-                                          city.name,
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w600,
-                                            color: isSelected ? widget.primaryColor : Color(0xFF333333),
-                                          ),
-                                        ),
-                                      ),
-                                      if (isSelected)
-                                        Icon(
-                                          Iconsax.tick_circle,
-                                          color: widget.secondaryColor,
-                                          size: 24,
-                                        ),
-                                    ],
-                                  ),
+                                border: Border.all(
+                                  color: isSelected
+                                      ? widget.secondaryColor.withOpacity(0.0)
+                                      : Color(0xFFF0F0F0),
+                                  width: 1,
                                 ),
                               ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? widget.secondaryColor.withOpacity(
+                                              0.15,
+                                            )
+                                          : Color(0xFFFAFAFA),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: isSelected
+                                            ? widget.secondaryColor.withOpacity(
+                                                0.3,
+                                              )
+                                            : Color(0xFFF0F0F0),
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      Iconsax.buildings,
+                                      color: isSelected
+                                          ? widget.secondaryColor
+                                          : Color(0xFF999999),
+                                      size: 20,
+                                    ),
+                                  ),
+                                  SizedBox(width: 16),
+                                  Expanded(
+                                    child: Text(
+                                      city.name,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                        color: isSelected
+                                            ? widget.primaryColor
+                                            : Color(0xFF333333),
+                                      ),
+                                    ),
+                                  ),
+                                  if (isSelected)
+                                    Icon(
+                                      Iconsax.tick_circle,
+                                      color: widget.secondaryColor,
+                                      size: 24,
+                                    ),
+                                ],
+                              ),
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
           ),
         ],
       ),
@@ -1034,10 +1048,7 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
             Text(
               "Try selecting a different country or search again",
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: Color(0xFF666666),
-              ),
+              style: TextStyle(fontSize: 14, color: Color(0xFF666666)),
             ),
           ],
         ),
@@ -1052,7 +1063,8 @@ class GuestSelectorBottomSheet extends StatefulWidget {
   final int totalChildren;
   final List<int> childrenAges;
   final List<Map<String, dynamic>> rooms;
-  final Function(int, int, List<int>, List<Map<String, dynamic>>) onGuestsChanged;
+  final Function(int, int, List<int>, List<Map<String, dynamic>>)
+  onGuestsChanged;
   final Color primaryColor;
   final Color secondaryColor;
   final Color accentColor;
@@ -1072,7 +1084,8 @@ class GuestSelectorBottomSheet extends StatefulWidget {
   });
 
   @override
-  State<GuestSelectorBottomSheet> createState() => _GuestSelectorBottomSheetState();
+  State<GuestSelectorBottomSheet> createState() =>
+      _GuestSelectorBottomSheetState();
 }
 
 class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
@@ -1084,18 +1097,21 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
   @override
   void initState() {
     super.initState();
-    rooms = widget.rooms.isNotEmpty ? 
-        List.from(widget.rooms) : 
-        [
-          {'adults': 2, 'children': 0, 'childrenAges': <int>[]}
-        ];
+    rooms = widget.rooms.isNotEmpty
+        ? List.from(widget.rooms)
+        : [
+            {'adults': 2, 'children': 0, 'childrenAges': <int>[]},
+          ];
     _calculateTotals();
   }
 
   void _calculateTotals() {
     totalAdults = rooms.fold(0, (sum, room) => sum + (room['adults'] as int));
-    totalChildren = rooms.fold(0, (sum, room) => sum + (room['children'] as int));
-    
+    totalChildren = rooms.fold(
+      0,
+      (sum, room) => sum + (room['children'] as int),
+    );
+
     childrenAges = [];
     for (final room in rooms) {
       if (room['children'] > 0) {
@@ -1112,11 +1128,7 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
   void _addRoom() {
     if (rooms.length >= 4) return; // Max 4 rooms
     setState(() {
-      rooms.add({
-        'adults': 2,
-        'children': 0,
-        'childrenAges': <int>[],
-      });
+      rooms.add({'adults': 2, 'children': 0, 'childrenAges': <int>[]});
     });
     updateGuests();
   }
@@ -1133,11 +1145,13 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
   void _updateRoom(int index, String key, dynamic value) {
     setState(() {
       rooms[index][key] = value;
-      
+
       if (key == 'children') {
         final int newChildrenCount = value;
-        final List<int> currentAges = List<int>.from(rooms[index]['childrenAges']);
-        
+        final List<int> currentAges = List<int>.from(
+          rooms[index]['childrenAges'],
+        );
+
         if (newChildrenCount > currentAges.length) {
           while (currentAges.length < newChildrenCount) {
             currentAges.add(1);
@@ -1165,7 +1179,7 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
-    
+
     return Container(
       height: screenHeight * 0.9,
       decoration: BoxDecoration(
@@ -1174,7 +1188,10 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
           topLeft: Radius.circular(32),
           topRight: Radius.circular(32),
         ),
-        border: Border.all(color: widget.secondaryColor.withOpacity(0.1), width: 1),
+        border: Border.all(
+          color: widget.secondaryColor.withOpacity(0.1),
+          width: 1,
+        ),
       ),
       child: Column(
         children: [
@@ -1237,7 +1254,10 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
                         ],
                       ),
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           color: widget.secondaryColor.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
@@ -1245,7 +1265,11 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
                         ),
                         child: Row(
                           children: [
-                            Icon(Iconsax.home, size: 16, color: widget.secondaryColor),
+                            Icon(
+                              Iconsax.home,
+                              size: 16,
+                              color: widget.secondaryColor,
+                            ),
                             SizedBox(width: 6),
                             Text(
                               "${rooms.length} Room${rooms.length > 1 ? 's' : ''}",
@@ -1264,12 +1288,12 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
               ],
             ),
           ),
-          
+
           // Summary Card
           Padding(
             padding: EdgeInsets.all(0),
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 15,vertical: 5),
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
               decoration: BoxDecoration(
                 color: widget.secondaryColor.withOpacity(0.05),
                 borderRadius: BorderRadius.circular(20),
@@ -1326,7 +1350,7 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
               ),
             ),
           ),
-          
+
           // Rooms List
           Expanded(
             child: SingleChildScrollView(
@@ -1338,44 +1362,57 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
                     final room = entry.value;
                     return _buildRoomCard(index, room);
                   }),
-                  
+
                   // Add Room Button
                   if (rooms.length < 4)
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                    child: OutlinedButton(
-                      onPressed: _addRoom,
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: widget.secondaryColor,
-                        side: BorderSide(color: widget.secondaryColor, width: 1),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        padding: EdgeInsets.symmetric(vertical: 18, horizontal: 24),
-                        backgroundColor: Colors.white,
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Iconsax.add_circle, size: 16, color: widget.secondaryColor),
-                          SizedBox(width: 10),
-                          Text(
-                            "Add Another Room",
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
+                      child: OutlinedButton(
+                        onPressed: _addRoom,
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: widget.secondaryColor,
+                          side: BorderSide(
+                            color: widget.secondaryColor,
+                            width: 1,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            vertical: 18,
+                            horizontal: 24,
+                          ),
+                          backgroundColor: Colors.white,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Iconsax.add_circle,
+                              size: 16,
                               color: widget.secondaryColor,
                             ),
-                          ),
-                        ],
+                            SizedBox(width: 10),
+                            Text(
+                              "Add Another Room",
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: widget.secondaryColor,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),
           ),
-          
+
           // Bottom Action Bar
           Container(
             padding: EdgeInsets.all(15),
@@ -1409,7 +1446,11 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Iconsax.tick_circle, size: 22, color: Colors.white),
+                        Icon(
+                          Iconsax.tick_circle,
+                          size: 22,
+                          color: Colors.white,
+                        ),
                         SizedBox(width: 10),
                         Text(
                           "Apply Selection",
@@ -1434,7 +1475,7 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
   Widget _buildRoomCard(int index, Map<String, dynamic> room) {
     final int childrenCount = room['children'] as int;
     final int adultsCount = room['adults'] as int;
-    
+
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
       padding: EdgeInsets.all(16),
@@ -1464,7 +1505,10 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
                     decoration: BoxDecoration(
                       color: widget.secondaryColor.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: widget.secondaryColor.withOpacity(0.2), width: 1),
+                      border: Border.all(
+                        color: widget.secondaryColor.withOpacity(0.2),
+                        width: 1,
+                      ),
                     ),
                     child: Icon(
                       Iconsax.home_hashtag,
@@ -1497,18 +1541,18 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
                 ],
               ),
               if (rooms.length > 1)
-              IconButton(
-                onPressed: () => _removeRoom(index),
-                icon: Icon(Iconsax.trash, color: Color(0xFFDC2626), size: 22),
-                padding: EdgeInsets.zero,
-                constraints: BoxConstraints(),
-                tooltip: "Remove Room",
-              ),
+                IconButton(
+                  onPressed: () => _removeRoom(index),
+                  icon: Icon(Iconsax.trash, color: Color(0xFFDC2626), size: 22),
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints(),
+                  tooltip: "Remove Room",
+                ),
             ],
           ),
-          
+
           SizedBox(height: 20),
-          
+
           // Adults and Children counters
           Row(
             children: [
@@ -1529,7 +1573,8 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
                       value: adultsCount,
                       minValue: 1,
                       maxValue: 4,
-                      onIncrement: () => _updateRoom(index, 'adults', adultsCount + 1),
+                      onIncrement: () =>
+                          _updateRoom(index, 'adults', adultsCount + 1),
                       onDecrement: () {
                         if (adultsCount > 1) {
                           _updateRoom(index, 'adults', adultsCount - 1);
@@ -1557,7 +1602,8 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
                       value: childrenCount,
                       minValue: 0,
                       maxValue: 3,
-                      onIncrement: () => _updateRoom(index, 'children', childrenCount + 1),
+                      onIncrement: () =>
+                          _updateRoom(index, 'children', childrenCount + 1),
                       onDecrement: () {
                         if (childrenCount > 0) {
                           _updateRoom(index, 'children', childrenCount - 1);
@@ -1569,7 +1615,7 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
               ),
             ],
           ),
-          
+
           // Children Ages if children > 0
           if (childrenCount > 0) ...[
             SizedBox(height: 24),
@@ -1586,7 +1632,8 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
               spacing: 16,
               runSpacing: 16,
               children: List.generate(childrenCount, (childIndex) {
-                final currentAge = (room['childrenAges'] as List<int>)[childIndex];
+                final currentAge =
+                    (room['childrenAges'] as List<int>)[childIndex];
                 return SizedBox(
                   width: 130,
                   child: Column(
@@ -1604,13 +1651,20 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
                       Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: widget.secondaryColor.withOpacity(0.3), width: 1.5),
+                          border: Border.all(
+                            color: widget.secondaryColor.withOpacity(0.3),
+                            width: 1.5,
+                          ),
                         ),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<int>(
                             value: currentAge,
                             isExpanded: true,
-                            icon: Icon(Iconsax.arrow_down_1, size: 18, color: widget.secondaryColor),
+                            icon: Icon(
+                              Iconsax.arrow_down_1,
+                              size: 18,
+                              color: widget.secondaryColor,
+                            ),
                             padding: EdgeInsets.symmetric(horizontal: 12),
                             dropdownColor: Colors.white,
                             borderRadius: BorderRadius.circular(12),
@@ -1620,13 +1674,22 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
                               fontWeight: FontWeight.w500,
                             ),
                             items: List.generate(17, (age) => age + 1)
-                                .map((age) => DropdownMenuItem(
-                                      value: age,
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(horizontal: 8),
-                                        child: Text("$age years", style: TextStyle(color: widget.primaryColor)),
+                                .map(
+                                  (age) => DropdownMenuItem(
+                                    value: age,
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 8,
                                       ),
-                                    ))
+                                      child: Text(
+                                        "$age years",
+                                        style: TextStyle(
+                                          color: widget.primaryColor,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
                                 .toList(),
                             onChanged: (value) {
                               if (value != null) {
@@ -1658,7 +1721,10 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: widget.secondaryColor.withOpacity(0.3), width: 1),
+        border: Border.all(
+          color: widget.secondaryColor.withOpacity(0.3),
+          width: 1,
+        ),
       ),
       child: Row(
         children: [
@@ -1666,7 +1732,9 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
             onPressed: value > minValue ? onDecrement : null,
             icon: Icon(
               Iconsax.minus,
-              color: value > minValue ? widget.secondaryColor : Color(0xFFD1D5DB),
+              color: value > minValue
+                  ? widget.secondaryColor
+                  : Color(0xFFD1D5DB),
               size: 20,
             ),
             padding: EdgeInsets.all(10),
@@ -1688,7 +1756,9 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
             onPressed: value < maxValue ? onIncrement : null,
             icon: Icon(
               Iconsax.add,
-              color: value < maxValue ? widget.secondaryColor : Color(0xFFD1D5DB),
+              color: value < maxValue
+                  ? widget.secondaryColor
+                  : Color(0xFFD1D5DB),
               size: 16,
             ),
             padding: EdgeInsets.all(10),
@@ -1734,18 +1804,18 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
     _searchController.addListener(_filterCountries);
   }
 
- void _filterCountries() {
-  final query = _searchController.text.toLowerCase();
+  void _filterCountries() {
+    final query = _searchController.text.toLowerCase();
 
-  setState(() {
-    filteredCountries = query.isEmpty
-        ? countries.map((e) => e.name).toList()
-        : countries
-            .where((e) => e.name.toLowerCase().contains(query))
-            .map((e) => e.name)
-            .toList();
-  });
-}
+    setState(() {
+      filteredCountries = query.isEmpty
+          ? countries.map((e) => e.name).toList()
+          : countries
+                .where((e) => e.name.toLowerCase().contains(query))
+                .map((e) => e.name)
+                .toList();
+    });
+  }
 
   @override
   void dispose() {
@@ -1756,7 +1826,7 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
-    
+
     return Container(
       height: screenHeight * 0.85,
       decoration: BoxDecoration(
@@ -1765,7 +1835,10 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
           topLeft: Radius.circular(32),
           topRight: Radius.circular(32),
         ),
-        border: Border.all(color: widget.secondaryColor.withOpacity(0.1), width: 1),
+        border: Border.all(
+          color: widget.secondaryColor.withOpacity(0.1),
+          width: 1,
+        ),
       ),
       child: Column(
         children: [
@@ -1811,7 +1884,10 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
                       ),
                       if (widget.selectedCountry != null)
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             color: widget.secondaryColor.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
@@ -1831,7 +1907,7 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
               ],
             ),
           ),
-          
+
           // Search field
           Padding(
             padding: EdgeInsets.all(24),
@@ -1851,7 +1927,10 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
                 decoration: InputDecoration(
                   hintText: "Search countries...",
                   hintStyle: TextStyle(color: Colors.grey[500]),
-                  prefixIcon: Icon(Iconsax.search_normal, color: widget.secondaryColor),
+                  prefixIcon: Icon(
+                    Iconsax.search_normal,
+                    color: widget.secondaryColor,
+                  ),
                   filled: true,
                   fillColor: Colors.white,
                   // border: OutlineInputBorder(
@@ -1862,87 +1941,105 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
                   //   borderRadius: BorderRadius.circular(16),
                   //   borderSide: BorderSide(color: widget.accentColor, width: 1.5),
                   // ),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 18,
+                  ),
                 ),
               ),
             ),
           ),
-          
+
           // Countries list
           Expanded(
             child: widget.isLoading
                 ? _buildShimmerList()
                 : filteredCountries.isEmpty
-                    ? _buildEmptyState()
-                    : ListView.builder(
-                        padding: EdgeInsets.only(bottom: 24, left: 24, right: 24),
-                        itemCount: filteredCountries.length,
-                        itemBuilder: (context, index) {
-                          final country = filteredCountries[index];
-                          final isSelected = country == widget.selectedCountry;
-                          
-                          return Padding(
-                            padding: EdgeInsets.only(bottom: 12),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: () => widget.onCountrySelected(country),
+                ? _buildEmptyState()
+                : ListView.builder(
+                    padding: EdgeInsets.only(bottom: 24, left: 24, right: 24),
+                    itemCount: filteredCountries.length,
+                    itemBuilder: (context, index) {
+                      final country = filteredCountries[index];
+                      final isSelected = country == widget.selectedCountry;
+
+                      return Padding(
+                        padding: EdgeInsets.only(bottom: 12),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () => widget.onCountrySelected(country),
+                            borderRadius: BorderRadius.circular(16),
+                            child: Container(
+                              padding: EdgeInsets.all(18),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? widget.secondaryColor.withOpacity(0.1)
+                                    : Colors.white,
                                 borderRadius: BorderRadius.circular(16),
-                                child: Container(
-                                  padding: EdgeInsets.all(18),
-                                  decoration: BoxDecoration(
-                                    color: isSelected ? widget.secondaryColor.withOpacity(0.1) : Colors.white,
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(
-                                      color: isSelected ? widget.secondaryColor.withOpacity(0.0) : Color(0xFFF0F0F0),
-                                      width: 1,
-                                    ),
-                                 
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        width: 40,
-                                        height: 40,
-                                        decoration: BoxDecoration(
-                                          color: isSelected ? widget.secondaryColor.withOpacity(0.15) : Color(0xFFFAFAFA),
-                                          borderRadius: BorderRadius.circular(12),
-                                          border: Border.all(
-                                            color: isSelected ? widget.secondaryColor.withOpacity(0.3) : Color(0xFFF0F0F0),
-                                            width: 1,
-                                          ),
-                                        ),
-                                        child: Icon(
-                                          Iconsax.flag,
-                                          color: isSelected ? widget.secondaryColor : Color(0xFF999999),
-                                          size: 20,
-                                        ),
-                                      ),
-                                      SizedBox(width: 16),
-                                      Expanded(
-                                        child: Text(
-                                          country,
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
-                                            color: isSelected ? widget.primaryColor : Color(0xFF333333),
-                                          ),
-                                        ),
-                                      ),
-                                      if (isSelected)
-                                        Icon(
-                                          Iconsax.tick_circle,
-                                          color: widget.secondaryColor,
-                                          size: 20,
-                                        ),
-                                    ],
-                                  ),
+                                border: Border.all(
+                                  color: isSelected
+                                      ? widget.secondaryColor.withOpacity(0.0)
+                                      : Color(0xFFF0F0F0),
+                                  width: 1,
                                 ),
                               ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? widget.secondaryColor.withOpacity(
+                                              0.15,
+                                            )
+                                          : Color(0xFFFAFAFA),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: isSelected
+                                            ? widget.secondaryColor.withOpacity(
+                                                0.3,
+                                              )
+                                            : Color(0xFFF0F0F0),
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      Iconsax.flag,
+                                      color: isSelected
+                                          ? widget.secondaryColor
+                                          : Color(0xFF999999),
+                                      size: 20,
+                                    ),
+                                  ),
+                                  SizedBox(width: 16),
+                                  Expanded(
+                                    child: Text(
+                                      country,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: isSelected
+                                            ? widget.primaryColor
+                                            : Color(0xFF333333),
+                                      ),
+                                    ),
+                                  ),
+                                  if (isSelected)
+                                    Icon(
+                                      Iconsax.tick_circle,
+                                      color: widget.secondaryColor,
+                                      size: 20,
+                                    ),
+                                ],
+                              ),
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
           ),
         ],
       ),
@@ -2030,10 +2127,7 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
             Text(
               "Try searching with different keywords",
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: Color(0xFF666666),
-              ),
+              style: TextStyle(fontSize: 14, color: Color(0xFF666666)),
             ),
           ],
         ),

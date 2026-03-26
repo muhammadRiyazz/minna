@@ -22,7 +22,7 @@ class HotelDetailsPage extends StatefulWidget {
     required this.checkInDate,
     required this.checkOutDate,
     required this.rooms,
-   required  this.hotelSearchData,
+    required this.hotelSearchData,
   });
 
   @override
@@ -33,27 +33,27 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
   // --- Theme Colors ---
   final Color _primaryColor = Colors.black;
   // UPDATED: Gold Color as requested
-  final Color _secondaryColor = const Color(0xFFD4AF37); 
+  final Color _secondaryColor = const Color(0xFFD4AF37);
   final Color _backgroundColor = const Color(0xFFF8F9FA);
   final Color _cardColor = Colors.white;
   final Color _textPrimary = Colors.black;
   final Color _textSecondary = const Color(0xFF666666);
   final Color _textLight = const Color(0xFF999999);
-  
+
   // State Variables
   int _selectedImageIndex = 0;
   bool _isDescriptionExpanded = false;
   final int _maxDescriptionLines = 6;
   Timer? _imageSliderTimer;
-  
+
   // Controllers & Keys
   final PageController _imagePageController = PageController();
   final ScrollController _scrollController = ScrollController();
-  final GlobalKey _roomsSectionKey = GlobalKey(); 
-  
+  final GlobalKey _roomsSectionKey = GlobalKey();
+
   // Loading State
-  int? _loadingRoomIndex; 
-  bool _isFabVisible = true; 
+  int? _loadingRoomIndex;
+  bool _isFabVisible = true;
 
   final AuthApiService _apiService = AuthApiService();
 
@@ -74,9 +74,10 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
 
   void _scrollListener() {
     if (_roomsSectionKey.currentContext != null) {
-      final RenderBox box = _roomsSectionKey.currentContext!.findRenderObject() as RenderBox;
+      final RenderBox box =
+          _roomsSectionKey.currentContext!.findRenderObject() as RenderBox;
       final position = box.localToGlobal(Offset.zero);
-      
+
       // Hide FAB when approaching bottom/rooms section
       if (position.dy < MediaQuery.of(context).size.height - 100) {
         if (_isFabVisible) setState(() => _isFabVisible = false);
@@ -93,7 +94,7 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
         context,
         duration: const Duration(milliseconds: 800),
         curve: Curves.easeInOutCubic,
-        alignment: 0.1, 
+        alignment: 0.1,
       );
     }
   }
@@ -121,8 +122,13 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
   }
 
   // --- Map Functions ---
-  Future<void> launchGoogleMaps(double lat, double lng, String hotelName) async {
-    final url = 'https://www.google.com/maps/search/?api=1&query=$lat,$lng&query_place_id=$hotelName';
+  Future<void> launchGoogleMaps(
+    double lat,
+    double lng,
+    String hotelName,
+  ) async {
+    final url =
+        'https://www.google.com/maps/search/?api=1&query=$lat,$lng&query_place_id=$hotelName';
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url));
     } else {
@@ -136,7 +142,8 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
   }
 
   Future<void> launchAppleMaps(double lat, double lng, String hotelName) async {
-    final url = 'https://maps.apple.com/?q=$lat,$lng&name=${Uri.encodeComponent(hotelName)}';
+    final url =
+        'https://maps.apple.com/?q=$lat,$lng&name=${Uri.encodeComponent(hotelName)}';
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url));
     } else {
@@ -175,7 +182,11 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
               const SizedBox(height: 24),
               Text(
                 'Open Location',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: _primaryColor),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: _primaryColor,
+                ),
               ),
               const SizedBox(height: 20),
               Container(
@@ -194,7 +205,10 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                         ),
                         child: Icon(Icons.map_rounded, color: _secondaryColor),
                       ),
-                      title: const Text('Google Maps', style: TextStyle(fontWeight: FontWeight.w600)),
+                      title: const Text(
+                        'Google Maps',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
                       onTap: () {
                         Navigator.pop(context);
                         launchGoogleMaps(lat, lng, hotelName);
@@ -210,7 +224,10 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                         ),
                         child: Icon(Icons.map_outlined, color: _secondaryColor),
                       ),
-                      title: const Text('Apple Maps', style: TextStyle(fontWeight: FontWeight.w600)),
+                      title: const Text(
+                        'Apple Maps',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
                       onTap: () {
                         Navigator.pop(context);
                         launchAppleMaps(lat, lng, hotelName);
@@ -226,7 +243,9 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                   onPressed: () => Navigator.pop(context),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: _textSecondary,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     side: BorderSide(color: Colors.grey.shade300),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
@@ -255,7 +274,9 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
         _buildSectionHeader("Location"),
         const SizedBox(height: 12),
         GestureDetector(
-          onTap: hasCoordinates ? () => showMapOptions(latitude, longitude, hotel.hotelName) : null,
+          onTap: hasCoordinates
+              ? () => showMapOptions(latitude, longitude, hotel.hotelName)
+              : null,
           child: Container(
             decoration: BoxDecoration(
               color: _cardColor,
@@ -277,13 +298,20 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                     height: 60,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [_secondaryColor, _secondaryColor.withOpacity(0.7)],
+                        colors: [
+                          _secondaryColor,
+                          _secondaryColor.withOpacity(0.7),
+                        ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: const Icon(Icons.location_on_rounded, color: Colors.white, size: 28),
+                    child: const Icon(
+                      Icons.location_on_rounded,
+                      color: Colors.white,
+                      size: 28,
+                    ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -303,7 +331,9 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          hasCoordinates ? "Tap to view on map" : "Location details",
+                          hasCoordinates
+                              ? "Tap to view on map"
+                              : "Location details",
                           style: TextStyle(
                             color: _textLight,
                             fontSize: 12,
@@ -314,7 +344,11 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                     ),
                   ),
                   if (hasCoordinates)
-                    Icon(Icons.chevron_right_rounded, color: _textLight, size: 24),
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      color: _textLight,
+                      size: 24,
+                    ),
                 ],
               ),
             ),
@@ -366,7 +400,12 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
     );
   }
 
-  Widget _buildImageWithShimmer(String imageUrl, {double? width, double? height, BoxFit fit = BoxFit.cover}) {
+  Widget _buildImageWithShimmer(
+    String imageUrl, {
+    double? width,
+    double? height,
+    BoxFit fit = BoxFit.cover,
+  }) {
     return Stack(
       children: [
         Container(width: width, height: height, color: Colors.grey[300]),
@@ -377,7 +416,11 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
           fit: fit,
           loadingBuilder: (context, child, loadingProgress) {
             if (loadingProgress == null) return child;
-            return Container(width: width, height: height, color: Colors.grey[300]);
+            return Container(
+              width: width,
+              height: height,
+              color: Colors.grey[300],
+            );
           },
           errorBuilder: (context, error, stackTrace) {
             return Container(
@@ -385,7 +428,10 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
               height: height,
               color: Colors.grey[300],
               child: Center(
-                child: Icon(Icons.broken_image_rounded, color: Colors.grey[500]),
+                child: Icon(
+                  Icons.broken_image_rounded,
+                  color: Colors.grey[500],
+                ),
               ),
             );
           },
@@ -396,7 +442,7 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final hotelDetails =widget.hotelSearchData.hotelDetails;
+    final hotelDetails = widget.hotelSearchData.hotelDetails;
     final hotelSearchDetails = widget.hotelSearchData.hotelSearchDetails;
     final fullHotelDetails = widget.hotelSearchData.hotelDetails;
 
@@ -407,18 +453,21 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
       backgroundColor: _backgroundColor,
       floatingActionButton: (hasRooms && _isFabVisible)
           ? Container(
-              margin: const EdgeInsets.only(bottom: 10), 
+              margin: const EdgeInsets.only(bottom: 10),
               child: FloatingActionButton.extended(
                 onPressed: _scrollToRooms,
-                backgroundColor: _primaryColor, 
+                backgroundColor: _primaryColor,
                 foregroundColor: Colors.white,
-                elevation: 10, 
+                elevation: 10,
                 highlightElevation: 12,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(50), 
+                  borderRadius: BorderRadius.circular(50),
                 ),
                 label: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 4,
+                    horizontal: 4,
+                  ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -447,12 +496,15 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                           ),
                         ],
                       ),
-                      
-                      const SizedBox(width: 30), 
+
+                      const SizedBox(width: 30),
 
                       // 2. Action Button Section (Right Side)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white, // White pill
                           borderRadius: BorderRadius.circular(30),
@@ -467,7 +519,6 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                                 fontSize: 13,
                               ),
                             ),
-                          
                           ],
                         ),
                       ),
@@ -478,7 +529,7 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
             )
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      
+
       body: CustomScrollView(
         controller: _scrollController,
         slivers: [
@@ -494,7 +545,11 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
             pinned: true,
             title: Text(
               widget.hotelSearchData.hotelDetails.hotelName,
-              style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             centerTitle: true,
             flexibleSpace: FlexibleSpaceBar(
@@ -540,12 +595,19 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(Icons.location_on_rounded, size: 18, color: _secondaryColor),
+                            Icon(
+                              Icons.location_on_rounded,
+                              size: 18,
+                              color: _secondaryColor,
+                            ),
                             const SizedBox(width: 6),
                             Expanded(
                               child: Text(
                                 hotelDetails.address,
-                                style: TextStyle(color: _textSecondary, fontSize: 14),
+                                style: TextStyle(
+                                  color: _textSecondary,
+                                  fontSize: 14,
+                                ),
                               ),
                             ),
                           ],
@@ -554,14 +616,21 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                         Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
                               decoration: BoxDecoration(
                                 color: _secondaryColor.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Row(
                                 children: [
-                                  Icon(Icons.star_rounded, color: _secondaryColor, size: 14),
+                                  Icon(
+                                    Icons.star_rounded,
+                                    color: _secondaryColor,
+                                    size: 14,
+                                  ),
                                   const SizedBox(width: 6),
                                   Text(
                                     "${hotelDetails.hotelRating} Star Hotel",
@@ -574,7 +643,6 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                                 ],
                               ),
                             ),
-                           
                           ],
                         ),
                       ],
@@ -584,7 +652,10 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
 
                   // Image Gallery List
                   if (hotelDetails.images.length > 1) ...[
-                    _buildSectionHeader("Gallery Photos", "${_selectedImageIndex + 1}/${hotelDetails.images.length}"),
+                    _buildSectionHeader(
+                      "Gallery Photos",
+                      "${_selectedImageIndex + 1}/${hotelDetails.images.length}",
+                    ),
                     const SizedBox(height: 12),
                     SizedBox(
                       height: 90,
@@ -605,7 +676,9 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
-                                  color: _selectedImageIndex == index ? _secondaryColor : Colors.transparent,
+                                  color: _selectedImageIndex == index
+                                      ? _secondaryColor
+                                      : Colors.transparent,
                                   width: 2,
                                 ),
                               ),
@@ -629,9 +702,21 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                   // Check-in/Check-out
                   Row(
                     children: [
-                      Expanded(child: _buildInfoCard('Check-in', Icons.login_rounded, fullHotelDetails.checkInTime)),
+                      Expanded(
+                        child: _buildInfoCard(
+                          'Check-in',
+                          Icons.login_rounded,
+                          fullHotelDetails.checkInTime,
+                        ),
+                      ),
                       const SizedBox(width: 10),
-                      Expanded(child: _buildInfoCard('Check-out', Icons.logout_rounded, fullHotelDetails.checkOutTime)),
+                      Expanded(
+                        child: _buildInfoCard(
+                          'Check-out',
+                          Icons.logout_rounded,
+                          fullHotelDetails.checkOutTime,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -671,12 +756,15 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                   const SizedBox(height: 32),
 
                   // --- AVAILABLE ROOMS HEADER ---
-                  Container(key: _roomsSectionKey), 
-                  
+                  Container(key: _roomsSectionKey),
+
                   if (hasRooms) ...[
                     Row(
                       children: [
-                        Icon(Icons.bedroom_parent_rounded, color: _primaryColor),
+                        Icon(
+                          Icons.bedroom_parent_rounded,
+                          color: _primaryColor,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           "Available Rooms",
@@ -703,32 +791,37 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
           // Rooms List
           if (hasRooms)
             SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final room = hotelSearchDetails.rooms[index];
-                  return _buildRoomCard(room, index);
-                },
-                childCount: hotelSearchDetails.rooms.length,
-              ),
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final room = hotelSearchDetails.rooms[index];
+                return _buildRoomCard(room, index);
+              }, childCount: hotelSearchDetails.rooms.length),
             )
-          else SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Center(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 16),
-                    Text(
-                      'No rooms available',
-                      style: TextStyle(fontSize: 16, color: _textSecondary, fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(height: 8),
-                    Text('Please try different dates', style: TextStyle(fontSize: 14, color: _textLight)),
-                  ],
+          else
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Center(
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 16),
+                      Text(
+                        'No rooms available',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: _textSecondary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Please try different dates',
+                        style: TextStyle(fontSize: 14, color: _textLight),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
 
           const SliverToBoxAdapter(child: SizedBox(height: 80)),
         ],
@@ -742,9 +835,23 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(title, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: _textPrimary)),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            color: _textPrimary,
+          ),
+        ),
         if (subtitle != null)
-          Text(subtitle, style: TextStyle(color: _secondaryColor, fontSize: 14, fontWeight: FontWeight.w600)),
+          Text(
+            subtitle,
+            style: TextStyle(
+              color: _secondaryColor,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
       ],
     );
   }
@@ -779,14 +886,22 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
               const SizedBox(width: 8),
               Text(
                 title,
-                style: TextStyle(fontSize: 14, color: _textSecondary, fontWeight: FontWeight.w500),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: _textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 8),
           Text(
             value,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _textPrimary),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: _textPrimary,
+            ),
           ),
         ],
       ),
@@ -814,16 +929,26 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
         children: [
           AnimatedCrossFade(
             duration: const Duration(milliseconds: 300),
-            crossFadeState: _isDescriptionExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            crossFadeState: _isDescriptionExpanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
             firstChild: Text(
               cleanedDescription,
-              style: TextStyle(color: _textSecondary, height: 1.6, fontSize: 14),
+              style: TextStyle(
+                color: _textSecondary,
+                height: 1.6,
+                fontSize: 14,
+              ),
               maxLines: _maxDescriptionLines,
               overflow: TextOverflow.ellipsis,
             ),
             secondChild: Text(
               cleanedDescription,
-              style: TextStyle(color: _textSecondary, height: 1.6, fontSize: 14),
+              style: TextStyle(
+                color: _textSecondary,
+                height: 1.6,
+                fontSize: 14,
+              ),
             ),
           ),
           const SizedBox(height: 12),
@@ -840,11 +965,17 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                 children: [
                   Text(
                     _isDescriptionExpanded ? "Show Less" : "Show More",
-                    style: TextStyle(color: _secondaryColor, fontWeight: FontWeight.w600, fontSize: 13),
+                    style: TextStyle(
+                      color: _secondaryColor,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
                   ),
                   const SizedBox(width: 6),
                   Icon(
-                    _isDescriptionExpanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
+                    _isDescriptionExpanded
+                        ? Icons.keyboard_arrow_up_rounded
+                        : Icons.keyboard_arrow_down_rounded,
                     color: _secondaryColor,
                     size: 18,
                   ),
@@ -892,10 +1023,15 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
             spacing: 8,
             runSpacing: 8,
             children: facilities.take(8).map((facility) {
-              final displayFacility = facility.length > 20 ? '${facility.substring(0, 20)}...' : facility;
+              final displayFacility = facility.length > 20
+                  ? '${facility.substring(0, 20)}...'
+                  : facility;
               return Container(
                 constraints: const BoxConstraints(minWidth: 100, maxWidth: 150),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: _secondaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
@@ -903,12 +1039,20 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(_getFacilityIcon(facility), color: _secondaryColor, size: 14),
+                    Icon(
+                      _getFacilityIcon(facility),
+                      color: _secondaryColor,
+                      size: 14,
+                    ),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
                         displayFacility,
-                        style: TextStyle(fontSize: 11, color: _textPrimary, fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: _textPrimary,
+                          fontWeight: FontWeight.w500,
+                        ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -924,7 +1068,11 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
               onTap: () => _showAllFacilitiesBottomSheet(facilities),
               child: Text(
                 "+ ${facilities.length - 8} more facilities",
-                style: TextStyle(color: _primaryColor, fontSize: 14, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                  color: _primaryColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ],
@@ -943,7 +1091,10 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
           margin: const EdgeInsets.only(top: 120),
           decoration: BoxDecoration(
             color: _cardColor,
-            borderRadius: const BorderRadius.only(topLeft: Radius.circular(28), topRight: Radius.circular(28)),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(28),
+              topRight: Radius.circular(28),
+            ),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -952,16 +1103,28 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                 padding: const EdgeInsets.all(15),
                 decoration: BoxDecoration(
                   color: _primaryColor,
-                  borderRadius: const BorderRadius.only(topLeft: Radius.circular(28), topRight: Radius.circular(28)),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(28),
+                    topRight: Radius.circular(28),
+                  ),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("All Facilities (${facilities.length})",
-                        style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                    Text(
+                      "All Facilities (${facilities.length})",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     IconButton(
                       onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.close_rounded, color: Colors.white),
+                      icon: const Icon(
+                        Icons.close_rounded,
+                        color: Colors.white,
+                      ),
                     ),
                   ],
                 ),
@@ -974,7 +1137,10 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                     runSpacing: 12,
                     children: facilities.map((facility) {
                       return Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
                         decoration: BoxDecoration(
                           color: _secondaryColor.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
@@ -982,9 +1148,19 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(_getFacilityIcon(facility), color: _secondaryColor, size: 16),
+                            Icon(
+                              _getFacilityIcon(facility),
+                              color: _secondaryColor,
+                              size: 16,
+                            ),
                             const SizedBox(width: 8),
-                            Text(facility, style: TextStyle(color: _textPrimary, fontWeight: FontWeight.w500)),
+                            Text(
+                              facility,
+                              style: TextStyle(
+                                color: _textPrimary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ],
                         ),
                       );
@@ -1049,10 +1225,20 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name,
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: _textPrimary),
-                    maxLines: 1, overflow: TextOverflow.ellipsis),
-                Text(distance, style: TextStyle(fontSize: 12, color: _textSecondary)),
+                Text(
+                  name,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: _textPrimary,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  distance,
+                  style: TextStyle(fontSize: 12, color: _textSecondary),
+                ),
               ],
             ),
           ),
@@ -1078,9 +1264,14 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
       ),
       child: Column(
         children: [
-          if (details.phoneNumber.isNotEmpty) _buildContactItem(Icons.phone_rounded, details.phoneNumber),
-          _buildContactItem(Icons.location_city_rounded, '${details.cityName}, ${details.countryName}'),
-          if (details.email.isNotEmpty) _buildContactItem(Icons.email_rounded, details.email),
+          if (details.phoneNumber.isNotEmpty)
+            _buildContactItem(Icons.phone_rounded, details.phoneNumber),
+          _buildContactItem(
+            Icons.location_city_rounded,
+            '${details.cityName}, ${details.countryName}',
+          ),
+          if (details.email.isNotEmpty)
+            _buildContactItem(Icons.email_rounded, details.email),
         ],
       ),
     );
@@ -1093,7 +1284,16 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
         children: [
           Icon(icon, size: 20, color: _secondaryColor),
           const SizedBox(width: 12),
-          Expanded(child: Text(text, style: TextStyle(fontSize: 14, color: _textPrimary, fontWeight: FontWeight.w500))),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 14,
+                color: _textPrimary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -1101,10 +1301,11 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
 
   Widget _buildRoomCard(RoomDetail room, int index) {
     final isRefundable = room.isRefundable;
-    final roomImages = widget.hotelSearchData.hotelDetails.roomDetails.length > index
+    final roomImages =
+        widget.hotelSearchData.hotelDetails.roomDetails.length > index
         ? widget.hotelSearchData.hotelDetails.roomDetails[index].imageURL
         : [];
-    
+
     // Check if this specific room is currently loading
     final bool isLoading = _loadingRoomIndex == index;
 
@@ -1130,10 +1331,16 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
               Container(
                 height: 200,
                 decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
                 ),
                 child: ClipRRect(
-                  borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
                   child: _buildImageWithShimmer(
                     roomImages.first,
                     width: double.infinity,
@@ -1155,14 +1362,24 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              room.name.isNotEmpty ? room.name[0] : 'Standard Room',
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: _textPrimary),
+                              room.name.isNotEmpty
+                                  ? room.name[0]
+                                  : 'Standard Room',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                                color: _textPrimary,
+                              ),
                             ),
                             if (room.mealType.isNotEmpty) ...[
                               const SizedBox(height: 4),
                               Text(
                                 room.mealType,
-                                style: TextStyle(fontSize: 14, color: _secondaryColor, fontWeight: FontWeight.w600),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: _secondaryColor,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ],
                           ],
@@ -1170,7 +1387,10 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                       ),
                       if (isRefundable)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xFF4CAF50).withOpacity(0.1),
                             borderRadius: BorderRadius.circular(20),
@@ -1178,31 +1398,41 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                           ),
                           child: const Text(
                             'Refundable',
-                            style: TextStyle(fontSize: 12, color: Color(0xFF4CAF50), fontWeight: FontWeight.w600),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Color(0xFF4CAF50),
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                     ],
                   ),
                   const SizedBox(height: 12),
-                  if (widget.hotelSearchData.hotelDetails.roomDetails.length > index) _buildRoomDetails(index),
+                  if (widget.hotelSearchData.hotelDetails.roomDetails.length >
+                      index)
+                    _buildRoomDetails(index),
                   const SizedBox(height: 16),
-                  
+
                   // Updated: Full Price Breakdown
                   _buildPriceBreakdown(room),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // Book Now Button with Specific Loading State
                   SizedBox(
                     width: double.infinity,
                     height: 56,
                     child: ElevatedButton(
-                      onPressed: isLoading ? null : () => _bookRoom(room, index),
+                      onPressed: isLoading
+                          ? null
+                          : () => _bookRoom(room, index),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: _primaryColor,
                         foregroundColor: Colors.white,
                         disabledBackgroundColor: Colors.grey[300],
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
                         elevation: 2,
                       ),
                       child: isLoading
@@ -1211,7 +1441,8 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                               height: 24,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                color: _secondaryColor, // Gold spinner on loading
+                                color:
+                                    _secondaryColor, // Gold spinner on loading
                               ),
                             )
                           : const Row(
@@ -1219,7 +1450,13 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                               children: [
                                 Icon(Icons.shopping_cart_rounded, size: 20),
                                 SizedBox(width: 12),
-                                Text("Book Now", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                                Text(
+                                  "Book Now",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ],
                             ),
                     ),
@@ -1246,7 +1483,10 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
             children: [
               Icon(Icons.aspect_ratio_rounded, size: 16, color: _textSecondary),
               const SizedBox(width: 6),
-              Text(detail.roomSize, style: TextStyle(fontSize: 12, color: _textSecondary)),
+              Text(
+                detail.roomSize,
+                style: TextStyle(fontSize: 12, color: _textSecondary),
+              ),
             ],
           ),
       ],
@@ -1271,9 +1511,22 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Total Price', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: _textPrimary)),
-              Text('₹${NumberFormat('#,##0').format(totalPrice)}',
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Color(0xFF4CAF50))),
+              Text(
+                'Total Price',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: _textPrimary,
+                ),
+              ),
+              Text(
+                '₹${NumberFormat('#,##0').format(totalPrice)}',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF4CAF50),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -1284,21 +1537,31 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Base Fare', style: TextStyle(fontSize: 12, color: _textSecondary)),
-              Text('₹${NumberFormat('#,##0').format(room.totalFare)}',
-                  style: TextStyle(fontSize: 12, color: _textPrimary)),
+              Text(
+                'Base Fare',
+                style: TextStyle(fontSize: 12, color: _textSecondary),
+              ),
+              Text(
+                '₹${NumberFormat('#,##0').format(room.totalFare)}',
+                style: TextStyle(fontSize: 12, color: _textPrimary),
+              ),
             ],
           ),
           const SizedBox(height: 6),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Taxes & Fees', style: TextStyle(fontSize: 12, color: _textSecondary)),
-              Text('₹${NumberFormat('#,##0').format(room.totalTax)}',
-                  style: TextStyle(fontSize: 12, color: _textPrimary)),
+              Text(
+                'Taxes & Fees',
+                style: TextStyle(fontSize: 12, color: _textSecondary),
+              ),
+              Text(
+                '₹${NumberFormat('#,##0').format(room.totalTax)}',
+                style: TextStyle(fontSize: 12, color: _textPrimary),
+              ),
             ],
           ),
-          
+
           const SizedBox(height: 12),
           Divider(height: 1, color: const Color(0xFFDDDDDD)),
           const SizedBox(height: 8),
@@ -1307,9 +1570,18 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Per Night ($nights nights)', style: TextStyle(fontSize: 12, color: _textSecondary)),
-              Text('₹${NumberFormat('#,##0').format(totalPrice / (nights == 0 ? 1 : nights))}',
-                  style: TextStyle(fontSize: 12, color: _textPrimary, fontWeight: FontWeight.w600)),
+              Text(
+                'Per Night ($nights nights)',
+                style: TextStyle(fontSize: 12, color: _textSecondary),
+              ),
+              Text(
+                '₹${NumberFormat('#,##0').format(totalPrice / (nights == 0 ? 1 : nights))}',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: _textPrimary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ],
           ),
 
@@ -1320,7 +1592,11 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
             const SizedBox(height: 8),
             Row(
               children: [
-                Icon(Icons.info_outline_rounded, size: 14, color: _textSecondary),
+                Icon(
+                  Icons.info_outline_rounded,
+                  size: 14,
+                  color: _textSecondary,
+                ),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
@@ -1354,12 +1630,15 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
     try {
       // Step 1: Authenticate
       final authResult = await _apiService.authenticate().timeout(
-        const Duration(seconds: 15), 
+        const Duration(seconds: 15),
         onTimeout: () => throw TimeoutException("Authentication timed out"),
       );
 
       if (!authResult.isSuccess) {
-        if(mounted) _showErrorSnackBar(authResult.error ?? "Authentication failed. Please login again.");
+        if (mounted)
+          _showErrorSnackBar(
+            authResult.error ?? "Authentication failed. Please login again.",
+          );
         return;
       }
 
@@ -1367,26 +1646,33 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
       // Wrap in try-catch in case balance check throws unexpected network error
       bool hasSufficientBalance = false;
       try {
-        hasSufficientBalance = await _apiService.checkSufficientBalance(room.totalFare);
+        hasSufficientBalance = await _apiService.checkSufficientBalance(
+          room.totalFare,
+        );
       } catch (e) {
         throw Exception("Failed to verify wallet balance");
       }
 
       if (!hasSufficientBalance) {
-         if(mounted) _showErrorSnackBar("Insufficient wallet balance for this booking.");
+        if (mounted)
+          _showErrorSnackBar("Insufficient wallet balance for this booking.");
         return;
       }
 
       // Step 3: Pre-book room
-      final preBookResult = await _apiService.preBookRoomWithAuth(
-        bookingCode: room.bookingCode,
-      ).timeout(
-        const Duration(seconds: 20),
-        onTimeout: () => throw TimeoutException("Room check timed out"),
-      );
+      final preBookResult = await _apiService
+          .preBookRoomWithAuth(bookingCode: room.bookingCode)
+          .timeout(
+            const Duration(seconds: 20),
+            onTimeout: () => throw TimeoutException("Room check timed out"),
+          );
 
       if (!preBookResult.isSuccess || preBookResult.data == null) {
-        if(mounted) _showErrorSnackBar(preBookResult.error ?? "Room is no longer available. Please select another.");
+        if (mounted)
+          _showErrorSnackBar(
+            preBookResult.error ??
+                "Room is no longer available. Please select another.",
+          );
         return;
       }
 
@@ -1398,16 +1684,30 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
 
       if (callbackResult.isSuccess && callbackResult.data != null) {
         if (mounted) {
-          _navigateToPassengerInput(room, preBookResult.data!, callbackResult.data!.prebookId.toString());
+          _navigateToPassengerInput(
+            room,
+            preBookResult.data!,
+            callbackResult.data!.prebookId.toString(),
+          );
         }
       } else {
-        if(mounted) _showErrorSnackBar(callbackResult.error ?? "System error initiating booking. Please try again.");
+        if (mounted)
+          _showErrorSnackBar(
+            callbackResult.error ??
+                "System error initiating booking. Please try again.",
+          );
       }
     } on TimeoutException catch (_) {
-      if(mounted) _showErrorSnackBar("Network connection timed out. Please check your internet.");
+      if (mounted)
+        _showErrorSnackBar(
+          "Network connection timed out. Please check your internet.",
+        );
     } catch (e) {
       log("Booking Error: $e");
-      if(mounted) _showErrorSnackBar("An unexpected error occurred. Please try again later.");
+      if (mounted)
+        _showErrorSnackBar(
+          "An unexpected error occurred. Please try again later.",
+        );
     } finally {
       // 2. Always turn off loading state, even if error occurred
       if (mounted) {
@@ -1450,7 +1750,9 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
       );
 
       if (response['status'] == 'SUCCESS') {
-        final prebookCallbackResponse = PrebookCallbackResponse.fromJson(response);
+        final prebookCallbackResponse = PrebookCallbackResponse.fromJson(
+          response,
+        );
         return ApiResult.success(prebookCallbackResponse);
       } else {
         return ApiResult.error(response['statusDesc'] ?? 'Callback API failed');
@@ -1460,12 +1762,16 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
     }
   }
 
-  void _navigateToPassengerInput(RoomDetail room, PreBookResponseWithAuth preBookResponse, String prebookId) {
+  void _navigateToPassengerInput(
+    RoomDetail room,
+    PreBookResponseWithAuth preBookResponse,
+    String prebookId,
+  ) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => PassengerInputPage(
-rooms: widget.rooms,
+          rooms: widget.rooms,
           hotel: widget.hotelSearchData,
           room: room,
           preBookResponse: preBookResponse,
@@ -1477,12 +1783,18 @@ rooms: widget.rooms,
 
   IconData _getFacilityIcon(String facility) {
     final facilityLower = facility.toLowerCase();
-    if (facilityLower.contains('wifi') || facilityLower.contains('internet')) return Icons.wifi_rounded;
-    if (facilityLower.contains('pool') || facilityLower.contains('swim')) return Icons.pool_rounded;
+    if (facilityLower.contains('wifi') || facilityLower.contains('internet'))
+      return Icons.wifi_rounded;
+    if (facilityLower.contains('pool') || facilityLower.contains('swim'))
+      return Icons.pool_rounded;
     if (facilityLower.contains('parking')) return Icons.local_parking_rounded;
-    if (facilityLower.contains('restaurant') || facilityLower.contains('dining')) return Icons.restaurant_rounded;
-    if (facilityLower.contains('gym') || facilityLower.contains('fitness')) return Icons.fitness_center_rounded;
-    if (facilityLower.contains('ac') || facilityLower.contains('air')) return Icons.ac_unit_rounded;
+    if (facilityLower.contains('restaurant') ||
+        facilityLower.contains('dining'))
+      return Icons.restaurant_rounded;
+    if (facilityLower.contains('gym') || facilityLower.contains('fitness'))
+      return Icons.fitness_center_rounded;
+    if (facilityLower.contains('ac') || facilityLower.contains('air'))
+      return Icons.ac_unit_rounded;
     if (facilityLower.contains('bar')) return Icons.local_bar_rounded;
     return Icons.check_circle_outline_rounded;
   }
