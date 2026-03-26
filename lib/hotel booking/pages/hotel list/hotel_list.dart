@@ -13,6 +13,7 @@ class HotelListPage extends StatefulWidget {
   final DateTime checkInDate;
   final DateTime checkOutDate;
   final List<Map<String, dynamic>> rooms;
+  final String guestNationalityCode;
 
   const HotelListPage({
     super.key,
@@ -21,6 +22,8 @@ class HotelListPage extends StatefulWidget {
     required this.checkInDate,
     required this.checkOutDate,
     required this.rooms,
+    required this.guestNationalityCode,
+
   });
 
   @override
@@ -560,6 +563,8 @@ class _HotelListPageState extends State<HotelListPage> {
                   checkOutDate: widget.checkOutDate,
                   rooms: widget.rooms,
                   hotelSearchData: hotel.hotelSearchItem,
+                                        guestNationalityCode:widget.guestNationalityCode,
+
                 ),
               ),
             );

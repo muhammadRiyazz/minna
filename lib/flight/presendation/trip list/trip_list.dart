@@ -16,11 +16,8 @@ import 'package:dotted_line/dotted_line.dart';
 import 'package:minna/cab/function/commission_data.dart'; // Import your commission service
 
 class FlightSearchPage extends StatelessWidget {
-
   final String tripType;
-   FlightSearchPage({super.key ,
-   required this.tripType
-   });
+  FlightSearchPage({super.key, required this.tripType});
 
   // Color Theme - Consistent with home page
   final Color _primaryColor = Colors.black;
@@ -99,15 +96,20 @@ class FlightSearchPage extends StatelessWidget {
             return state.isLoading
                 ? _buildLoadingPage()
                 : flightOptions.isNotEmpty
-                    ? _buildFlightList(context, flightOptions, state ,tripType)
-                    : _buildNoFlightsWidget(context);
+                ? _buildFlightList(context, flightOptions, state, tripType)
+                : _buildNoFlightsWidget(context);
           },
         ),
       ),
     );
   }
 
-  Widget _buildFlightList(BuildContext context, List<FlightOptionElement> flights, TripRequestState state ,String tripType) {
+  Widget _buildFlightList(
+    BuildContext context,
+    List<FlightOptionElement> flights,
+    TripRequestState state,
+    String tripType,
+  ) {
     return Column(
       children: [
         // Results Header
@@ -126,7 +128,10 @@ class FlightSearchPage extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: _secondaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
@@ -153,7 +158,7 @@ class FlightSearchPage extends StatelessWidget {
             itemBuilder: (context, index) {
               final option = flights[index];
               return FlightCard(
-tripType:tripType,
+                tripType: tripType,
                 flightOption: option,
                 isLoading: state.isflightLoading,
                 primaryColor: _primaryColor,
@@ -305,7 +310,7 @@ tripType:tripType,
                   ],
                 ),
                 const SizedBox(height: 20),
-                
+
                 // Flight route shimmer
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -340,7 +345,7 @@ tripType:tripType,
                         ),
                       ],
                     ),
-                    
+
                     // Duration and plane
                     Column(
                       children: [
@@ -371,7 +376,7 @@ tripType:tripType,
                         ),
                       ],
                     ),
-                    
+
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
@@ -405,7 +410,7 @@ tripType:tripType,
                   ],
                 ),
                 const SizedBox(height: 20),
-                
+
                 // Button shimmer
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -470,7 +475,7 @@ class FlightCard extends StatelessWidget {
   });
 
   // Helper method to determine travel type (Domestic/International)
-  String _getTravelType(String tripType){
+  String _getTravelType(String tripType) {
     return tripType; // or 'International'
   }
 
@@ -533,7 +538,7 @@ class FlightCard extends StatelessWidget {
             // Airline header with price
             _buildAirlineHeader(context, price, travelType),
             const SizedBox(height: 20),
-            
+
             // Flight route
             _buildFlightRoute(
               firstLeg: firstOnwardLeg,
@@ -568,7 +573,11 @@ class FlightCard extends StatelessWidget {
     );
   }
 
-  Widget _buildAirlineHeader(BuildContext context, double price, String travelType) {
+  Widget _buildAirlineHeader(
+    BuildContext context,
+    double price,
+    String travelType,
+  ) {
     // Calculate commission and total amount
     final commissionService = FlightCommissionService();
     double commission = 0;
@@ -584,11 +593,7 @@ class FlightCard extends StatelessWidget {
         travelType: travelType,
       );
     } catch (e) {
-
-
-
-
-     log('Error calculating commission: $e');
+      log('Error calculating commission: $e');
       // Use fallback values if commission calculation fails
       commission = 0;
       totalWithCommission = price;
@@ -629,11 +634,13 @@ class FlightCard extends StatelessWidget {
                       child: Image.network(
                         flightOption.flightimg ?? "",
                         fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) =>
-                            Container(
-                              color: backgroundColor,
-                              child: Icon(Icons.airlines_rounded, color: textSecondary),
-                            ),
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          color: backgroundColor,
+                          child: Icon(
+                            Icons.airlines_rounded,
+                            color: textSecondary,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -748,26 +755,29 @@ class FlightCard extends StatelessWidget {
               //     color: textSecondary,
               //   ),
               // ),
-                Text(
-  'Incl. taxes',
-  style: TextStyle(
-    fontSize: 10,
-    color: textSecondary,
-  ),
-),
+              Text(
+                'Incl. taxes',
+                style: TextStyle(fontSize: 10, color: textSecondary),
+              ),
 
               const SizedBox(height: 6),
-              if (flightOption.flightFares != null && flightOption.flightFares!.isNotEmpty)
+              if (flightOption.flightFares != null &&
+                  flightOption.flightFares!.isNotEmpty)
                 InkWell(
                   onTap: () {
                     _showFareOptionsBottomSheet(context, flightOption);
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: secondaryColor.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: secondaryColor.withOpacity(0.3)),
+                      border: Border.all(
+                        color: secondaryColor.withOpacity(0.3),
+                      ),
                     ),
                     child: Text(
                       'More Fares',
@@ -828,10 +838,7 @@ class FlightCard extends StatelessWidget {
                     ),
                     Text(
                       firstLeg?.originName ?? '--',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: textSecondary,
-                      ),
+                      style: TextStyle(fontSize: 11, color: textSecondary),
                     ),
                   ],
                 ),
@@ -873,7 +880,9 @@ class FlightCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    stops == 0 ? 'Non-stop' : '$stops ${stops == 1 ? 'stop' : 'stops'}',
+                    stops == 0
+                        ? 'Non-stop'
+                        : '$stops ${stops == 1 ? 'stop' : 'stops'}',
                     style: TextStyle(
                       fontSize: 10,
                       color: stops == 0 ? secondaryColor : textSecondary,
@@ -905,12 +914,9 @@ class FlightCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      lastLeg?.destinationName ?? '--',textAlign: TextAlign.end,
-                      style: TextStyle(
-                        
-                        fontSize: 11,
-                        color: textSecondary,
-                      ),
+                      lastLeg?.destinationName ?? '--',
+                      textAlign: TextAlign.end,
+                      style: TextStyle(fontSize: 11, color: textSecondary),
                     ),
                   ],
                 ),
@@ -974,7 +980,11 @@ class FlightCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Icon(Icons.info_outline_rounded, size: 16, color: textSecondary),
+                Icon(
+                  Icons.info_outline_rounded,
+                  size: 16,
+                  color: textSecondary,
+                ),
                 const SizedBox(width: 6),
                 Text(
                   'Flight Details',
@@ -1026,10 +1036,7 @@ class FlightCard extends StatelessWidget {
                   const SizedBox(width: 6),
                   Text(
                     'Book Now',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
@@ -1055,14 +1062,18 @@ class FlightCard extends StatelessWidget {
 
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => FlightBookingPage( triptype: tripType,
-      
-      )),
+      MaterialPageRoute(
+        builder: (context) => FlightBookingPage(triptype: tripType),
+      ),
     );
   }
 
-  void _showFareOptionsBottomSheet(BuildContext context, FlightOptionElement flight) {
-    final List<FreeBaggage> baggageList = flight.flightLegs?.firstOrNull?.freeBaggages ?? [];
+  void _showFareOptionsBottomSheet(
+    BuildContext context,
+    FlightOptionElement flight,
+  ) {
+    final List<FreeBaggage> baggageList =
+        flight.flightLegs?.firstOrNull?.freeBaggages ?? [];
     final travelType = _getTravelType(tripType);
 
     showModalBottomSheet(
@@ -1083,7 +1094,9 @@ class FlightCard extends StatelessWidget {
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(24),
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.1),
@@ -1115,10 +1128,7 @@ class FlightCard extends StatelessWidget {
                     const SizedBox(height: 8),
                     Text(
                       "Choose the fare that suits your travel needs",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: textSecondary,
-                      ),
+                      style: TextStyle(fontSize: 14, color: textSecondary),
                     ),
                   ],
                 ),
@@ -1128,7 +1138,8 @@ class FlightCard extends StatelessWidget {
                 child: ListView.separated(
                   padding: const EdgeInsets.all(16),
                   itemCount: flight.flightFares?.length ?? 0,
-                  separatorBuilder: (context, index) => const SizedBox(height: 12),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final fare = flight.flightFares?[index];
                     final baggageInfo = baggageList.firstWhere(
@@ -1136,7 +1147,13 @@ class FlightCard extends StatelessWidget {
                       orElse: () => FreeBaggage(),
                     );
 
-                    return _buildFareOptionCard(context, fare, baggageInfo, flight, travelType);
+                    return _buildFareOptionCard(
+                      context,
+                      fare,
+                      baggageInfo,
+                      flight,
+                      travelType,
+                    );
                   },
                 ),
               ),
@@ -1147,10 +1164,16 @@ class FlightCard extends StatelessWidget {
     );
   }
 
-  Widget _buildFareOptionCard(BuildContext context, FlightFare? fare, FreeBaggage baggageInfo, FlightOptionElement flight, String travelType) {
+  Widget _buildFareOptionCard(
+    BuildContext context,
+    FlightFare? fare,
+    FreeBaggage baggageInfo,
+    FlightOptionElement flight,
+    String travelType,
+  ) {
     final isSelected = flight.selectedFare == fare;
     final commissionService = FlightCommissionService();
-    
+
     // Calculate commission and total for this fare
     double actualAmount = fare?.totalAmount ?? 0;
     double commission = 0;
@@ -1168,7 +1191,7 @@ class FlightCard extends StatelessWidget {
     } catch (e) {
       print('Error calculating commission for fare: $e');
     }
-    
+
     return GestureDetector(
       onTap: () {
         if (fare != null) {
@@ -1227,8 +1250,9 @@ class FlightCard extends StatelessWidget {
                 ),
               ],
             ),
+
             // const SizedBox(height: 8),
-            
+
             // // Commission info
             // Container(
             //   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -1258,43 +1282,67 @@ class FlightCard extends StatelessWidget {
             //   ),
             // ),
             // const SizedBox(height: 12),
-            
-            // Baggage info
-            if (_formatBaggage(baggageInfo.adtBaggage).isNotEmpty)
-              _buildBaggageRow('Adult', _formatBaggage(baggageInfo.adtBaggage)),
-            if (_formatBaggage(baggageInfo.chdBaggage).isNotEmpty)
-              _buildBaggageRow('Child', _formatBaggage(baggageInfo.chdBaggage)),
-            if (_formatBaggage(baggageInfo.infBaggage).isNotEmpty)
-              _buildBaggageRow('Infant', _formatBaggage(baggageInfo.infBaggage)),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? secondaryColor.withOpacity(0.05)
+                    : Colors.grey.shade50,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: isSelected
+                      ? secondaryColor.withOpacity(0.2)
+                      : Colors.grey.shade200,
+                ),
+              ),
+              child: Column(
+                children: [
+                  if (_formatBaggage(baggageInfo.adtBaggage).isNotEmpty)
+                    _buildBaggageRow(
+                      'Check-in',
+                      _formatBaggage(baggageInfo.adtBaggage),
+                      Icons.work_rounded,
+                    ),
+                  if (_formatBaggage(
+                    baggageInfo.adtHandBaggage,
+                  ).isNotEmpty) ...[
+                    if (_formatBaggage(baggageInfo.adtBaggage).isNotEmpty)
+                      const SizedBox(height: 8),
+                    _buildBaggageRow(
+                      'Cabin',
+                      _formatBaggage(baggageInfo.adtHandBaggage),
+                      Icons.business_center_rounded,
+                    ),
+                  ],
+                ],
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildBaggageRow(String type, String baggage) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            '$type Baggage',
-            style: TextStyle(
-              fontSize: 12,
-              color: textSecondary,
-            ),
+  Widget _buildBaggageRow(String type, String baggage, IconData icon) {
+    return Row(
+      children: [
+        Icon(icon, size: 14, color: textSecondary),
+        const SizedBox(width: 8),
+        Text(
+          '$type Baggage',
+          style: TextStyle(fontSize: 12, color: textSecondary),
+        ),
+        const Spacer(),
+        Text(
+          baggage,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: textPrimary,
           ),
-          Text(
-            baggage,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: textPrimary,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -1310,7 +1358,7 @@ class FlightCard extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (context) {
         return FlightDetailsBottomSheet(
-          tripType:tripType,
+          tripType: tripType,
           flightOption: option,
           primaryColor: primaryColor,
           secondaryColor: secondaryColor,
@@ -1332,7 +1380,7 @@ class FlightDetailsBottomSheet extends StatelessWidget {
   final Color cardColor;
   final Color textPrimary;
   final Color textSecondary;
-final String tripType;
+  final String tripType;
   const FlightDetailsBottomSheet({
     super.key,
     required this.flightOption,
@@ -1341,7 +1389,7 @@ final String tripType;
     required this.backgroundColor,
     required this.cardColor,
     required this.textPrimary,
-    required this. tripType,
+    required this.tripType,
     required this.textSecondary,
   });
 
@@ -1353,9 +1401,9 @@ final String tripType;
 
   @override
   Widget build(BuildContext context) {
-    final travelType = _getTravelType( tripType);
+    final travelType = _getTravelType(tripType);
     final commissionService = FlightCommissionService();
-    
+
     // Calculate commission and total
     double actualAmount = flightOption.selectedFare?.aprxTotalAmount ?? 0;
     double commission = 0;
@@ -1387,7 +1435,9 @@ final String tripType;
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: cardColor,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(24),
+              ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.1),
@@ -1414,7 +1464,7 @@ final String tripType;
               ],
             ),
           ),
-          
+
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(20),
@@ -1422,20 +1472,24 @@ final String tripType;
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Flight Summary
-                  _buildFlightSummary(actualAmount,commission,totalWithCommission),
+                  _buildFlightSummary(
+                    actualAmount,
+                    commission,
+                    totalWithCommission,
+                  ),
                   const SizedBox(height: 24),
-                  
+
                   // Flight Legs
                   _buildFlightLegs(),
                   const SizedBox(height: 24),
-                  
+
                   // Fare Breakdown
                   // _buildFareBreakdownWithCommission(actualAmount,commission,totalWithCommission),
                 ],
               ),
             ),
           ),
-          
+
           // Book Button
           // Container(
           //   padding: const EdgeInsets.all(20),
@@ -1476,7 +1530,11 @@ final String tripType;
     );
   }
 
-  Widget _buildFlightSummary(double actualAmount, double commission, double totalWithCommission) {
+  Widget _buildFlightSummary(
+    double actualAmount,
+    double commission,
+    double totalWithCommission,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -1497,11 +1555,10 @@ final String tripType;
               child: Image.network(
                 flightOption.flightimg ?? "",
                 fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) =>
-                    Container(
-                      color: backgroundColor,
-                      child: Icon(Icons.airlines_rounded, color: textSecondary),
-                    ),
+                errorBuilder: (context, error, stackTrace) => Container(
+                  color: backgroundColor,
+                  child: Icon(Icons.airlines_rounded, color: textSecondary),
+                ),
               ),
             ),
           ),
@@ -1521,10 +1578,7 @@ final String tripType;
                 const SizedBox(height: 4),
                 Text(
                   flightOption.ticketingCarrier ?? '---',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: textSecondary,
-                  ),
+                  style: TextStyle(fontSize: 12, color: textSecondary),
                 ),
               ],
             ),
@@ -1540,13 +1594,10 @@ final String tripType;
                   color: primaryColor,
                 ),
               ),
-                   Text(
-  'Incl. taxes',
-  style: TextStyle(
-    fontSize: 10,
-    color: textSecondary,
-  ),
-),
+              Text(
+                'Incl. taxes',
+                style: TextStyle(fontSize: 10, color: textSecondary),
+              ),
               // Text(
               //   'incl. ₹${commission.toStringAsFixed(0)} service',
               //   style: TextStyle(
@@ -1632,17 +1683,11 @@ final String tripType;
                     ),
                     Text(
                       leg.origin ?? '--',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: textPrimary,
-                      ),
+                      style: TextStyle(fontSize: 14, color: textPrimary),
                     ),
                     Text(
                       leg.originName ?? '--',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: textSecondary,
-                      ),
+                      style: TextStyle(fontSize: 12, color: textSecondary),
                     ),
                   ],
                 ),
@@ -1651,10 +1696,7 @@ final String tripType;
                 children: [
                   Text(
                     '${duration.inHours}h ${duration.inMinutes.remainder(60)}m',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: textSecondary,
-                    ),
+                    style: TextStyle(fontSize: 12, color: textSecondary),
                   ),
                   const SizedBox(height: 8),
                   Icon(Icons.flight_rounded, color: primaryColor, size: 20),
@@ -1674,17 +1716,11 @@ final String tripType;
                     ),
                     Text(
                       leg.destination ?? '--',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: textPrimary,
-                      ),
+                      style: TextStyle(fontSize: 14, color: textPrimary),
                     ),
                     Text(
                       leg.destinationName ?? '--',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: textSecondary,
-                      ),
+                      style: TextStyle(fontSize: 12, color: textSecondary),
                     ),
                   ],
                 ),
@@ -1699,28 +1735,111 @@ final String tripType;
             children: [
               Text(
                 'Flight ${leg.airlineCode} ${leg.flightNo}',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: textSecondary,
-                ),
+                style: TextStyle(fontSize: 12, color: textSecondary),
               ),
               Text(
                 'Terminal ${leg.departureTerminal ?? '-'}',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: textSecondary,
-                ),
+                style: TextStyle(fontSize: 12, color: textSecondary),
               ),
             ],
+          ),
+
+          // Baggage & Extras
+          if ((leg.freeBaggages != null && leg.freeBaggages!.isNotEmpty) ||
+              (flightOption.selectedFare != null &&
+                  flightOption.selectedFare!.fareName != null)) ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: backgroundColor,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey.shade200),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Baggage & Extras',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: primaryColor,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      if (flightOption.selectedFare != null &&
+                          flightOption.selectedFare!.fareName != null)
+                        _buildInfoBadge(
+                          Icons.airplane_ticket_rounded,
+                          'Fare: ${flightOption.selectedFare!.fareName}',
+                          primaryColor,
+                        ),
+                      if (leg.freeBaggages != null &&
+                          leg.freeBaggages!.isNotEmpty) ...[
+                        if (leg.freeBaggages!.first.adtBaggage != null &&
+                            leg.freeBaggages!.first.adtBaggage!.isNotEmpty)
+                          _buildInfoBadge(
+                            Icons.work_rounded,
+                            'Check-in: ${leg.freeBaggages!.first.adtBaggage}',
+                            secondaryColor,
+                          ),
+                        if (leg.freeBaggages!.first.adtHandBaggage != null &&
+                            leg.freeBaggages!.first.adtHandBaggage!.isNotEmpty)
+                          _buildInfoBadge(
+                            Icons.business_center_rounded,
+                            'Cabin: ${leg.freeBaggages!.first.adtHandBaggage}',
+                            secondaryColor,
+                          ),
+                      ],
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoBadge(IconData icon, String text, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: color.withOpacity(0.2)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: color),
+          const SizedBox(width: 4),
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildFareBreakdownWithCommission(double actualAmount, double commission, double totalWithCommission) {
+  Widget _buildFareBreakdownWithCommission(
+    double actualAmount,
+    double commission,
+    double totalWithCommission,
+  ) {
     final selectedFare = flightOption.selectedFare;
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -1739,19 +1858,18 @@ final String tripType;
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Base fare breakdown
           if (selectedFare?.fares != null)
             ...selectedFare!.fares!.map((fare) => _buildFareRow(fare)),
-          
-          
+
           // Commission row
-          _buildCommissionRow(commission+selectedFare!.aprxTotalTax!),
-          
+          _buildCommissionRow(commission + selectedFare!.aprxTotalTax!),
+
           const SizedBox(height: 12),
           Divider(color: Colors.grey.shade400),
           const SizedBox(height: 12),
-          
+
           // Total amount
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1787,10 +1905,7 @@ final String tripType;
         children: [
           Text(
             '${fare.ptc} Passenger',
-            style: TextStyle(
-              fontSize: 14,
-              color: textPrimary,
-            ),
+            style: TextStyle(fontSize: 14, color: textPrimary),
           ),
           Text(
             '₹${fare.baseFare?.toStringAsFixed(0) ?? '0'}',
@@ -1816,11 +1931,8 @@ final String tripType;
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-           'Tax & Fees',
-            style: TextStyle(
-              fontSize: 14,
-              color: textPrimary,
-            ),
+            'Tax & Fees',
+            style: TextStyle(fontSize: 14, color: textPrimary),
           ),
           Text(
             '₹${totalTax.toStringAsFixed(0)}',

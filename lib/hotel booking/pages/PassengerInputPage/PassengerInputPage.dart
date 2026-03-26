@@ -7,6 +7,7 @@ import 'package:minna/hotel%20booking/domain/hotel%20list/hotel_list.dart';
 import 'package:minna/hotel%20booking/domain/rooms/rooms.dart';
 import 'package:minna/hotel%20booking/functions/auth.dart';
 import 'package:minna/hotel%20booking/pages/booking%20confirm%20page/booking_confirm.dart';
+import 'package:iconsax/iconsax.dart';
 
 class PassengerInputPage extends StatefulWidget {
   final RoomDetail room;
@@ -14,6 +15,7 @@ class PassengerInputPage extends StatefulWidget {
   final PreBookResponseWithAuth preBookResponse;
   final String prebookId;
   final List<Map<String, dynamic>> rooms;
+  final String guestNationalityCode;
 
   const PassengerInputPage({
     super.key,
@@ -22,6 +24,7 @@ class PassengerInputPage extends StatefulWidget {
     required this.preBookResponse,
     required this.prebookId,
     required this.rooms,
+    required this.guestNationalityCode,
   });
 
   @override
@@ -36,13 +39,15 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
   bool _isSubmitting = false;
 
   // Theme colors
-  final Color _primaryColor = Colors.black;
-  final Color _secondaryColor = Color(0xFFD4AF37);
-  final Color _backgroundColor = Color(0xFFF8F9FA);
+  final Color _primaryColor = Color(0xFF000000); // Black
+  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
+  final Color _accentColor = Color(0xFFB8860B); // Dark Gold
+  final Color _backgroundColor = Color(0xFFFAFAFA); // Off-white
   final Color _cardColor = Colors.white;
-  final Color _textPrimary = Colors.black;
+  final Color _textPrimary = Color(0xFF000000);
   final Color _textSecondary = Color(0xFF666666);
   final Color _textLight = Color(0xFF999999);
+  final Color _borderColor = Color(0xFFE0E0E0);
   final Color _errorColor = Color(0xFFE53935);
   final Color _successColor = Color(0xFF4CAF50);
   final Color _warningColor = Color(0xFFFF9800);
@@ -56,6 +61,40 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
   void initState() {
     super.initState();
     _initializePassengers();
+  }
+
+  InputDecoration _buildInputTheme({
+    required String labelText,
+    required IconData prefixIcon,
+  }) {
+    return InputDecoration(
+      labelText: labelText,
+      labelStyle: TextStyle(fontSize: 10, color: _textSecondary),
+      filled: true,
+      fillColor: _backgroundColor,
+      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: _secondaryColor, width: 1.5),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: _errorColor),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: _errorColor, width: 1.5),
+      ),
+      prefixIcon: Icon(prefixIcon, color: _textLight, size: 20),
+    );
   }
 
   void _initializePassengers() {
@@ -203,9 +242,15 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
             floating: false,
             pinned: true,
             elevation: 4,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back_rounded, color: Colors.white),
-              onPressed: _isSubmitting ? null : () => Navigator.pop(context),
+            leading: Padding(
+              padding: const EdgeInsets.only(left: 8.0, top: 4.0),
+              child: IconButton(
+                icon: Icon(Icons.arrow_back_rounded, color: Colors.white),
+                onPressed: _isSubmitting ? null : () => Navigator.pop(context),
+              ),
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
             ),
             shadowColor: Colors.black.withOpacity(0.3),
             surfaceTintColor: Colors.white,
@@ -214,30 +259,33 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
                 'Passenger Details',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 14,
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
+                  letterSpacing: 0.5,
                 ),
               ),
               centerTitle: true,
-              background: Container(color: _primaryColor),
+              background: Container(
+                decoration: BoxDecoration(
+                  color: _primaryColor,
+                  borderRadius: BorderRadius.vertical(
+                    bottom: Radius.circular(24),
+                  ),
+                ),
+              ),
             ),
           ),
-
-          // SliverToBoxAdapter(
-          //   child: _buildValidationRequirements(),
-          // ),
+          // SliverPadding(padding: EdgeInsets.only(top: 16)),
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, roomIndex) => _buildRoomSection(roomIndex),
               childCount: roomPassengers.length,
             ),
           ),
-
-          SliverToBoxAdapter(child: _buildSubmitButton()),
-
-          SliverToBoxAdapter(child: SizedBox(height: 30)),
+          SliverPadding(padding: EdgeInsets.only(bottom: 150)),
         ],
       ),
+      bottomNavigationBar: _buildSubmitButton(),
     );
   }
 
@@ -324,15 +372,15 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
         : 'Room ${roomIndex + 1}';
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 5),
-      // margin: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      margin: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
       decoration: BoxDecoration(
         color: _cardColor,
-        // borderRadius: BorderRadius.circular(16),
+        // borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: _borderColor.withOpacity(0.3)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 15,
             offset: Offset(0, 4),
           ),
         ],
@@ -351,7 +399,7 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
-                    Icons.room_rounded,
+                    Iconsax.building_3,
                     color: _secondaryColor,
                     size: 20,
                   ),
@@ -371,8 +419,8 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
                               color: _textPrimary,
                             ),
                           ),
-                          SizedBox(width: 8),
-                          _buildRoomValidationIndicator(roomIndex),
+                          // SizedBox(width: 8),
+                          // _buildRoomValidationIndicator(roomIndex),
                         ],
                       ),
                       SizedBox(height: 5),
@@ -383,7 +431,7 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
                               roomName,
                               style: TextStyle(
                                 color: _textSecondary,
-                                fontSize: 12,
+                                fontSize: 8,
                               ),
                             ),
                           ),
@@ -414,8 +462,8 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
                 ),
               ],
             ),
-            SizedBox(height: 16),
-            Divider(),
+            SizedBox(height: 20),
+            // Divider(),
             ...roomPassengers[roomIndex].asMap().entries.map((entry) {
               final passengerIndex = entry.key;
               final passenger = entry.value;
@@ -500,12 +548,18 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
 
     return Container(
       margin: EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        // border: Border.all(
-        //   color: isAdult ? _primaryColor.withOpacity(0.1) : _warningColor.withOpacity(0.1),
-        // ),
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _borderColor.withOpacity(0.5)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -521,7 +575,7 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
-                  isAdult ? Icons.person_rounded : Icons.child_care_rounded,
+                  isAdult ? Iconsax.user : Iconsax.emoji_happy,
                   color: isAdult ? _secondaryColor : _warningColor,
                   size: 16,
                 ),
@@ -669,7 +723,9 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
     if ((passenger['Age'] ?? 0) <= 0) isValid = false;
 
     if (isAdult) {
-      if (_validationInfo.panMandatory && (passenger['PAN']?.isEmpty ?? true))
+      if (_validationInfo.panMandatory &&
+          passengerIndex == 0 &&
+          (passenger['PAN']?.isEmpty ?? true))
         isValid = false;
       if (_validationInfo.passportMandatory &&
           (passenger['Passport']?.isEmpty ?? true))
@@ -691,20 +747,9 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
   Widget _buildTitleDropdown(int roomIndex, int passengerIndex) {
     return DropdownButtonFormField<String>(
       value: roomPassengers[roomIndex][passengerIndex]['Title'],
-      decoration: InputDecoration(
+      decoration: _buildInputTheme(
         labelText: 'Title',
-        labelStyle: TextStyle(color: Colors.grey[700]),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey[300]!),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey[300]!),
-        ),
-        filled: true,
-        fillColor: Colors.grey[50],
-        prefixIcon: Icon(Icons.title, color: Colors.grey[600]),
+        prefixIcon: Iconsax.fatrows,
       ),
       items: _titles.map((String value) {
         return DropdownMenuItem<String>(
@@ -730,7 +775,7 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
           style: TextStyle(
             color: _textSecondary,
             fontWeight: FontWeight.w500,
-            fontSize: 14,
+            fontSize: 10,
           ),
         ),
         SizedBox(height: 8),
@@ -740,23 +785,9 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
               child: TextFormField(
                 initialValue:
                     roomPassengers[roomIndex][passengerIndex]['FirstName'],
-                decoration: InputDecoration(
+                decoration: _buildInputTheme(
                   labelText: 'First Name',
-                  labelStyle: TextStyle(fontSize: 13),
-                  filled: true,
-                  fillColor: _backgroundColor,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey[300]!),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey[300]!),
-                  ),
-                  prefixIcon: Icon(
-                    Icons.person_outline_rounded,
-                    color: _textLight,
-                  ),
+                  prefixIcon: Iconsax.user,
                 ),
                 validator: (value) => _validateName(value, 'First Name'),
                 onChanged: (value) {
@@ -773,19 +804,9 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
               child: TextFormField(
                 initialValue:
                     roomPassengers[roomIndex][passengerIndex]['LastName'],
-                decoration: InputDecoration(
+                decoration: _buildInputTheme(
                   labelText: 'Last Name',
-                  labelStyle: TextStyle(fontSize: 13),
-                  filled: true,
-                  fillColor: _backgroundColor,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey[300]!),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey[300]!),
-                  ),
+                  prefixIcon: Iconsax.user,
                 ),
                 validator: (value) => _validateName(value, 'Last Name'),
                 onChanged: (value) {
@@ -812,26 +833,15 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
           style: TextStyle(
             color: _textSecondary,
             fontWeight: FontWeight.w500,
-            fontSize: 14,
+            fontSize: 10,
           ),
         ),
         SizedBox(height: 8),
         TextFormField(
           initialValue: roomPassengers[roomIndex][passengerIndex]['Email'],
-          decoration: InputDecoration(
+          decoration: _buildInputTheme(
             labelText: 'Email Address',
-            labelStyle: TextStyle(fontSize: 13),
-            filled: true,
-            fillColor: _backgroundColor,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.grey[300]!),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.grey[300]!),
-            ),
-            prefixIcon: Icon(Icons.email_outlined, color: _textLight),
+            prefixIcon: Iconsax.sms,
           ),
           keyboardType: TextInputType.emailAddress,
           validator: (value) {
@@ -851,20 +861,9 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
         SizedBox(height: 12),
         TextFormField(
           initialValue: roomPassengers[roomIndex][passengerIndex]['Phone'],
-          decoration: InputDecoration(
+          decoration: _buildInputTheme(
             labelText: 'Phone Number',
-            labelStyle: TextStyle(fontSize: 13),
-            filled: true,
-            fillColor: _backgroundColor,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.grey[300]!),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.grey[300]!),
-            ),
-            prefixIcon: Icon(Icons.phone_outlined, color: _textLight),
+            prefixIcon: Iconsax.call,
           ),
           keyboardType: TextInputType.phone,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -889,22 +888,10 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
     return TextFormField(
       initialValue: roomPassengers[roomIndex][passengerIndex]['Age']
           ?.toString(),
-      decoration: InputDecoration(
+      decoration: _buildInputTheme(
         labelText: isAdult ? 'Age' : 'Child Age',
-        labelStyle: TextStyle(fontSize: 13),
-        filled: true,
-        fillColor: _backgroundColor,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey[300]!),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey[300]!),
-        ),
-        prefixIcon: Icon(Icons.cake_outlined, color: _textLight),
-        suffixText: 'years',
-      ),
+        prefixIcon: Iconsax.calendar_1,
+      ).copyWith(suffixText: 'years'),
       keyboardType: TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       validator: (value) {
@@ -935,27 +922,16 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
           style: TextStyle(
             color: _textSecondary,
             fontWeight: FontWeight.w500,
-            fontSize: 14,
+            fontSize: 10,
           ),
         ),
         SizedBox(height: 8),
-        if (_validationInfo.panMandatory)
+        if (_validationInfo.panMandatory && passengerIndex == 0)
           TextFormField(
             initialValue: roomPassengers[roomIndex][passengerIndex]['PAN'],
-            decoration: InputDecoration(
+            decoration: _buildInputTheme(
               labelText: 'PAN Number',
-              labelStyle: TextStyle(fontSize: 13),
-              filled: true,
-              fillColor: _backgroundColor,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              prefixIcon: Icon(Icons.credit_card_rounded, color: _textLight),
+              prefixIcon: Iconsax.card,
             ),
             validator: (value) {
               if (_validationInfo.panMandatory &&
@@ -970,27 +946,14 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
               _validatePassengerForm(roomIndex, passengerIndex);
             },
           ),
-        if (_validationInfo.panMandatory) SizedBox(height: 12),
+        if (_validationInfo.panMandatory && passengerIndex == 0)
+          SizedBox(height: 12),
         if (_validationInfo.passportMandatory)
           TextFormField(
             initialValue: roomPassengers[roomIndex][passengerIndex]['Passport'],
-            decoration: InputDecoration(
+            decoration: _buildInputTheme(
               labelText: 'Passport Number',
-              labelStyle: TextStyle(fontSize: 13),
-              filled: true,
-              fillColor: _backgroundColor,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              prefixIcon: Icon(
-                Icons.airplane_ticket_rounded,
-                color: _textLight,
-              ),
+              prefixIcon: Iconsax.ticket,
             ),
             validator: (value) {
               if (_validationInfo.passportMandatory &&
@@ -1077,22 +1040,37 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
     );
 
     return Container(
-      margin: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: _cardColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 20,
+            offset: Offset(0, -4),
+          ),
+        ],
+      ),
+      padding: EdgeInsets.only(
+        left: 20,
+        right: 20,
+        top: 16,
+        bottom: MediaQuery.of(context).padding.bottom + 16,
+      ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          if (!isFormValid)
-            Padding(
-              padding: EdgeInsets.only(bottom: 12),
-              child: Text(
-                'Please complete all passenger details in all rooms to continue',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: _errorColor,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
+          // if (!isFormValid)
+          //   Padding(
+          //     padding: EdgeInsets.only(bottom: 12),
+          //     child: Text(
+          //       'Complete all passenger details to continue',
+          //       style: TextStyle(
+          //         color: _errorColor,
+          //         fontSize: 12,
+          //         fontWeight: FontWeight.w500,
+          //       ),
+          //     ),
+          //   ),
           ElevatedButton(
             onPressed: isFormValid && !_isSubmitting ? _submitForm : null,
             style: ElevatedButton.styleFrom(
@@ -1102,30 +1080,32 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
                 borderRadius: BorderRadius.circular(16),
               ),
               padding: EdgeInsets.symmetric(vertical: 18),
-              elevation: 2,
-              minimumSize: Size(double.infinity, 50),
+              elevation: 4,
+              shadowColor: _primaryColor.withOpacity(0.4),
+              minimumSize: Size(double.infinity, 56),
             ),
             child: _isSubmitting
                 ? SizedBox(
-                    height: 20,
-                    width: 20,
+                    height: 24,
+                    width: 24,
                     child: CircularProgressIndicator(
-                      strokeWidth: 2,
+                      strokeWidth: 2.5,
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
                   )
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.arrow_forward_rounded, size: 20),
-                      SizedBox(width: 12),
                       Text(
                         'Continue to Preview',
                         style: TextStyle(
                           fontSize: 16,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
                         ),
                       ),
+                      SizedBox(width: 8),
+                      Icon(Iconsax.arrow_right_14, size: 20),
                     ],
                   ),
           ),
@@ -1167,6 +1147,16 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
   }
 
   void _submitForm() {
+    // Copy PAN from the first passenger of each room to all other passengers in that room
+    for (int roomIndex = 0; roomIndex < roomPassengers.length; roomIndex++) {
+      if (roomPassengers[roomIndex].isNotEmpty) {
+        final leadPan = roomPassengers[roomIndex][0]['PAN'];
+        for (int i = 1; i < roomPassengers[roomIndex].length; i++) {
+          roomPassengers[roomIndex][i]['PAN'] = leadPan;
+        }
+      }
+    }
+
     if (!_allPassengersValid) {
       _showValidationError(
         'Please complete all passenger details in all rooms before proceeding',
@@ -1235,6 +1225,7 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
           roomPassengers: roomPassengers,
           bookingId: widget.room.bookingCode,
           preBookResponse: widget.preBookResponse,
+          guestNationalityCode: widget.guestNationalityCode,
         ),
       ),
     ).then((_) {

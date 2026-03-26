@@ -15,6 +15,7 @@ class HotelDetailsPage extends StatefulWidget {
   final DateTime checkOutDate;
   final List<Map<String, dynamic>> rooms;
   final HotelSearchItem hotelSearchData;
+  final String guestNationalityCode;
 
   const HotelDetailsPage({
     super.key,
@@ -23,6 +24,7 @@ class HotelDetailsPage extends StatefulWidget {
     required this.checkOutDate,
     required this.rooms,
     required this.hotelSearchData,
+    required this.guestNationalityCode,
   });
 
   @override
@@ -1776,6 +1778,7 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
           room: room,
           preBookResponse: preBookResponse,
           prebookId: prebookId.toString(),
+          guestNationalityCode: widget.guestNationalityCode,
         ),
       ),
     );

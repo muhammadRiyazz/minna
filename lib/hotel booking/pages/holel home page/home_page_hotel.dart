@@ -21,6 +21,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
   CountryModel? selectedCountry;
   String? selectedCity;
   String? selectedCityCode;
+  CountryModel? guestNationality; // Added for Nationality
   DateTime checkInDate = DateTime.now();
   DateTime checkOutDate = DateTime.now().add(const Duration(days: 1));
 
@@ -165,6 +166,31 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
             selectedCityCode = cityCode;
           });
           Navigator.pop(context);
+        },
+        primaryColor: _primaryColor,
+        secondaryColor: _secondaryColor,
+        accentColor: _accentColor,
+      ),
+    );
+  }
+
+  void _showNationalityBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withOpacity(0.4),
+      builder: (context) => CountryBottomSheet(
+        isLoading: isLoadingCountries,
+        selectedCountry: guestNationality?.name,
+        onCountrySelected: (countryName) {
+          Navigator.pop(context);
+          if (countryName != guestNationality?.name) {
+            final country = countries.firstWhere((c) => c.name == countryName);
+            setState(() {
+              guestNationality = country;
+            });
+          }
         },
         primaryColor: _primaryColor,
         secondaryColor: _secondaryColor,
@@ -453,6 +479,16 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
           ),
           const SizedBox(height: 16),
 
+          // Guest Nationality Card
+          _buildLocationCard(
+            title: "Guest Nationality",
+            value: guestNationality?.name ?? "Select Nationality",
+            icon: Iconsax.global,
+            isLoading: isLoadingCountries,
+            onTap: _showNationalityBottomSheet,
+          ),
+          const SizedBox(height: 16),
+
           // Dates and Guests Row
           Row(
             children: [
@@ -628,6 +664,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
         selectedCountry != null &&
         selectedCity != null &&
         selectedCityCode != null &&
+        guestNationality != null &&
         !isLoadingCities;
 
     return SizedBox(
@@ -645,6 +682,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
                       checkInDate: checkInDate,
                       checkOutDate: checkOutDate,
                       rooms: rooms,
+                      guestNationalityCode: guestNationality!.code,
                     ),
                   ),
                 );

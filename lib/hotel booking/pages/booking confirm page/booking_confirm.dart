@@ -23,6 +23,7 @@ class HotelBookingConfirmationPage extends StatefulWidget {
   final List<List<Map<String, dynamic>>>? roomPassengers;
   final String bookingId;
   final PreBookResponseWithAuth preBookResponse;
+  final String guestNationalityCode;
 
   const HotelBookingConfirmationPage({
     super.key,
@@ -34,6 +35,7 @@ class HotelBookingConfirmationPage extends StatefulWidget {
     required this.roomPassengers,
     required this.bookingId,
     required this.preBookResponse,
+    required this.guestNationalityCode,
   });
 
   @override
@@ -395,7 +397,7 @@ class _HotelBookingConfirmationPageState
     final bookingRequest = <String, dynamic>{
       "BookingCode": widget.room.bookingCode,
       "IsVoucherBooking": true,
-      "GuestNationality": "IN",
+      "GuestNationality": widget.guestNationalityCode,
       "EndUserIp": "192.168.9.119",
       "HotelRoomsDetails": hotelRoomsDetails,
       "NetAmount": netAmount, // Add NetAmount for ALL bookings
@@ -1503,8 +1505,8 @@ class _HotelBookingConfirmationPageState
                       (_isTimerExpired || state is HotelBookingConfirmLoading)
                       ? null
                       : () {
-                          _showServerErrorBottomSheet(context);
-                          // _onProceedToPayment();
+                          // _showServerErrorBottomSheet(context);
+                          _onProceedToPayment();
                         },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _isTimerExpired
