@@ -14,6 +14,9 @@ import 'package:minna/hotel%20booking/domain/hotel%20list/hotel_list.dart'
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:minna/comman/application/login/login_bloc.dart';
 import 'package:minna/comman/pages/log%20in/login_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:minna/hotel%20booking/functions/hotel_payment_utils.dart';
+import 'package:minna/hotel%20booking/functions/auth.dart';
 
 class HotelBookingConfirmationPage extends StatefulWidget {
   final String prebookId;
@@ -53,16 +56,21 @@ class _HotelBookingConfirmationPageState
   String _displayTime = '08:00';
 
   // Theme colors
-  final Color _primaryColor = Colors.black;
-  final Color _secondaryColor = Color(0xFFD4AF37);
-  final Color _backgroundColor = Color(0xFFF8F9FA);
+  final Color _primaryColor = maincolor1;
+  final Color _secondaryColor = secondaryColor;
+  final Color _backgroundColor = const Color(0xFFF8F9FA);
   final Color _cardColor = Colors.white;
-  final Color _textPrimary = Colors.black;
-  final Color _textSecondary = Color(0xFF666666);
-  final Color _textLight = Color(0xFF999999);
-  final Color _errorColor = Color(0xFFE53935);
-  final Color _successColor = Color(0xFF4CAF50);
-  final Color _warningColor = Color(0xFFFF9800);
+  final Color _textPrimary = const Color(0xFF1A1A1A);
+  final Color _textSecondary = const Color(0xFF6C757D);
+  final Color _textLight = const Color(0xFFADB5BD);
+  final Color _errorColor = const Color(0xFFD62828);
+  final Color _successColor = const Color(0xFF2D6A4F);
+  final Color _warningColor = const Color(0xFFF77F00);
+  final Color _borderColor = const Color(0xFFE9ECEF);
+
+  // Service Charge
+  double _serviceChargePercentage = 0.0;
+  final AuthApiService _apiService = AuthApiService();
 
   @override
   void initState() {
@@ -70,6 +78,22 @@ class _HotelBookingConfirmationPageState
     context.read<LoginBloc>().add(const LoginEvent.loginInfo());
     _startOptimizedTimer();
     _initRazorpay();
+    _fetchServiceCharge();
+  }
+
+  Future<void> _fetchServiceCharge() async {
+    try {
+      final result = await _apiService.getServiceCharge();
+      if (result.isSuccess && result.data != null) {
+        if (mounted) {
+          setState(() {
+            _serviceChargePercentage = result.data!.percentage;
+          });
+        }
+      }
+    } catch (e) {
+      log("Error fetching service charge: $e");
+    }
   }
 
   @override
@@ -115,18 +139,41 @@ class _HotelBookingConfirmationPageState
     log("Hotel Payment Success: ${response.paymentId}");
 
     try {
+      context.read<HotelBookingConfirmBloc>().add(
+        HotelBookingConfirmEvent.startLoading(),
+      );
+
       final bookingRequest = await _generateBookingRequest();
       final totalAmount = _getTotalAmount();
-      final netAmount = _getNetAmount();
-      final totalRooms = widget.roomPassengers?.length ?? 1;
-      final isSingleRoom = totalRooms == 1;
 
-      log(
-        "Booking Request Mode: ${isSingleRoom ? 'Single Room (5)' : 'Multi Room (1)'}",
+      // NEW: Verify payment before proceeding
+      log("🔹 Verifying Hotel Payment...");
+      final isVerified = await verifyHotelRazorpayPayment(
+        paymentId: response.paymentId ?? '',
+        orderId: response.orderId ?? _orderId ?? '',
+        signature: response.signature ?? '',
+        traceId: "", // As per current implementation logic
+        tokenId: widget.preBookResponse.token,
       );
-      log("Net Amount (for API): $netAmount");
-      log("Total Amount (charged): $totalAmount");
-      log("Booking Request: ${jsonEncode(bookingRequest)}");
+
+      if (!isVerified) {
+        log("❌ Hotel Payment Verification Failed");
+        context.read<HotelBookingConfirmBloc>().add(
+          HotelBookingConfirmEvent.stopLoading(),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              "Payment verification failed. Please contact support.",
+            ),
+            backgroundColor: _errorColor,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        return;
+      }
+
+      log("✅ Hotel Payment Verified. Proceeding to book...");
 
       context.read<HotelBookingConfirmBloc>().add(
         HotelBookingConfirmEvent.paymentDone(
@@ -134,8 +181,7 @@ class _HotelBookingConfirmationPageState
           orderId: response.orderId ?? _orderId ?? '',
           transactionId: response.paymentId ?? '',
           bookingId: widget.bookingId,
-          amount:
-              totalAmount, // Pass the total amount (with taxes) for processing
+          amount: totalAmount,
           bookingRequest: bookingRequest,
         ),
       );
@@ -143,7 +189,9 @@ class _HotelBookingConfirmationPageState
       _timer.cancel();
     } catch (e) {
       log("Error in payment success handler: $e");
-      // Handle error appropriately
+      context.read<HotelBookingConfirmBloc>().add(
+        HotelBookingConfirmEvent.stopLoading(),
+      );
     }
   }
 
@@ -254,12 +302,22 @@ class _HotelBookingConfirmationPageState
         .firstOrNull
         ?.rooms
         .firstOrNull;
+
+    double baseAmount;
     if (preBookRoom != null) {
-      // This returns the TOTAL amount (room fare + taxes)
-      return preBookRoom.totalFare + preBookRoom.totalTax;
+      // This returns the base amount (room fare + taxes)
+      baseAmount = preBookRoom.totalFare + preBookRoom.totalTax;
+    } else {
+      // Fallback to widget.room data
+      baseAmount = widget.room.totalFare + widget.room.totalTax;
     }
-    // Fallback to widget.room data
-    return widget.room.totalFare + widget.room.totalTax;
+
+    if (_serviceChargePercentage > 0) {
+      final serviceCharge = (baseAmount * _serviceChargePercentage) / 100;
+      return baseAmount + serviceCharge;
+    }
+
+    return baseAmount;
   }
 
   // Add a new method to get just the net amount (room fare without taxes)
@@ -307,12 +365,12 @@ class _HotelBookingConfirmationPageState
     final totalAmount = roomFare + roomTax;
 
     // Get required authentication fields
-    final tokenId = widget.preBookResponse.tokenId;
+    final token = widget.preBookResponse.token;
     final agencyId = widget.preBookResponse.agencyId;
     final traceId = ""; // Using empty string as per your code
 
-    if (tokenId == null || tokenId.isEmpty) {
-      throw Exception("TokenId is required for booking");
+    if (token.isEmpty) {
+      throw Exception("Token is required for booking");
     }
 
     // Build passenger data
@@ -414,11 +472,11 @@ class _HotelBookingConfirmationPageState
     } else {
       // For multi-room bookings (Mode 1)
       // Based on the API documentation you provided, Mode 1 needs these additional fields
-      bookingRequest["TokenId"] = tokenId;
+      bookingRequest["TokenId"] = token;
       bookingRequest["TraceId"] = traceId;
       bookingRequest["AgencyId"] = agencyId; // Use default if not provided
       log(
-        "Multi-Room Booking (Mode 1) - NetAmount: $netAmount, TokenId: $tokenId, AgencyId: ${agencyId}",
+        "Multi-Room Booking (Mode 1) - NetAmount: $netAmount, Token: $token, AgencyId: ${agencyId}",
       );
     }
 
@@ -579,13 +637,73 @@ class _HotelBookingConfirmationPageState
       final totalRooms = widget.roomPassengers?.length ?? 1;
       final isSingleRoom = totalRooms == 1;
 
-      log(
-        "Payment Details - Total Amount: $totalAmount, Net Amount: $netAmount, Mode: ${isSingleRoom ? 'Single' : 'Multi'}",
+      // 1. Get User ID
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      final userId = preferences.getString('userId') ?? '';
+
+      // 2. Get Service Charge
+      double serviceChargeAmount = 0;
+      final baseAmountForServiceCharge =
+          widget
+                  .preBookResponse
+                  .preBookResponse
+                  .hotelResult
+                  .firstOrNull
+                  ?.rooms
+                  .firstOrNull !=
+              null
+          ? (widget
+                    .preBookResponse
+                    .preBookResponse
+                    .hotelResult
+                    .firstOrNull!
+                    .rooms
+                    .firstOrNull!
+                    .totalFare +
+                widget
+                    .preBookResponse
+                    .preBookResponse
+                    .hotelResult
+                    .firstOrNull!
+                    .rooms
+                    .firstOrNull!
+                    .totalTax)
+          : (widget.room.totalFare + widget.room.totalTax);
+
+      if (_serviceChargePercentage > 0) {
+        serviceChargeAmount =
+            (baseAmountForServiceCharge * _serviceChargePercentage) / 100;
+        log(
+          "✅ Using state service charge: $_serviceChargePercentage% -> $serviceChargeAmount",
+        );
+      } else {
+        try {
+          final chargeResult = await _apiService.getServiceCharge();
+          if (chargeResult.isSuccess && chargeResult.data != null) {
+            final percentage = chargeResult.data!.percentage;
+            serviceChargeAmount =
+                (baseAmountForServiceCharge * percentage) / 100;
+            log(
+              "✅ Fetched service charge in payment: $percentage% -> $serviceChargeAmount",
+            );
+          }
+        } catch (e) {
+          log("⚠️ Could not fetch service charge, using 0: $e");
+        }
+      }
+
+      // 3. Generate Booking Payload
+      final bookingPayload = await _generateBookingRequest();
+
+      // 4. Create Order using Hotel-specific API
+      final orderData = await createHotelRazorpayOrder(
+        userId: userId,
+        bookingPayload: bookingPayload,
+        amount: totalAmount,
+        serviceCharge: serviceChargeAmount,
       );
 
-      final orderId = await createOrder(totalAmount);
-
-      if (orderId == null) {
+      if (orderData == null) {
         log("Order ID creation failed");
         context.read<HotelBookingConfirmBloc>().add(
           HotelBookingConfirmEvent.stopLoading(),
@@ -593,13 +711,22 @@ class _HotelBookingConfirmationPageState
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Failed to create order. Please try again."),
+            content: const Text("Failed to create order. Please try again."),
             backgroundColor: _errorColor,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
           ),
+        );
+        return;
+      }
+
+      final orderId = orderData['order_id']?.toString();
+      if (orderId == null) {
+        log("Invalid order data received");
+        context.read<HotelBookingConfirmBloc>().add(
+          HotelBookingConfirmEvent.stopLoading(),
         );
         return;
       }
@@ -728,207 +855,60 @@ class _HotelBookingConfirmationPageState
   @override
   Widget build(BuildContext context) {
     final totalAmount = _getTotalAmount();
-    final totalRooms = widget.roomPassengers?.length ?? 1;
-    final totalGuests = widget.passengers.length;
-    final preBookRoom = widget
-        .preBookResponse
-        .preBookResponse
-        .hotelResult
-        .firstOrNull
-        ?.rooms
-        .firstOrNull;
 
     return MultiBlocListener(
       listeners: [
         BlocListener<HotelBookingConfirmBloc, HotelBookingConfirmState>(
           listener: (context, state) {
-            state.whenOrNull(
-              success:
-                  (data, bookingId, confirmationNo, bookingRefNo, booktableId) {
-                    log(
-                      "Hotel Booking Success - BookingId: $bookingId, ConfirmationNo: $confirmationNo",
-                    );
-                    // Navigate to success page
-                    // Navigator.pushReplacement(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => HotelBookingSuccessPage(
-                    //       bookingId: bookingId,
-                    //       confirmationNo: confirmationNo,
-                    //       bookingRefNo: bookingRefNo,
-                    //       hotelName: widget.hotel.hotelDetails.hotelName,
-                    //       amount: totalAmount,
-                    //     ),
-                    //   ),
-                    // );
-                  },
-              paymentFailed: (message, orderId, bookingId) {
-                _showPaymentFailedSheet();
-              },
-              refundInitiated:
-                  (
-                    message,
-                    orderId,
-                    transactionId,
-                    amount,
-                    tableId,
-                    bookingId,
-                  ) {
-                    _showRefundInitiatedSheet(context);
-                  },
-              refundFailed:
-                  (message, orderId, transactionId, amount, bookingId) {
-                    _showContactSupportSheet(context);
-                  },
-              error:
-                  (
-                    message,
-                    shouldRefund,
-                    orderId,
-                    transactionId,
-                    amount,
-                    booktableId,
-                    bookingId,
-                  ) {
-                    if (shouldRefund) {
-                      log("Initiating refund for order: $orderId");
-                      context.read<HotelBookingConfirmBloc>().add(
-                        HotelBookingConfirmEvent.initiateRefund(
-                          orderId: orderId,
-                          transactionId: transactionId,
-                          amount: amount,
-                          booktableId: booktableId,
-                          bookingId: bookingId,
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(message),
-                          backgroundColor: _errorColor,
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
-                    }
-                  },
-            );
+            // state.maybeWhen(
+            //   paymentFail: (orderId, prebookId, bookingId) {
+            //     _showPaymentFailedSheet();
+            //   },
+            //   serverError: () {
+            //     _showServerErrorBottomSheet(context);
+            //   },
+            //   orElse: () {},
+            // );
           },
         ),
       ],
-      child: WillPopScope(
-        onWillPop: _onWillPop,
+      child: PopScope(
+        canPop: false,
+        onPopInvoked: (didPop) async {
+          if (didPop) return;
+          final shouldExit = await _onWillPop();
+          if (shouldExit && context.mounted) {
+            Navigator.of(context).pop();
+          }
+        },
         child: Scaffold(
           backgroundColor: _backgroundColor,
-          body: Column(
-            children: [
-              Expanded(
-                child: CustomScrollView(
-                  slivers: [
-                    // App Bar
-                    SliverAppBar(
-                      backgroundColor: _primaryColor,
-                      expandedHeight: 140,
-                      floating: false,
-                      pinned: true,
-                      elevation: 4,
-                      shadowColor: Colors.black.withOpacity(0.3),
-                      leading: IconButton(
-                        icon: Icon(
-                          Icons.arrow_back_rounded,
-                          color: Colors.white,
-                        ),
-                        onPressed: () => _onWillPop(),
-                      ),
-                      title: Text(
-                        "Confirm Hotel Booking",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      centerTitle: true,
-                      bottom: PreferredSize(
-                        preferredSize: Size.fromHeight(60),
-                        child: Container(
-                          color: _primaryColor,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Time remaining:',
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 8,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.timer,
-                                      color: Colors.white,
-                                      size: 18,
-                                    ),
-                                    SizedBox(width: 8),
-                                    Text(
-                                      _displayTime,
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    // Main Content
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          children: [
-                            _buildHotelSummary(),
-                            SizedBox(height: 16),
-                            _buildBookingDetails(),
-                            SizedBox(height: 16),
-                            _buildGuestSummary(),
-                            SizedBox(height: 16),
-                            _buildPriceBreakdown(preBookRoom),
-                            if (preBookRoom?.cancelPolicies.isNotEmpty ==
-                                true) ...[
-                              SizedBox(height: 16),
-                              _buildCancellationPolicy(preBookRoom!),
-                            ],
-                            SizedBox(height: 20),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+          body: CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              _buildAppBar(),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      _buildTimerSection(),
+                      const SizedBox(height: 16),
+                      _buildHotelSummaryCard(),
+                      const SizedBox(height: 16),
+                      _buildRoomInfoCard(),
+                      const SizedBox(height: 16),
+                      _buildPassengerSummaryCard(),
+                      const SizedBox(height: 16),
+                      _buildPriceDetailedCard(totalAmount),
+                      const SizedBox(height: 120), // Spacing for bottom bar
+                    ],
+                  ),
                 ),
               ),
-              _buildPaymentSection(totalAmount),
             ],
           ),
+          bottomNavigationBar: _buildBottomActionBar(totalAmount),
         ),
       ),
     );
@@ -1166,6 +1146,10 @@ class _HotelBookingConfirmationPageState
     final totalAmount = _getTotalAmount();
     final roomFare = preBookRoom?.totalFare ?? widget.room.totalFare;
     final roomTax = preBookRoom?.totalTax ?? widget.room.totalTax;
+    final baseAmountForServiceCharge = roomFare + roomTax;
+    final serviceChargeAmount = (_serviceChargePercentage > 0)
+        ? (baseAmountForServiceCharge * _serviceChargePercentage) / 100
+        : 0.0;
 
     return Container(
       decoration: BoxDecoration(
@@ -1189,6 +1173,8 @@ class _HotelBookingConfirmationPageState
             _buildPriceRow('Room Fare', roomFare),
             SizedBox(height: 8),
             _buildPriceRow('Taxes & Fees', roomTax),
+            SizedBox(height: 8),
+            _buildPriceRow('Service Charge', serviceChargeAmount),
             Divider(height: 20, color: Colors.grey.shade300),
             _buildPriceRow('Total Amount', totalAmount, isTotal: true),
             SizedBox(height: 12),
@@ -1888,6 +1874,493 @@ class _HotelBookingConfirmationPageState
           ),
         );
       },
+    );
+  }
+
+  Widget _buildAppBar() {
+    return SliverAppBar(
+      backgroundColor: _primaryColor,
+      expandedHeight: 180,
+      pinned: true,
+      elevation: 0,
+      leading: Container(
+        margin: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.2),
+          shape: BoxShape.circle,
+        ),
+        child: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_rounded,
+            color: Colors.white,
+            size: 20,
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      flexibleSpace: FlexibleSpaceBar(
+        centerTitle: true,
+        title: const Text(
+          'Confirm Booking',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.5,
+          ),
+        ),
+        background: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.network(
+              'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80',
+              fit: BoxFit.cover,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.3),
+                    _primaryColor.withOpacity(0.8),
+                    _primaryColor,
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTimerSection() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: _errorColor.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _errorColor.withOpacity(0.1)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: _errorColor.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.timer_outlined, color: _errorColor, size: 18),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Complete Booking in',
+                  style: TextStyle(fontSize: 12, color: _textSecondary),
+                ),
+                Text(
+                  _displayTime,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: _errorColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHotelSummaryCard() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: _borderColor),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: _secondaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.hotel_class_rounded,
+                  color: _secondaryColor,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.hotel.hotelDetails.hotelName,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: _textPrimary,
+                      ),
+                    ),
+                    Text(
+                      widget.hotel.hotelDetails.address,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 12, color: _textSecondary),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const Divider(height: 32),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildSimpleInfo(
+                'Hotel Code',
+                widget.hotel.hotelDetails.hotelCode,
+              ),
+              // _buildSimpleInfo('Currency', widget.hotel.hotelDetails.c),
+              _buildSimpleInfo(
+                'Ratings',
+                widget.hotel.hotelDetails.hotelRating.toString(),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSimpleInfo(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: TextStyle(fontSize: 11, color: _textSecondary)),
+        const SizedBox(height: 4),
+        Text(
+          value.isEmpty ? 'N/A' : value,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: _textPrimary,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRoomInfoCard() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: _borderColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.king_bed_outlined, color: _primaryColor, size: 20),
+              const SizedBox(width: 12),
+              Text(
+                'Room Information',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: _textPrimary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            widget.room.name.join(', '),
+            style: TextStyle(fontSize: 13, color: _textSecondary, height: 1.4),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              _buildAmenityChip('Premium Stay'),
+              _buildAmenityChip('Verified Room'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAmenityChip(String label) {
+    return Container(
+      margin: const EdgeInsets.only(right: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: _backgroundColor,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 11,
+          color: _textSecondary,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPassengerSummaryCard() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: _borderColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.people_outline_rounded,
+                color: _primaryColor,
+                size: 20,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Passenger Summary',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: _textPrimary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: widget.passengers.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final p = widget.passengers[index];
+              return Row(
+                children: [
+                  CircleAvatar(
+                    radius: 12,
+                    backgroundColor: _primaryColor.withOpacity(0.05),
+                    child: Text(
+                      '${index + 1}',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: _primaryColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    '${p['Title'] ?? ''} ${p['FirstName'] ?? ''} ${p['LastName'] ?? ''}',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: _textPrimary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const Spacer(),
+                  if (p['LeadPassenger'] == true)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _secondaryColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        'LEAD',
+                        style: TextStyle(
+                          fontSize: 8,
+                          color: _secondaryColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPriceDetailedCard(double totalAmount) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: _primaryColor,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: _primaryColor.withOpacity(0.2),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          _buildSummaryPriceRow(
+            'Base Price',
+            '₹${widget.room.totalFare.toStringAsFixed(2)}',
+            Colors.white70,
+          ),
+          const SizedBox(height: 12),
+          _buildSummaryPriceRow(
+            'Taxes & Fees',
+            '₹${widget.room.totalTax.toStringAsFixed(2)}',
+            Colors.white70,
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Divider(color: Colors.white24),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Total Payable',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Text(
+                '₹${totalAmount.toStringAsFixed(2)}',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: _secondaryColor,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryPriceRow(String label, String value, Color color) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: TextStyle(fontSize: 13, color: color)),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 13,
+            color: color,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBottomActionBar(double totalAmount) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -5),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Total Payable',
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+                Text(
+                  '₹${totalAmount.toStringAsFixed(2)}',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: _primaryColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            flex: 2,
+            child: ElevatedButton(
+              onPressed: _onProceedToPayment,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _secondaryColor,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 0,
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Confirm & Pay',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(width: 8),
+                  Icon(Icons.arrow_forward_rounded, size: 20),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

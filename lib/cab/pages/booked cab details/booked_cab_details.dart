@@ -10,6 +10,7 @@ import 'package:minna/cab/application/booked%20info%20list/booked_info_bloc.dart
 import 'package:minna/cab/domain/cab%20list%20model/cab_booked_details.dart';
 import 'package:minna/cab/function/commission_data.dart';
 import 'package:minna/comman/core/api.dart';
+import 'package:minna/comman/const/const.dart';
 import 'package:shimmer/shimmer.dart';
 
 class BookingDetailsPage extends StatefulWidget {
@@ -33,17 +34,17 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
   late CommissionProvider commissionProvider;
   BuildContext? _parentContext;
 
-  // New color scheme
-  final Color _primaryColor = Colors.black;
-  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
-  final Color _backgroundColor = Color(0xFFF8F9FA);
-  final Color _cardColor = Colors.white;
-  final Color _textPrimary = Colors.black;
-  final Color _textSecondary = Color(0xFF666666);
-  final Color _textLight = Color(0xFF999999);
-  final Color _errorColor = Color(0xFFE53935);
-  final Color _successColor = Color(0xFF4CAF50);
-  final Color _warningColor = Color(0xFFFF9800);
+  // Color scheme
+  final Color _primaryColor = maincolor1;
+  final Color _secondaryColor = secondaryColor; 
+  final Color _backgroundColor = backgroundColor;
+  final Color _cardColor = cardColor;
+  final Color _textPrimary = textPrimary;
+  final Color _textSecondary = textSecondary;
+  final Color _textLight = textLight;
+  final Color _errorColor = errorColor;
+  final Color _successColor = const Color(0xFF0D9488);
+  final Color _warningColor = const Color(0xFFD97706);
 
   @override
   void initState() {
@@ -240,107 +241,73 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
           slivers: [
             // Sliver App Bar
             SliverAppBar(
-              backgroundColor: _primaryColor,
-              expandedHeight: 200.0,
+              expandedHeight: 140.0,
+              floating: false,
               pinned: true,
-              floating: true,
-              elevation: 0,
-              iconTheme: IconThemeData(color: Colors.white),
-              title: Text(
-                'Booking Details',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
+              backgroundColor: _primaryColor,
+              elevation: 4,
+              shadowColor: Colors.black.withOpacity(0.2),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+                onPressed: () => Navigator.pop(context),
               ),
-              centerTitle: true,
               flexibleSpace: FlexibleSpaceBar(
-                background: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [_primaryColor, _primaryColor.withOpacity(0.8)],
-                    ),
+                centerTitle: true,
+                title: const Text(
+                  'Booking Details',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.5,
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Booking ID',
-                                  style: TextStyle(
-                                    color: Colors.white.withOpacity(0.8),
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  details.bookingId,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                color: isCancelled
-                                    ? _errorColor.withOpacity(0.2)
-                                    : _successColor.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(
-                                  color: isCancelled
-                                      ? _errorColor
-                                      : _successColor,
-                                  width: 1,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    isCancelled
-                                        ? Icons.cancel
-                                        : Icons.check_circle,
-                                    size: 12,
-                                    color: isCancelled
-                                        ? _errorColor
-                                        : _successColor,
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    details.statusDesc,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: isCancelled
-                                          ? _errorColor
-                                          : _successColor,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                ),
+                background: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [_primaryColor, _primaryColor.withOpacity(0.8)],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                    Positioned(
+                      top: -40,
+                      right: -40,
+                      child: Container(
+                        width: 150,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _secondaryColor.withOpacity(0.08),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 20,
+                      right: 20,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: isCancelled ? _errorColor.withOpacity(0.2) : _successColor.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: isCancelled ? _errorColor : _successColor, width: 1),
+                        ),
+                        child: Text(
+                          details.statusDesc.toUpperCase(),
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
+                            color: isCancelled ? _errorColor : _successColor,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -409,14 +376,15 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     return Container(
       decoration: BoxDecoration(
         color: _cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withOpacity(0.04),
             blurRadius: 20,
-            offset: const Offset(0, 8),
+            offset: const Offset(0, 4),
           ),
         ],
+        border: Border.all(color: Colors.grey.shade100),
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -474,30 +442,32 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(6),
+                      padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         color: _secondaryColor.withOpacity(0.1),
                         shape: BoxShape.circle,
-                        border: Border.all(
-                          color: _secondaryColor.withOpacity(0.3),
-                          width: 2,
-                        ),
                       ),
                       child: Icon(
-                        Icons.arrow_forward_rounded,
+                        Icons.local_taxi_rounded,
                         color: _secondaryColor,
-                        size: 15,
+                        size: 20,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Container(
-                      width: 2,
+                      width: 1,
                       height: 40,
-                      color: _secondaryColor.withOpacity(0.3),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [_secondaryColor.withOpacity(0.5), Colors.transparent],
+                        ),
+                      ),
                     ),
                   ],
                 ),

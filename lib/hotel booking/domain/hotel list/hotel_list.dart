@@ -107,12 +107,14 @@ class HotelSearchResponse {
   final bool status;
   final String message;
   final int totalHotels;
+  final int nextOffset;
   final List<HotelSearchItem> hotels;
 
   HotelSearchResponse({
     required this.status,
     required this.message,
     required this.totalHotels,
+    required this.nextOffset,
     required this.hotels,
   });
 
@@ -120,10 +122,12 @@ class HotelSearchResponse {
     return HotelSearchResponse(
       status: json['status'] as bool? ?? false,
       message: json['message'] as String? ?? '',
-      totalHotels:
-          json['total_hotels'] as int? ?? json['totalHotels'] as int? ?? 0,
-      hotels:
-          (json['hotels'] as List<dynamic>?)
+      totalHotels: json['total'] as int? ??
+          json['total_hotels'] as int? ??
+          json['totalHotels'] as int? ??
+          0,
+      nextOffset: json['next_offset'] as int? ?? 0,
+      hotels: (json['hotels'] as List<dynamic>?)
               ?.map((e) => HotelSearchItem.fromJson(e))
               .toList() ??
           [],

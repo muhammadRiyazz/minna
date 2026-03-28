@@ -38,19 +38,18 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
   List<List<Map<String, dynamic>>> roomPassengers = [];
   bool _isSubmitting = false;
 
-  // Theme colors
-  final Color _primaryColor = Color(0xFF000000); // Black
-  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
-  final Color _accentColor = Color(0xFFB8860B); // Dark Gold
-  final Color _backgroundColor = Color(0xFFFAFAFA); // Off-white
-  final Color _cardColor = Colors.white;
-  final Color _textPrimary = Color(0xFF000000);
-  final Color _textSecondary = Color(0xFF666666);
-  final Color _textLight = Color(0xFF999999);
-  final Color _borderColor = Color(0xFFE0E0E0);
-  final Color _errorColor = Color(0xFFE53935);
-  final Color _successColor = Color(0xFF4CAF50);
-  final Color _warningColor = Color(0xFFFF9800);
+  // Local theme aliases for brevity, mapped to global constants
+  final Color _primaryColor = maincolor1;
+  final Color _secondaryColor = secondaryColor;
+  final Color _backgroundColor = backgroundColor;
+  final Color _cardColor = cardColor;
+  final Color _textPrimary = textPrimary;
+  final Color _textSecondary = textSecondary;
+  final Color _textLight = textLight;
+  final Color _borderColor = borderSoft;
+  final Color _errorColor = errorColor;
+  final Color _successColor = successColor;
+  final Color _warningColor = warningColor;
 
   final List<String> _titles = ['Mr.', 'Mrs.', 'Ms.', 'Dr.', 'Prof.'];
   final List<String> _paxTypes = ['Adult', 'Child', 'Infant'];
@@ -69,31 +68,43 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
   }) {
     return InputDecoration(
       labelText: labelText,
-      labelStyle: TextStyle(fontSize: 10, color: _textSecondary),
+      labelStyle: TextStyle(
+        fontSize: 12,
+        color: _textSecondary,
+        fontWeight: FontWeight.w500,
+      ),
+      floatingLabelStyle: TextStyle(
+        color: _secondaryColor,
+        fontWeight: FontWeight.bold,
+      ),
       filled: true,
-      fillColor: _backgroundColor,
-      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      fillColor: _cardColor,
+      contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: _borderColor, width: 1.5),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: _borderColor, width: 1.5),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: _secondaryColor, width: 1.5),
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: _secondaryColor, width: 2),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: _errorColor),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide(color: _errorColor, width: 1.5),
       ),
-      prefixIcon: Icon(prefixIcon, color: _textLight, size: 20),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: _errorColor, width: 2),
+      ),
+      prefixIcon: Container(
+        padding: EdgeInsets.all(12),
+        margin: EdgeInsets.only(right: 8),
+        child: Icon(prefixIcon, color: _primaryColor, size: 20),
+      ),
     );
   }
 
@@ -235,54 +246,82 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
     return Scaffold(
       backgroundColor: _backgroundColor,
       body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
         slivers: [
           SliverAppBar(
             backgroundColor: _primaryColor,
-            expandedHeight: 120,
+            expandedHeight: 180,
             floating: false,
             pinned: true,
-            elevation: 4,
-            leading: Padding(
-              padding: const EdgeInsets.only(left: 8.0, top: 4.0),
+            elevation: 0,
+            leading: Container(
+              margin: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.2),
+                shape: BoxShape.circle,
+              ),
               child: IconButton(
-                icon: Icon(Icons.arrow_back_rounded, color: Colors.white),
+                icon: const Icon(
+                  Icons.arrow_back_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
                 onPressed: _isSubmitting ? null : () => Navigator.pop(context),
               ),
             ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
-            ),
-            shadowColor: Colors.black.withOpacity(0.3),
-            surfaceTintColor: Colors.white,
             flexibleSpace: FlexibleSpaceBar(
+              centerTitle: true,
               title: Text(
                 'Passenger Details',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                   letterSpacing: 0.5,
+                  shadows: [
+                    Shadow(
+                      color: Colors.black.withOpacity(0.3),
+                      offset: const Offset(0, 2),
+                      blurRadius: 4,
+                    ),
+                  ],
                 ),
               ),
-              centerTitle: true,
-              background: Container(
-                decoration: BoxDecoration(
-                  color: _primaryColor,
-                  borderRadius: BorderRadius.vertical(
-                    bottom: Radius.circular(24),
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.network(
+                    'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80',
+                    fit: BoxFit.cover,
                   ),
-                ),
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black.withOpacity(0.3),
+                          _primaryColor.withOpacity(0.8),
+                          _primaryColor,
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-          // SliverPadding(padding: EdgeInsets.only(top: 16)),
+          SliverToBoxAdapter(child: _buildValidationRequirements()),
           SliverList(
             delegate: SliverChildBuilderDelegate(
-              (context, roomIndex) => _buildRoomSection(roomIndex),
+              (context, roomIndex) => Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                child: _buildRoomSection(roomIndex),
+              ),
               childCount: roomPassengers.length,
             ),
           ),
-          SliverPadding(padding: EdgeInsets.only(bottom: 150)),
+          const SliverPadding(padding: EdgeInsets.only(bottom: 120)),
         ],
       ),
       bottomNavigationBar: _buildSubmitButton(),
@@ -365,142 +404,100 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
     final roomConfig = widget.rooms[roomIndex];
     final adults = roomConfig['adults'] as int? ?? 0;
     final children = roomConfig['children'] as int? ?? 0;
-    final totalPassengers = adults + children;
-    final isRoomValid = _isRoomValid(roomIndex);
     final roomName = roomIndex < widget.room.name.length
         ? widget.room.name[roomIndex]
         : 'Room ${roomIndex + 1}';
 
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-      decoration: BoxDecoration(
-        color: _cardColor,
-        // borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: _borderColor.withOpacity(0.3)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 15,
-            offset: Offset(0, 4),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: _primaryColor.withOpacity(0.05),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            border: Border.all(color: _borderColor),
           ),
-        ],
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(13),
-                  decoration: BoxDecoration(
-                    color: _secondaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(
-                    Iconsax.building_3,
-                    color: _secondaryColor,
-                    size: 20,
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: _secondaryColor.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(Iconsax.house_2, color: _secondaryColor, size: 18),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Room ${roomIndex + 1}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: _textPrimary,
+                      ),
+                    ),
+                    Text(
+                      roomName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 11, color: _textSecondary),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: _primaryColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  '$adults Adult${adults > 1 ? 's' : ''}${children > 0 ? ', $children Child${children > 1 ? 'ren' : ''}' : ''}',
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            'Room ${roomIndex + 1}',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: _textPrimary,
-                            ),
-                          ),
-                          // SizedBox(width: 8),
-                          // _buildRoomValidationIndicator(roomIndex),
-                        ],
-                      ),
-                      SizedBox(height: 5),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              roomName,
-                              style: TextStyle(
-                                color: _textSecondary,
-                                fontSize: 8,
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 8),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _backgroundColor,
-                              borderRadius: BorderRadius.circular(4),
-                              // border: Border.all(color: Colors.grey.shade300),
-                            ),
-                            child: Text(
-                              '$adults Adult${adults > 1 ? 's' : ''}${children > 0 ? ', $children Child${children > 1 ? 'ren' : ''}' : ''}',
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: _textSecondary,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+              ),
+            ],
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: _cardColor,
+            borderRadius: const BorderRadius.vertical(
+              bottom: Radius.circular(20),
             ),
-            SizedBox(height: 20),
-            // Divider(),
-            ...roomPassengers[roomIndex].asMap().entries.map((entry) {
+            border: Border.all(color: _borderColor),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.02),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            children: roomPassengers[roomIndex].asMap().entries.map((entry) {
               final passengerIndex = entry.key;
               final passenger = entry.value;
               final isAdult = passenger['PaxType'] == 1;
 
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: _buildPassengerForm(roomIndex, passengerIndex, isAdult),
-              );
-            }),
-
-            SizedBox(height: 8),
-            Container(
-              padding: EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: _backgroundColor.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.info_outline_rounded, color: _textLight, size: 16),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'Total $totalPassengers passenger${totalPassengers > 1 ? 's' : ''} (${adults} adult${adults > 1 ? 's' : ''}${children > 0 ? ', ${children} child${children > 1 ? 'ren' : ''}' : ''})',
-                      style: TextStyle(fontSize: 12, color: _textSecondary),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            if (roomIndex < roomPassengers.length - 1)
-              Divider(height: 30, color: Colors.grey.shade200),
-          ],
+              return _buildPassengerForm(roomIndex, passengerIndex, isAdult);
+            }).toList(),
+          ),
         ),
-      ),
+      ],
     );
   }
 
@@ -544,140 +541,106 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
   Widget _buildPassengerForm(int roomIndex, int passengerIndex, bool isAdult) {
     final passenger = roomPassengers[roomIndex][passengerIndex];
     final isLeadPassenger = passenger['LeadPassenger'];
-    final isFirstPassenger = passengerIndex == 0;
 
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
-      padding: EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: _backgroundColor.withOpacity(0.3),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _borderColor.withOpacity(0.5)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
-        ],
+        border: Border.all(color: _borderColor),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          initiallyExpanded: passengerIndex == 0,
+          leading: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: isAdult
+                  ? _secondaryColor.withOpacity(0.1)
+                  : _warningColor.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              isAdult ? Iconsax.user : Iconsax.emoji_happy,
+              color: isAdult ? _secondaryColor : _warningColor,
+              size: 20,
+            ),
+          ),
+          title: Row(
             children: [
-              Container(
-                padding: EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: isAdult
-                      ? _secondaryColor.withOpacity(0.1)
-                      : _warningColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  isAdult ? Iconsax.user : Iconsax.emoji_happy,
-                  color: isAdult ? _secondaryColor : _warningColor,
-                  size: 16,
+              Text(
+                '${isAdult ? 'Adult' : 'Child'} ${passengerIndex + 1}',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: _textPrimary,
                 ),
               ),
-              SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          '${isAdult ? 'Adult' : 'Child'} ${passengerIndex + 1}',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: _textPrimary,
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        _buildPassengerValidationIndicator(
-                          roomIndex,
-                          passengerIndex,
-                        ),
-                        if (isLeadPassenger) ...[
-                          SizedBox(width: 8),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _secondaryColor.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              'Lead',
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: _secondaryColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                        if (!isAdult) ...[
-                          SizedBox(width: 8),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _warningColor.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              'Child',
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: _warningColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
+              const SizedBox(width: 8),
+              _buildPassengerValidationIndicator(roomIndex, passengerIndex),
+              if (isLeadPassenger) ...[
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: _secondaryColor,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: const Text(
+                    'LEAD',
+                    style: TextStyle(
+                      fontSize: 8,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
                     ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: Form(
+                key: Key('passenger_form_${roomIndex}_$passengerIndex'),
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                onChanged: () =>
+                    _validatePassengerForm(roomIndex, passengerIndex),
+                child: Column(
+                  children: [
+                    const Divider(height: 1),
+                    const SizedBox(height: 16),
+                    if (isAdult) ...[
+                      _buildTitleDropdown(roomIndex, passengerIndex),
+                      const SizedBox(height: 16),
+                    ],
+                    _buildNameFields(roomIndex, passengerIndex, isAdult),
+                    const SizedBox(height: 16),
+                    if (isAdult) ...[
+                      _buildContactSection(roomIndex, passengerIndex),
+                      const SizedBox(height: 16),
+                    ],
+                    _buildAgeField(roomIndex, passengerIndex, isAdult),
+                    if (isAdult &&
+                        (_validationInfo.panMandatory ||
+                            _validationInfo.passportMandatory)) ...[
+                      const SizedBox(height: 16),
+                      _buildDocumentsSection(roomIndex, passengerIndex),
+                    ],
+                    if (isAdult && passengerIndex != 0) ...[
+                      const SizedBox(height: 12),
+                      _buildLeadPassengerToggle(roomIndex, passengerIndex),
+                    ],
                   ],
                 ),
               ),
-            ],
-          ),
-          SizedBox(height: 16),
-
-          Form(
-            key: Key('passenger_form_${roomIndex}_$passengerIndex'),
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            onChanged: () {
-              _validatePassengerForm(roomIndex, passengerIndex);
-            },
-            child: Column(
-              children: [
-                if (isAdult) _buildTitleDropdown(roomIndex, passengerIndex),
-                if (isAdult) SizedBox(height: 12),
-                _buildNameFields(roomIndex, passengerIndex, isAdult),
-                SizedBox(height: 12),
-                if (isAdult) _buildContactSection(roomIndex, passengerIndex),
-                SizedBox(height: 12),
-                _buildAgeField(roomIndex, passengerIndex, isAdult),
-                if (isAdult) SizedBox(height: 12),
-                if (isAdult &&
-                    (_validationInfo.panMandatory ||
-                        _validationInfo.passportMandatory))
-                  _buildDocumentsSection(roomIndex, passengerIndex),
-              ],
             ),
-          ),
-
-          if (isAdult && !isFirstPassenger)
-            _buildLeadPassengerToggle(roomIndex, passengerIndex),
-        ],
+          ],
+        ),
       ),
     );
   }

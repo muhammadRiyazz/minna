@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:minna/comman/core/api.dart';
+import 'package:iconsax/iconsax.dart';
 
 // Enum to track which location field is being edited
 enum LocationFieldType {
@@ -34,7 +35,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
   TimeOfDay _selectedTime = TimeOfDay.now();
   final TextEditingController _sourceController = TextEditingController();
   final TextEditingController _destinationController = TextEditingController();
-  
+
   // For location search
   final String _apiKey = locationapiKey;
   List<dynamic> _searchResults = [];
@@ -42,12 +43,12 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
   bool _isSearching = false;
   bool _isGettingCurrentLocation = false;
   LocationFieldType? _currentLocationField;
-  
+
   // Location data storage
   Map<String, dynamic> _sourceLocationData = {};
   Map<String, dynamic> _destinationLocationData = {};
   final List<Map<String, dynamic>> _multiCityLocationData = [];
-  
+
   // For multi-city trips
   List<Map<String, dynamic>> _multiCityRoutes = [
     {
@@ -57,26 +58,26 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
       'time': TimeOfDay.now(),
       'sourceData': {},
       'destinationData': {},
-    }
+    },
   ];
-  
+
   // For round trip
   DateTime? _returnDate;
   TimeOfDay? _returnTime;
-  
+
   // For airport transfer
   bool _isAirportPickup = true;
 
-  // New Color Theme - Consistent with flight booking
-  final Color _primaryColor = Colors.black;
-  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
-  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
-  final Color _backgroundColor = Color(0xFFF8F9FA);
-  final Color _cardColor = Colors.white;
-  final Color _textPrimary = Colors.black;
-  final Color _textSecondary = Color(0xFF666666);
-  final Color _textLight = Color(0xFF999999);
-  final Color _errorColor = Color(0xFFE53935);
+  // Premium Theme (Consistent with global const.dart)
+  final Color _primaryColor = maincolor1; // Deep Ocean Blue
+  final Color _secondaryColor = secondaryColor; // Premium Gold
+  final Color _accentColor = accentColor;
+  final Color _backgroundColor = backgroundColor;
+  final Color _cardColor = cardColor;
+  final Color _textPrimary = textPrimary;
+  final Color _textSecondary = textSecondary;
+  final Color _textLight = textLight;
+  final Color _errorColor = errorColor;
 
   final Map<int, String> tripTypes = {
     1: 'ONE WAY',
@@ -86,7 +87,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
     10: 'DAY RENTAL (8HR/80KM)',
     11: 'DAY RENTAL (12HR/120KM)',
   };
-  
+
   final Map<int, String> cabTypes = {
     1: 'Compact',
     2: 'SUV',
@@ -124,64 +125,89 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
         return StatefulBuilder(
           builder: (context, setModalState) {
             return Container(
-              margin: EdgeInsets.only(top: 60),
-              padding: const EdgeInsets.all(24),
+              height: MediaQuery.of(context).size.height * 0.9,
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+                color: _cardColor,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(32),
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 20,
-                    spreadRadius: 0,
+                    color: _primaryColor.withOpacity(0.15),
+                    blurRadius: 30,
+                    offset: const Offset(0, -5),
                   ),
                 ],
               ),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
                 children: [
                   // Drag handle
-                  Center(
-                    child: Container(
-                      width: 48,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(2),
-                      ),
+                  const SizedBox(height: 12),
+                  Container(
+                    width: 40,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(2.5),
                     ),
                   ),
                   const SizedBox(height: 24),
 
                   // Header
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Choose Your Vehicle',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: _textPrimary,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Select Vehicle',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w900,
+                                color: _primaryColor,
+                                letterSpacing: -0.5,
+                              ),
+                            ),
+                            Text(
+                              'Choose one or more car types',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: _textSecondary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.close, color: _textLight),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ],
+                        Container(
+                          decoration: BoxDecoration(
+                            color: _backgroundColor,
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            icon: Icon(
+                              Iconsax.close_circle,
+                              color: _textLight,
+                              size: 24,
+                            ),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
+                  const SizedBox(height: 16),
 
                   // Vehicle list
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.5,
-                    child: ListView.separated(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      itemCount: cabTypes.length,
-                      separatorBuilder: (context, index) => Divider(
-                        height: 1,
-                        color: Colors.grey[200],
+                  Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 8,
                       ),
+                      itemCount: cabTypes.length,
                       itemBuilder: (context, index) {
                         final entry = cabTypes.entries.elementAt(index);
                         return _buildVehicleItem(
@@ -190,6 +216,50 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                           setModalState,
                         );
                       },
+                    ),
+                  ),
+
+                  // Action Button
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+                    child: Container(
+                      width: double.infinity,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        gradient: LinearGradient(
+                          colors: [
+                            _primaryColor,
+                            _primaryColor.withOpacity(0.9),
+                          ],
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: _primaryColor.withOpacity(0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: const Text(
+                          'CONFIRM SELECTION',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -208,54 +278,133 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
   ) {
     final bool isSelected = _selectedCabTypes.contains(cabId);
 
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      leading: Container(
-        width: 50,
-        height: 50,
-        decoration: BoxDecoration(
-          color: _secondaryColor.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(Icons.directions_car, color: _secondaryColor, size: 28),
-      ),
-      title: Text(
-        cabName,
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-          color: _textPrimary,
-        ),
-      ),
-      trailing: Container(
-        width: 24,
-        height: 24,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: isSelected ? _secondaryColor : Colors.grey,
-            width: isSelected ? 2 : 1,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: GestureDetector(
+        onTap: () {
+          setModalState(() {
+            if (isSelected) {
+              _selectedCabTypes.remove(cabId);
+            } else {
+              _selectedCabTypes.add(cabId);
+            }
+          });
+          setState(() {}); // Update main UI
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? _secondaryColor.withOpacity(0.05)
+                : Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isSelected
+                  ? Colors.transparent
+                  : Colors.grey.withOpacity(0.2),
+              width: isSelected ? 2 : 1,
+            ),
+            // boxShadow: isSelected
+            //     ? [
+            //         BoxShadow(
+            //           color: _secondaryColor.withOpacity(0.1),
+            //           blurRadius: 10,
+            //           offset: const Offset(0, 4),
+            //         ),
+            //       ]
+            //     : [],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? _secondaryColor.withOpacity(0.15)
+                      : _backgroundColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Iconsax.car,
+                  color: isSelected ? _secondaryColor : _textSecondary,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      cabName,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: isSelected ? _primaryColor : _textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      _getVehicleSubtitle(cabName),
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: _textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (isSelected)
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: _secondaryColor,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Iconsax.tick_circle,
+                    color: Colors.white,
+                    size: 16,
+                  ),
+                )
+              else
+                Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.grey.withOpacity(0.3),
+                      width: 2,
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
-        child: isSelected
-            ? Icon(Icons.check, color: _secondaryColor, size: 16)
-            : null,
       ),
-      onTap: () {
-        setModalState(() {
-          if (isSelected) {
-            _selectedCabTypes.remove(cabId);
-          } else {
-            _selectedCabTypes.add(cabId);
-          }
-        });
-        setState(() {});
-      },
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     );
   }
 
-  void _showLocationSearchSheet(LocationFieldType fieldType, [int? multiCityIndex]) {
+  String _getVehicleSubtitle(String type) {
+    String typeLower = type.toLowerCase();
+    if (typeLower.contains('suv') || typeLower.contains('innova')) {
+      return '6-7 Seater • Spacious • AC';
+    } else if (typeLower.contains('sedan') || typeLower.contains('dzire')) {
+      return '4 Seater • Comfortable • AC';
+    } else if (typeLower.contains('compact')) {
+      return '4 Seater • Economy • AC';
+    }
+    return 'Professional Driver • AC';
+  }
+
+  void _showLocationSearchSheet(
+    LocationFieldType fieldType, [
+    int? multiCityIndex,
+  ]) {
     _currentLocationField = fieldType;
     _searchController.clear();
     _searchResults.clear();
@@ -273,7 +422,9 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
               height: MediaQuery.of(context).size.height * 0.9,
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(28),
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.2),
@@ -284,19 +435,21 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
               ),
               child: Column(
                 children: [
-                  SizedBox(height: 12,),
+                  const SizedBox(height: 12),
 
                   // Header
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 15),
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(28),
+                      ),
                     ),
                     child: Row(
                       children: [
                         IconButton(
-                          icon: Icon(Icons.arrow_back, color: _textPrimary),
+                          icon: Icon(Iconsax.arrow_left, color: _textPrimary),
                           onPressed: () => Navigator.pop(context),
                         ),
                         const SizedBox(width: 8),
@@ -313,27 +466,29 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                       ],
                     ),
                   ),
-SizedBox(height: 6,),
+                  const SizedBox(height: 6),
 
                   // Current Location Button
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15, ),
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
                     child: GestureDetector(
-                      onTap: () => _getCurrentLocation(setModalState, fieldType, multiCityIndex),
+                      onTap: () => _getCurrentLocation(
+                        setModalState,
+                        fieldType,
+                        multiCityIndex,
+                      ),
                       child: Container(
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
                           color: _secondaryColor.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: _secondaryColor.withOpacity(0.3)),
+                          border: Border.all(
+                            color: _secondaryColor.withOpacity(0.3),
+                          ),
                         ),
                         child: Row(
                           children: [
-                            Icon(
-                              Icons.my_location,
-                              color: _secondaryColor,
-                              size: 24,
-                            ),
+                            Icon(Iconsax.gps, color: _secondaryColor, size: 24),
                             const SizedBox(width: 16),
                             Expanded(
                               child: Column(
@@ -371,18 +526,15 @@ SizedBox(height: 6,),
                       ),
                     ),
                   ),
-SizedBox(height: 12,),
+                  const SizedBox(height: 12),
 
                   // Divider
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15, ),
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
                     child: Row(
                       children: [
                         Expanded(
-                          child: Divider(
-                            color: Colors.grey[300],
-                            thickness: 1,
-                          ),
+                          child: Divider(color: Colors.grey[300], thickness: 1),
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -395,31 +547,37 @@ SizedBox(height: 12,),
                           ),
                         ),
                         Expanded(
-                          child: Divider(
-                            color: Colors.grey[300],
-                            thickness: 1,
-                          ),
+                          child: Divider(color: Colors.grey[300], thickness: 1),
                         ),
                       ],
                     ),
                   ),
-SizedBox(height: 12,),
+                  const SizedBox(height: 12),
                   // Search Bar
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5,horizontal: 15),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 5,
+                      horizontal: 15,
+                    ),
                     child: TextField(
                       controller: _searchController,
                       decoration: InputDecoration(
                         hintText: 'Search for a place...',
                         hintStyle: TextStyle(color: _textLight),
-                        prefixIcon: Icon(Icons.search, color: _secondaryColor),
+                        prefixIcon: Icon(
+                          Iconsax.search_normal_1,
+                          color: _secondaryColor,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide(color: Colors.grey.shade300),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide(color: _secondaryColor, width: 2),
+                          borderSide: BorderSide(
+                            color: _secondaryColor,
+                            width: 2,
+                          ),
                         ),
                         filled: true,
                         fillColor: _backgroundColor,
@@ -441,74 +599,81 @@ SizedBox(height: 12,),
                   Expanded(
                     child: _isSearching
                         ? Center(
-                            child: CircularProgressIndicator(color: _secondaryColor),
+                            child: CircularProgressIndicator(
+                              color: _secondaryColor,
+                            ),
                           )
                         : _searchResults.isEmpty
-                            ? Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.location_on_outlined,
-                                      size: 64,
-                                      color: Colors.grey[300],
-                                    ),
-                                    const SizedBox(height: 16),
-                                    Text(
-                                      _searchController.text.isEmpty
-                                          ? 'Search for places'
-                                          : 'No results found',
-                                      style: TextStyle(
-                                        color: _textLight,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ],
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Iconsax.location,
+                                  size: 64,
+                                  color: Colors.grey[300],
                                 ),
-                              )
-                            : ListView.builder(
-                                padding: const EdgeInsets.only(bottom: 10),
-                                itemCount: _searchResults.length,
-                                itemBuilder: (context, index) {
-                                  final place = _searchResults[index];
-                                  return ListTile(
-                                    // contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                                    leading: Container(
-                                      width: 44,
-                                      height: 44,
-                                      decoration: BoxDecoration(
-                                        color: _secondaryColor.withOpacity(0.1),
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Icon(
-                                        Icons.place,
-                                        color: _secondaryColor,
-                                        size: 20,
-                                      ),
-                                    ),
-                                    title: Text(
-                                      place['description'] ?? '',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        color: _textPrimary,
-                                      ),
-                                    ),
-                                    subtitle: place['structured_formatting'] != null
-                                        ? Text(
-                                            place['structured_formatting']['secondary_text'] ?? '',
-                                            style: TextStyle(
-                                              color: _textSecondary,
-                                              fontSize: 12,
-                                            ),
-                                          )
-                                        : null,
-                                    onTap: () {
-                                      _selectPlace(place, fieldType, multiCityIndex);
-                                      Navigator.pop(context);
-                                    },
+                                const SizedBox(height: 16),
+                                Text(
+                                  _searchController.text.isEmpty
+                                      ? 'Search for places'
+                                      : 'No results found',
+                                  style: TextStyle(
+                                    color: _textLight,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : ListView.builder(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            itemCount: _searchResults.length,
+                            itemBuilder: (context, index) {
+                              final place = _searchResults[index];
+                              return ListTile(
+                                // contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                leading: Container(
+                                  width: 44,
+                                  height: 44,
+                                  decoration: BoxDecoration(
+                                    color: _secondaryColor.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Icon(
+                                    Iconsax.location,
+                                    color: _secondaryColor,
+                                    size: 20,
+                                  ),
+                                ),
+                                title: Text(
+                                  place['description'] ?? '',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: _textPrimary,
+                                  ),
+                                ),
+                                subtitle: place['structured_formatting'] != null
+                                    ? Text(
+                                        place['structured_formatting']['secondary_text'] ??
+                                            '',
+                                        style: TextStyle(
+                                          color: _textSecondary,
+                                          fontSize: 12,
+                                        ),
+                                      )
+                                    : null,
+                                onTap: () {
+                                  _selectPlace(
+                                    place,
+                                    fieldType,
+                                    multiCityIndex,
                                   );
+                                  Navigator.pop(context);
                                 },
-                              ),
+                              );
+                            },
+                          ),
                   ),
                 ],
               ),
@@ -519,7 +684,11 @@ SizedBox(height: 12,),
     );
   }
 
-  Future<void> _getCurrentLocation(StateSetter setModalState, LocationFieldType fieldType, int? multiCityIndex) async {
+  Future<void> _getCurrentLocation(
+    StateSetter setModalState,
+    LocationFieldType fieldType,
+    int? multiCityIndex,
+  ) async {
     setModalState(() {
       _isGettingCurrentLocation = true;
     });
@@ -575,12 +744,15 @@ SizedBox(height: 12,),
                 _destinationLocationData = locationData;
                 break;
               case LocationFieldType.multiCitySource:
-                _multiCityRoutes[multiCityIndex!]['source'].text = locationData['address'] as String;
+                _multiCityRoutes[multiCityIndex!]['source'].text =
+                    locationData['address'] as String;
                 _multiCityRoutes[multiCityIndex]['sourceData'] = locationData;
                 break;
               case LocationFieldType.multiCityDestination:
-                _multiCityRoutes[multiCityIndex!]['destination'].text = locationData['address'] as String;
-                _multiCityRoutes[multiCityIndex]['destinationData'] = locationData;
+                _multiCityRoutes[multiCityIndex!]['destination'].text =
+                    locationData['address'] as String;
+                _multiCityRoutes[multiCityIndex]['destinationData'] =
+                    locationData;
                 break;
             }
           });
@@ -600,7 +772,7 @@ SizedBox(height: 12,),
 
   String _formatAddress(Placemark placemark) {
     List<String> addressParts = [];
-    
+
     if (placemark.street != null && placemark.street!.isNotEmpty) {
       addressParts.add(placemark.street!);
     }
@@ -610,7 +782,8 @@ SizedBox(height: 12,),
     if (placemark.locality != null && placemark.locality!.isNotEmpty) {
       addressParts.add(placemark.locality!);
     }
-    if (placemark.administrativeArea != null && placemark.administrativeArea!.isNotEmpty) {
+    if (placemark.administrativeArea != null &&
+        placemark.administrativeArea!.isNotEmpty) {
       addressParts.add(placemark.administrativeArea!);
     }
     if (placemark.postalCode != null && placemark.postalCode!.isNotEmpty) {
@@ -619,11 +792,14 @@ SizedBox(height: 12,),
     if (placemark.country != null && placemark.country!.isNotEmpty) {
       addressParts.add(placemark.country!);
     }
-    
+
     return addressParts.join(', ');
   }
 
-  String _getLocationFieldTitle(LocationFieldType fieldType, int? multiCityIndex) {
+  String _getLocationFieldTitle(
+    LocationFieldType fieldType,
+    int? multiCityIndex,
+  ) {
     switch (fieldType) {
       case LocationFieldType.source:
         return 'Pickup Location';
@@ -643,11 +819,11 @@ SizedBox(height: 12,),
 
     try {
       final url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$query&key=$_apiKey&components=country:in'
+        'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$query&key=$_apiKey&components=country:in',
       );
-      
+
       final response = await http.get(url);
-      
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['status'] == 'OK') {
@@ -675,18 +851,22 @@ SizedBox(height: 12,),
     }
   }
 
-  Future<void> _selectPlace(dynamic place, LocationFieldType fieldType, int? multiCityIndex) async {
+  Future<void> _selectPlace(
+    dynamic place,
+    LocationFieldType fieldType,
+    int? multiCityIndex,
+  ) async {
     try {
       final placeId = place['place_id'];
       final detailsUrl = Uri.parse(
-        'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$_apiKey&fields=name,formatted_address,geometry'
+        'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$_apiKey&fields=name,formatted_address,geometry',
       );
-      
+
       final detailsResponse = await http.get(detailsUrl);
-      
+
       if (detailsResponse.statusCode == 200) {
         final detailsData = json.decode(detailsResponse.body);
-        
+
         if (detailsData['status'] == 'OK') {
           final result = detailsData['result'];
           final locationData = {
@@ -706,12 +886,15 @@ SizedBox(height: 12,),
                 _destinationLocationData = locationData;
                 break;
               case LocationFieldType.multiCitySource:
-                _multiCityRoutes[multiCityIndex!]['source'].text = locationData['address'] as String;
+                _multiCityRoutes[multiCityIndex!]['source'].text =
+                    locationData['address'] as String;
                 _multiCityRoutes[multiCityIndex]['sourceData'] = locationData;
                 break;
               case LocationFieldType.multiCityDestination:
-                _multiCityRoutes[multiCityIndex!]['destination'].text = locationData['address'] as String;
-                _multiCityRoutes[multiCityIndex]['destinationData'] = locationData;
+                _multiCityRoutes[multiCityIndex!]['destination'].text =
+                    locationData['address'] as String;
+                _multiCityRoutes[multiCityIndex]['destinationData'] =
+                    locationData;
                 break;
             }
           });
@@ -735,11 +918,13 @@ SizedBox(height: 12,),
             _destinationLocationData = locationData;
             break;
           case LocationFieldType.multiCitySource:
-            _multiCityRoutes[multiCityIndex!]['source'].text = locationData['address'] as String;
+            _multiCityRoutes[multiCityIndex!]['source'].text =
+                locationData['address'] as String;
             _multiCityRoutes[multiCityIndex]['sourceData'] = locationData;
             break;
           case LocationFieldType.multiCityDestination:
-            _multiCityRoutes[multiCityIndex!]['destination'].text = locationData['address'] as String;
+            _multiCityRoutes[multiCityIndex!]['destination'].text =
+                locationData['address'] as String;
             _multiCityRoutes[multiCityIndex]['destinationData'] = locationData;
             break;
         }
@@ -747,14 +932,18 @@ SizedBox(height: 12,),
     }
   }
 
-  Future<void> _selectDate(BuildContext context, {bool isReturnDate = false, int? multiCityIndex}) async {
+  Future<void> _selectDate(
+    BuildContext context, {
+    bool isReturnDate = false,
+    int? multiCityIndex,
+  }) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: isReturnDate 
+      initialDate: isReturnDate
           ? _returnDate ?? DateTime.now().add(const Duration(days: 1))
           : multiCityIndex != null
-            ? _multiCityRoutes[multiCityIndex]['date']
-            : _selectedDate,
+          ? _multiCityRoutes[multiCityIndex]['date']
+          : _selectedDate,
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365)),
       builder: (context, child) {
@@ -765,14 +954,14 @@ SizedBox(height: 12,),
               onPrimary: Colors.white,
               surface: _cardColor,
               onSurface: _textPrimary,
-            ), 
+            ),
             dialogTheme: DialogThemeData(backgroundColor: _backgroundColor),
           ),
           child: child!,
         );
       },
     );
-    
+
     if (picked != null) {
       setState(() {
         if (isReturnDate) {
@@ -786,14 +975,18 @@ SizedBox(height: 12,),
     }
   }
 
-  Future<void> _selectTime(BuildContext context, {bool isReturnTime = false, int? multiCityIndex}) async {
+  Future<void> _selectTime(
+    BuildContext context, {
+    bool isReturnTime = false,
+    int? multiCityIndex,
+  }) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: isReturnTime 
+      initialTime: isReturnTime
           ? _returnTime ?? TimeOfDay.now()
           : multiCityIndex != null
-            ? _multiCityRoutes[multiCityIndex]['time']
-            : _selectedTime,
+          ? _multiCityRoutes[multiCityIndex]['time']
+          : _selectedTime,
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -802,14 +995,14 @@ SizedBox(height: 12,),
               onPrimary: Colors.white,
               surface: _cardColor,
               onSurface: _textPrimary,
-            ), 
-            dialogTheme: DialogThemeData(backgroundColor: _backgroundColor),
+            ),
+            dialogTheme: const DialogThemeData(backgroundColor: Colors.white),
           ),
           child: child!,
         );
       },
     );
-    
+
     if (picked != null) {
       setState(() {
         if (isReturnTime) {
@@ -867,24 +1060,26 @@ SizedBox(height: 12,),
     if (_selectedTripType == 3) {
       for (var route in _multiCityRoutes) {
         final sourceData = route['sourceData'] as Map<String, dynamic>;
-        final destinationData = route['destinationData'] as Map<String, dynamic>;
-        
+        final destinationData =
+            route['destinationData'] as Map<String, dynamic>;
+
         routes.add({
           "startDate": DateFormat('yyyy-MM-dd').format(route['date']),
-          "startTime": "${route['time'].hour.toString().padLeft(2, '0')}:${route['time'].minute.toString().padLeft(2, '0')}:00",
+          "startTime":
+              "${route['time'].hour.toString().padLeft(2, '0')}:${route['time'].minute.toString().padLeft(2, '0')}:00",
           "source": {
             "address": route['source'].text,
             "coordinates": {
               "latitude": sourceData['latitude'] ?? 22.6531496,
               "longitude": sourceData['longitude'] ?? 88.4448719,
-            }
+            },
           },
           "destination": {
             "address": route['destination'].text,
             "coordinates": {
               "latitude": destinationData['latitude'] ?? 22.7008099,
               "longitude": destinationData['longitude'] ?? 88.3747597,
-            }
+            },
           },
         });
       }
@@ -892,33 +1087,35 @@ SizedBox(height: 12,),
       if (_isAirportPickup) {
         routes.add({
           "startDate": DateFormat('yyyy-MM-dd').format(_selectedDate),
-          "startTime": "${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}:00",
+          "startTime":
+              "${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}:00",
           "source": {
             "isAirport": 1,
             "address": _sourceController.text,
             "coordinates": {
               "latitude": _sourceLocationData['latitude'] ?? 22.6531496,
               "longitude": _sourceLocationData['longitude'] ?? 88.4448719,
-            }
+            },
           },
           "destination": {
             "address": _destinationController.text,
             "coordinates": {
               "latitude": _destinationLocationData['latitude'] ?? 22.7008099,
               "longitude": _destinationLocationData['longitude'] ?? 88.3747597,
-            }
+            },
           },
         });
       } else {
         routes.add({
           "startDate": DateFormat('yyyy-MM-dd').format(_selectedDate),
-          "startTime": "${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}:00",
+          "startTime":
+              "${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}:00",
           "source": {
             "address": _sourceController.text,
             "coordinates": {
               "latitude": _sourceLocationData['latitude'] ?? 22.6531496,
               "longitude": _sourceLocationData['longitude'] ?? 88.4448719,
-            }
+            },
           },
           "destination": {
             "isAirport": 1,
@@ -926,66 +1123,71 @@ SizedBox(height: 12,),
             "coordinates": {
               "latitude": _destinationLocationData['latitude'] ?? 22.7008099,
               "longitude": _destinationLocationData['longitude'] ?? 88.3747597,
-            }
+            },
           },
         });
       }
     } else if (_selectedTripType == 10 || _selectedTripType == 11) {
       routes.add({
         "startDate": DateFormat('yyyy-MM-dd').format(_selectedDate),
-        "startTime": "${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}:00",
+        "startTime":
+            "${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}:00",
         "source": {
           "address": _sourceController.text,
           "coordinates": {
             "latitude": _sourceLocationData['latitude'] ?? 22.6531496,
             "longitude": _sourceLocationData['longitude'] ?? 88.4448719,
-          }
+          },
         },
         "destination": {
           "address": _sourceController.text,
           "coordinates": {
             "latitude": _sourceLocationData['latitude'] ?? 22.7008099,
             "longitude": _sourceLocationData['longitude'] ?? 88.3747597,
-          }
+          },
         },
       });
     } else {
       routes.add({
         "startDate": DateFormat('yyyy-MM-dd').format(_selectedDate),
-        "startTime": "${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}:00",
+        "startTime":
+            "${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}:00",
         "source": {
           "address": _sourceController.text,
           "coordinates": {
             "latitude": _sourceLocationData['latitude'] ?? 22.6531496,
             "longitude": _sourceLocationData['longitude'] ?? 88.4448719,
-          }
+          },
         },
         "destination": {
           "address": _destinationController.text,
           "coordinates": {
             "latitude": _destinationLocationData['latitude'] ?? 22.7008099,
             "longitude": _destinationLocationData['longitude'] ?? 88.3747597,
-          }
+          },
         },
       });
 
-      if (_selectedTripType == 2 && _returnDate != null && _returnTime != null) {
+      if (_selectedTripType == 2 &&
+          _returnDate != null &&
+          _returnTime != null) {
         routes.add({
           "startDate": DateFormat('yyyy-MM-dd').format(_returnDate!),
-          "startTime": "${_returnTime!.hour.toString().padLeft(2, '0')}:${_returnTime!.minute.toString().padLeft(2, '0')}:00",
+          "startTime":
+              "${_returnTime!.hour.toString().padLeft(2, '0')}:${_returnTime!.minute.toString().padLeft(2, '0')}:00",
           "source": {
             "address": _destinationController.text,
             "coordinates": {
               "latitude": _destinationLocationData['latitude'] ?? 22.6531496,
               "longitude": _destinationLocationData['longitude'] ?? 88.4448719,
-            }
+            },
           },
           "destination": {
             "address": _sourceController.text,
             "coordinates": {
               "latitude": _sourceLocationData['latitude'] ?? 22.7008099,
               "longitude": _sourceLocationData['longitude'] ?? 88.3747597,
-            }
+            },
           },
         });
       }
@@ -1014,7 +1216,8 @@ SizedBox(height: 12,),
         return;
       }
     } else {
-      if (_sourceController.text.isEmpty || _destinationController.text.isEmpty) {
+      if (_sourceController.text.isEmpty ||
+          _destinationController.text.isEmpty) {
         _showErrorSnackBar('Please fill all required fields');
         return;
       }
@@ -1040,16 +1243,16 @@ SizedBox(height: 12,),
       SnackBar(
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: EdgeInsets.all(16),
+        margin: const EdgeInsets.all(16),
         backgroundColor: _errorColor,
         content: Row(
           children: [
-            Icon(Icons.error_outline_rounded, color: Colors.white, size: 20),
-            SizedBox(width: 12),
+            const Icon(Iconsax.info_circle, color: Colors.white, size: 20),
+            const SizedBox(width: 12),
             Expanded(
               child: Text(
                 message,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   color: Colors.white,
@@ -1058,7 +1261,7 @@ SizedBox(height: 12,),
             ),
           ],
         ),
-        duration: Duration(seconds: 3),
+        duration: const Duration(seconds: 3),
         action: SnackBarAction(
           label: 'OK',
           textColor: Colors.white,
@@ -1074,156 +1277,149 @@ SizedBox(height: 12,),
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _backgroundColor,
-    
       body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
         slivers: [
-
-
-
-      SliverAppBar(
-                backgroundColor: _primaryColor,
-                expandedHeight: 130,
-                floating: false,
-                pinned: true,
-                elevation: 4,leading: IconButton(
-              icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+          // Premium Sliver App Bar
+          SliverAppBar(
+            expandedHeight: 220.0,
+            floating: false,
+            pinned: true,
+            backgroundColor: _primaryColor,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(
+                Iconsax.arrow_left_2,
+                color: Colors.white,
+                size: 20,
+              ),
               onPressed: () => Navigator.pop(context),
             ),
-                shadowColor: Colors.black.withOpacity(0.3),
-                surfaceTintColor: Colors.white,
-                flexibleSpace: FlexibleSpaceBar(
-                  title: Text(
-                    'Cab Booking',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  centerTitle: true,
-                  background: Container(
-                    decoration: BoxDecoration(
-                    color: _primaryColor
-                    ),
-                  ),
-                ),
-                // shape: RoundedRectangleBorder(
-                //   borderRadius: BorderRadius.vertical(
-                //     bottom: Radius.circular(20),
-                //   ),
-                // ),
-              ),
-
-
-
-
-
-
-
-
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: true,
+              background: Stack(
+                fit: StackFit.expand,
                 children: [
-                  // Header Section
-                  _buildHeaderSection(),
-                  const SizedBox(height: 20),
-
-                  // Trip Type Selection
-                  _buildTripTypeSection(),
-                  const SizedBox(height: 20),
-
-                  // Airport Transfer Type (if applicable)
-                  if (_selectedTripType == 4) ...[
-                    _buildTransferTypeSection(),
-                    const SizedBox(height: 8),
-                  ],
-
-                  // Location Fields
-                  if (_selectedTripType != 3) 
-                    _buildLocationSection(),
-                                      const SizedBox(height: 8),
-
-                  // Multi-city routes
-                  if (_selectedTripType == 3)
-                    _buildMultiCitySection(),
-                    const SizedBox(height: 8),
-
-                  // Date and Time Section
-                  if (_selectedTripType != 3)
-                    _buildDateTimeSection(),
-
-                  const SizedBox(height: 20),
-
-                  // Vehicle Selection
-                  _buildVehicleSelectionSection(),
-                  const SizedBox(height: 20),
-
-                  // Search Button
-                  _buildSearchButton(),
+                  // Hero Background Image
+                  Image.network(
+                    'https://images.unsplash.com/photo-1593950315186-76a92975b60c?auto=format&fit=crop&q=80&w=1000',
+                    fit: BoxFit.cover,
+                  ),
+                  // Premium Gradient Overlay
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          _primaryColor.withOpacity(0.3),
+                          _primaryColor.withOpacity(0.5),
+                          _primaryColor,
+                        ],
+                        stops: const [0.0, 0.6, 1.0],
+                      ),
+                    ),
+                  ),
+                  // Header Content
+                  SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const SizedBox(height: 10),
+                          Text(
+                            "PREMIUM RIDES",
+                            style: TextStyle(
+                              color: _secondaryColor,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 2,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "Book Your Comfort\nJourney",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w900,
+                              height: 1.2,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black.withOpacity(0.3),
+                                  offset: const Offset(0, 2),
+                                  blurRadius: 4,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildHeaderSection() {
-    return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: _primaryColor,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: _primaryColor.withOpacity(0.3),
-            blurRadius: 15,
-            offset: Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: _secondaryColor.withOpacity(0.2),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.directions_car_rounded,
-              color: _secondaryColor,
-              size: 28,
-            ),
-          ),
-          SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Find Your Perfect Ride",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    height: 1.2,
+          SliverToBoxAdapter(
+            child: Transform.translate(
+              offset: Offset(0, 10),
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 10),
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: _cardColor,
+                  borderRadius: BorderRadius.circular(32),
+                  boxShadow: [
+                    BoxShadow(
+                      color: _primaryColor.withOpacity(0.08),
+                      blurRadius: 40,
+                      offset: const Offset(0, 15),
+                    ),
+                  ],
+                  border: Border.all(
+                    color: Colors.grey.withOpacity(0.05),
+                    width: 1.5,
                   ),
                 ),
-                SizedBox(height: 4),
-                Text(
-                  "Safe, comfortable and on-time cab service",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white.withOpacity(0.8),
-                    fontWeight: FontWeight.w500,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Trip Type Selection
+                    _buildTripTypeSection(),
+                    const SizedBox(height: 24),
+
+                    // Airport Transfer Type (if applicable)
+                    if (_selectedTripType == 4) ...[
+                      _buildTransferTypeSection(),
+                      const SizedBox(height: 20),
+                    ],
+
+                    // Location Fields
+                    if (_selectedTripType != 3) _buildLocationSection(),
+
+                    // Multi-city routes
+                    if (_selectedTripType == 3) _buildMultiCitySection(),
+
+                    const SizedBox(height: 20),
+
+                    // Date and Time Section
+                    if (_selectedTripType != 3) _buildDateTimeSection(),
+
+                    const SizedBox(height: 24),
+
+                    // Vehicle Selection
+                    _buildVehicleSelectionSection(),
+                    const SizedBox(height: 32),
+
+                    // Search Button
+                    _buildSearchButton(),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ],
@@ -1246,9 +1442,10 @@ SizedBox(height: 12,),
         ),
         const SizedBox(height: 12),
         SizedBox(
-          height: 40,
+          height: 48,
           child: ListView(
             scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(vertical: 4),
             children: tripTypes.entries.map((entry) {
               final isSelected = _selectedTripType == entry.key;
               return Padding(
@@ -1266,50 +1463,53 @@ SizedBox(height: 12,),
                             'time': TimeOfDay.now(),
                             'sourceData': {},
                             'destinationData': {},
-                          }
+                          },
                         ];
                       }
                     });
                   },
-                  child: Container(
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeOutCubic,
                     decoration: BoxDecoration(
-                      color: isSelected ? _secondaryColor : _cardColor,
-                      borderRadius: BorderRadius.circular(14),
+                      color: isSelected ? _secondaryColor : _backgroundColor,
+                      borderRadius: BorderRadius.circular(16),
+                      // boxShadow: isSelected
+                      //     ? [
+                      //         BoxShadow(
+                      //           color: _secondaryColor.withOpacity(0.3),
+                      //           blurRadius: 10,
+                      //           offset: const Offset(0, 4),
+                      //         ),
+                      //       ]
+                      //     : [],
                       // border: Border.all(
-                      //   color: isSelected ? _secondaryColor : Colors.grey.shade300,
+                      //   color: isSelected
+                      //       ? _secondaryColor
+                      //       : Colors.grey.withOpacity(0.1),
                       //   width: 1.5,
                       // ),
-                      // boxShadow: [
-                      //   BoxShadow(
-                      //     color: Colors.black.withOpacity(0.05),
-                      //     blurRadius: 8,
-                      //     offset: Offset(0, 2),
-                      //   ),
-                      // ],
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
                           _getTripTypeIcon(entry.key),
-                          size: 20,
+                          size: 18,
                           color: isSelected ? Colors.white : _secondaryColor,
                         ),
-
-                        const SizedBox(width: 6),
-
-
-                         Text(
+                        const SizedBox(width: 10),
+                        Text(
                           entry.value,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.2,
                             color: isSelected ? Colors.white : _textPrimary,
                           ),
                         ),
-                       
                       ],
                     ),
                   ),
@@ -1348,27 +1548,28 @@ SizedBox(height: 12,),
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   decoration: BoxDecoration(
-                    color: _isAirportPickup ? _secondaryColor : _cardColor,
+                    color: _isAirportPickup
+                        ? _secondaryColor
+                        : _backgroundColor,
                     borderRadius: BorderRadius.circular(16),
-                    // border: Border.all(
-                    //   color: _isAirportPickup ? _secondaryColor : Colors.grey.shade300,
-                    //   width: 1.5,
-                    // ),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
-                        Icons.flight_land,size: 12,
-                        color: _isAirportPickup ? Colors.white : _secondaryColor,
+                        Iconsax.airplane,
+                        size: 16,
+                        color: _isAirportPickup
+                            ? Colors.white
+                            : _secondaryColor,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         'Airport Pickup',
                         style: TextStyle(
                           color: _isAirportPickup ? Colors.white : _textPrimary,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12
+                          fontWeight: FontWeight.w700,
+                          fontSize: 12,
                         ),
                       ),
                     ],
@@ -1385,29 +1586,32 @@ SizedBox(height: 12,),
                   });
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                   decoration: BoxDecoration(
-                    color: !_isAirportPickup ? _secondaryColor : _cardColor,
+                    color: !_isAirportPickup
+                        ? _secondaryColor
+                        : _backgroundColor,
                     borderRadius: BorderRadius.circular(16),
-                    // border: Border.all(
-                    //   color: !_isAirportPickup ? _secondaryColor : Colors.grey.shade300,
-                    //   width: 1.5,
-                    // ),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
-                        Icons.flight_takeoff,size: 12,
-                        color: !_isAirportPickup ? Colors.white : _secondaryColor,
+                        Iconsax.airplane_square,
+                        size: 16,
+                        color: !_isAirportPickup
+                            ? Colors.white
+                            : _secondaryColor,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         'Airport Drop',
                         style: TextStyle(
-                          color: !_isAirportPickup ? Colors.white : _textPrimary,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12
+                          color: !_isAirportPickup
+                              ? Colors.white
+                              : _textPrimary,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 12,
                         ),
                       ),
                     ],
@@ -1423,17 +1627,11 @@ SizedBox(height: 12,),
 
   Widget _buildLocationSection() {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _cardColor,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        color: _backgroundColor.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.grey.shade100),
       ),
       child: Column(
         children: [
@@ -1442,18 +1640,19 @@ SizedBox(height: 12,),
             label: _selectedTripType == 4 && _isAirportPickup
                 ? 'Airport'
                 : 'Pickup Location',
-            icon: Icons.location_on_rounded,
+            icon: Iconsax.location,
             onTap: () => _showLocationSearchSheet(LocationFieldType.source),
           ),
           if (_selectedTripType != 10 && _selectedTripType != 11) ...[
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             _buildLocationField(
               controller: _destinationController,
               label: _selectedTripType == 4 && !_isAirportPickup
                   ? 'Airport'
                   : 'Drop Location',
-              icon: Icons.location_on_rounded,
-              onTap: () => _showLocationSearchSheet(LocationFieldType.destination),
+              icon: Iconsax.location,
+              onTap: () =>
+                  _showLocationSearchSheet(LocationFieldType.destination),
             ),
           ],
         ],
@@ -1466,72 +1665,92 @@ SizedBox(height: 12,),
       children: [
         for (int i = 0; i < _multiCityRoutes.length; i++)
           Container(
-            margin: EdgeInsets.only(bottom: 16),
+            margin: const EdgeInsets.only(bottom: 20),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: _cardColor,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 20,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+              color: _backgroundColor,
+              borderRadius: BorderRadius.circular(24),
+              // border: Border.all(
+              //   color: _secondaryColor.withOpacity(0.1),
+              //   width: 1,
+              // ),
             ),
             child: Column(
               children: [
                 Row(
                   children: [
-                                    SizedBox(height: 10),
-
-                    Text(
-                      ' Route ${i + 1}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: _secondaryColor,
-                        fontSize: 16,
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _secondaryColor.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        'ROUTE ${i + 1}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          color: _secondaryColor,
+                          fontSize: 10,
+                          letterSpacing: 1,
+                        ),
                       ),
                     ),
-                    Spacer(),
+                    const Spacer(),
                     if (_multiCityRoutes.length > 1)
                       IconButton(
-                        icon: Icon(Icons.remove_circle, color: _errorColor),
+                        constraints: const BoxConstraints(),
+                        padding: EdgeInsets.zero,
+                        icon: Icon(
+                          Iconsax.minus_cirlce,
+                          color: _errorColor,
+                          size: 20,
+                        ),
                         onPressed: () => _removeMultiCityRoute(i),
                       ),
                   ],
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 16),
                 _buildLocationField(
                   controller: _multiCityRoutes[i]['source'],
                   label: 'Pickup Location',
-                  icon: Icons.location_on_rounded,
-                  onTap: () => _showLocationSearchSheet(LocationFieldType.multiCitySource, i),
+                  icon: Iconsax.location,
+                  onTap: () => _showLocationSearchSheet(
+                    LocationFieldType.multiCitySource,
+                    i,
+                  ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 12),
                 _buildLocationField(
                   controller: _multiCityRoutes[i]['destination'],
                   label: 'Drop Location',
-                  icon: Icons.location_on_rounded,
-                  onTap: () => _showLocationSearchSheet(LocationFieldType.multiCityDestination, i),
+                  icon: Iconsax.location,
+                  onTap: () => _showLocationSearchSheet(
+                    LocationFieldType.multiCityDestination,
+                    i,
+                  ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 12),
                 Row(
                   children: [
                     Expanded(
                       child: _buildDateTimeField(
-                        label: 'Pickup Date',
-                        value: DateFormat('dd MMM yyyy').format(_multiCityRoutes[i]['date']),
-                        icon: Icons.calendar_month_rounded,
+                        label: 'Date',
+                        value: DateFormat(
+                          'dd MMM yyyy',
+                        ).format(_multiCityRoutes[i]['date']),
+                        icon: Iconsax.calendar,
                         onTap: () => _selectDate(context, multiCityIndex: i),
                       ),
                     ),
-                    SizedBox(width: 16),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: _buildDateTimeField(
-                        label: 'Pickup Time',
+                        label: 'Time',
                         value: _multiCityRoutes[i]['time'].format(context),
-                        icon: Icons.access_time_rounded,
+                        icon: Iconsax.clock,
                         onTap: () => _selectTime(context, multiCityIndex: i),
                       ),
                     ),
@@ -1540,14 +1759,23 @@ SizedBox(height: 12,),
               ],
             ),
           ),
-        ElevatedButton.icon(
-          onPressed: _addMultiCityRoute,
-          icon: Icon(Icons.add, color: Colors.white),
-          label: Text('Add Another Route', style: TextStyle(color: Colors.white)),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: _secondaryColor,
-            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: _addMultiCityRoute,
+            icon: const Icon(Iconsax.add_circle, size: 18),
+            label: const Text(
+              'Add Another Route',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: _secondaryColor,
+              side: BorderSide(color: _secondaryColor),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
           ),
         ),
       ],
@@ -1556,17 +1784,11 @@ SizedBox(height: 12,),
 
   Widget _buildDateTimeSection() {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(13),
       decoration: BoxDecoration(
-        color: _cardColor,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        color: _backgroundColor.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(24),
+        // border: Border.all(color: Colors.grey.shade100),
       ),
       child: Column(
         children: [
@@ -1576,23 +1798,23 @@ SizedBox(height: 12,),
                 child: _buildDateTimeField(
                   label: 'Pickup Date',
                   value: DateFormat('dd MMM yyyy').format(_selectedDate),
-                  icon: Icons.calendar_month_rounded,
+                  icon: Iconsax.calendar,
                   onTap: () => _selectDate(context),
                 ),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 12),
               Expanded(
                 child: _buildDateTimeField(
                   label: 'Pickup Time',
                   value: _selectedTime.format(context),
-                  icon: Icons.access_time_rounded,
+                  icon: Iconsax.clock,
                   onTap: () => _selectTime(context),
                 ),
               ),
             ],
           ),
           if (_selectedTripType == 2) ...[
-            SizedBox(height: 16),
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
@@ -1601,18 +1823,18 @@ SizedBox(height: 12,),
                     value: _returnDate != null
                         ? DateFormat('dd MMM yyyy').format(_returnDate!)
                         : 'Select date',
-                    icon: Icons.calendar_month_rounded,
+                    icon: Iconsax.calendar,
                     onTap: () => _selectDate(context, isReturnDate: true),
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 12),
                 Expanded(
                   child: _buildDateTimeField(
                     label: 'Return Time',
                     value: _returnTime != null
                         ? _returnTime!.format(context)
                         : 'Select time',
-                    icon: Icons.access_time_rounded,
+                    icon: Iconsax.clock,
                     onTap: () => _selectTime(context, isReturnTime: true),
                   ),
                 ),
@@ -1641,51 +1863,61 @@ SizedBox(height: 12,),
         GestureDetector(
           onTap: _showVehicleSelectionSheet,
           child: Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: _cardColor,
-              borderRadius: BorderRadius.circular(20),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: _secondaryColor.withOpacity(0.15),
+                width: 1,
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 8,
-                  offset: Offset(0, 2),
+                  color: Colors.black.withOpacity(0.02),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
             child: Row(
               children: [
                 Container(
-                  padding: EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: _secondaryColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
-                    Icons.directions_car_rounded,
-                    color: _selectedCabTypes.isNotEmpty ? _secondaryColor : _textLight,
-                    size: 22,
+                    Iconsax.car,
+                    color: _selectedCabTypes.isNotEmpty
+                        ? _secondaryColor
+                        : _textLight,
+                    size: 24,
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         'Vehicle Type',
-                        style: TextStyle(fontSize: 10, color: _textLight),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: _textLight,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
                         _selectedCabTypes.isNotEmpty
                             ? _selectedCabTypes
-                                .map((id) => cabTypes[id])
-                                .join(", ")
-                            : 'Select your vehicle',
+                                  .map((id) => cabTypes[id])
+                                  .join(", ")
+                            : 'Select your preferred vehicle(s)',
                         style: TextStyle(
                           fontSize: 13,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w700,
                           color: _selectedCabTypes.isNotEmpty
                               ? _textPrimary
                               : _textLight,
@@ -1694,7 +1926,7 @@ SizedBox(height: 12,),
                     ],
                   ),
                 ),
-                Icon(Icons.arrow_forward_ios_rounded, color: _textLight, size: 18),
+                Icon(Iconsax.more, color: _textLight, size: 20),
               ],
             ),
           ),
@@ -1704,35 +1936,46 @@ SizedBox(height: 12,),
   }
 
   Widget _buildSearchButton() {
-    return SizedBox(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
       width: double.infinity,
-      height: 56,
-      child: ElevatedButton(
-        onPressed: _proceedToBooking,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: _primaryColor,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          elevation: 2,
-          shadowColor: _primaryColor.withOpacity(0.3),
+      height: 60,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        gradient: LinearGradient(
+          colors: [_primaryColor, _primaryColor.withOpacity(0.9)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.search_rounded, size: 20),
-            SizedBox(width: 12),
-            Text(
-              'FIND CABS',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 1,
+        boxShadow: [
+          BoxShadow(
+            color: _primaryColor.withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _proceedToBooking,
+          borderRadius: BorderRadius.circular(20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Icon(Iconsax.search_normal_1, size: 22, color: Colors.white),
+              SizedBox(width: 12),
+              Text(
+                'FIND CABS',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0.5,
+                  color: Colors.white,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -1747,27 +1990,33 @@ SizedBox(height: 12,),
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
-          color: _backgroundColor,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          // border: Border.all(color: Colors.grey.shade200),
+          // border: Border.all(
+          //   color: _secondaryColor.withOpacity(0.15),
+          //   width: 1,
+          // ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: _secondaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
+                shape: BoxShape.circle,
               ),
-              child: Icon(
-                icon,
-                color: _secondaryColor,
-                size: 24,
-              ),
+              child: Icon(icon, color: _secondaryColor, size: 18),
             ),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1775,18 +2024,23 @@ SizedBox(height: 12,),
                   Text(
                     label,
                     style: TextStyle(
-                      fontSize: 10,
+                      fontSize: 8,
                       color: _textSecondary,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
                     ),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   Text(
-                    controller.text.isEmpty ? 'Select location' : controller.text,
+                    controller.text.isEmpty
+                        ? 'Tap to select location'
+                        : controller.text,
                     style: TextStyle(
                       fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: controller.text.isEmpty ? _textLight : _textPrimary,
+                      fontWeight: FontWeight.w800,
+                      color: controller.text.isEmpty
+                          ? _textLight
+                          : _primaryColor,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -1795,8 +2049,8 @@ SizedBox(height: 12,),
               ),
             ),
             Icon(
-              Icons.arrow_forward_ios_rounded,
-              color: _textLight,
+              Iconsax.arrow_right_3,
+              color: _secondaryColor.withOpacity(0.5),
               size: 16,
             ),
           ],
@@ -1814,42 +2068,55 @@ SizedBox(height: 12,),
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         decoration: BoxDecoration(
-          color: _backgroundColor,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          // border: Border.all(color: Colors.grey.shade200),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              color: _secondaryColor,
-              size: 20,
+          // border: Border.all(
+          //   color: _secondaryColor.withOpacity(0.15),
+          //   width: 1,
+          // ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
             ),
-            SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: _secondaryColor, size: 14),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
                     label,
                     style: TextStyle(
                       fontSize: 10,
                       color: _textSecondary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    value,
-                    style: TextStyle(
-                      fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: _textPrimary,
+                      letterSpacing: 0.5,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                value,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w900,
+                  color: _primaryColor,
+                ),
               ),
             ),
           ],
@@ -1861,18 +2128,18 @@ SizedBox(height: 12,),
   IconData _getTripTypeIcon(int tripType) {
     switch (tripType) {
       case 1:
-        return Icons.arrow_forward_rounded;
+        return Iconsax.arrow_right;
       case 2:
-        return Icons.compare_arrows_rounded;
+        return Iconsax.arrow_swap;
       case 3:
-        return Icons.alt_route_rounded;
+        return Iconsax.route_square;
       case 4:
-        return Icons.airplanemode_active_rounded;
+        return Iconsax.airplane;
       case 10:
       case 11:
-        return Icons.timer_rounded;
+        return Iconsax.timer;
       default:
-        return Icons.directions_car_rounded;
+        return Iconsax.car;
     }
   }
 }

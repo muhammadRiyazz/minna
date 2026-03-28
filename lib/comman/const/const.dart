@@ -12,3 +12,4 @@ const Color textLight = Color(0xFF94A3B8);
 const Color successColor = Color(0xFF10B981);
 const Color errorColor = Color(0xFFEF4444); // Premium Red
 const Color warningColor = Color(0xFFF59E0B); // Amber
+const Color borderSoft = Color(0xFFF3F4F6);

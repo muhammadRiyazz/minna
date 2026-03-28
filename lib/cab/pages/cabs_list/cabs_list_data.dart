@@ -7,6 +7,7 @@ import 'package:minna/cab/application/fetch%20cab/fetch_cabs_state.dart';
 import 'package:minna/cab/domain/cab%20list%20model/cab_list_data.dart';
 import 'package:minna/cab/function/commission_data.dart';
 import 'package:minna/cab/pages/booking_hold/booking_hold_input.dart';
+import 'package:minna/comman/const/const.dart';
 
 class CabsListPage extends StatefulWidget {
   final Map<String, dynamic> requestData;
@@ -20,16 +21,16 @@ class CabsListPage extends StatefulWidget {
 class _CabsListPageState extends State<CabsListPage> {
   late CommissionProvider commissionProvider;
   
-  final Color _primaryColor = Colors.black;
-  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
-  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
-  final Color _backgroundColor = Color(0xFFF8F9FA);
-  final Color _cardColor = Colors.white;
-  final Color _textPrimary = Colors.black;
-  final Color _textSecondary = Color(0xFF666666);
-  final Color _textLight = Color(0xFF999999);
-  final Color _errorColor = Color(0xFFE53935);
-  final Color _successColor = Color(0xFF00C853);
+  final Color _primaryColor = maincolor1;
+  final Color _secondaryColor = secondaryColor; 
+  final Color _accentColor = accentColor;
+  final Color _backgroundColor = backgroundColor;
+  final Color _cardColor = cardColor;
+  final Color _textPrimary = textPrimary;
+  final Color _textSecondary = textSecondary;
+  final Color _textLight = textLight;
+  final Color _errorColor = errorColor;
+  final Color _successColor = const Color(0xFF0D9488);
 
   @override
   void initState() {
@@ -55,32 +56,56 @@ class _CabsListPageState extends State<CabsListPage> {
       child: Scaffold(
         backgroundColor: _backgroundColor,
         body: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
           slivers: [
-            // Sliver App Bar
+            // Premium Sliver App Bar
             SliverAppBar(
-              backgroundColor: _primaryColor,
-              expandedHeight: 120,
+              expandedHeight: 140.0,
               floating: false,
               pinned: true,
-  elevation: 4,leading: IconButton(
-              icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
-              onPressed: () => Navigator.pop(context),
-            ),              shadowColor: Colors.black.withOpacity(0.3),
-              surfaceTintColor: Colors.white,
+              backgroundColor: _primaryColor,
+              elevation: 4,
+              shadowColor: Colors.black.withOpacity(0.2),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+                onPressed: () => Navigator.pop(context),
+              ),
               flexibleSpace: FlexibleSpaceBar(
-                title: Text(
+                centerTitle: true,
+                title: const Text(
                   'Available Cabs',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.5,
                   ),
                 ),
-                centerTitle: true,
-                background: Container(
-                  decoration: BoxDecoration(
-                    color: _primaryColor,
-                  ),
+                background: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [_primaryColor, _primaryColor.withOpacity(0.8)],
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: -40,
+                      right: -40,
+                      child: Container(
+                        width: 150,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _secondaryColor.withOpacity(0.08),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -120,7 +145,7 @@ class _CabsListPageState extends State<CabsListPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
               color: _secondaryColor.withOpacity(0.1),
               shape: BoxShape.circle,
@@ -131,21 +156,22 @@ class _CabsListPageState extends State<CabsListPage> {
               color: _secondaryColor,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 24),
           Text(
-            "Finding the best cabs for you...",
+            "Finding the best rides...",
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 20,
               color: _textPrimary,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w800,
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
-            "Please wait while we search available rides",
+            "Searching available cabs for your route",
             style: TextStyle(
               fontSize: 14,
-              color: _textLight,
+              color: _textSecondary,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
@@ -156,12 +182,12 @@ class _CabsListPageState extends State<CabsListPage> {
   Widget _buildErrorState(String message) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(32.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 color: _errorColor.withOpacity(0.1),
                 shape: BoxShape.circle,
@@ -172,42 +198,47 @@ class _CabsListPageState extends State<CabsListPage> {
                 color: _errorColor,
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 24),
             Text(
               "Something went wrong",
               style: TextStyle(
                 fontSize: 20,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w800,
                 color: _textPrimary,
               ),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Text(
               message,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 15,
                 color: _textSecondary,
+                height: 1.5,
               ),
             ),
-            SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () {
-                context.read<FetchCabsBloc>().add(FetchCabsEvent.fetchCabs(requestData: widget.requestData));
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _secondaryColor,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              height: 54,
+              child: ElevatedButton(
+                onPressed: () {
+                  context.read<FetchCabsBloc>().add(FetchCabsEvent.fetchCabs(requestData: widget.requestData));
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _primaryColor,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 0,
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              ),
-              child: Text(
-                "Try Again",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+                child: const Text(
+                  "Try Again",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),
@@ -224,12 +255,12 @@ class _CabsListPageState extends State<CabsListPage> {
       return SliverFillRemaining(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(32.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
                     color: _textLight.withOpacity(0.1),
                     shape: BoxShape.circle,
@@ -237,25 +268,26 @@ class _CabsListPageState extends State<CabsListPage> {
                   child: Icon(
                     Icons.search_off_rounded,
                     size: 64,
-                    color: _textLight,
+                    color: _textLight.withOpacity(0.5),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 24),
                 Text(
-                  "No cabs available",
+                  "No cabs found",
                   style: TextStyle(
                     fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w800,
                     color: _textPrimary,
                   ),
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 Text(
-                  "Try changing your search parameters or location",
+                  "No vehicles match your search or area. Try another route.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 15,
                     color: _textSecondary,
+                    height: 1.5,
                   ),
                 ),
               ],
@@ -265,233 +297,175 @@ class _CabsListPageState extends State<CabsListPage> {
       );
     }
     
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          final cabData = cabRateList[index];
-          final cab = cabData.cab;
-          final fare = cabData.fare;
-          final originalAmount = fare.totalAmount ?? 0;
+    return SliverPadding(
+      padding: const EdgeInsets.only(top: 16, bottom: 32),
+      sliver: SliverList(
+        delegate: SliverChildBuilderDelegate(
+          (context, index) {
+            final cabData = cabRateList[index];
+            final cab = cabData.cab;
+            final fare = cabData.fare;
+            final originalAmount = fare.totalAmount ?? 0;
 
-          return Container(
-            margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-            decoration: BoxDecoration(
-              color: _cardColor,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Cab Type + Fare
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Car Image
-                      Container(
-                        decoration: BoxDecoration(
-                          color: _backgroundColor,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey.shade200),
+            return Container(
+              margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              decoration: BoxDecoration(
+                color: _cardColor,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 20,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+                border: Border.all(color: Colors.grey.shade100),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Car Image
+                        Container(
+                          decoration: BoxDecoration(
+                            color: _backgroundColor,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          height: 85,
+                          width: 100,
+                          child: cab.image.isNotEmpty
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: Image.network(
+                                    cab.image,
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (context, error, stackTrace) => 
+                                        Icon(Icons.directions_car_rounded, size: 40, color: _secondaryColor),
+                                  ),
+                                )
+                              : Icon(Icons.directions_car_rounded, size: 40, color: _secondaryColor),
                         ),
-                        height: 80,
-                        width: 90,
-                        child: cab.image.isNotEmpty
-                            ? ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: Image.network(
-                                  cab.image,
-                                  fit: BoxFit.contain,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Icon(
-                                      Icons.directions_car_rounded,
-                                      size: 40,
-                                      color: _secondaryColor,
-                                    );
-                                  },
-                                ),
-                              )
-                            : Icon(
-                                Icons.directions_car_rounded,
-                                size: 40,
-                                color: _secondaryColor,
-                              ),
-                      ),
-                      const SizedBox(width: 12),
+                        const SizedBox(width: 16),
 
-                      // Cab Info
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              cab.category,
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: _textPrimary,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              cab.model,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: _textSecondary,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.event_seat_rounded,
-                                  size: 12,
+                        // Cab Info
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                cab.category.toUpperCase(),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
                                   color: _secondaryColor,
+                                  letterSpacing: 1,
                                 ),
-                                SizedBox(width: 4),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                cab.model,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w800,
+                                  color: _textPrimary,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  _buildAmenityTag(Icons.person_outline_rounded, "${cab.seatingCapacity} Seats"),
+                                  const SizedBox(width: 8),
+                                  _buildAmenityTag(Icons.work_outline_rounded, "${cab.bagCapacity} Bags"),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Fare Section
+                        FutureBuilder<double>(
+                          future: commissionProvider.calculateAmountWithCommission(originalAmount),
+                          builder: (context, snapshot) {
+                            if (commissionProvider.isLoading || snapshot.connectionState == ConnectionState.waiting) {
+                              return _buildAmountShimmer();
+                            }
+
+                            final amountWithCommission = snapshot.data ?? originalAmount;
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
                                 Text(
-                                  "${cab.seatingCapacity} seats",
+                                  "₹${amountWithCommission.toStringAsFixed(0)}",
                                   style: TextStyle(
-                                    fontSize: 12,
-                                    color: _textSecondary,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w900,
+                                    color: _textPrimary,
                                   ),
                                 ),
-                                SizedBox(width: 10),
-                                Icon(
-                                  Icons.work_rounded,
-                                  size: 12,
-                                  color: _secondaryColor,
-                                ),
-                                SizedBox(width: 4),
                                 Text(
-                                  "${cab.bagCapacity} bags",
+                                  "inc. GST",
                                   style: TextStyle(
-                                    fontSize: 12,
-                                    color: _textSecondary,
+                                    fontSize: 10,
+                                    color: _textLight,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ],
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+                    
+                    // Policy & Fuel
+                    Row(
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.local_gas_station_rounded, size: 14, color: _textLight),
+                            const SizedBox(width: 6),
+                            Text(
+                              cab.fuelType ?? "Petrol",
+                              style: TextStyle(
+                                fontSize: 12, 
+                                color: _textSecondary, 
+                                fontWeight: FontWeight.w600
+                              ),
                             ),
                           ],
                         ),
-                      ),
-
-                      // Fare Section
-                      FutureBuilder<double>(
-                        future: commissionProvider.calculateAmountWithCommission(originalAmount),
-                        builder: (context, snapshot) {
-                          if (commissionProvider.isLoading || snapshot.connectionState == ConnectionState.waiting) {
-                            return _buildAmountShimmer();
-                          }
-
-                          final amountWithCommission = snapshot.data ?? originalAmount;
-                          final hasCommission = amountWithCommission > originalAmount;
-
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                            
-                              Text(
-                                "₹${amountWithCommission.toStringAsFixed(0)}",
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: _secondaryColor,
-                                ),
-                              ),
-                              Text(
-                                "Total fare",
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: _textLight,
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 16),
-                  Divider(height: 1, color: Colors.grey.shade300),
-                  const SizedBox(height: 12),
-
-                  // Extra Info Row
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.local_gas_station_rounded,
-                        size: 16,
-                        color: _secondaryColor,
-                      ),
-                      SizedBox(width: 6),
-                      Text(
-                        cab.fuelType ?? "Petrol",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: _textSecondary,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Spacer(),
-                      Text(
-                        "Policy: ${cabData.cancellationPolicy}",
-                        style: TextStyle(
-                          color: _successColor,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // Instructions
-                  if (cab.instructions.isNotEmpty)
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 6,
-                      children: List.generate(
-                        cab.instructions.length,
-                        (i) => Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        const Spacer(),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: _secondaryColor.withOpacity(0.1),
+                            color: _successColor.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: _secondaryColor.withOpacity(0.2),
-                              width: 1,
-                            ),
                           ),
                           child: Text(
-                            cab.instructions[i],
+                            cabData.cancellationPolicy,
                             style: TextStyle(
-                              fontSize: 11,
-                              color: _secondaryColor,
-                              fontWeight: FontWeight.w500,
+                              color: _successColor, 
+                              fontSize: 11, 
+                              fontWeight: FontWeight.w800
                             ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
 
-                  if (cab.instructions.isNotEmpty) const SizedBox(height: 16),
+                    const SizedBox(height: 20),
 
-                  // Book Button
-                  Align(alignment: AlignmentGeometry.bottomRight,
-                    child: SizedBox(
-                      // width: 2,
+                    // Book Button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.push(
@@ -503,68 +477,52 @@ class _CabsListPageState extends State<CabsListPage> {
                               ),
                             ),
                           );
-                          log(cabData.toJson().toString());
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: _primaryColor, // Gold button
+                          backgroundColor: _primaryColor,
                           foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          elevation: 2,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          elevation: 0,
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 50),
-                          child: Text(
-                            "Book Now",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
+                        child: const Text(
+                          "SELECT CAR",
+                          style: TextStyle(
+                            fontSize: 14, 
+                            fontWeight: FontWeight.w800, 
+                            letterSpacing: 1.5
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          );
-        },
-        childCount: cabRateList.length,
+            );
+          },
+          childCount: cabRateList.length,
+        ),
       ),
     );
   }
 
-  // Small shimmer for amount loading
   Widget _buildAmountShimmer() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Container(
-          width: 80,
-          height: 16,
+          width: 70,
+          height: 22,
           decoration: BoxDecoration(
-            color: Colors.grey[300],
-            borderRadius: BorderRadius.circular(4),
-          ),
-        ),
-        SizedBox(height: 6),
-        Container(
-          width: 90,
-          height: 24,
-          decoration: BoxDecoration(
-            color: Colors.grey[300],
+            color: Colors.grey[200],
             borderRadius: BorderRadius.circular(6),
           ),
         ),
-        SizedBox(height: 4),
+        const SizedBox(height: 6),
         Container(
-          width: 60,
+          width: 40,
           height: 12,
           decoration: BoxDecoration(
-            color: Colors.grey[300],
+            color: Colors.grey[200],
             borderRadius: BorderRadius.circular(4),
           ),
         ),
@@ -573,161 +531,90 @@ class _CabsListPageState extends State<CabsListPage> {
   }
 
   Widget _buildShimmerLoading() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: List.generate(4, (index) => _buildShimmerCard()),
-      ),
+    return ListView.builder(
+      itemCount: 4,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.all(16),
+      itemBuilder: (context, index) => _buildShimmerCard(),
     );
   }
 
   Widget _buildShimmerCard() {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: _cardColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.grey.shade100),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 100,
+                height: 85,
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(width: 60, height: 12, color: Colors.grey[100]),
+                    const SizedBox(height: 8),
+                    Container(width: 120, height: 16, color: Colors.grey[100]),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Container(width: 50, height: 20, color: Colors.grey[100]),
+                        const SizedBox(width: 8),
+                        Container(width: 50, height: 20, color: Colors.grey[100]),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Container(width: 60, height: 24, color: Colors.grey[100]),
+            ],
           ),
+          const SizedBox(height: 20),
+          Container(width: double.infinity, height: 52, decoration: BoxDecoration(
+            color: Colors.grey[50], 
+            borderRadius: BorderRadius.circular(16)
+          )),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Cab Type + Fare (Shimmer)
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Car Image Shimmer
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  height: 80,
-                  width: 90,
-                ),
-                const SizedBox(width: 12),
+    );
+  }
 
-                // Cab Info Shimmer
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        height: 20, // Increased size
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Container(
-                        width: 140, // Increased size
-                        height: 16, // Increased size
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      // Row(
-                      //   children: [
-                      //     Container(
-                      //       width: 80, // Increased size
-                      //       height: 16, // Increased size
-                      //       decoration: BoxDecoration(
-                      //         color: Colors.grey[300],
-                      //         borderRadius: BorderRadius.circular(4),
-                      //       ),
-                      //     ),
-                      //     SizedBox(width: 20),
-                      //     Container(
-                      //       width: 80, // Increased size
-                      //       height: 16, // Increased size
-                      //       decoration: BoxDecoration(
-                      //         color: Colors.grey[300],
-                      //         borderRadius: BorderRadius.circular(4),
-                      //       ),
-                      //     ),
-                      //   ],
-                      // ),
-                    ],
-                  ),
-                ),
-
-                // Fare Shimmer
-                _buildAmountShimmer(),
-              ],
+  Widget _buildAmenityTag(IconData icon, String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: _backgroundColor,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey.shade100),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: _textSecondary),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              color: _textSecondary,
+              fontWeight: FontWeight.w700,
             ),
-
-            const SizedBox(height: 16),
-            Container(
-              width: double.infinity,
-              height: 1,
-              color: Colors.grey[300],
-            ),
-            const SizedBox(height: 12),
-
-            Row(
-              children: [
-                Container(
-                  width: 100, // Increased size
-                  height: 16, // Increased size
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                Spacer(),
-                Container(
-                  width: 140, // Increased size
-                  height: 16, // Increased size
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 12),
-
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: List.generate(
-                2,
-                (i) => Container(
-                  width: 100, // Increased size
-                  height: 32, // Increased size
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            Container(
-              width: double.infinity,
-              height: 52, // Increased size
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

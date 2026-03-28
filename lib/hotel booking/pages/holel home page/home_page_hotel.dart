@@ -524,7 +524,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: isBold ? 15 : 13,
+                        fontSize: 12,
                         fontWeight: isBold ? FontWeight.w900 : FontWeight.w700,
                         color: isDisabled ? Colors.grey[400] : maincolor1,
                       ),
@@ -606,23 +606,8 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
       height: 60,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        gradient: isEnabled
-            ? LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [secondaryColor, secondaryColor.withOpacity(0.8)],
-              )
-            : null,
-        color: isEnabled ? null : _borderColor,
-        boxShadow: isEnabled
-            ? [
-                BoxShadow(
-                  color: secondaryColor.withOpacity(0.35),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
-                ),
-              ]
-            : null,
+
+        color: isEnabled ? maincolor1 : _borderColor,
       ),
       child: ElevatedButton(
         onPressed: isEnabled
@@ -705,12 +690,11 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
   void _filterCities() {
     final query = _searchController.text.toLowerCase();
     setState(() {
-      filteredCities =
-          query.isEmpty
-              ? List.from(widget.cities)
-              : widget.cities
-                  .where((c) => c.name.toLowerCase().contains(query))
-                  .toList();
+      filteredCities = query.isEmpty
+          ? List.from(widget.cities)
+          : widget.cities
+                .where((c) => c.name.toLowerCase().contains(query))
+                .toList();
     });
   }
 
@@ -725,7 +709,7 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
     final double screenHeight = MediaQuery.of(context).size.height;
 
     return Container(
-      height: screenHeight * 0.85,
+      height: screenHeight * 0.87,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: const BorderRadius.only(
@@ -795,7 +779,7 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
                             Text(
                               "Select City",
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w900,
                                 color: maincolor1,
                                 letterSpacing: -0.5,
@@ -804,7 +788,7 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
                             Text(
                               "Where would you like to stay?",
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: 10,
                                 color: textSecondary,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -812,29 +796,6 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
                           ],
                         ),
                       ),
-                      if (widget.selectedCity != null)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: secondaryColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: secondaryColor.withOpacity(0.2),
-                              width: 1,
-                            ),
-                          ),
-                          child: Text(
-                            "Selected",
-                            style: TextStyle(
-                              color: secondaryColor,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ),
                     ],
                   ),
                 ),
@@ -844,15 +805,12 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
 
           // Search field
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.grey[50],
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: Colors.grey[200]!,
-                  width: 1,
-                ),
+                border: Border.all(color: Colors.grey[200]!, width: 1),
               ),
               child: TextField(
                 controller: _searchController,
@@ -886,138 +844,126 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
 
           // Cities list
           Expanded(
-            child:
-                widget.isLoading
-                    ? _buildShimmerList()
-                    : filteredCities.isEmpty
-                    ? _buildEmptyState()
-                    : ListView.builder(
-                        padding: const EdgeInsets.all(24),
-                        itemCount: filteredCities.length,
-                        itemBuilder: (context, index) {
-                          final city = filteredCities[index];
-                          final isSelected = city.name == widget.selectedCity;
+            child: widget.isLoading
+                ? _buildShimmerList()
+                : filteredCities.isEmpty
+                ? _buildEmptyState()
+                : ListView.builder(
+                    padding: const EdgeInsets.all(24),
+                    itemCount: filteredCities.length,
+                    itemBuilder: (context, index) {
+                      final city = filteredCities[index];
+                      final isSelected = city.name == widget.selectedCity;
 
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap:
-                                    () => widget.onCitySelected(
-                                      city.name,
-                                      city.code,
-                                    ),
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 0),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () =>
+                                widget.onCitySelected(city.name, city.code),
+                            borderRadius: BorderRadius.circular(16),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? maincolor1.withOpacity(0.02)
+                                    : Colors.white,
                                 borderRadius: BorderRadius.circular(16),
-                                child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color:
-                                        isSelected
-                                            ? maincolor1.withOpacity(0.02)
-                                            : Colors.white,
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(
-                                      color:
-                                          isSelected
-                                              ? secondaryColor.withOpacity(0.3)
-                                              : Colors.grey[100]!,
-                                      width: isSelected ? 1.5 : 1,
+                                // border: Border.all(
+                                //   color: isSelected
+                                //       ? secondaryColor.withOpacity(0.3)
+                                //       : Colors.grey[100]!,
+                                //   width: isSelected ? 1.5 : 1,
+                                // ),
+                                boxShadow: isSelected
+                                    ? [
+                                        BoxShadow(
+                                          color: secondaryColor.withOpacity(
+                                            0.05,
+                                          ),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ]
+                                    : [],
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? secondaryColor.withOpacity(0.1)
+                                          : Colors.grey[50],
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
-                                    boxShadow:
-                                        isSelected
-                                            ? [
-                                              BoxShadow(
-                                                color: secondaryColor
-                                                    .withOpacity(0.05),
-                                                blurRadius: 10,
-                                                offset: const Offset(0, 4),
-                                              ),
-                                            ]
-                                            : [],
+                                    child: Icon(
+                                      Iconsax.buildings,
+                                      color: isSelected
+                                          ? secondaryColor
+                                          : Colors.grey[400],
+                                      size: 16,
+                                    ),
                                   ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        width: 44,
-                                        height: 44,
-                                        decoration: BoxDecoration(
-                                          color:
-                                              isSelected
-                                                  ? secondaryColor
-                                                      .withOpacity(0.1)
-                                                  : Colors.grey[50],
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                        ),
-                                        child: Icon(
-                                          Iconsax.buildings,
-                                          color:
-                                              isSelected
-                                                  ? secondaryColor
-                                                  : Colors.grey[400],
-                                          size: 20,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 16),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              city.name,
-                                              style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight:
-                                                    isSelected
-                                                        ? FontWeight.w900
-                                                        : FontWeight.w600,
-                                                color:
-                                                    isSelected
-                                                        ? maincolor1
-                                                        : Colors.grey[800],
-                                              ),
-                                            ),
-                                            Text(
-                                              "Available Hotels",
-                                              style: TextStyle(
-                                                fontSize: 11,
-                                                color: textSecondary,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      if (isSelected)
-                                        Container(
-                                          padding: const EdgeInsets.all(4),
-                                          decoration: BoxDecoration(
-                                            color: secondaryColor,
-                                            shape: BoxShape.circle,
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          city.name,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: isSelected
+                                                ? FontWeight.w900
+                                                : FontWeight.w600,
+                                            color: isSelected
+                                                ? maincolor1
+                                                : Colors.grey[800],
                                           ),
-                                          child: const Icon(
-                                            Icons.check,
-                                            color: Colors.white,
-                                            size: 14,
-                                          ),
-                                        )
-                                      else
-                                        Icon(
-                                          Iconsax.arrow_right_3,
-                                          color: Colors.grey[300],
-                                          size: 16,
                                         ),
-                                    ],
+                                        Text(
+                                          "Available Hotels",
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            color: textSecondary,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
+                                  if (isSelected)
+                                    Container(
+                                      padding: const EdgeInsets.all(4),
+                                      decoration: BoxDecoration(
+                                        color: secondaryColor,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(
+                                        Icons.check,
+                                        color: Colors.white,
+                                        size: 14,
+                                      ),
+                                    )
+                                  else
+                                    Icon(
+                                      Iconsax.arrow_right_3,
+                                      color: Colors.grey[300],
+                                      size: 16,
+                                    ),
+                                ],
                               ),
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
           ),
         ],
       ),
@@ -1158,12 +1104,11 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
   @override
   void initState() {
     super.initState();
-    rooms =
-        widget.rooms.isNotEmpty
-            ? List.from(widget.rooms.map((e) => Map<String, dynamic>.from(e)))
-            : [
-              {'adults': 2, 'children': 0, 'childrenAges': <int>[]},
-            ];
+    rooms = widget.rooms.isNotEmpty
+        ? List.from(widget.rooms.map((e) => Map<String, dynamic>.from(e)))
+        : [
+            {'adults': 2, 'children': 0, 'childrenAges': <int>[]},
+          ];
     _calculateTotals();
   }
 
@@ -1367,10 +1312,7 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [
-                  maincolor1,
-                  maincolor1.withOpacity(0.85),
-                ],
+                colors: [maincolor1, maincolor1.withOpacity(0.85)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -1409,11 +1351,7 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
                     ],
                   ),
                 ),
-                Container(
-                  width: 1,
-                  height: 40,
-                  color: Colors.white24,
-                ),
+                Container(width: 1, height: 40, color: Colors.white24),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(left: 20),
@@ -1469,7 +1407,8 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
                             border: Border.all(
                               color: secondaryColor.withOpacity(0.3),
                               width: 2,
-                              style: BorderStyle.none, // Switched to dashed border look via bg
+                              style: BorderStyle
+                                  .none, // Switched to dashed border look via bg
                             ),
                             color: secondaryColor.withOpacity(0.05),
                             borderRadius: BorderRadius.circular(20),
@@ -1539,11 +1478,7 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Iconsax.tick_circle5,
-                          size: 20,
-                          color: maincolor1,
-                        ),
+                        Icon(Iconsax.tick_circle5, size: 20, color: maincolor1),
                         const SizedBox(width: 12),
                         const Text(
                           "Confirm Configuration",
@@ -1574,10 +1509,7 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: Colors.grey[100]!,
-          width: 1,
-        ),
+        border: Border.all(color: Colors.grey[100]!, width: 1),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.03),
@@ -1658,10 +1590,10 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
                   value: adultsCount,
                   minValue: 1,
                   maxValue: 4,
-                  onIncrement:
-                      () => _updateRoom(index, 'adults', adultsCount + 1),
-                  onDecrement:
-                      () => _updateRoom(index, 'adults', adultsCount - 1),
+                  onIncrement: () =>
+                      _updateRoom(index, 'adults', adultsCount + 1),
+                  onDecrement: () =>
+                      _updateRoom(index, 'adults', adultsCount - 1),
                 ),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 16),
@@ -1674,10 +1606,10 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
                   value: childrenCount,
                   minValue: 0,
                   maxValue: 3,
-                  onIncrement:
-                      () => _updateRoom(index, 'children', childrenCount + 1),
-                  onDecrement:
-                      () => _updateRoom(index, 'children', childrenCount - 1),
+                  onIncrement: () =>
+                      _updateRoom(index, 'children', childrenCount + 1),
+                  onDecrement: () =>
+                      _updateRoom(index, 'children', childrenCount - 1),
                 ),
 
                 // Children Ages if children > 0
@@ -1709,11 +1641,13 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: childrenCount,
-                    separatorBuilder: (context, _) => const SizedBox(height: 12),
+                    separatorBuilder: (context, _) =>
+                        const SizedBox(height: 12),
                     itemBuilder: (context, childIndex) {
                       final ages = rooms[index]['childrenAges'] as List<int>;
-                      final currentAge =
-                          childIndex < ages.length ? ages[childIndex] : 1;
+                      final currentAge = childIndex < ages.length
+                          ? ages[childIndex]
+                          : 1;
                       return _buildChildAgeSelector(
                         roomIndex: index,
                         childIndex: childIndex,
@@ -1818,29 +1752,26 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color:
-                enabled
-                    ? (isPrimary ? secondaryColor : Colors.white)
-                    : Colors.transparent,
+            color: enabled
+                ? (isPrimary ? secondaryColor : Colors.white)
+                : Colors.transparent,
             borderRadius: BorderRadius.circular(10),
-            boxShadow:
-                enabled && isPrimary
-                    ? [
-                      BoxShadow(
-                        color: secondaryColor.withOpacity(0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ]
-                    : [],
+            boxShadow: enabled && isPrimary
+                ? [
+                    BoxShadow(
+                      color: secondaryColor.withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : [],
           ),
           child: Icon(
             icon,
             size: 18,
-            color:
-                enabled
-                    ? (isPrimary ? maincolor1 : maincolor1)
-                    : Colors.grey[300],
+            color: enabled
+                ? (isPrimary ? maincolor1 : maincolor1)
+                : Colors.grey[300],
           ),
         ),
       ),
@@ -1882,11 +1813,7 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
             child: DropdownButtonHideUnderline(
               child: DropdownButton<int>(
                 value: age,
-                icon: Icon(
-                  Iconsax.arrow_down_1,
-                  size: 16,
-                  color: maincolor1,
-                ),
+                icon: Icon(Iconsax.arrow_down_1, size: 16, color: maincolor1),
                 dropdownColor: Colors.white,
                 borderRadius: BorderRadius.circular(16),
                 style: TextStyle(
@@ -1894,13 +1821,9 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
                   color: maincolor1,
                   fontWeight: FontWeight.w800,
                 ),
-                items:
-                    List.generate(17, (i) => i + 1).map((i) {
-                      return DropdownMenuItem(
-                        value: i,
-                        child: Text("$i years"),
-                      );
-                    }).toList(),
+                items: List.generate(17, (i) => i + 1).map((i) {
+                  return DropdownMenuItem(value: i, child: Text("$i years"));
+                }).toList(),
                 onChanged: (val) {
                   if (val != null) _updateChildAge(roomIndex, childIndex, val);
                 },
@@ -1945,13 +1868,12 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
     final query = _searchController.text.toLowerCase();
 
     setState(() {
-      filteredCountries =
-          query.isEmpty
-              ? countries.map((e) => e.name).toList()
-              : countries
-                  .where((e) => e.name.toLowerCase().contains(query))
-                  .map((e) => e.name)
-                  .toList();
+      filteredCountries = query.isEmpty
+          ? countries.map((e) => e.name).toList()
+          : countries
+                .where((e) => e.name.toLowerCase().contains(query))
+                .map((e) => e.name)
+                .toList();
     });
   }
 
@@ -1966,7 +1888,7 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
     final double screenHeight = MediaQuery.of(context).size.height;
 
     return Container(
-      height: screenHeight * 0.85,
+      height: screenHeight * 0.87,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: const BorderRadius.only(
@@ -2036,7 +1958,7 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
                             Text(
                               "Select Country",
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w900,
                                 color: maincolor1,
                                 letterSpacing: -0.5,
@@ -2045,7 +1967,7 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
                             Text(
                               "Choose your location or nationality",
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: 10,
                                 color: textSecondary,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -2053,29 +1975,6 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
                           ],
                         ),
                       ),
-                      if (widget.selectedCountry != null)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: secondaryColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: secondaryColor.withOpacity(0.2),
-                              width: 1,
-                            ),
-                          ),
-                          child: Text(
-                            "Selected",
-                            style: TextStyle(
-                              color: secondaryColor,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ),
                     ],
                   ),
                 ),
@@ -2085,15 +1984,12 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
 
           // Search field
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+            padding: const EdgeInsets.fromLTRB(24, 10, 24, 0),
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.grey[50],
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: Colors.grey[200]!,
-                  width: 1,
-                ),
+                border: Border.all(color: Colors.grey[200]!, width: 1),
               ),
               child: TextField(
                 controller: _searchController,
@@ -2127,134 +2023,125 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
 
           // Countries list
           Expanded(
-            child:
-                widget.isLoading
-                    ? _buildShimmerList()
-                    : filteredCountries.isEmpty
-                    ? _buildEmptyState()
-                    : ListView.builder(
-                        padding: const EdgeInsets.all(24),
-                        itemCount: filteredCountries.length,
-                        itemBuilder: (context, index) {
-                          final country = filteredCountries[index];
-                          final isSelected = country == widget.selectedCountry;
+            child: widget.isLoading
+                ? _buildShimmerList()
+                : filteredCountries.isEmpty
+                ? _buildEmptyState()
+                : ListView.builder(
+                    padding: const EdgeInsets.all(24),
+                    itemCount: filteredCountries.length,
+                    itemBuilder: (context, index) {
+                      final country = filteredCountries[index];
+                      final isSelected = country == widget.selectedCountry;
 
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: () => widget.onCountrySelected(country),
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 5),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () => widget.onCountrySelected(country),
+                            borderRadius: BorderRadius.circular(16),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? maincolor1.withOpacity(0.02)
+                                    : Colors.white,
                                 borderRadius: BorderRadius.circular(16),
-                                child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color:
-                                        isSelected
-                                            ? maincolor1.withOpacity(0.02)
-                                            : Colors.white,
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(
-                                      color:
-                                          isSelected
-                                              ? secondaryColor.withOpacity(0.3)
-                                              : Colors.grey[100]!,
-                                      width: isSelected ? 1.5 : 1,
+                                // border: Border.all(
+                                //   color: isSelected
+                                //       ? secondaryColor.withOpacity(0.3)
+                                //       : Colors.grey[100]!,
+                                //   width: isSelected ? 1.5 : 1,
+                                // ),
+                                boxShadow: isSelected
+                                    ? [
+                                        BoxShadow(
+                                          color: secondaryColor.withOpacity(
+                                            0.05,
+                                          ),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ]
+                                    : [],
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? secondaryColor.withOpacity(0.1)
+                                          : Colors.grey[50],
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
-                                    boxShadow:
-                                        isSelected
-                                            ? [
-                                              BoxShadow(
-                                                color: secondaryColor
-                                                    .withOpacity(0.05),
-                                                blurRadius: 10,
-                                                offset: const Offset(0, 4),
-                                              ),
-                                            ]
-                                            : [],
+                                    child: Icon(
+                                      Iconsax.flag,
+                                      color: isSelected
+                                          ? secondaryColor
+                                          : Colors.grey[400],
+                                      size: 16,
+                                    ),
                                   ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        width: 44,
-                                        height: 44,
-                                        decoration: BoxDecoration(
-                                          color:
-                                              isSelected
-                                                  ? secondaryColor
-                                                      .withOpacity(0.1)
-                                                  : Colors.grey[50],
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                        ),
-                                        child: Icon(
-                                          Iconsax.flag,
-                                          color:
-                                              isSelected
-                                                  ? secondaryColor
-                                                  : Colors.grey[400],
-                                          size: 20,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 16),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              country,
-                                              style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight:
-                                                    isSelected
-                                                        ? FontWeight.w900
-                                                        : FontWeight.w600,
-                                                color:
-                                                    isSelected
-                                                        ? maincolor1
-                                                        : Colors.grey[800],
-                                              ),
-                                            ),
-                                            Text(
-                                              "Country Profile",
-                                              style: TextStyle(
-                                                fontSize: 11,
-                                                color: textSecondary,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      if (isSelected)
-                                        Container(
-                                          padding: const EdgeInsets.all(4),
-                                          decoration: BoxDecoration(
-                                            color: secondaryColor,
-                                            shape: BoxShape.circle,
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          country,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: isSelected
+                                                ? FontWeight.w900
+                                                : FontWeight.w600,
+                                            color: isSelected
+                                                ? maincolor1
+                                                : Colors.grey[800],
                                           ),
-                                          child: const Icon(
-                                            Icons.check,
-                                            color: Colors.white,
-                                            size: 14,
-                                          ),
-                                        )
-                                      else
-                                        Icon(
-                                          Iconsax.arrow_right_3,
-                                          color: Colors.grey[300],
-                                          size: 16,
                                         ),
-                                    ],
+                                        Text(
+                                          "Country Profile",
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            color: textSecondary,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
+                                  if (isSelected)
+                                    Container(
+                                      padding: const EdgeInsets.all(4),
+                                      decoration: BoxDecoration(
+                                        color: secondaryColor,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(
+                                        Icons.check,
+                                        color: Colors.white,
+                                        size: 14,
+                                      ),
+                                    )
+                                  else
+                                    Icon(
+                                      Iconsax.arrow_right_3,
+                                      color: Colors.grey[300],
+                                      size: 16,
+                                    ),
+                                ],
                               ),
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
           ),
         ],
       ),

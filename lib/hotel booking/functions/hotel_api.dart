@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:minna/comman/core/api.dart';
-import 'package:minna/hotel%20booking/core/core.dart';
 import 'package:minna/hotel%20booking/domain/Nation%20and%20city/city.dart';
 import 'package:minna/hotel%20booking/domain/Nation%20and%20city/nation';
 import 'package:minna/hotel%20booking/domain/hotel%20list/hotel_list.dart';
@@ -39,56 +38,60 @@ class HotelApiService {
     required String checkIn,
     required String checkOut,
     required List<Map<String, dynamic>> rooms,
+    int offset = 0,
+    int limit = 200,
   }) async {
     try {
-      log('🔍 Hotel Search Request:');
-      log('   Country: $country');
+      log('🔍 Hotel Search Request via callback:');
       log('   City: $city');
       log('   Check-in: $checkIn');
       log('   Check-out: $checkOut');
       log('   Rooms: ${rooms.length}');
+      log('   Offset: $offset, Limit: $limit');
 
-      // final request = HotelSearchRequest(
-      //   country: country,
-      //   city: city,
-      //   checkIn: checkIn,
-      //   checkOut: checkOut,
-      //   rooms: rooms,
-      // );
+      // Map rooms to the format expected by the backend
+      final mappedRooms = rooms.map((room) {
+        return {
+          "Adults": room['adults'] as int? ?? 1,
+          "Children": room['children'] as int? ?? 0,
+          "ChildrenAges": room['childrenAges'] as List<int>? ?? [],
+        };
+      }).toList();
 
-      final url = Uri.parse('$baseUrl/hotel-api-search');
-      log('📡 API URL: $url');
+      final searchUrl = Uri.parse('https://mttrip.in/hotel-api-search');
+      log('📡 Search API URL: $searchUrl');
 
-      final response = await _client.post(
-        url,
+      final requestBody = {
+        "city": jsonEncode({"CityCode": city}),
+        "CheckIn": checkIn,
+        "CheckOut": checkOut,
+        "offset": offset.toString(),
+        "limit": limit.toString(),
+        "rooms": jsonEncode(mappedRooms),
+      };
 
-        body: {
-          "country": country,
-          "city": city,
-          "CheckIn": checkIn,
-          "CheckOut": checkOut,
-          "rooms": jsonEncode(rooms),
-        },
-      );
+      log('📡 Search Request body: ${jsonEncode(requestBody)}');
 
-      log('📡 Response body: ${response.body}');
+      final response = await _client.post(searchUrl, body: requestBody);
+
+      log('📡 Search Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
-        log('✅ Search successful, total hotels: ${data['totalHotels']}');
+        log('✅ Search successful, total: ${data['total']}');
         return HotelSearchResponse.fromJson(data);
       } else {
-        log('❌ API Error: ${response.statusCode} - ${response.body}');
+        log('❌ Search API Error: ${response.statusCode} - ${response.body}');
         throw ApiException(
           'API returned status code ${response.statusCode}',
           statusCode: response.statusCode,
         );
       }
     } on http.ClientException catch (e) {
-      log('❌ HTTP Client Error: $e');
+      log('❌ Search HTTP Client Error: $e');
       throw ApiException('Network error: ${e.message}');
     } catch (e, stackTrace) {
-      log('❌ Unexpected Error: $e');
+      log('❌ Search Unexpected Error: $e');
       log('Stack trace: $stackTrace');
       throw ApiException('Failed to search hotels: ${e.toString()}');
     }
@@ -98,36 +101,37 @@ class HotelApiService {
   // Basic Authentication credentials for static APIs
 
   // Base64 encoded authorization header
-  String get _basicAuth =>
-      'Basic ${base64Encode(utf8.encode('$hotelusername:$hoteluserpass'))}';
-
   Future<List<CountryModel>> getCountries() async {
-    log("getCountries----");
+    log("getCountries via callback----");
 
     try {
-      final response = await _client.get(
-        Uri.parse(
-          'http://api.tbotechnology.in/TBOHolidays_HotelAPI/CountryList',
-        ),
-        headers: {
-          'Authorization': _basicAuth,
-          'Content-Type': 'application/json',
+      final response = await _client.post(
+        Uri.parse('$baseUrl/hotel-api-call-basic'),
+        body: {
+          'url': 'CountryList',
+          'isLive': liveOrStage.toString(),
+          'datas': json.encode(
+            [],
+          ), // Empty array as per TBO spec for CountryList
         },
       );
 
-      log(response.body);
+      log('Response from callback (CountryList): ${response.body}');
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data['Status']['Code'] == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final data = responseData['data'];
+
+        if (data != null && data['Status']['Code'] == 200) {
           final List<dynamic> countryList = data['CountryList'];
           return countryList
               .map((json) => CountryModel.fromJson(json))
               .toList();
         } else {
-          throw Exception(
-            'Failed to load countries: ${data['Status']['Description']}',
-          );
+          final errorMessage = data != null
+              ? data['Status']['Description']
+              : 'Unknown error from backend';
+          throw Exception('Failed to load countries: $errorMessage');
         }
       } else {
         throw Exception(
@@ -135,35 +139,38 @@ class HotelApiService {
         );
       }
     } catch (e) {
-      log(e.toString());
+      log('Error in getCountries: ${e.toString()}');
       throw Exception('Failed to load countries: $e');
     }
   }
 
   Future<List<HotelCityHotel>> getCities(String countryCode) async {
-    log("getCities----");
+    log("getCities via callback----");
 
     try {
       final response = await _client.post(
-        Uri.parse('http://api.tbotechnology.in/TBOHolidays_HotelAPI/CityList'),
-        headers: {
-          'Authorization': _basicAuth,
-          'Content-Type': 'application/json',
+        Uri.parse('$baseUrl/hotel-api-call-basic'),
+        body: {
+          'url': 'CityList',
+          'isLive': liveOrStage.toString(),
+          'datas': json.encode({'CountryCode': countryCode}),
         },
-        body: json.encode({'CountryCode': countryCode}),
       );
 
-      log(response.body);
+      log('Response from callback (CityList): ${response.body}');
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data['Status']['Code'] == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final data = responseData['data'];
+
+        if (data != null && data['Status']['Code'] == 200) {
           final List<dynamic> cityList = data['CityList'];
           return cityList.map((json) => HotelCityHotel.fromJson(json)).toList();
         } else {
-          throw Exception(
-            'Failed to load cities: ${data['Status']['Description']}',
-          );
+          final errorMessage = data != null
+              ? data['Status']['Description']
+              : 'Unknown error from backend';
+          throw Exception('Failed to load cities: $errorMessage');
         }
       } else {
         throw Exception(
@@ -171,7 +178,7 @@ class HotelApiService {
         );
       }
     } catch (e) {
-      log(e.toString());
+      log('Error in getCities: ${e.toString()}');
       throw Exception('Failed to load cities: $e');
     }
   }

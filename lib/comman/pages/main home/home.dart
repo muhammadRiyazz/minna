@@ -109,33 +109,6 @@ class _HomeContentPageState extends State<HomeContentPage> {
   final TextEditingController _searchController = TextEditingController();
   String _searchText = '';
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   // Travel Offers Data with working image URLs
   final List<Map<String, dynamic>> _travelOffers = [
     {
@@ -468,11 +441,8 @@ class _HomeContentPageState extends State<HomeContentPage> {
                   child: Image.asset(
                     'asset/mtlogo.jpg',
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Icon(
-                      Iconsax.airplane,
-                      color: secondaryColor,
-                      size: 18,
-                    ),
+                    errorBuilder: (context, error, stackTrace) =>
+                        Icon(Iconsax.airplane, color: secondaryColor, size: 18),
                   ),
                 ),
               ),
@@ -1616,11 +1586,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
         children: [
           Row(
             children: [
-              Icon(
-                Iconsax.trend_up,
-                color: maincolor1,
-                size: headingFontSize,
-              ),
+              Icon(Iconsax.trend_up, color: maincolor1, size: headingFontSize),
               SizedBox(width: 8),
               Shimmer.fromColors(
                 baseColor: Colors.grey[300]!,
@@ -1885,7 +1851,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
               crossAxisCount: 4,
               crossAxisSpacing: 12,
               mainAxisSpacing: 16,
-              childAspectRatio: 0.8,
+              childAspectRatio: 0.7,
             ),
             itemCount: _travelServices.length,
             itemBuilder: (context, index) {
@@ -2000,13 +1966,14 @@ class _HomeContentPageState extends State<HomeContentPage> {
           ),
           const SizedBox(height: 20),
           GridView.builder(
+            padding: EdgeInsets.all(0),
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 4,
               crossAxisSpacing: 12,
               mainAxisSpacing: 16,
-              childAspectRatio: 0.75,
+              childAspectRatio: 0.7,
             ),
             itemCount: _quickServices.length,
             itemBuilder: (context, index) {
@@ -2046,7 +2013,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
               size: isSmallScreen ? 18 : 22,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 6),
           Text(
             service['label'],
             style: TextStyle(
@@ -2129,6 +2096,27 @@ class _HomeContentPageState extends State<HomeContentPage> {
                   color: Colors.white.withOpacity(0.7),
                   fontSize: 14,
                   height: 1.5,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: secondaryColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Text(
+                  'Explore Collections',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
                 ),
               ),
             ],

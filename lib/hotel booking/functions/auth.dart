@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:http/http.dart' as http;
-import 'package:minna/hotel%20booking/core/core.dart';
 import 'package:minna/hotel%20booking/domain/authentication/authendication.dart';
 
 class AuthApiService {
@@ -10,23 +9,22 @@ class AuthApiService {
   factory AuthApiService() => _instance;
   AuthApiService._internal();
 
-  static const String _baseAuthUrl = 'http://Sharedapi.tektravels.com/SharedData.svc/rest';
-  static const String _baseHotelUrl = 'https://affiliate.tektravels.com/HotelAPI';
+  static const String _baseUrl = 'https://mttrip.in';
 
-  String? _tokenId;
+  String? _token;
   Member? _currentMember;
   String _clientId = 'ApiIntegrationNew';
-  
+
   // Get current IP address
   String get _endUserIp => '192.168.1.1'; // Replace with actual IP detection
 
   // Get current authentication info
   AuthInfo? get authInfo {
-    if (_tokenId == null || _currentMember == null) {
+    if (_token == null || _currentMember == null) {
       return null;
     }
     return AuthInfo(
-      tokenId: _tokenId!,
+      token: _token!,
       member: _currentMember!,
       clientId: _clientId,
       endUserIp: _endUserIp,
@@ -34,48 +32,72 @@ class AuthApiService {
   }
 
   // Check if authenticated
-  bool get isAuthenticated => _tokenId != null && _currentMember != null;
+  bool get isAuthenticated => _token != null && _currentMember != null;
 
   Future<ApiResult<AuthenticateResponse>> authenticate() async {
-    log('authenticate ------------------------------');
+    log('authenticate mttrip ------------------------------');
     try {
-      final request = AuthenticateRequest(
-        clientId: _clientId,
-        userName: "Rinoware",
-        password: "Rinoware@123",
-        endUserIp: _endUserIp,
+      final response = await http.get(
+        Uri.parse('$_baseUrl/hotel-api-authenticateApi'),
+        headers: {'Content-Type': 'application/json'},
       );
 
-      final response = await http.post(
-        Uri.parse('$_baseAuthUrl/Authenticate'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(request.toJson()),
-      );
-      
       log('authenticate respo--');
       log(response.body);
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final authResponse = AuthenticateResponse.fromJson(data);
-        
+
         if (authResponse.isSuccess) {
-          _tokenId = authResponse.tokenId;
+          _token = authResponse.token;
           _currentMember = authResponse.member;
           return ApiResult.success(authResponse);
         } else {
-          return ApiResult.error('Authentication failed: ${authResponse.error.errorMessage}');
+          return ApiResult.error(
+            'Authentication failed: ${authResponse.message ?? "Unknown error"}',
+          );
         }
       } else {
         return ApiResult.error('HTTP Error: ${response.statusCode}');
       }
     } catch (e) {
+      log('Authenticate Error: $e');
+      return ApiResult.error('Network error: $e');
+    }
+  }
+
+  Future<ApiResult<ServiceChargeResponse>> getServiceCharge() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_baseUrl/hotel-api-get-service-charge'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      log('Service Charge Response: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final chargeResponse = ServiceChargeResponse.fromJson(data);
+
+        if (chargeResponse.status) {
+          return ApiResult.success(chargeResponse);
+        } else {
+          return ApiResult.error('Failed to get service charge');
+        }
+      } else {
+        return ApiResult.error('HTTP Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      log('Service Charge Error: $e');
       return ApiResult.error('Network error: $e');
     }
   }
 
   Future<ApiResult<AgencyBalanceResponse>> getAgencyBalance() async {
-    if (_tokenId == null || _currentMember == null) {
+    // Note: The user didn't provide a new endpoint for balance,
+    // keeping the old one for now but it may need update to mttrip.in
+    if (_token == null || _currentMember == null) {
       return ApiResult.error('Please authenticate first');
     }
 
@@ -85,25 +107,27 @@ class AuthApiService {
         tokenAgencyId: _currentMember!.agencyId.toString(),
         tokenMemberId: _currentMember!.memberId.toString(),
         endUserIp: _endUserIp,
-        tokenId: _tokenId!,
+        tokenId: _token!,
       );
 
       final response = await http.post(
-        Uri.parse('$_baseAuthUrl/GetAgencyBalance'),
+        Uri.parse(
+          'http://Sharedapi.tektravels.com/SharedData.svc/rest/GetAgencyBalance',
+        ),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(request.toJson()),
       );
-      
-      log(response.body);
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final balanceResponse = AgencyBalanceResponse.fromJson(data);
-        
+
         if (balanceResponse.isSuccess) {
           return ApiResult.success(balanceResponse);
         } else {
-          return ApiResult.error('Failed to get balance: ${balanceResponse.error.errorMessage}');
+          return ApiResult.error(
+            'Failed to get balance: ${balanceResponse.error.errorMessage}',
+          );
         }
       } else {
         return ApiResult.error('HTTP Error: ${response.statusCode}');
@@ -113,12 +137,11 @@ class AuthApiService {
     }
   }
 
-  // UPDATED: PreBook with authentication info included
+  // UPDATED: PreBook using mttrip.in endpoint
   Future<ApiResult<PreBookResponseWithAuth>> preBookRoomWithAuth({
     required String bookingCode,
   }) async {
     try {
-      // First ensure we're authenticated
       if (!isAuthenticated) {
         final authResult = await authenticate();
         if (!authResult.isSuccess) {
@@ -126,21 +149,21 @@ class AuthApiService {
         }
       }
 
-      // Now make the prebook call
-      final preBookResult = await _preBookRoomInternal(bookingCode: bookingCode);
-      
+      final preBookResult = await _preBookRoomInternal(
+        bookingCode: bookingCode,
+      );
+
       if (preBookResult.isSuccess) {
-        // Wrap the response with authentication info
-        final responseWithAuth = PreBookResponseWithAuth(
-          preBookResponse: preBookResult.data!,
-          tokenId: _tokenId!,
-          agencyId: _currentMember!.agencyId,
-          memberId: _currentMember!.memberId,
-          endUserIp: _endUserIp,
-          clientId: _clientId,
+        return ApiResult.success(
+          PreBookResponseWithAuth(
+            preBookResponse: preBookResult.data!,
+            token: _token!,
+            agencyId: _currentMember!.agencyId,
+            memberId: _currentMember!.memberId,
+            endUserIp: _endUserIp,
+            clientId: _clientId,
+          ),
         );
-        
-        return ApiResult.success(responseWithAuth);
       } else {
         return ApiResult.error(preBookResult.error ?? 'Prebook failed');
       }
@@ -150,71 +173,59 @@ class AuthApiService {
     }
   }
 
-  // Internal prebook method (without auth)
   Future<ApiResult<PreBookResponse>> _preBookRoomInternal({
     required String bookingCode,
   }) async {
+    log('preBookRoomInternal ------------------------------$bookingCode');
     try {
-      final String basicAuth = 'Basic ${base64Encode(utf8.encode('$livehotelusername:$livehoteluserpass'))}';
-      final request = PreBookRequest(bookingCode: bookingCode);
-
       final response = await http.post(
-        Uri.parse('$_baseHotelUrl/PreBook'),
-        headers: {
-          'Authorization': basicAuth,
-          'Content-Type': 'application/json',
-        },
-        body: json.encode(request.toJson()),
+        Uri.parse('$_baseUrl/hotel-api-prebook'),
+        body: {'bookingCode': bookingCode},
       );
 
-      log('PreBook Request: ${json.encode(request.toJson())}');
+      log('PreBook Request: ${json.encode({'bookingCode': bookingCode})}');
       log('PreBook Response: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final preBookResponse = PreBookResponse.fromJson(data);
+        final apiWrapper = PreBookApiResponse.fromJson(data);
 
-        if (preBookResponse.isSuccess) {
-          return ApiResult.success(preBookResponse);
+        if (apiWrapper.isSuccess && apiWrapper.data != null) {
+          return ApiResult.success(apiWrapper.data);
         } else {
           return ApiResult.error(
-            'Pre-book failed: ${preBookResponse.status.description}',
+            apiWrapper.message.isNotEmpty
+                ? apiWrapper.message
+                : 'Pre-book failed',
           );
         }
       } else {
         return ApiResult.error('HTTP Error: ${response.statusCode}');
       }
     } catch (e) {
-      log('PreBook Error: $e');
+      log('_preBookRoomInternal Error: $e');
       return ApiResult.error('Network error: $e');
     }
   }
 
-  // Helper method to check if user has sufficient balance
-  Future<bool> checkSufficientBalance(double roomAmount) async {
-    final balanceResult = await getAgencyBalance();
-    if (balanceResult.isSuccess) {
-      final balance = balanceResult.data!;
-      return balance.cashBalance >= roomAmount;
-    }
-    return false;
-  }
+  // Future<bool> checkSufficientBalance(double roomAmount) async {
+  //   final balanceResult = await getAgencyBalance();
+  //   if (balanceResult.isSuccess) {
+  //     return balanceResult.data!.cashBalance >= roomAmount;
+  //   }
+  //   return false;
+  // }
 
-  // Clear session
   void clearSession() {
-    _tokenId = null;
+    _token = null;
     _currentMember = null;
   }
 
-  // Get confirmation data for navigation
   ConfirmationData? getConfirmationData(PreBookResponse preBookResponse) {
-    if (!isAuthenticated) {
-      return null;
-    }
-    
+    if (!isAuthenticated) return null;
     return ConfirmationData(
       preBookResponse: preBookResponse,
-      tokenId: _tokenId!,
+      token: _token!,
       agencyId: _currentMember!.agencyId,
       memberId: _currentMember!.memberId,
       endUserIp: _endUserIp,
@@ -225,13 +236,13 @@ class AuthApiService {
 
 // Helper class for authentication info
 class AuthInfo {
-  final String tokenId;
+  final String token;
   final Member member;
   final String clientId;
   final String endUserIp;
 
   AuthInfo({
-    required this.tokenId,
+    required this.token,
     required this.member,
     required this.clientId,
     required this.endUserIp,
@@ -240,7 +251,7 @@ class AuthInfo {
   ConfirmationData toConfirmationData(PreBookResponse preBookResponse) {
     return ConfirmationData(
       preBookResponse: preBookResponse,
-      tokenId: tokenId,
+      token: token,
       agencyId: member.agencyId,
       memberId: member.memberId,
       endUserIp: endUserIp,

@@ -45,16 +45,17 @@ class _BookingPageState extends State<BookingPage> {
   late CommissionProvider commissionProvider;
 
   // Color Theme
-  final Color _primaryColor = Colors.black;
-  final Color _secondaryColor = Color(0xFFD4AF37);
-  final Color _accentColor = Color(0xFFC19B3C);
-  final Color _backgroundColor = Color(0xFFF8F9FA);
-  final Color _cardColor = Colors.white;
-  final Color _textPrimary = Colors.black;
-  final Color _textSecondary = Color(0xFF666666);
-  final Color _textLight = Color(0xFF999999);
-  final Color _errorColor = Color(0xFFE53935);
-  final Color _successColor = Color(0xFF00C853);
+  // Color Theme
+  final Color _primaryColor = maincolor1;
+  final Color _secondaryColor = secondaryColor;
+  final Color _accentColor = accentColor;
+  final Color _backgroundColor = backgroundColor;
+  final Color _cardColor = cardColor;
+  final Color _textPrimary = textPrimary;
+  final Color _textSecondary = textSecondary;
+  final Color _textLight = textLight;
+  final Color _errorColor = errorColor;
+  final Color _successColor = const Color(0xFF0D9488);
 
   @override
   void initState() {
@@ -232,176 +233,181 @@ class _BookingPageState extends State<BookingPage> {
 
     return Scaffold(
       backgroundColor: _backgroundColor,
-      appBar: AppBar(
-        title: Text(
-          "Cab Booking",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          // Premium Sliver App Bar
+          SliverAppBar(
+            expandedHeight: 120.0,
+            floating: false,
+            pinned: true,
+            backgroundColor: _primaryColor,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+              onPressed: () => Navigator.pop(context),
+            ),
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: true,
+              title: const Text(
+                'Passenger Details',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              background: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [_primaryColor, _primaryColor.withOpacity(0.8)],
+                  ),
+                ),
+              ),
+            ),
           ),
-        ),
-        centerTitle: true,
-        backgroundColor: _primaryColor,
-        foregroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Selected Cab Card
-            _buildCabCard(cab),
-            const SizedBox(height: 24),
 
-            // Passenger Information Section
-            _buildSectionHeader("Passenger Information"),
-            const SizedBox(height: 16),
-            _buildPassengerInfoForm(),
+          SliverPadding(
+            padding: const EdgeInsets.all(16),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                // Selected Cab Card
+                _buildCabCard(cab),
+                const SizedBox(height: 24),
 
-            const SizedBox(height: 24),
+                // Passenger Information Section
+                _buildSectionHeader("PASSENGER CONTACT"),
+                const SizedBox(height: 16),
+                _buildPassengerInfoForm(),
 
-            // Additional Information Section
-            _buildSectionHeader("Additional Information", optional: true),
-            const SizedBox(height: 16),
-            _buildAdditionalInfoSection(),
+                const SizedBox(height: 24),
 
-            const SizedBox(height: 32),
+                // Additional Information Section
+                _buildSectionHeader("ADDITIONAL DETAILS", optional: true),
+                const SizedBox(height: 16),
+                _buildAdditionalInfoSection(),
 
-            // Confirm Booking Button
-            _buildConfirmButton(),
-          ],
-        ),
+                const SizedBox(height: 40),
+
+                // Confirm Booking Button
+                _buildConfirmButton(),
+                const SizedBox(height: 40),
+              ]),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildCabCard(CabRate cab) {
     return Container(
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: _cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacity(0.04),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
         ],
+        border: Border.all(color: Colors.grey.shade100),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Row(
+      child: Row(
+        children: [
+          // Car Image
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: _backgroundColor,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            height: 70,
+            width: 85,
+            child: cab.cab.image.isNotEmpty
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.network(
+                      cab.cab.image,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) => 
+                          Icon(Icons.directions_car_rounded, size: 30, color: _secondaryColor),
+                    ),
+                  )
+                : Icon(Icons.directions_car_rounded, size: 30, color: _secondaryColor),
+          ),
+          const SizedBox(width: 16),
+
+          // Cab Info
+          Expanded(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Car Image
-                Container(
-                  width: 100,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: _backgroundColor,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.grey.shade200),
+                Text(
+                  cab.cab.category.toUpperCase(),
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    color: _secondaryColor,
+                    letterSpacing: 1,
                   ),
-                  child: cab.cab.image.isNotEmpty
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: Image.network(
-                            cab.cab.image,
-                            fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Center(
-                                child: Icon(
-                                  Icons.directions_car_rounded,
-                                  size: 40,
-                                  color: _secondaryColor,
-                                ),
-                              );
-                            },
-                          ),
-                        )
-                      : Center(
-                          child: Icon(
-                            Icons.directions_car_rounded,
-                            size: 40,
-                            color: _secondaryColor,
-                          ),
-                        ),
                 ),
-                const SizedBox(width: 16),
-
-                // Cab Info
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        cab.cab.category,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: _textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        cab.cab.model,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: _textSecondary,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                    ],
+                const SizedBox(height: 4),
+                Text(
+                  cab.cab.model,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: _textPrimary,
                   ),
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Icon(Icons.person_outline_rounded, size: 12, color: _textSecondary),
+                    const SizedBox(width: 4),
+                    Text(
+                      "${cab.cab.seatingCapacity} Seats",
+                      style: TextStyle(fontSize: 11, color: _textSecondary, fontWeight: FontWeight.w600),
+                    ),
+                  ],
                 ),
               ],
             ),
-          
-            // Row(
-            //   children: [
-            //     _buildInfoItem(
-            //       icon: Icons.local_gas_station_rounded,
-            //       text: cab.cab.fuelType ?? "Petrol",
-            //     ),
-            //     Spacer(),
-            //     _buildInfoItem(
-            //       icon: Icons.policy_rounded,
-            //       text: "Free cancellation",
-            //       textColor: _successColor,
-            //     ),
-            //   ],
-            // ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildSectionHeader(String title, {bool optional = false}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
       children: [
         Text(
           title,
           style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: _textPrimary,
+            fontSize: 12,
+            fontWeight: FontWeight.w800,
+            color: _textLight,
+            letterSpacing: 1,
           ),
         ),
-        if (optional)
+        if (optional) ...[
+          const SizedBox(width: 8),
           Text(
-            "(Optional)",
+            "(OPTIONAL)",
             style: TextStyle(
-              fontSize: 14,
-              color: _textLight,
+              fontSize: 10,
+              color: _textLight.withOpacity(0.6),
+              fontWeight: FontWeight.w800,
             ),
           ),
+        ],
       ],
     );
   }
@@ -511,20 +517,24 @@ class _BookingPageState extends State<BookingPage> {
   }
 
   Widget _buildCountryCodeField(String code) {
-    return TextFormField(
-      initialValue: code,
-      readOnly: true,
-      decoration: InputDecoration(
-        labelText: "Code",
-        labelStyle: TextStyle(color: _textSecondary),
-        border: _outlineInputBorder(),
-        enabledBorder: _outlineInputBorder(),
-        focusedBorder: _outlineInputBorder(_secondaryColor),
-        contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-        isDense: true,
-        // suffixIcon: Icon(Icons.lock_outline_rounded, size: 16, color: _textLight),
+    return Container(
+      decoration: BoxDecoration(
+        color: _backgroundColor,
+        borderRadius: BorderRadius.circular(16),
       ),
-      style: TextStyle(fontSize: 13, color: _textPrimary),
+      child: TextFormField(
+        initialValue: code,
+        readOnly: true,
+        textAlign: TextAlign.center,
+        decoration: InputDecoration(
+          labelText: "CODE",
+          labelStyle: TextStyle(color: _textLight, fontSize: 10, fontWeight: FontWeight.w800),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 16),
+          isDense: true,
+        ),
+        style: TextStyle(fontSize: 14, color: _textPrimary, fontWeight: FontWeight.bold),
+      ),
     );
   }
 
@@ -709,17 +719,21 @@ class _BookingPageState extends State<BookingPage> {
       initialValue: initialValue,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(color: _textSecondary,fontSize: 12),
+        labelStyle: TextStyle(color: _textLight, fontSize: 12, fontWeight: FontWeight.w600),
         prefixIcon: prefixIcon != null
             ? Icon(prefixIcon, color: _secondaryColor, size: 20)
             : null,
-        border: _outlineInputBorder(),
-        enabledBorder: _outlineInputBorder(),
+        filled: true,
+        fillColor: _backgroundColor,
+        border: _outlineInputBorder(Colors.transparent),
+        enabledBorder: _outlineInputBorder(Colors.transparent),
         focusedBorder: _outlineInputBorder(_secondaryColor),
+        errorBorder: _outlineInputBorder(_errorColor),
+        focusedErrorBorder: _outlineInputBorder(_errorColor),
         contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
         isDense: true,
       ),
-      style: TextStyle(fontSize: 13, color: _textPrimary),
+      style: TextStyle(fontSize: 14, color: _textPrimary, fontWeight: FontWeight.w600),
       keyboardType: keyboardType,
       maxLines: maxLines,
       validator: validator,
@@ -776,8 +790,8 @@ class _BookingPageState extends State<BookingPage> {
 
   OutlineInputBorder _outlineInputBorder([Color color = Colors.grey]) {
     return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(color: color.withOpacity(0.3), width: 1.5),
+      borderRadius: BorderRadius.circular(16),
+      borderSide: BorderSide(color: color.withOpacity(0.5), width: 1.5),
     );
   }
 }
