@@ -195,10 +195,10 @@ void showAirportBottomSheet(BuildContext context, {required bool isFrom}) {
                               Container(
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFD4AF37).withOpacity(0.1),
+                                  color: secondaryColor.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(14),
                                 ),
-                                child: const Icon(Icons.flight_rounded, color: Color(0xFFD4AF37)),
+                                child: Icon(Icons.flight_rounded, color: secondaryColor),
                               ),
                               const SizedBox(width: 16),
                               Expanded(
@@ -209,9 +209,10 @@ void showAirportBottomSheet(BuildContext context, {required bool isFrom}) {
                                       children: [
                                         Text(
                                           airport.code,
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontWeight: FontWeight.w800,
                                             fontSize: 15,
+                                            color: textPrimary,
                                           ),
                                         ),
                                         const SizedBox(width: 8),
@@ -226,7 +227,7 @@ void showAirportBottomSheet(BuildContext context, {required bool isFrom}) {
                                             style: TextStyle(
                                               fontSize: 9,
                                               fontWeight: FontWeight.bold,
-                                              color: Colors.grey[600],
+                                              color: textSecondary,
                                             ),
                                           ),
                                         ),
@@ -237,7 +238,7 @@ void showAirportBottomSheet(BuildContext context, {required bool isFrom}) {
                                       airport.name,
                                       style: TextStyle(
                                         fontSize: 14,
-                                        color: Colors.grey[800],
+                                        color: textPrimary,
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
@@ -245,7 +246,7 @@ void showAirportBottomSheet(BuildContext context, {required bool isFrom}) {
                                       airport.countryCode,
                                       style: TextStyle(
                                         fontSize: 12,
-                                        color: Colors.grey[500],
+                                        color: textSecondary,
                                       ),
                                     ),
                                   ],

@@ -3,6 +3,7 @@ import 'package:minna/flight/domain/fare%20request%20and%20respo/fare_respo.dart
 import 'package:minna/flight/presendation/booking%20page/widget.dart/flightLeg.dart';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 
 class FlightbookingCard extends StatelessWidget {
@@ -12,14 +13,7 @@ class FlightbookingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Theme colors
-    final Color primaryColor = Colors.black;
-    final Color secondaryColor = Color(0xFFD4AF37);
-    final Color backgroundColor = Color(0xFFF8F9FA);
-    final Color cardColor = Colors.white;
-    final Color textPrimary = Colors.black;
-    final Color textSecondary = Color(0xFF666666);
-    final Color textLight = Color(0xFF999999);
+    // Theme colors are now used from minna/comman/const/const.dart
 
     // Safely get onward and return legs with null checks
     final onwardLegs = flightOption.flightOnwardLegs ?? [];
@@ -72,12 +66,13 @@ class FlightbookingCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.grey.shade100, width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: Offset(0, 4),
+            color: maincolor1.withOpacity(0.04),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -87,36 +82,44 @@ class FlightbookingCard extends StatelessWidget {
           // Header
           Container(
             width: double.infinity,
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              // color: _secondaryColor.withOpacity(0.1),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
+              color: maincolor1.withOpacity(0.02),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(24),
               ),
             ),
             child: Row(
               children: [
                 Container(
-                  padding: EdgeInsets.all(6),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: secondaryColor,
+                    color: maincolor1.withOpacity(0.05),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
-                    Icons.flight_takeoff_rounded,
-                    size: 16,
-                    color: Colors.white,
-                  ),
+                  child: Icon(Iconsax.airplane, size: 20, color: maincolor1),
                 ),
-                SizedBox(width: 12),
-                Text(
-                  'Flight Details',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: primaryColor,
-                  ),
+                const SizedBox(width: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Flight Itinerary',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                        color: maincolor1,
+                      ),
+                    ),
+                    Text(
+                      'Review your travel journey details',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: textSecondary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -155,7 +158,7 @@ class FlightbookingCard extends StatelessWidget {
                                 Container(
                                   color: backgroundColor,
                                   child: Icon(
-                                    Icons.airlines_rounded,
+                                    Iconsax.airplane,
                                     color: secondaryColor,
                                     size: 20,
                                   ),
@@ -174,7 +177,7 @@ class FlightbookingCard extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
-                                color: primaryColor,
+                                color: textPrimary,
                               ),
                             ),
                             SizedBox(height: 2),
@@ -229,7 +232,7 @@ class FlightbookingCard extends StatelessWidget {
                     arrivalTime: onwardArrivalTime,
                     duration: onwardDuration!,
                     stops: onwardStops,
-                    primaryColor: primaryColor,
+                    primaryColor: maincolor1,
                     secondaryColor: secondaryColor,
                     textSecondary: textSecondary,
                   ),
@@ -247,7 +250,7 @@ class FlightbookingCard extends StatelessWidget {
                     arrivalTime: returnArrivalTime,
                     duration: returnDuration!,
                     stops: returnStops,
-                    primaryColor: primaryColor,
+                    primaryColor: maincolor1,
                     secondaryColor: secondaryColor,
                     textSecondary: textSecondary,
                   ),
@@ -255,75 +258,89 @@ class FlightbookingCard extends StatelessWidget {
 
                 SizedBox(height: 16),
 
-                // Flight Legs Expansion
                 if (onwardLegs.isNotEmpty || returnLegs.isNotEmpty)
                   Container(
+                    margin: const EdgeInsets.only(top: 16),
                     decoration: BoxDecoration(
                       color: backgroundColor,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey.shade200),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.grey.shade100),
                     ),
-                    child: ExpansionTile(
-                      collapsedIconColor: secondaryColor,
-                      iconColor: secondaryColor,
-                      tilePadding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      title: Row(
+                    child: Theme(
+                      data: Theme.of(
+                        context,
+                      ).copyWith(dividerColor: Colors.transparent),
+                      child: ExpansionTile(
+                        collapsedIconColor: maincolor1,
+                        iconColor: maincolor1,
+                        tilePadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 4,
+                        ),
+                        collapsedBackgroundColor: maincolor1.withOpacity(0.02),
+                        backgroundColor: Colors.transparent,
+                        collapsedShape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        title: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: maincolor1.withOpacity(0.05),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Iconsax.clipboard_text,
+                                size: 16,
+                                color: maincolor1,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Text(
+                              'Detailed Flight Legs',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w800,
+                                color: maincolor1,
+                              ),
+                            ),
+                          ],
+                        ),
                         children: [
-                          Container(
-                            padding: EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: secondaryColor.withOpacity(0.1),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.list_alt_rounded,
-                              size: 16,
-                              color: secondaryColor,
-                            ),
-                          ),
-                          SizedBox(width: 12),
-                          Text(
-                            'Detailed Flight Legs',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: primaryColor,
+                          Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              children: [
+                                // Onward Legs
+                                if (onwardLegs.isNotEmpty) ...[
+                                  _buildLegsSection(
+                                    title: 'Onward Journey Legs',
+                                    legs: onwardLegs,
+                                    primaryColor: maincolor1,
+                                    secondaryColor: secondaryColor,
+                                    textSecondary: textSecondary,
+                                  ),
+                                  if (returnLegs.isNotEmpty)
+                                    const SizedBox(height: 20),
+                                ],
+                                // Return Legs
+                                if (returnLegs.isNotEmpty)
+                                  _buildLegsSection(
+                                    title: 'Return Journey Legs',
+                                    legs: returnLegs,
+                                    primaryColor: maincolor1,
+                                    secondaryColor: secondaryColor,
+                                    textSecondary: textSecondary,
+                                  ),
+                              ],
                             ),
                           ),
                         ],
                       ),
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(12),
-                          child: Column(
-                            children: [
-                              // Onward Legs
-                              if (onwardLegs.isNotEmpty) ...[
-                                _buildLegsSection(
-                                  title: 'Onward Journey Legs',
-                                  legs: onwardLegs,
-                                  primaryColor: primaryColor,
-                                  secondaryColor: secondaryColor,
-                                  textSecondary: textSecondary,
-                                ),
-                                if (returnLegs.isNotEmpty) SizedBox(height: 20),
-                              ],
-                              // Return Legs
-                              if (returnLegs.isNotEmpty)
-                                _buildLegsSection(
-                                  title: 'Return Journey Legs',
-                                  legs: returnLegs,
-                                  primaryColor: primaryColor,
-                                  secondaryColor: secondaryColor,
-                                  textSecondary: textSecondary,
-                                ),
-                            ],
-                          ),
-                        ),
-                      ],
                     ),
                   ),
               ],
@@ -364,11 +381,7 @@ class FlightbookingCard extends StatelessWidget {
                   color: secondaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: Icon(
-                  Icons.flight_rounded,
-                  size: 14,
-                  color: secondaryColor,
-                ),
+                child: Icon(Iconsax.airplane, size: 14, color: secondaryColor),
               ),
               SizedBox(width: 8),
               Text(
@@ -466,7 +479,7 @@ class FlightbookingCard extends StatelessWidget {
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
-                            Icons.flight_rounded,
+                            Iconsax.airplane,
                             size: 14,
                             color: Colors.white,
                           ),
@@ -530,11 +543,7 @@ class FlightbookingCard extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  Icons.calendar_today_rounded,
-                  size: 12,
-                  color: secondaryColor,
-                ),
+                Icon(Iconsax.calendar_1, size: 14, color: secondaryColor),
                 SizedBox(width: 6),
                 Text(
                   DateFormat('MMM dd, yyyy').format(departureTime),

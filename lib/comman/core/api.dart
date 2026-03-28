@@ -12,3 +12,6 @@ const String baseUrl = "https://tictechnologies.in/stage/minna/";
 //- test - rzp_test_Dr1h8dVI9Vimy9
 
 final String locationapiKey = 'AIzaSyAGmdSqGPgz_-Qoc669E8U7pHNTAJWGGSU';
+
+
+ String cabauth  = 'Basic NzUzNjQ1ODYzMDBlMzQ3MWRjNGYwNTJkNTIxYTM5MzM=';

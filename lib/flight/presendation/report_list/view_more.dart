@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:minna/flight/domain/report/report_model.dart';
 import 'package:minna/flight/presendation/report%20details/report_details.dart';
+import 'package:minna/comman/const/const.dart';
 
 class FlightAllReportsPage extends StatefulWidget {
   final List<ReportData> allReports;
@@ -19,17 +20,7 @@ class FlightAllReportsPage extends StatefulWidget {
 
 class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
   // Theme Colors
-  final Color _primaryColor = Colors.black;
-  final Color _secondaryColor = Color(0xFFD4AF37);
-  final Color _accentColor = Color(0xFFC19B3C);
-  final Color _backgroundColor = Color(0xFFF8F9FA);
-  final Color _cardColor = Colors.white;
-  final Color _textPrimary = Colors.black;
-  final Color _textSecondary = Color(0xFF666666);
-  final Color _textLight = Color(0xFF999999);
-  final Color _errorColor = Color(0xFFE53935);
-  final Color _successColor = Color(0xFF4CAF50);
-  final Color _warningColor = Color(0xFFFF9800);
+  final Color _accentColor = secondaryColor;
 
   final TextEditingController _searchController = TextEditingController();
   String _startDate = '';
@@ -110,7 +101,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
       builder: (_) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         elevation: 8,
-        backgroundColor: _cardColor,
+        backgroundColor: cardColor,
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
@@ -121,19 +112,19 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                 padding: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
                   border: Border(
-                    bottom: BorderSide(color: _backgroundColor, width: 1),
+                    bottom: BorderSide(color: backgroundColor, width: 1),
                   ),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.calendar_month_rounded, color: _secondaryColor, size: 24),
+                    Icon(Icons.calendar_month_rounded, color: secondaryColor, size: 24),
                     const SizedBox(width: 12),
                     Text(
                       'Select Date Range',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: _primaryColor,
+                        color: maincolor1,
                       ),
                     ),
                   ],
@@ -162,18 +153,18 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                     DateTime.parse(_startDate),
                     DateTime.parse(_endDate),
                   ),
-                  selectionColor: _secondaryColor.withOpacity(0.3),
-                  startRangeSelectionColor: _secondaryColor,
-                  endRangeSelectionColor: _secondaryColor,
-                  rangeSelectionColor: _secondaryColor.withOpacity(0.1),
-                  todayHighlightColor: _secondaryColor,
+                  selectionColor: secondaryColor.withOpacity(0.3),
+                  startRangeSelectionColor: secondaryColor,
+                  endRangeSelectionColor: secondaryColor,
+                  rangeSelectionColor: secondaryColor.withOpacity(0.1),
+                  todayHighlightColor: secondaryColor,
                   monthViewSettings: const DateRangePickerMonthViewSettings(
                     showTrailingAndLeadingDates: true,
                   ),
                   headerStyle: DateRangePickerHeaderStyle(
                     textAlign: TextAlign.center,
                     textStyle: TextStyle(
-                      color: _primaryColor,
+                      color: maincolor1,
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
                     ),
@@ -190,7 +181,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                   TextButton(
                     onPressed: () => Navigator.pop(context),
                     style: TextButton.styleFrom(
-                      foregroundColor: _textSecondary,
+                      foregroundColor: textSecondary,
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     ),
                     child: Text('Cancel'),
@@ -201,14 +192,14 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                   Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [_secondaryColor, _accentColor],
+                        colors: [secondaryColor, _accentColor],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: _secondaryColor.withOpacity(0.3),
+                          color: secondaryColor.withOpacity(0.3),
                           blurRadius: 8,
                           offset: Offset(0, 4),
                         ),
@@ -269,19 +260,19 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
         decoration: BoxDecoration(
-          color: _secondaryColor.withOpacity(0.2),
+          color: secondaryColor.withOpacity(0.2),
           borderRadius: BorderRadius.circular(6)
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.calendar_today_rounded, size: 12, color: _secondaryColor),
+            Icon(Icons.calendar_today_rounded, size: 12, color: secondaryColor),
             const SizedBox(width: 8),
             Text(
               '${DateFormat('MMM dd, yyyy').format(DateTime.parse(_startDate))}  -  '
               '${DateFormat('MMM dd, yyyy').format(DateTime.parse(_endDate))}',
-              style: TextStyle(fontSize: 12, color: _textPrimary, fontWeight: FontWeight.w500),
+              style: TextStyle(fontSize: 12, color: textPrimary, fontWeight: FontWeight.w500),
             ),
             if (_isDateFilterActive) ...[
               SizedBox(width: 8),
@@ -290,10 +281,10 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                 child: Container(
                   padding: EdgeInsets.all(2),
                   decoration: BoxDecoration(
-                    color: _errorColor.withOpacity(0.1),
+                    color: errorColor.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.close, size: 12, color: _errorColor),
+                  child: Icon(Icons.close, size: 12, color: errorColor),
                 ),
               ),
             ],
@@ -306,10 +297,10 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
   Widget _buildFilterChip({required String label, required VoidCallback onClear, bool isClearAll = false}) {
     return Container(
       decoration: BoxDecoration(
-        color: isClearAll ? _errorColor.withOpacity(0.1) : _secondaryColor.withOpacity(0.1),
+        color: isClearAll ? errorColor.withOpacity(0.1) : secondaryColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isClearAll ? _errorColor.withOpacity(0.3) : _secondaryColor.withOpacity(0.3),
+          color: isClearAll ? errorColor.withOpacity(0.3) : secondaryColor.withOpacity(0.3),
         ),
       ),
       child: Padding(
@@ -321,7 +312,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
               label,
               style: TextStyle(
                 fontSize: 12,
-                color: isClearAll ? _errorColor : _textPrimary,
+                color: isClearAll ? errorColor : textPrimary,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -331,7 +322,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
               child: Container(
                 padding: EdgeInsets.all(2),
                 decoration: BoxDecoration(
-                  color: isClearAll ? _errorColor : _secondaryColor,
+                  color: isClearAll ? errorColor : secondaryColor,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -356,7 +347,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
     return Container(
       margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -382,7 +373,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                       width: 80,
                       height: 10,
                       decoration: BoxDecoration(
-                        color: _backgroundColor,
+                        color: backgroundColor,
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
@@ -391,7 +382,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                       width: 120,
                       height: 16,
                       decoration: BoxDecoration(
-                        color: _backgroundColor,
+                        color: backgroundColor,
                         borderRadius: BorderRadius.circular(6),
                       ),
                     ),
@@ -401,7 +392,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                   width: 80,
                   height: 30,
                   decoration: BoxDecoration(
-                    color: _backgroundColor,
+                    color: backgroundColor,
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
@@ -413,7 +404,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
             Container(
               padding: EdgeInsets.all(13),
               decoration: BoxDecoration(
-                color: _backgroundColor,
+                color: backgroundColor,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
@@ -426,7 +417,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                           width: 40,
                           height: 10,
                           decoration: BoxDecoration(
-                            color: _cardColor,
+                            color: cardColor,
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
@@ -435,7 +426,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                           width: 80,
                           height: 14,
                           decoration: BoxDecoration(
-                            color: _cardColor,
+                            color: cardColor,
                             borderRadius: BorderRadius.circular(6),
                           ),
                         ),
@@ -446,7 +437,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                     width: 30,
                     height: 30,
                     decoration: BoxDecoration(
-                      color: _cardColor,
+                      color: cardColor,
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -458,7 +449,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                           width: 30,
                           height: 10,
                           decoration: BoxDecoration(
-                            color: _cardColor,
+                            color: cardColor,
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
@@ -467,7 +458,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                           width: 80,
                           height: 14,
                           decoration: BoxDecoration(
-                            color: _cardColor,
+                            color: cardColor,
                             borderRadius: BorderRadius.circular(6),
                           ),
                         ),
@@ -486,7 +477,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                   width: 60,
                   height: 20,
                   decoration: BoxDecoration(
-                    color: _backgroundColor,
+                    color: backgroundColor,
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
@@ -495,7 +486,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                   width: 70,
                   height: 25,
                   decoration: BoxDecoration(
-                    color: _backgroundColor,
+                    color: backgroundColor,
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
@@ -510,9 +501,9 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _backgroundColor,
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-        backgroundColor: _primaryColor,
+        backgroundColor: maincolor1,
         iconTheme: IconThemeData(color: Colors.white),
         centerTitle: true,
         elevation: 0,
@@ -534,7 +525,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
               margin: EdgeInsets.all(12),
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: _cardColor,
+                color: cardColor,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
@@ -552,7 +543,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                       Expanded(
                         child: Container(
                           decoration: BoxDecoration(
-                            color: _backgroundColor,
+                            color: backgroundColor,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: TextField(
@@ -560,30 +551,30 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                             onChanged: _onSearchChanged,
                             decoration: InputDecoration(
                               hintText: 'Search by PNR, Route, or Passenger...',
-                              hintStyle: TextStyle(color: _textLight, fontSize: 14),
-                              prefixIcon: Icon(Icons.search_rounded, color: _secondaryColor, size: 20),
+                              hintStyle: TextStyle(color: textLight, fontSize: 14),
+                              prefixIcon: Icon(Icons.search_rounded, color: secondaryColor, size: 20),
                               suffixIcon: _searchController.text.isNotEmpty
                                   ? IconButton(
-                                      icon: Icon(Icons.clear_rounded, color: _textLight, size: 18),
+                                      icon: Icon(Icons.clear_rounded, color: textLight, size: 18),
                                       onPressed: _clearSearch,
                                     )
                                   : null,
                               border: InputBorder.none,
                               contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                             ),
-                            style: TextStyle(color: _textPrimary, fontSize: 14),
+                            style: TextStyle(color: textPrimary, fontSize: 14),
                           ),
                         ),
                       ),
                       SizedBox(width: 5),
                       Container(
                         decoration: BoxDecoration(
-                         color: _secondaryColor,
+                         color: secondaryColor,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: IconButton(
                           onPressed: _showDatePickerDialog,
-                          icon: Icon(Icons.calendar_today_rounded, size: 20, color: _cardColor),
+                          icon: Icon(Icons.calendar_today_rounded, size: 20, color: cardColor),
                           tooltip: 'Select Date Range',
                         ),
                       ),
@@ -604,7 +595,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                   Text(
                     'All Flight Reports',
                     style: TextStyle(
-                      color: _textPrimary,
+                      color: textPrimary,
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                     ),
@@ -612,18 +603,18 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: _backgroundColor,
+                      color: backgroundColor,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.confirmation_number_rounded, size: 12, color: _secondaryColor),
+                        Icon(Icons.confirmation_number_rounded, size: 12, color: secondaryColor),
                         SizedBox(width: 6),
                         Text(
                           '${_filteredReports.length} ${_filteredReports.length == 1 ? 'report' : 'reports'}',
                           style: TextStyle(
-                            color: _secondaryColor,
+                            color: secondaryColor,
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                           ),
@@ -666,7 +657,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
     return Container(
       margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -705,7 +696,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                             'BOOKING REFERENCE',
                             style: TextStyle(
                               fontSize: 8,
-                              color: _textSecondary,
+                              color: textSecondary,
                               fontWeight: FontWeight.w600,
                               letterSpacing: 1.0,
                             ),
@@ -714,7 +705,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                           Text(
                             report.pnr ?? 'ID: ${report.bookingId}',
                             style: TextStyle(
-                              color: _textPrimary,
+                              color: textPrimary,
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
                             ),
@@ -729,13 +720,13 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                           decoration: BoxDecoration(
-                            color: _secondaryColor.withOpacity(0.1),
+                            color: secondaryColor.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
                             '₹${report.amount}',
                             style: TextStyle(
-                              color: _secondaryColor,
+                              color: secondaryColor,
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
                             ),
@@ -747,7 +738,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                             ? _formatDate(report.response!.journey.flightOption.flightLegs.first.departureTime)
                             : 'N/A',
                           style: TextStyle(
-                            color: _textLight,
+                            color: textLight,
                             fontSize: 10,
                             fontWeight: FontWeight.w500,
                           ),
@@ -762,7 +753,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                 Container(
                   padding: EdgeInsets.all(13),
                   decoration: BoxDecoration(
-                    color: _backgroundColor,
+                    color: backgroundColor,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: Colors.grey.shade200),
                   ),
@@ -776,7 +767,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                               'FROM',
                               style: TextStyle(
                                 fontSize: 10,
-                                color: _textSecondary,
+                                color: textSecondary,
                                 fontWeight: FontWeight.w600,
                                 letterSpacing: 1.0,
                               ),
@@ -792,13 +783,13 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                             SizedBox(height: 6),
                             Row(
                               children: [
-                                Icon(Icons.calendar_today, size: 12, color: _secondaryColor),
+                                Icon(Icons.calendar_today, size: 12, color: secondaryColor),
                                 SizedBox(width: 4),
                                 Text(
                                   firstLeg != null ? _formatDate(firstLeg.departureTime) : 'N/A',
                                   style: TextStyle(
                                     fontSize: 11,
-                                    color: _textSecondary,
+                                    color: textSecondary,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -814,13 +805,13 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                             Container(
                               padding: EdgeInsets.all(6),
                               decoration: BoxDecoration(
-                                color: _secondaryColor.withOpacity(0.1),
+                                color: secondaryColor.withOpacity(0.1),
                                 shape: BoxShape.circle,
-                                border: Border.all(color: _secondaryColor.withOpacity(0.3), width: 2),
+                                border: Border.all(color: secondaryColor.withOpacity(0.3), width: 2),
                               ),
                               child: Icon(
                                 Icons.arrow_forward_rounded,
-                                color: _secondaryColor,
+                                color: secondaryColor,
                                 size: 16,
                               ),
                             ),
@@ -835,7 +826,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                               'TO',
                               style: TextStyle(
                                 fontSize: 10,
-                                color: _textSecondary,
+                                color: textSecondary,
                                 fontWeight: FontWeight.w600,
                                 letterSpacing: 1.0,
                               ),
@@ -853,13 +844,13 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                Icon(Icons.calendar_today, size: 12, color: _secondaryColor),
+                                Icon(Icons.calendar_today, size: 12, color: secondaryColor),
                                 SizedBox(width: 4),
                                 Text(
                                   lastLeg != null ? _formatDate(lastLeg.arrivalTime) : 'N/A',
                                   style: TextStyle(
                                     fontSize: 11,
-                                    color: _textSecondary,
+                                    color: textSecondary,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -882,12 +873,12 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                         Container(
                           padding: EdgeInsets.all(4),
                           decoration: BoxDecoration(
-                            color: _secondaryColor.withOpacity(0.1),
+                            color: secondaryColor.withOpacity(0.1),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             Icons.flight_takeoff_rounded,
-                            color: _secondaryColor,
+                            color: secondaryColor,
                             size: 12,
                           ),
                         ),
@@ -896,7 +887,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                           '${flightLegs.length} flight${flightLegs.length > 1 ? 's' : ''}',
                           style: TextStyle(
                             fontSize: 10,
-                            color: _textSecondary,
+                            color: textSecondary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -909,12 +900,12 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                         Container(
                           padding: EdgeInsets.all(4),
                           decoration: BoxDecoration(
-                            color: _secondaryColor.withOpacity(0.1),
+                            color: secondaryColor.withOpacity(0.1),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             Icons.people_rounded,
-                            color: _secondaryColor,
+                            color: secondaryColor,
                             size: 12,
                           ),
                         ),
@@ -923,7 +914,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                           '${response.passengers.length} passenger${response.passengers.length > 1 ? 's' : ''}',
                           style: TextStyle(
                             fontSize: 10,
-                            color: _textSecondary,
+                            color: textSecondary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -934,9 +925,9 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: _successColor.withOpacity(0.1),
+                        color: successColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: _successColor.withOpacity(0.3)),
+                        border: Border.all(color: successColor.withOpacity(0.3)),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -945,7 +936,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                             width: 6,
                             height: 6,
                             decoration: BoxDecoration(
-                              color: _successColor,
+                              color: successColor,
                               shape: BoxShape.circle,
                             ),
                           ),
@@ -954,7 +945,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                             'CONFIRMED',
                             style: TextStyle(
                               fontSize: 8,
-                              color: _successColor,
+                              color: successColor,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -986,7 +977,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
               padding: EdgeInsets.all(24),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [_secondaryColor.withOpacity(0.1), _accentColor.withOpacity(0.1)],
+                  colors: [secondaryColor.withOpacity(0.1), _accentColor.withOpacity(0.1)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -994,7 +985,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
               ),
               child: Icon(
                 Icons.airplane_ticket_rounded,
-                color: _secondaryColor,
+                color: secondaryColor,
                 size: 64,
               ),
             ),
@@ -1002,7 +993,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
             Text(
               _isFilterActive ? 'No Matching Reports' : 'No Reports Found',
               style: TextStyle(
-                color: _textPrimary,
+                color: textPrimary,
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
               ),
@@ -1016,7 +1007,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                     ? 'No reports match your current filters.\nTry adjusting your search criteria.'
                     : 'You don\'t have any flight reports yet.\nStart by booking your first flight!',
                 style: TextStyle(
-                  color: _textSecondary,
+                  color: textSecondary,
                   fontSize: 14,
                 ),
                 textAlign: TextAlign.center,
@@ -1029,14 +1020,14 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                 child: Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [_secondaryColor, _accentColor],
+                      colors: [secondaryColor, _accentColor],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: _secondaryColor.withOpacity(0.3),
+                        color: secondaryColor.withOpacity(0.3),
                         blurRadius: 8,
                         offset: Offset(0, 4),
                       ),

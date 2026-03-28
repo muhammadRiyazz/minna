@@ -5,6 +5,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:http/http.dart' as http;
 import 'package:minna/cab/application/fetch%20cab/fetch_cabs_state.dart';
 import 'package:minna/cab/domain/cab%20list%20model/cab_list_data.dart';
+import 'package:minna/comman/core/api.dart';
       part 'fetch_cabs_bloc.freezed.dart';                                                                     
 part 'fetch_cabs_event.dart';
 
@@ -19,7 +20,7 @@ class FetchCabsBloc extends Bloc<FetchCabsEvent, FetchCabsState> {
         final response = await http.post(
           Uri.parse('http://gozotech2.ddns.net:5192/api/cpapi/booking/getQuote'),
           headers: {
-            'Authorization': 'Basic ZjA2MjljNTIxZjE2MjU0NTA2YmIyMDQzNWI4MTJmMmE=',
+            'Authorization': cabauth,
             'Content-Type': 'application/json',
           },
           body: jsonEncode(event.requestData),
@@ -71,7 +72,7 @@ class FetchCabsBloc extends Bloc<FetchCabsEvent, FetchCabsState> {
   // final response = await http.post(
   //           Uri.parse('http://gozotech2.ddns.net:5192/api/cpapi/booking/getQuote'),
   //           headers: {
-  //             'Authorization': 'Basic ZjA2MjljNTIxZjE2MjU0NTA2YmIyMDQzNWI4MTJmMmE=',
+  //             'Authorization': cabauth,
   //             'Content-Type': 'application/json',
   //           },
   //           body: jsonEncode(event.requestData),

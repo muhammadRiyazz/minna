@@ -16,7 +16,11 @@ class BookingDetailsPage extends StatefulWidget {
   final String bookingId;
   final String tableID;
 
-  const BookingDetailsPage({super.key, required this.bookingId, required this.tableID});
+  const BookingDetailsPage({
+    super.key,
+    required this.bookingId,
+    required this.tableID,
+  });
 
   @override
   State<BookingDetailsPage> createState() => _BookingDetailsPageState();
@@ -25,7 +29,7 @@ class BookingDetailsPage extends StatefulWidget {
 class _BookingDetailsPageState extends State<BookingDetailsPage> {
   bool _isCancelling = false;
   final String _baseUrl = 'http://gozotech2.ddns.net:5192/api/cpapi/booking';
-  final String _authorization = 'Basic ZjA2MjljNTIxZjE2MjU0NTA2YmIyMDQzNWI4MTJmMmE=';
+  final String _authorization = cabauth;
   late CommissionProvider commissionProvider;
   BuildContext? _parentContext;
 
@@ -62,10 +66,11 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
   Widget build(BuildContext context) {
     // Store parent context before creating local BlocProvider
     _parentContext = context;
-    
+
     return BlocProvider(
       create: (context) =>
-          BookedDetailsBloc()..add(BookedDetailsEvent.fetchDetails(widget.bookingId)),
+          BookedDetailsBloc()
+            ..add(BookedDetailsEvent.fetchDetails(widget.bookingId)),
       child: WillPopScope(
         onWillPop: () async {
           // Refresh booking list when navigating back
@@ -97,7 +102,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
       log('Parent context not available for refreshing booking list on back');
       return;
     }
-    
+
     try {
       final bookedInfoBloc = parentCtx.read<BookedInfoBloc>();
       log('Refreshing booking list on back navigation');
@@ -121,9 +126,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
             background: Shimmer.fromColors(
               baseColor: Colors.grey[300]!,
               highlightColor: Colors.grey[100]!,
-              child: Container(
-                color: _primaryColor,
-              ),
+              child: Container(color: _primaryColor),
             ),
           ),
         ),
@@ -142,7 +145,10 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                             children: [
                               _buildShimmerBox(width: 40, height: 14),
                               const SizedBox(height: 12),
-                              _buildShimmerBox(width: double.infinity, height: 20),
+                              _buildShimmerBox(
+                                width: double.infinity,
+                                height: 20,
+                              ),
                               const SizedBox(height: 8),
                               _buildShimmerBox(width: 200, height: 16),
                             ],
@@ -150,7 +156,11 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                         ),
                         Column(
                           children: [
-                            _buildShimmerBox(width: 40, height: 40, isCircle: true),
+                            _buildShimmerBox(
+                              width: 40,
+                              height: 40,
+                              isCircle: true,
+                            ),
                           ],
                         ),
                         Expanded(
@@ -159,7 +169,10 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                             children: [
                               _buildShimmerBox(width: 40, height: 14),
                               const SizedBox(height: 12),
-                              _buildShimmerBox(width: double.infinity, height: 20),
+                              _buildShimmerBox(
+                                width: double.infinity,
+                                height: 20,
+                              ),
                               const SizedBox(height: 8),
                               _buildShimmerBox(width: 200, height: 16),
                             ],
@@ -212,11 +225,14 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
   Widget _buildSuccessState(BuildContext context, BookingDetails details) {
     // Check multiple ways the status might indicate cancellation
     final statusLower = details.statusDesc.toLowerCase();
-    final isCancelled = statusLower.contains('cancel') || 
-                        statusLower.contains('cancelled') ||
-                        statusLower == 'cancel';
-    
-    log('📊 Building success state - Status: ${details.statusDesc}, isCancelled: $isCancelled');
+    final isCancelled =
+        statusLower.contains('cancel') ||
+        statusLower.contains('cancelled') ||
+        statusLower == 'cancel';
+
+    log(
+      '📊 Building success state - Status: ${details.statusDesc}, isCancelled: $isCancelled',
+    );
 
     return Stack(
       children: [
@@ -288,7 +304,9 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                                     : _successColor.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: isCancelled ? _errorColor : _successColor,
+                                  color: isCancelled
+                                      ? _errorColor
+                                      : _successColor,
                                   width: 1,
                                 ),
                               ),
@@ -296,9 +314,13 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(
-                                    isCancelled ? Icons.cancel : Icons.check_circle,
+                                    isCancelled
+                                        ? Icons.cancel
+                                        : Icons.check_circle,
                                     size: 12,
-                                    color: isCancelled ? _errorColor : _successColor,
+                                    color: isCancelled
+                                        ? _errorColor
+                                        : _successColor,
                                   ),
                                   const SizedBox(width: 6),
                                   Text(
@@ -306,7 +328,9 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600,
-                                      color: isCancelled ? _errorColor : _successColor,
+                                      color: isCancelled
+                                          ? _errorColor
+                                          : _successColor,
                                     ),
                                   ),
                                 ],
@@ -378,223 +402,239 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     );
   }
 
-Widget _buildJourneyCard(BookingDetails details) {
-  final firstRoute = details.routes.first;
-  final lastRoute = details.routes.last;
+  Widget _buildJourneyCard(BookingDetails details) {
+    final firstRoute = details.routes.first;
+    final lastRoute = details.routes.last;
 
-  return Container(
-    decoration: BoxDecoration(
-      color: _cardColor,
-      borderRadius: BorderRadius.circular(20),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.08),
-          blurRadius: 20,
-          offset: const Offset(0, 8),
-        ),
-      ],
-    ),
-    padding: const EdgeInsets.all(16),
-    child: Column(
-      children: [
-        // Route Information
-        Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'FROM',
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: _textSecondary,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 1.0,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    firstRoute.source.address,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 6),
-                  Row(
-                    children: [
-                      Icon(Icons.access_time, size: 12, color: _secondaryColor),
-                      const SizedBox(width: 6),
-                      Flexible(
-                        child: Text(
-                          '${_formatDate(firstRoute.startDate)} • ${_formatTimeTo12Hour(firstRoute.startTime)}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: _textSecondary,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: _secondaryColor.withOpacity(0.1),
-                      shape: BoxShape.circle,
-                      border: Border.all(color: _secondaryColor.withOpacity(0.3), width: 2),
-                    ),
-                    child: Icon(
-                      Icons.arrow_forward_rounded,
-                      color: _secondaryColor,
-                      size: 15,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    width: 2,
-                    height: 40,
-                    color: _secondaryColor.withOpacity(0.3),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    'TO',
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: _textSecondary,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 1.0,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    lastRoute.destination.address,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.end,
-                  ),
-                  const SizedBox(height: 6),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Icon(Icons.access_time, size: 12, color: _secondaryColor),
-                      const SizedBox(width: 6),
-                      Flexible(
-                        child: Text(
-                          '${_formatDate(lastRoute.startDate)} • ${_formatTimeTo12Hour(lastRoute.startTime)}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: _textSecondary,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.end,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 20),
-        
-        // Trip Information - Grid layout for better space management
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: _backgroundColor,
-            borderRadius: BorderRadius.circular(12),
+    return Container(
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
-          child: Column(
+        ],
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          // Route Information
+          Row(
             children: [
-              // First row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: _buildCompactTripInfoItem('Distance', '${details.tripDistance} km'),
-                  ),
-                  Container(
-                    width: 1,
-                    height: 40,
-                    color: _textLight.withOpacity(0.3),
-                  ),
-                  Expanded(
-                    child: _buildCompactTripInfoItem('Trip Type', details.tripTypeName),
-                  ),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'FROM',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: _textSecondary,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      firstRoute.source.address,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.access_time,
+                          size: 12,
+                          color: _secondaryColor,
+                        ),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            '${_formatDate(firstRoute.startDate)} • ${_formatTimeTo12Hour(firstRoute.startTime)}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: _textSecondary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 12),
-              Container(
-                width: double.infinity,
-                height: 1,
-                color: _textLight.withOpacity(0.3),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: _secondaryColor.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: _secondaryColor.withOpacity(0.3),
+                          width: 2,
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.arrow_forward_rounded,
+                        color: _secondaryColor,
+                        size: 15,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      width: 2,
+                      height: 40,
+                      color: _secondaryColor.withOpacity(0.3),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 12),
-              // Second row - centered single item
-              _buildCompactTripInfoItem('Booked On', _formatDate(details.bookingDate)),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      'TO',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: _textSecondary,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      lastRoute.destination.address,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.end,
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Icon(
+                          Icons.access_time,
+                          size: 12,
+                          color: _secondaryColor,
+                        ),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            '${_formatDate(lastRoute.startDate)} • ${_formatTimeTo12Hour(lastRoute.startTime)}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: _textSecondary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.end,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
+          const SizedBox(height: 20),
+
+          // Trip Information - Grid layout for better space management
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: _backgroundColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              children: [
+                // First row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: _buildCompactTripInfoItem(
+                        'Distance',
+                        '${details.tripDistance} km',
+                      ),
+                    ),
+                    Container(
+                      width: 1,
+                      height: 40,
+                      color: _textLight.withOpacity(0.3),
+                    ),
+                    Expanded(
+                      child: _buildCompactTripInfoItem(
+                        'Trip Type',
+                        details.tripTypeName,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  width: double.infinity,
+                  height: 1,
+                  color: _textLight.withOpacity(0.3),
+                ),
+                const SizedBox(height: 12),
+                // Second row - centered single item
+                _buildCompactTripInfoItem(
+                  'Booked On',
+                  _formatDate(details.bookingDate),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Compact version for the trip info items
+  Widget _buildCompactTripInfoItem(String title, String value) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 10,
+            color: _textSecondary,
+            fontWeight: FontWeight.w600,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+          textAlign: TextAlign.center,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
       ],
-    ),
-  );
-}
-
-// Compact version for the trip info items
-Widget _buildCompactTripInfoItem(String title, String value) {
-  return Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      Text(
-        title,
-        style: TextStyle(
-          fontSize: 10, 
-          color: _textSecondary,
-          fontWeight: FontWeight.w600,
-        ),
-        textAlign: TextAlign.center,
-      ),
-      const SizedBox(height: 4),
-      Text(
-        value,
-        style: const TextStyle(
-          fontSize: 12, 
-          fontWeight: FontWeight.w700,
-        ),
-        textAlign: TextAlign.center,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-      ),
-    ],
-  );
-}
- 
+    );
+  }
 
   Widget _buildTripInfoCard(BookingDetails details) {
     return Container(
@@ -618,9 +658,16 @@ Widget _buildCompactTripInfoItem(String title, String value) {
             decoration: BoxDecoration(
               color: _secondaryColor.withOpacity(0.1),
               shape: BoxShape.circle,
-              border: Border.all(color: _secondaryColor.withOpacity(0.3), width: 2),
+              border: Border.all(
+                color: _secondaryColor.withOpacity(0.3),
+                width: 2,
+              ),
             ),
-            child: Icon(Icons.calendar_today_rounded, color: _secondaryColor, size: 20),
+            child: Icon(
+              Icons.calendar_today_rounded,
+              color: _secondaryColor,
+              size: 20,
+            ),
           ),
           const SizedBox(width: 20),
           Expanded(
@@ -645,7 +692,10 @@ Widget _buildCompactTripInfoItem(String title, String value) {
                 ),
                 const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: _secondaryColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
@@ -692,7 +742,11 @@ Widget _buildCompactTripInfoItem(String title, String value) {
                   color: _secondaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.route_rounded, color: _secondaryColor, size: 12),
+                child: Icon(
+                  Icons.route_rounded,
+                  color: _secondaryColor,
+                  size: 12,
+                ),
               ),
               const SizedBox(width: 12),
               Text(
@@ -705,7 +759,10 @@ Widget _buildCompactTripInfoItem(String title, String value) {
               ),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: _backgroundColor,
                   borderRadius: BorderRadius.circular(12),
@@ -739,7 +796,11 @@ Widget _buildCompactTripInfoItem(String title, String value) {
                   children: [
                     Column(
                       children: [
-                        Icon(Icons.location_on, color: _secondaryColor, size: 16),
+                        Icon(
+                          Icons.location_on,
+                          color: _secondaryColor,
+                          size: 16,
+                        ),
                         if (index < details.routes.length - 1)
                           Container(
                             width: 2,
@@ -817,7 +878,11 @@ Widget _buildCompactTripInfoItem(String title, String value) {
                   color: _secondaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.person_rounded, color: _secondaryColor, size: 12),
+                child: Icon(
+                  Icons.person_rounded,
+                  color: _secondaryColor,
+                  size: 12,
+                ),
               ),
               const SizedBox(width: 12),
               Text(
@@ -833,9 +898,15 @@ Widget _buildCompactTripInfoItem(String title, String value) {
           const SizedBox(height: 20),
           _buildTravellerInfoItem('Full Name', traveller.fullName),
           _buildTravellerInfoItem('Email', traveller.email),
-          _buildTravellerInfoItem('Primary Contact', traveller.primaryContact.fullNumber),
+          _buildTravellerInfoItem(
+            'Primary Contact',
+            traveller.primaryContact.fullNumber,
+          ),
           if (traveller.alternateContact.number.isNotEmpty)
-            _buildTravellerInfoItem('Alternate Contact', traveller.alternateContact.fullNumber),
+            _buildTravellerInfoItem(
+              'Alternate Contact',
+              traveller.alternateContact.fullNumber,
+            ),
         ],
       ),
     );
@@ -862,10 +933,7 @@ Widget _buildCompactTripInfoItem(String title, String value) {
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 13,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
             ),
           ),
         ],
@@ -898,7 +966,11 @@ Widget _buildCompactTripInfoItem(String title, String value) {
                   color: _secondaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.directions_car_rounded, color: _secondaryColor, size: 12),
+                child: Icon(
+                  Icons.directions_car_rounded,
+                  color: _secondaryColor,
+                  size: 12,
+                ),
               ),
               const SizedBox(width: 12),
               Text(
@@ -922,7 +994,11 @@ Widget _buildCompactTripInfoItem(String title, String value) {
                   color: _secondaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(Icons.directions_car_filled, color: _secondaryColor, size: 24),
+                child: Icon(
+                  Icons.directions_car_filled,
+                  color: _secondaryColor,
+                  size: 24,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -939,9 +1015,15 @@ Widget _buildCompactTripInfoItem(String title, String value) {
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        _buildCabSpecItem(Icons.people, '${cabRate.cab.seatingCapacity} Seats'),
+                        _buildCabSpecItem(
+                          Icons.people,
+                          '${cabRate.cab.seatingCapacity} Seats',
+                        ),
                         const SizedBox(width: 12),
-                        _buildCabSpecItem(Icons.luggage, '${cabRate.cab.bagCapacity} Bags'),
+                        _buildCabSpecItem(
+                          Icons.luggage,
+                          '${cabRate.cab.bagCapacity} Bags',
+                        ),
                         if (cabRate.cab.isAssured) ...[
                           const SizedBox(width: 12),
                           _buildCabSpecItem(Icons.verified, 'Assured'),
@@ -965,7 +1047,10 @@ Widget _buildCompactTripInfoItem(String title, String value) {
           ),
           const SizedBox(height: 12),
           _buildFareItem('Base Fare', cabRate.fare.baseFare.toString()),
-          _buildFareItem('Driver Allowance', cabRate.fare.driverAllowance.toString()),
+          _buildFareItem(
+            'Driver Allowance',
+            cabRate.fare.driverAllowance.toString(),
+          ),
           _buildFareItem('GST', cabRate.fare.gst.toString()),
           if (cabRate.fare.tollTax > 0)
             _buildFareItem('Toll Tax', cabRate.fare.tollTax.toString()),
@@ -974,25 +1059,35 @@ Widget _buildCompactTripInfoItem(String title, String value) {
           if (cabRate.fare.airportFee > 0)
             _buildFareItem('Airport Fee', cabRate.fare.airportFee.toString()),
           if (cabRate.fare.additionalCharge > 0)
-            _buildFareItem('Additional Charges', cabRate.fare.additionalCharge.toString()),
-          
+            _buildFareItem(
+              'Additional Charges',
+              cabRate.fare.additionalCharge.toString(),
+            ),
+
           FutureBuilder<double>(
-            future: commissionProvider.calculateAmountWithCommission(cabRate.fare.totalAmount),
+            future: commissionProvider.calculateAmountWithCommission(
+              cabRate.fare.totalAmount,
+            ),
             builder: (context, snapshot) {
-              if (commissionProvider.isLoading || snapshot.connectionState == ConnectionState.waiting) {
+              if (commissionProvider.isLoading ||
+                  snapshot.connectionState == ConnectionState.waiting) {
                 return SizedBox();
               }
 
-              final amountWithCommission = snapshot.data ?? cabRate.fare.totalAmount;
-              final hasCommission = amountWithCommission > cabRate.fare.totalAmount;
+              final amountWithCommission =
+                  snapshot.data ?? cabRate.fare.totalAmount;
+              final hasCommission =
+                  amountWithCommission > cabRate.fare.totalAmount;
 
               return Column(
                 children: [
                   if (hasCommission)
                     _buildFareItem(
                       "Service Charges & Other",
-                      (amountWithCommission - cabRate.fare.totalAmount).toStringAsFixed(0)),
-                  
+                      (amountWithCommission - cabRate.fare.totalAmount)
+                          .toStringAsFixed(0),
+                    ),
+
                   const SizedBox(height: 8),
                   const Divider(height: 1),
                   const SizedBox(height: 8),
@@ -1016,10 +1111,7 @@ Widget _buildCompactTripInfoItem(String title, String value) {
       children: [
         Icon(icon, size: 14, color: _textSecondary),
         const SizedBox(width: 4),
-        Text(
-          text,
-          style: TextStyle(fontSize: 12, color: _textSecondary),
-        ),
+        Text(text, style: TextStyle(fontSize: 12, color: _textSecondary)),
       ],
     );
   }
@@ -1053,7 +1145,7 @@ Widget _buildCompactTripInfoItem(String title, String value) {
 
   Widget _buildCancelButton(BookingDetails details) {
     return Container(
-      padding: const EdgeInsets.only(bottom: 12, right: 10,left: 10),
+      padding: const EdgeInsets.only(bottom: 12, right: 10, left: 10),
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
@@ -1082,7 +1174,9 @@ Widget _buildCompactTripInfoItem(String title, String value) {
               elevation: 4,
               shadowColor: _primaryColor.withOpacity(0.3),
             ),
-            onPressed: _isCancelling ? null : () => _onCancelPressed(details.bookingId),
+            onPressed: _isCancelling
+                ? null
+                : () => _onCancelPressed(details.bookingId),
             child: _isCancelling
                 ? SizedBox(
                     height: 24,
@@ -1113,7 +1207,7 @@ Widget _buildCompactTripInfoItem(String title, String value) {
     );
   }
 
-  // ... Rest of your existing methods (_onCancelPressed, _showCancellationBottomSheet, 
+  // ... Rest of your existing methods (_onCancelPressed, _showCancellationBottomSheet,
   // _confirmCancellation, _callCabStatusApi, _showError, etc.) remain the same
   // Only the UI components have been updated above
 
@@ -1124,18 +1218,15 @@ Widget _buildCompactTripInfoItem(String title, String value) {
 
     try {
       final uri = Uri.parse('$_baseUrl/getCancellationList');
-      final response = await http.post(
-        uri,
-        headers: {
-          'Authorization': _authorization,
-        },
-        body: '',
-      ).timeout(const Duration(seconds: 20));
+      final response = await http
+          .post(uri, headers: {'Authorization': _authorization}, body: '')
+          .timeout(const Duration(seconds: 20));
 
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
-          final List<dynamic> cancellationList = decoded['data']['cancellationList'] ?? [];
+          final List<dynamic> cancellationList =
+              decoded['data']['cancellationList'] ?? [];
           final reasons = cancellationList.map((e) {
             return _CancellationReason(
               id: e['id']?.toString() ?? '',
@@ -1169,10 +1260,15 @@ Widget _buildCompactTripInfoItem(String title, String value) {
     }
   }
 
-  Future<void> _showCancellationBottomSheet(String bookingId, List<_CancellationReason> reasons) async {
+  Future<void> _showCancellationBottomSheet(
+    String bookingId,
+    List<_CancellationReason> reasons,
+  ) async {
     String selectedReasonId = reasons.isNotEmpty ? reasons.first.id : '';
     String additionalText = '';
-    String placeholder = reasons.isNotEmpty ? reasons.first.placeholder : 'Additional details';
+    String placeholder = reasons.isNotEmpty
+        ? reasons.first.placeholder
+        : 'Additional details';
     bool isModalLoading = false;
 
     await showModalBottomSheet(
@@ -1185,154 +1281,176 @@ Widget _buildCompactTripInfoItem(String title, String value) {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return StatefulBuilder(builder: (context, setModalState) {
-          return Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-            ),
-            child: Container(
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height * 0.8,
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
               ),
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(4),
+              child: Container(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.8,
+                ),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      const Expanded(
-                        child: Text(
-                          'Cancel Booking',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: isModalLoading
-                            ? null
-                            : () => Navigator.of(context).pop(),
-                        icon: Icon(Icons.close, color: _textSecondary),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  const Divider(),
-                  const SizedBox(height: 8),
-                  Expanded(
-                    child: ListView(
-                      shrinkWrap: true,
+                    const SizedBox(height: 12),
+                    Row(
                       children: [
-                        const Text(
-                          'Select a reason',
-                          style: TextStyle(fontWeight: FontWeight.w600),
+                        const Expanded(
+                          child: Text(
+                            'Cancel Booking',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
-                        const SizedBox(height: 12),
-                        ...reasons.map((r) {
-                          return ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            title: Text(r.text),
-                            subtitle: r.placeholder.isNotEmpty ? Text(r.placeholder) : null,
-                            leading: Radio<String>(
-                              value: r.id,
-                              groupValue: selectedReasonId,
-                              onChanged: isModalLoading
+                        IconButton(
+                          onPressed: isModalLoading
+                              ? null
+                              : () => Navigator.of(context).pop(),
+                          icon: Icon(Icons.close, color: _textSecondary),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    const Divider(),
+                    const SizedBox(height: 8),
+                    Expanded(
+                      child: ListView(
+                        shrinkWrap: true,
+                        children: [
+                          const Text(
+                            'Select a reason',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                          const SizedBox(height: 12),
+                          ...reasons.map((r) {
+                            return ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(r.text),
+                              subtitle: r.placeholder.isNotEmpty
+                                  ? Text(r.placeholder)
+                                  : null,
+                              leading: Radio<String>(
+                                value: r.id,
+                                groupValue: selectedReasonId,
+                                onChanged: isModalLoading
+                                    ? null
+                                    : (val) {
+                                        setModalState(() {
+                                          selectedReasonId = val ?? '';
+                                          placeholder = r.placeholder;
+                                        });
+                                      },
+                              ),
+                              onTap: isModalLoading
                                   ? null
-                                  : (val) {
+                                  : () {
                                       setModalState(() {
-                                        selectedReasonId = val ?? '';
+                                        selectedReasonId = r.id;
                                         placeholder = r.placeholder;
                                       });
                                     },
-                            ),
-                            onTap: isModalLoading
-                                ? null
-                                : () {
-                                    setModalState(() {
-                                      selectedReasonId = r.id;
-                                      placeholder = r.placeholder;
-                                    });
-                                  },
-                          );
-                        }),
-                        const SizedBox(height: 16),
-                        TextField(
-                          enabled: !isModalLoading,
-                          minLines: 1,
-                          maxLines: 5,
-                          onChanged: (val) => additionalText = val,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                            hintText: placeholder.isNotEmpty ? placeholder : 'Additional details (optional)',
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: isModalLoading
-                                    ? null
-                                    : () async {
-                                        // Show loading in modal
-                                        setModalState(() {
-                                          isModalLoading = true;
-                                        });
-                                        
-                                        // Wait a brief moment to show loading state
-                                        await Future.delayed(const Duration(milliseconds: 300));
-                                        
-                                        // Close modal
-                                        if (context.mounted) {
-                                          Navigator.of(context).pop();
-                                        }
-                                        
-                                        // Start cancellation process
-                                        _confirmCancellation(
-                                          bookingId: bookingId,
-                                          reasonText: additionalText.isNotEmpty
-                                              ? additionalText
-                                              : (reasons.firstWhere((r) => r.id == selectedReasonId).text),
-                                          reasonId: selectedReasonId,
-                                        );
-                                      },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: _errorColor,
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                                child: isModalLoading
-                                    ? const SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: Colors.white,
-                                        ),
-                                      )
-                                    : const Text('Confirm Cancellation'),
+                            );
+                          }),
+                          const SizedBox(height: 16),
+                          TextField(
+                            enabled: !isModalLoading,
+                            minLines: 1,
+                            maxLines: 5,
+                            onChanged: (val) => additionalText = val,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
+                              hintText: placeholder.isNotEmpty
+                                  ? placeholder
+                                  : 'Additional details (optional)',
                             ),
-                          ],
-                        )
-                      ],
+                          ),
+                          const SizedBox(height: 20),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: isModalLoading
+                                      ? null
+                                      : () async {
+                                          // Show loading in modal
+                                          setModalState(() {
+                                            isModalLoading = true;
+                                          });
+
+                                          // Wait a brief moment to show loading state
+                                          await Future.delayed(
+                                            const Duration(milliseconds: 300),
+                                          );
+
+                                          // Close modal
+                                          if (context.mounted) {
+                                            Navigator.of(context).pop();
+                                          }
+
+                                          // Start cancellation process
+                                          _confirmCancellation(
+                                            bookingId: bookingId,
+                                            reasonText:
+                                                additionalText.isNotEmpty
+                                                ? additionalText
+                                                : (reasons
+                                                      .firstWhere(
+                                                        (r) =>
+                                                            r.id ==
+                                                            selectedReasonId,
+                                                      )
+                                                      .text),
+                                            reasonId: selectedReasonId,
+                                          );
+                                        },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: _errorColor,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 16,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  child: isModalLoading
+                                      ? const SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: Colors.white,
+                                          ),
+                                        )
+                                      : const Text('Confirm Cancellation'),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          );
-        });
+            );
+          },
+        );
       },
     );
   }
@@ -1354,17 +1472,19 @@ Widget _buildCompactTripInfoItem(String title, String value) {
       final bodyMap = {
         "bookingId": bookingId,
         "reason": reasonText,
-        "reasonId": reasonId
+        "reasonId": reasonId,
       };
 
-      final response = await http.post(
-        uri,
-        headers: {
-          'Authorization': _authorization,
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode(bodyMap),
-      ).timeout(const Duration(seconds: 20));
+      final response = await http
+          .post(
+            uri,
+            headers: {
+              'Authorization': _authorization,
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode(bodyMap),
+          )
+          .timeout(const Duration(seconds: 20));
 
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
@@ -1375,12 +1495,18 @@ Widget _buildCompactTripInfoItem(String title, String value) {
           final message = data['message'] ?? 'Booking cancelled successfully';
           final cancelledBookingId = data['bookingId'] ?? bookingId;
 
+          // Calculate rounded commission-inclusive refund amount
+          final double baseRefundedAmount = double.parse(refundedAmount.toString());
+          final double totalRefundedAmount = (await commissionProvider
+                  .calculateAmountWithCommission(baseRefundedAmount))
+              .roundToDouble();
+
           await _callCabStatusApi(
             bookingId: widget.tableID,
             type: 'cancel',
             request: jsonEncode(bodyMap),
             response: response.body,
-            refundAmount: double.parse(refundedAmount.toString()),
+            refundAmount: totalRefundedAmount,
           );
 
           // Show success dialog
@@ -1423,20 +1549,37 @@ Widget _buildCompactTripInfoItem(String title, String value) {
                       const SizedBox(height: 8),
                       Text(
                         message,
-                        style: const TextStyle(fontSize: 14, color: Colors.black87),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black87,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 20),
-                      _buildCancellationInfoItem('Booking ID', cancelledBookingId, Icons.confirmation_number_outlined),
-                      _buildCancellationInfoItem('Refund Amount', '₹$refundedAmount', Icons.currency_rupee),
-                      _buildCancellationInfoItem('Cancellation Charge', '₹$cancellationCharge', Icons.money_off_csred_outlined),
+                      _buildCancellationInfoItem(
+                        'Booking ID',
+                        cancelledBookingId,
+                        Icons.confirmation_number_outlined,
+                      ),
+                      _buildCancellationInfoItem(
+                        'Refund Amount',
+                        '₹${totalRefundedAmount.toStringAsFixed(0)}',
+                        Icons.currency_rupee,
+                      ),
+                      _buildCancellationInfoItem(
+                        'Cancellation Charge',
+                        '₹$cancellationCharge',
+                        Icons.money_off_csred_outlined,
+                      ),
                       const SizedBox(height: 16),
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: _warningColor.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: _warningColor.withOpacity(0.3)),
+                          border: Border.all(
+                            color: _warningColor.withOpacity(0.3),
+                          ),
                         ),
                         child: Row(
                           children: [
@@ -1445,7 +1588,10 @@ Widget _buildCompactTripInfoItem(String title, String value) {
                             Expanded(
                               child: Text(
                                 'Refund will be credited within 5–7 working days.',
-                                style: const TextStyle(fontSize: 13, color: Colors.black87),
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.black87,
+                                ),
                               ),
                             ),
                           ],
@@ -1456,7 +1602,9 @@ Widget _buildCompactTripInfoItem(String title, String value) {
                         onPressed: () async {
                           Navigator.of(context).pop();
                           // Wait a moment for dialog to close
-                          await Future.delayed(const Duration(milliseconds: 300));
+                          await Future.delayed(
+                            const Duration(milliseconds: 300),
+                          );
                           // Reload both booking details and booking list after closing success dialog
                           if (mounted) {
                             _reloadBookingDetails();
@@ -1503,23 +1651,27 @@ Widget _buildCompactTripInfoItem(String title, String value) {
           _isCancelling = false;
         });
       }
-      _showError('Failed to cancel booking. Please check your connection and try again.');
+      _showError(
+        'Failed to cancel booking. Please check your connection and try again.',
+      );
     }
   }
 
   /// Reload booking details after cancellation
   void _reloadBookingDetails() {
     if (!mounted) return;
-    
+
     // Reset loading states
     setState(() {
       _isCancelling = false;
     });
-    
+
     // Wait a moment then fetch updated booking details to ensure backend has processed cancellation
     Future.delayed(const Duration(milliseconds: 1000), () {
       if (mounted) {
-        log('🔄 Reloading booking details after cancellation - Booking ID: ${widget.bookingId}');
+        log(
+          '🔄 Reloading booking details after cancellation - Booking ID: ${widget.bookingId}',
+        );
         context.read<BookedDetailsBloc>().add(
           BookedDetailsEvent.fetchDetails(widget.bookingId),
         );
@@ -1530,7 +1682,7 @@ Widget _buildCompactTripInfoItem(String title, String value) {
   /// Reload booking list after cancellation
   void _reloadBookingList() {
     if (!mounted) return;
-    
+
     // Use the parent context we stored before creating local BlocProvider
     final parentCtx = _parentContext;
     if (parentCtx == null || !parentCtx.mounted) {
@@ -1538,15 +1690,21 @@ Widget _buildCompactTripInfoItem(String title, String value) {
       _tryRefreshBookingListAlternative();
       return;
     }
-    
+
     try {
       // Access BookedInfoBloc from parent context (above our local BlocProvider)
       final bookedInfoBloc = parentCtx.read<BookedInfoBloc>();
-      log('✅ Refreshing booking list after cancellation - Found BookedInfoBloc');
+      log(
+        '✅ Refreshing booking list after cancellation - Found BookedInfoBloc',
+      );
       bookedInfoBloc.add(BookedInfoEvent.fetchList());
     } catch (e, stackTrace) {
       // BookedInfoBloc might not be available in this context
-      log('❌ Could not refresh booking list from parent context: $e', error: e, stackTrace: stackTrace);
+      log(
+        '❌ Could not refresh booking list from parent context: $e',
+        error: e,
+        stackTrace: stackTrace,
+      );
       // Try alternative approach
       _tryRefreshBookingListAlternative();
     }
@@ -1555,7 +1713,7 @@ Widget _buildCompactTripInfoItem(String title, String value) {
   /// Alternative method to refresh booking list
   void _tryRefreshBookingListAlternative() {
     if (!mounted) return;
-    
+
     try {
       // Walk up the widget tree to find BookedInfoBloc using current context
       BookedInfoBloc? bookedInfoBloc;
@@ -1567,7 +1725,7 @@ Widget _buildCompactTripInfoItem(String title, String value) {
           return true; // Continue walking
         }
       });
-      
+
       if (bookedInfoBloc != null) {
         log('Found BookedInfoBloc using alternative method, refreshing list');
         bookedInfoBloc!.add(BookedInfoEvent.fetchList());
@@ -1606,9 +1764,7 @@ Widget _buildCompactTripInfoItem(String title, String value) {
 
       final cabStatusResponse = await http.post(
         cabStatusUri,
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
+        headers: {"Content-Type": "application/x-www-form-urlencoded"},
         body: cabStatusBody,
       );
 
@@ -1620,7 +1776,9 @@ Widget _buildCompactTripInfoItem(String title, String value) {
           log('CAB Status API returned error: ${cabStatusDecoded['message']}');
         }
       } else {
-        log('CAB Status API failed with status: ${cabStatusResponse.statusCode}');
+        log(
+          'CAB Status API failed with status: ${cabStatusResponse.statusCode}',
+        );
       }
     } catch (e) {
       log('Error calling CAB Status API: $e');
@@ -1633,9 +1791,7 @@ Widget _buildCompactTripInfoItem(String title, String value) {
       SnackBar(
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         backgroundColor: _errorColor,
         content: Row(
           children: [
@@ -1674,8 +1830,8 @@ Widget _buildCompactTripInfoItem(String title, String value) {
           ElevatedButton(
             onPressed: () {
               context.read<BookedDetailsBloc>().add(
-                    BookedDetailsEvent.fetchDetails(widget.bookingId),
-                  );
+                BookedDetailsEvent.fetchDetails(widget.bookingId),
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: _primaryColor,
@@ -1689,9 +1845,7 @@ Widget _buildCompactTripInfoItem(String title, String value) {
   }
 
   Widget _buildInitialState() {
-    return const Center(
-      child: Text('Loading booking details...'),
-    );
+    return const Center(child: Text('Loading booking details...'));
   }
 
   String _formatDate(String date) {
@@ -1728,5 +1882,9 @@ class _CancellationReason {
   final String text;
   final String placeholder;
 
-  _CancellationReason({required this.id, required this.text, required this.placeholder});
+  _CancellationReason({
+    required this.id,
+    required this.text,
+    required this.placeholder,
+  });
 }

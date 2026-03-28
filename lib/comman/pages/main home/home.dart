@@ -109,17 +109,8 @@ class _HomeContentPageState extends State<HomeContentPage> {
   final TextEditingController _searchController = TextEditingController();
   String _searchText = '';
 
-  // Color Theme - Consistent throughout
-  // Color Theme - Refined for Premium Experience
-  final Color _primaryColor = const Color(0xFF003875); // Deep Ocean Blue
-  final Color _secondaryColor = const Color(0xFFFFB703); // Premium Gold/Amber
-  final Color _accentColor = const Color(0xFF3B82F6); // Vibrant Blue
-  final Color _backgroundColor = const Color(0xFFF8FAFC);
-  final Color _cardColor = Colors.white;
-  final Color _textPrimary = const Color(0xFF0F172A);
-  final Color _textSecondary = const Color(0xFF64748B);
-  final Color _textLight = const Color(0xFF94A3B8);
-  final Color _successColor = const Color(0xFF10B981);
+
+
 
 
 
@@ -355,7 +346,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
         : 12;
 
     return Scaffold(
-      backgroundColor: _backgroundColor,
+      backgroundColor: backgroundColor,
       body: SafeArea(
         top: false,
         child: Stack(
@@ -458,7 +449,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
         horizontal: isSmallScreen ? 16 : 24,
         vertical: 12,
       ),
-      color: _backgroundColor,
+      color: backgroundColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -469,7 +460,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: _primaryColor,
+                  color: maincolor1,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Padding(
@@ -479,7 +470,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) => Icon(
                       Iconsax.airplane,
-                      color: _secondaryColor,
+                      color: secondaryColor,
                       size: 18,
                     ),
                   ),
@@ -489,7 +480,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
               Text(
                 'MT TRIP',
                 style: TextStyle(
-                  color: _primaryColor,
+                  color: maincolor1,
                   fontSize: 20,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 1.2,
@@ -513,7 +504,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     final isLoggedIn = state.isLoggedIn ?? false;
 
     return SliverAppBar(
-      backgroundColor: _backgroundColor,
+      backgroundColor: backgroundColor,
       expandedHeight: !isLoggedIn
           ? (isTablet
                 ? 160
@@ -577,11 +568,11 @@ class _HomeContentPageState extends State<HomeContentPage> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: _primaryColor,
+        color: maincolor1,
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(36)),
         boxShadow: [
           BoxShadow(
-            color: _primaryColor.withOpacity(0.3),
+            color: maincolor1.withOpacity(0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -692,8 +683,8 @@ class _HomeContentPageState extends State<HomeContentPage> {
               width: _currentOfferPage == index ? 24 : 8,
               decoration: BoxDecoration(
                 color: _currentOfferPage == index
-                    ? _secondaryColor
-                    : _textLight.withOpacity(0.4),
+                    ? secondaryColor
+                    : textLight.withOpacity(0.4),
                 borderRadius: BorderRadius.circular(4),
               ),
             );
@@ -760,18 +751,18 @@ class _HomeContentPageState extends State<HomeContentPage> {
         decoration: InputDecoration(
           hintText: 'Search for recharge, bill, travel...',
           hintStyle: TextStyle(
-            color: _textLight,
+            color: textLight,
             fontSize: isSmallScreen ? 14 : 16,
             fontWeight: FontWeight.w400,
           ),
           prefixIcon: Icon(
             Iconsax.search_normal,
-            color: _secondaryColor,
+            color: secondaryColor,
             size: 22,
           ),
           suffixIcon: _searchText.isNotEmpty
               ? IconButton(
-                  icon: Icon(Iconsax.close_circle, color: _textLight, size: 20),
+                  icon: Icon(Iconsax.close_circle, color: textLight, size: 20),
                   onPressed: () {
                     _searchController.clear();
                     setState(() => _searchText = '');
@@ -823,14 +814,14 @@ class _HomeContentPageState extends State<HomeContentPage> {
                           children: [
                             Icon(
                               Iconsax.search_status,
-                              color: _textLight,
+                              color: textLight,
                               size: 40,
                             ),
                             const SizedBox(height: 12),
                             Text(
                               'No services found for "$_searchText"',
                               style: TextStyle(
-                                color: _textSecondary,
+                                color: textSecondary,
                                 fontSize: 14,
                               ),
                               textAlign: TextAlign.center,
@@ -859,18 +850,18 @@ class _HomeContentPageState extends State<HomeContentPage> {
                             title: Text(
                               service['label'] as String,
                               style: TextStyle(
-                                color: _textPrimary,
+                                color: textPrimary,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
                               ),
                             ),
                             subtitle: Text(
                               _getServiceCategory(service['label'] as String),
-                              style: TextStyle(color: _textLight, fontSize: 12),
+                              style: TextStyle(color: textLight, fontSize: 12),
                             ),
                             trailing: Icon(
                               Iconsax.arrow_right_3,
-                              color: _textLight,
+                              color: textLight,
                               size: 16,
                             ),
                             onTap: () {
@@ -920,14 +911,14 @@ class _HomeContentPageState extends State<HomeContentPage> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              _secondaryColor.withOpacity(0.1),
-              _secondaryColor.withOpacity(0.05),
+              secondaryColor.withOpacity(0.1),
+              secondaryColor.withOpacity(0.05),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: _secondaryColor.withOpacity(0.2)),
+          border: Border.all(color: secondaryColor.withOpacity(0.2)),
         ),
         child: Row(
           children: [
@@ -935,12 +926,12 @@ class _HomeContentPageState extends State<HomeContentPage> {
             // Container(
             //   padding: EdgeInsets.all(8),
             //   decoration: BoxDecoration(
-            //     color: _secondaryColor.withOpacity(0.1),
+            //     color: secondaryColor.withOpacity(0.1),
             //     shape: BoxShape.circle,
             //   ),
             //   child: Icon(
             //     Icons.info_outline,
-            //     color: _secondaryColor,
+            //     color: secondaryColor,
             //     size: isSmallScreen ? 18 : 20,
             //   ),
             // ),
@@ -954,7 +945,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                   Text(
                     'Login Required!',
                     style: TextStyle(
-                      color: _primaryColor,
+                      color: maincolor1,
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
@@ -962,7 +953,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                   SizedBox(height: 4),
                   Text(
                     'login to manage trips, explore offers & more',
-                    style: TextStyle(color: _textSecondary, fontSize: 10),
+                    style: TextStyle(color: textSecondary, fontSize: 10),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -975,7 +966,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
               height: isSmallScreen ? 32 : 36,
               padding: EdgeInsets.symmetric(horizontal: 12),
               decoration: BoxDecoration(
-                color: _primaryColor,
+                color: maincolor1,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: TextButton(
@@ -1018,7 +1009,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
         Text(
           value,
           style: TextStyle(
-            color: _primaryColor,
+            color: maincolor1,
             fontSize: isSmallScreen ? 12 : 14,
             fontWeight: FontWeight.bold,
           ),
@@ -1027,7 +1018,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
         Text(
           label,
           style: TextStyle(
-            color: _textSecondary,
+            color: textSecondary,
             fontSize: isSmallScreen ? 10 : 12,
           ),
         ),
@@ -1042,7 +1033,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
   ) {
     return Container(
       padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
-      color: _cardColor,
+      color: cardColor,
       margin: EdgeInsets.only(top: 0),
       child: Column(
         children: [
@@ -1068,8 +1059,8 @@ class _HomeContentPageState extends State<HomeContentPage> {
               },
               decoration: InputDecoration(
                 hintText: 'Search destinations, flights, hotels...',
-                hintStyle: TextStyle(color: _textLight, fontSize: bodyFontSize),
-                prefixIcon: Icon(Iconsax.search_normal, color: _primaryColor),
+                hintStyle: TextStyle(color: textLight, fontSize: bodyFontSize),
+                prefixIcon: Icon(Iconsax.search_normal, color: maincolor1),
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.symmetric(
                   vertical: isSmallScreen ? 16 : 20,
@@ -1077,7 +1068,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                 ),
                 suffixIcon: _searchText.isNotEmpty
                     ? IconButton(
-                        icon: Icon(Iconsax.close_circle, color: _textLight),
+                        icon: Icon(Iconsax.close_circle, color: textLight),
                         onPressed: () {
                           setState(() {
                             _searchText = '';
@@ -1115,7 +1106,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
       margin: EdgeInsets.only(top: 16),
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
@@ -1133,7 +1124,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
             style: TextStyle(
               fontSize: bodyFontSize,
               fontWeight: FontWeight.w600,
-              color: _textPrimary,
+              color: textPrimary,
             ),
           ),
           SizedBox(height: 12),
@@ -1163,9 +1154,9 @@ class _HomeContentPageState extends State<HomeContentPage> {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: _backgroundColor,
+          color: backgroundColor,
           borderRadius: BorderRadius.circular(25),
-          border: Border.all(color: _secondaryColor.withOpacity(0.3)),
+          border: Border.all(color: secondaryColor.withOpacity(0.3)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -1181,7 +1172,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
               style: TextStyle(
                 fontSize: bodyFontSize,
                 fontWeight: FontWeight.w500,
-                color: _textPrimary,
+                color: textPrimary,
               ),
             ),
           ],
@@ -1225,7 +1216,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                   Text(
                     'TRENDING NOW',
                     style: TextStyle(
-                      color: _secondaryColor,
+                      color: secondaryColor,
                       fontSize: 10,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 1.5,
@@ -1237,7 +1228,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                     style: TextStyle(
                       fontSize: headingFontSize + 4,
                       fontWeight: FontWeight.w900,
-                      color: _primaryColor,
+                      color: maincolor1,
                       letterSpacing: -0.5,
                     ),
                   ),
@@ -1281,7 +1272,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: _primaryColor.withOpacity(0.12),
+              color: maincolor1.withOpacity(0.12),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -1359,13 +1350,13 @@ class _HomeContentPageState extends State<HomeContentPage> {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: _secondaryColor,
+                        color: secondaryColor,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
                         'From ${destination.price}',
                         style: TextStyle(
-                          color: _primaryColor,
+                          color: maincolor1,
                           fontSize: 11,
                           fontWeight: FontWeight.w900,
                         ),
@@ -1402,7 +1393,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     return Container(
       height: MediaQuery.of(context).size.height * 0.85,
       decoration: BoxDecoration(
-        color: _backgroundColor,
+        color: backgroundColor,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         boxShadow: [
           BoxShadow(
@@ -1469,7 +1460,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: _secondaryColor,
+                        color: secondaryColor,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -1517,12 +1508,12 @@ class _HomeContentPageState extends State<HomeContentPage> {
                         children: [
                           Text(
                             'Starting from',
-                            style: TextStyle(color: _textLight, fontSize: 14),
+                            style: TextStyle(color: textLight, fontSize: 14),
                           ),
                           Text(
                             '₹${destination.price}',
                             style: TextStyle(
-                              color: _primaryColor,
+                              color: maincolor1,
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                             ),
@@ -1532,12 +1523,12 @@ class _HomeContentPageState extends State<HomeContentPage> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: _secondaryColor.withOpacity(0.1),
+                          color: secondaryColor.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Icon(
                           Iconsax.star5,
-                          color: _secondaryColor,
+                          color: secondaryColor,
                           size: 24,
                         ),
                       ),
@@ -1547,7 +1538,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                   Text(
                     'Plan Your Perfect Trip',
                     style: TextStyle(
-                      color: _primaryColor,
+                      color: maincolor1,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -1556,7 +1547,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                   Text(
                     'Experience the beauty of ${destination.name}. Book your dream vacation with MT TRIP and get exclusive offers and world-class service.',
                     style: TextStyle(
-                      color: _textSecondary,
+                      color: textSecondary,
                       fontSize: 15,
                       height: 1.6,
                     ),
@@ -1574,13 +1565,13 @@ class _HomeContentPageState extends State<HomeContentPage> {
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: _primaryColor,
+                        backgroundColor: maincolor1,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
                         elevation: 4,
-                        shadowColor: _primaryColor.withOpacity(0.4),
+                        shadowColor: maincolor1.withOpacity(0.4),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -1588,7 +1579,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                           Icon(
                             Icons.phone_in_talk_rounded,
                             size: 22,
-                            color: _secondaryColor,
+                            color: secondaryColor,
                           ),
                           const SizedBox(width: 12),
                           const Text(
@@ -1627,7 +1618,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
             children: [
               Icon(
                 Iconsax.trend_up,
-                color: _primaryColor,
+                color: maincolor1,
                 size: headingFontSize,
               ),
               SizedBox(width: 8),
@@ -1696,7 +1687,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
               Text(
                 'EXCLUSIVE OFFERS',
                 style: TextStyle(
-                  color: _secondaryColor,
+                  color: secondaryColor,
                   fontSize: 10,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 1.5,
@@ -1707,7 +1698,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                 child: Text(
                   'View all',
                   style: TextStyle(
-                    color: _accentColor,
+                    color: accentColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -1747,7 +1738,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: _primaryColor.withOpacity(0.08),
+            color: maincolor1.withOpacity(0.08),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -1789,7 +1780,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: _successColor.withOpacity(0.9),
+                      color: successColor.withOpacity(0.9),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Text(
@@ -1823,7 +1814,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
-                      foregroundColor: _primaryColor,
+                      foregroundColor: maincolor1,
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
@@ -1870,7 +1861,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
           Text(
             'OUR SERVICES',
             style: TextStyle(
-              color: _secondaryColor,
+              color: secondaryColor,
               fontSize: 10,
               fontWeight: FontWeight.w800,
               letterSpacing: 2.0,
@@ -1882,7 +1873,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
             style: TextStyle(
               fontSize: headingFontSize + 2,
               fontWeight: FontWeight.w900,
-              color: _primaryColor,
+              color: maincolor1,
             ),
           ),
           SizedBox(height: 20),
@@ -1930,7 +1921,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: _primaryColor.withOpacity(0.06),
+                  color: maincolor1.withOpacity(0.06),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -1948,7 +1939,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
             style: TextStyle(
               fontSize: 9,
               fontWeight: FontWeight.w600,
-              color: _primaryColor,
+              color: maincolor1,
               letterSpacing: 0.2,
             ),
             textAlign: TextAlign.center,
@@ -1992,7 +1983,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
           Text(
             'QUICK TOOLS',
             style: TextStyle(
-              color: _secondaryColor,
+              color: secondaryColor,
               fontSize: 10,
               fontWeight: FontWeight.w800,
               letterSpacing: 2.0,
@@ -2004,7 +1995,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
             style: TextStyle(
               fontSize: headingFontSize + 2,
               fontWeight: FontWeight.w900,
-              color: _primaryColor,
+              color: maincolor1,
             ),
           ),
           const SizedBox(height: 20),
@@ -2046,7 +2037,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
           Container(
             padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
             decoration: BoxDecoration(
-              color: _backgroundColor, // Soft grey background inside white card
+              color: backgroundColor, // Soft grey background inside white card
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -2061,7 +2052,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: _primaryColor,
+              color: maincolor1,
             ),
             textAlign: TextAlign.center,
             maxLines: 1,
@@ -2085,11 +2076,11 @@ class _HomeContentPageState extends State<HomeContentPage> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [_primaryColor, Color(0xFF001F45)],
+          colors: [maincolor1, Color(0xFF001F45)],
         ),
         boxShadow: [
           BoxShadow(
-            color: _primaryColor.withOpacity(0.2),
+            color: maincolor1.withOpacity(0.2),
             blurRadius: 25,
             offset: const Offset(0, 12),
           ),
@@ -2115,7 +2106,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
               Text(
                 'GO BEYOND',
                 style: TextStyle(
-                  color: _secondaryColor,
+                  color: secondaryColor,
                   fontSize: 10,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 2.0,
@@ -2166,20 +2157,20 @@ class _HomeContentPageState extends State<HomeContentPage> {
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: _textPrimary,
+                  color: textPrimary,
                 ),
               ),
               SizedBox(height: 15),
               Text(
                 'We\'re working hard to bring you the best $service booking experience. Stay tuned!',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: _textSecondary),
+                style: TextStyle(fontSize: 16, color: textSecondary),
               ),
               SizedBox(height: 25),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _primaryColor,
+                  backgroundColor: maincolor1,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),

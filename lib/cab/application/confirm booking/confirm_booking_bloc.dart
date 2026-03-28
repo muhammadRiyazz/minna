@@ -98,7 +98,7 @@ class ConfirmBookingBloc extends Bloc<ConfirmBookingEvent, ConfirmBookingState> 
     final response = await http.post(
       Uri.parse('http://gozotech2.ddns.net:5192/api/cpapi/booking/confirm'),
       headers: {
-        'Authorization': 'Basic ZjA2MjljNTIxZjE2MjU0NTA2YmIyMDQzNWI4MTJmMmE=',
+        'Authorization': cabauth,
         'Content-Type': 'application/json',
       },
       body: jsonEncode({"bookingId": event.bookingid}),

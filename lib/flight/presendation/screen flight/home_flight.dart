@@ -9,40 +9,20 @@ import 'package:minna/flight/presendation/screen%20flight/widget/airport_bottom.
 import 'package:minna/flight/presendation/trip%20list/trip_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 
 class FlightBookingTab extends StatefulWidget {
-   const FlightBookingTab({super.key});
+  const FlightBookingTab({super.key});
 
   @override
   State<FlightBookingTab> createState() => _FlightBookingTabState();
 }
 
 class _FlightBookingTabState extends State<FlightBookingTab> {
-  // Color Theme - Consistent with hotel booking
-  final Color _primaryColor = Colors.black;
+  final Color _errorColor = const Color(0xFFE53935);
 
-  final Color _secondaryColor = Color(0xFFD4AF37); 
- // Gold
-  final Color _accentColor = Color(0xFFC19B3C); 
- // Darker Gold
-  final Color _backgroundColor = Color(0xFFF8F9FA);
-
-  final Color _cardColor = Colors.white;
-
-  final Color _textPrimary = Colors.black;
-
-  final Color _textSecondary = Color(0xFF666666);
-
-  final Color _textLight = Color(0xFF999999);
-
-  final Color _errorColor = Color(0xFFE53935);
-
-
-
-
-
-   final FlightCommissionService _commissionService = FlightCommissionService();
+  final FlightCommissionService _commissionService = FlightCommissionService();
 
   @override
   void initState() {
@@ -51,83 +31,127 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
   }
 
   Future<void> _initializeCommissionData() async {
-   
     try {
       await _commissionService.fetchCommissionRules();
-     
+
       log('Commission data initialized successfully');
     } catch (e) {
-   log(e.toString());
-   _retryCommissionInitialization();
+      log(e.toString());
+      _retryCommissionInitialization();
     }
   }
 
   Future<void> _retryCommissionInitialization() async {
     await _initializeCommissionData();
   }
+
   @override
   Widget build(BuildContext context) {
-
-    
     return Scaffold(
-      backgroundColor: _backgroundColor,
+      backgroundColor: backgroundColor,
       body: BlocBuilder<SearchDataBloc, SearchDataState>(
         builder: (context, state) {
           return CustomScrollView(
             slivers: [
-              // App Bar
+              // Enhanced App Bar with Image
               SliverAppBar(
-                backgroundColor: _primaryColor,
-                expandedHeight: 140,
+                expandedHeight: 210,
                 floating: false,
                 pinned: true,
-                elevation: 4,leading: IconButton(
-              icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
-              onPressed: () => Navigator.pop(context),
-            ),
-                shadowColor: Colors.black.withOpacity(0.3),
-                surfaceTintColor: Colors.white,
+                elevation: 0,
+                leading: IconButton(
+                  icon: const Icon(Iconsax.arrow_left, color: Colors.white),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                backgroundColor: maincolor1,
                 flexibleSpace: FlexibleSpaceBar(
-                  title: Text(
-                    'Flight Booking',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  centerTitle: true,
-                  background: Container(
-                    decoration: BoxDecoration(
-                    color: _primaryColor
-                    ),
+                  background: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Image.asset(
+                        'asset/flight/header_bg.png',
+                        fit: BoxFit.cover,
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.black.withOpacity(0.3),
+                              maincolor1.withOpacity(0.8),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 40,
+                        left: 20,
+                        right: 20,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "Where to next?",
+                              style: TextStyle(
+                                color: secondaryColor,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              "Find Your Perfect Flight",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black.withOpacity(0.4),
+                                    offset: Offset(0, 2),
+                                    blurRadius: 4,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                // shape: RoundedRectangleBorder(
-                //   borderRadius: BorderRadius.vertical(
-                //     bottom: Radius.circular(20),
-                //   ),
-                // ),
               ),
 
-              // Main Content
+              // Main Content with Layered Effect
               SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 17,horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Header Section
-                      _buildHeaderSection(),
-                      const SizedBox(height: 15),
+                child: Transform.translate(
+                  offset: Offset(0, -30),
+                  child: Padding(
+                    padding: EdgeInsetsGeometry.only(top: 45),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Search Cards Section (The Floating Layer)
+                          _buildSearchCardsSection(context, state),
+                          const SizedBox(height: 24),
 
-                      // Search Cards Section
-                      _buildSearchCardsSection(context, state),
-                      const SizedBox(height: 20),
+                          // Search Button
+                          _buildSearchButton(context, state),
+                          // const SizedBox(height: 32),
 
-                      // Search Button
-                      _buildSearchButton(context, state),
-                    ],
+                          // Promotional Section
+                          // _buildPromotionalSection(),
+                          const SizedBox(
+                            height: 100,
+                          ), // Extra space for scrolling
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -138,81 +162,33 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
     );
   }
 
-  Widget _buildHeaderSection() {
-    return Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-     color: _primaryColor,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: _primaryColor.withOpacity(0.3),
-            blurRadius: 15,
-            offset: Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: _secondaryColor.withOpacity(0.2),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.flight_takeoff_rounded,
-              color: _secondaryColor,
-              size: 28,
-            ),
-          ),
-          SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Find Your Perfect Flight",
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    height: 1.2,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  "Discover the best flights at amazing prices",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white.withOpacity(0.8),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildSearchCardsSection(BuildContext context, SearchDataState state) {
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: _cardColor,
-        borderRadius: BorderRadius.circular(20),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
+            color: maincolor1.withOpacity(0.08),
+            blurRadius: 25,
+            offset: const Offset(0, 10),
           ),
         ],
+        border: Border.all(color: Colors.grey.shade100, width: 1.5),
       ),
       child: Column(
         children: [
+          // // Header Accent
+          // Container(
+          //   height: 4,
+          //   width: 40,
+          //   margin: const EdgeInsets.only(bottom: 15),
+          //   decoration: BoxDecoration(
+          //     color: secondaryColor.withOpacity(0.3),
+          //     borderRadius: BorderRadius.circular(2),
+          //   ),
+          // ),
           // Trip Type Selector
           _buildTripTypeSelector(context, state),
           const SizedBox(height: 14),
@@ -236,32 +212,30 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
     return Container(
       padding: EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: _backgroundColor,
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _secondaryColor.withOpacity(0.2)),
+        // border: Border.all(color: secondaryColor.withOpacity(0.2)),
       ),
       child: Row(
         children: [
           Expanded(
             child: GestureDetector(
               onTap: () => context.read<SearchDataBloc>().add(
-                const SearchDataEvent.oneWayOrRound(
-                  oneWayOrRound: 'oneWay',
-                ),
+                const SearchDataEvent.oneWayOrRound(oneWayOrRound: 'oneWay'),
               ),
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 decoration: BoxDecoration(
-                  color: state.oneWay ? _secondaryColor : Colors.transparent,
+                  color: state.oneWay ? secondaryColor : Colors.transparent,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Center(
                   child: Text(
                     'One Way',
                     style: TextStyle(
-                      fontSize: 12,
-                      color: state.oneWay ? Colors.white : _textPrimary,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 11,
+                      color: state.oneWay ? maincolor1 : textPrimary,
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
                 ),
@@ -271,23 +245,21 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
           Expanded(
             child: GestureDetector(
               onTap: () => context.read<SearchDataBloc>().add(
-                const SearchDataEvent.oneWayOrRound(
-                  oneWayOrRound: 'roundTrip',
-                ),
+                const SearchDataEvent.oneWayOrRound(oneWayOrRound: 'roundTrip'),
               ),
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 decoration: BoxDecoration(
-                  color: !state.oneWay ? _secondaryColor : Colors.transparent,
+                  color: !state.oneWay ? secondaryColor : Colors.transparent,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Center(
                   child: Text(
                     'Round Trip',
                     style: TextStyle(
-                      fontSize: 12,
-                      color: !state.oneWay ? Colors.white : _textPrimary,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 11,
+                      color: !state.oneWay ? maincolor1 : textPrimary,
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
                 ),
@@ -300,40 +272,72 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
   }
 
   Widget _buildLocationCards(BuildContext context, SearchDataState state) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade200),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        children: [
-          // From Location
-          _buildLocationCard(
-            context: context,
-            title: "From",
-            subtitle: state.from?.name ?? "Select Departure City",
-            icon: Icons.flight_takeoff_rounded,
-            isFrom: true,
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            // border: Border.all(color: Colors.grey.shade100),
+            borderRadius: BorderRadius.circular(20),
           ),
-          Container(
-            height: 1,
-            color: Colors.grey.shade100,
+          child: Row(
+            children: [
+              // From Location
+              Expanded(
+                child: _buildLocationCard(
+                  context: context,
+                  state: state,
+                  title: "FROM",
+                  subtitle: state.from?.name ?? "Select Departure",
+                  icon: Iconsax.airplane,
+                  isFrom: true,
+                ),
+              ),
+              Container(height: 60, width: 1, color: Colors.grey.shade200),
+              // To Location
+              Expanded(
+                child: _buildLocationCard(
+                  context: context,
+                  state: state,
+                  title: "TO",
+                  subtitle: state.to?.name ?? "Select Arrival",
+                  icon: Iconsax.airplane_square,
+                  isFrom: false,
+                ),
+              ),
+            ],
           ),
-          // To Location
-          _buildLocationCard(
-            context: context,
-            title: "To",
-            subtitle: state.to?.name ?? "Select Arrival City",
-            icon: Icons.flight_land_rounded,
-            isFrom: false,
-          ),
-        ],
-      ),
+        ),
+        // Swap Button
+        // GestureDetector(
+        //   onTap: () {
+        //     // Swap state logic if needed, or just visual feedback for now
+        //   },
+        //   child: Container(
+        //     padding: const EdgeInsets.all(8),
+        //     decoration: BoxDecoration(
+        //       color: maincolor1,
+        //       shape: BoxShape.circle,
+        //       border: Border.all(color: Colors.white, width: 3),
+        //       boxShadow: [
+        //         BoxShadow(
+        //           color: maincolor1.withOpacity(0.3),
+        //           blurRadius: 10,
+        //           offset: const Offset(0, 4),
+        //         ),
+        //       ],
+        //     ),
+        //     child: Icon(Iconsax.arrow_2, color: secondaryColor, size: 22),
+        //   ),
+        // ),
+      ],
     );
   }
 
   Widget _buildLocationCard({
     required BuildContext context,
+    required SearchDataState state,
     required String title,
     required String subtitle,
     required IconData icon,
@@ -344,58 +348,73 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: _cardColor,
-          borderRadius: BorderRadius.only(
-            topLeft: isFrom ? Radius.circular(16) : Radius.zero,
-            topRight: isFrom ? Radius.circular(16) : Radius.zero,
-            bottomLeft: !isFrom ? Radius.circular(16) : Radius.zero,
-            bottomRight: !isFrom ? Radius.circular(16) : Radius.zero,
-          ),
+          // color: cardColor,
+          // borderRadius: BorderRadius.only(
+          //   topLeft: isFrom ? Radius.circular(16) : Radius.zero,
+          //   topRight: isFrom ? Radius.circular(16) : Radius.zero,
+          //   bottomLeft: !isFrom ? Radius.circular(16) : Radius.zero,
+          //   bottomRight: !isFrom ? Radius.circular(16) : Radius.zero,
+          // ),
         ),
         child: Row(
           children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: _secondaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                icon,
-                color: _secondaryColor,
-                size: 24,
-              ),
-            ),
-            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: _textSecondary,
-                      fontWeight: FontWeight.w500,
+                  if (isFrom ? state.from != null : state.to != null) ...[
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        isFrom
+                            ? (state.from?.code ?? "")
+                            : (state.to?.code ?? ""),
+                        style: TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.w900,
+                          color: maincolor1,
+                          letterSpacing: -1,
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: _textPrimary,
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        color: textSecondary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
+                  ] else ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      isFrom ? "FROM" : "TO",
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: textSecondary,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      isFrom ? "Select Origin" : "Select Destination",
+                      style: TextStyle(
+                        fontSize: 8,
+                        fontWeight: FontWeight.w600,
+                        color: maincolor1.withOpacity(0.3),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              color: _textLight,
-              size: 16,
-            ),
+            const SizedBox(width: 8),
+            Icon(icon, color: secondaryColor.withOpacity(0.35), size: 28),
           ],
         ),
       ),
@@ -451,9 +470,9 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
           builder: (context, child) => Theme(
             data: Theme.of(context).copyWith(
               colorScheme: ColorScheme.light(
-                primary: _secondaryColor,
+                primary: secondaryColor,
                 onPrimary: Colors.white,
-                onSurface: _primaryColor,
+                onSurface: maincolor1,
               ),
             ),
             child: child!,
@@ -482,52 +501,72 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
         }
       },
       child: Container(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: _backgroundColor,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.shade200),
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(16),
+          // border: Border.all(color: Colors.grey.shade200),
         ),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+
           children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: _secondaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(
-                Icons.calendar_month_rounded,
-                color: _secondaryColor,
-                size: 15,
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 9,
+                color: textSecondary,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.5,
               ),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                if (date != null)
                   Text(
-                    title,
+                    DateFormat('dd').format(date),
                     style: TextStyle(
-                      fontSize: 8,
-                      color: _textSecondary,
-                      fontWeight: FontWeight.w500,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: maincolor1,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    date != null
-                        ? DateFormat('dd MMM yyyy').format(date)
-                        : "Select date",
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: date != null ? _textPrimary : _textLight,
-                    ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        date != null
+                            ? DateFormat('MMM yyyy').format(date)
+                            : "Select",
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: textPrimary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        date != null ? DateFormat('EEEE').format(date) : "Date",
+                        style: TextStyle(
+                          fontSize: 9,
+                          color: textSecondary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ],
         ),
@@ -536,23 +575,27 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
   }
 
   Widget _buildTravelInfo(BuildContext context, SearchDataState state) {
-    return Column(
+    return Row(
       children: [
         // Travellers
-        _buildTravelInfoCard(
-          title: "Travellers",
-          value:
-              "${state.travellers['adults']! + state.travellers['children']! + state.travellers['infants']!} Travellers",
-          icon: Icons.people_rounded,
-          onTap: () => _showTravellersBottomSheet(context, state),
+        Expanded(
+          child: _buildTravelInfoCard(
+            title: "TRAVELLERS",
+            value:
+                "${state.travellers['adults']! + state.travellers['children']! + state.travellers['infants']!} PAX",
+            icon: Iconsax.user_add,
+            onTap: () => _showTravellersBottomSheet(context, state),
+          ),
         ),
-        const SizedBox(height: 14),
+        const SizedBox(width: 16),
         // Class
-        _buildTravelInfoCard(
-          title: "Class",
-          value: state.seatClass,
-          icon: Icons.airline_seat_recline_normal_rounded,
-          onTap: () => _showClassBottomSheet(context, state),
+        Expanded(
+          child: _buildTravelInfoCard(
+            title: "CABIN CLASS",
+            value: state.seatClass,
+            icon: Iconsax.favorite_chart,
+            onTap: () => _showClassBottomSheet(context, state),
+          ),
         ),
       ],
     );
@@ -567,25 +610,21 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
         decoration: BoxDecoration(
-          color: _cardColor,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.shade200),
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(16),
+          // border: Border.all(color: Colors.grey.shade200),
         ),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: _secondaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
+                color: secondaryColor.withOpacity(0.1),
+                shape: BoxShape.circle,
               ),
-              child: Icon(
-                icon,
-                color: _secondaryColor,
-                size: 20,
-              ),
+              child: Icon(icon, color: secondaryColor, size: 15),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -595,26 +634,23 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
                   Text(
                     title,
                     style: TextStyle(
-                      fontSize: 10,
-                      color: _textSecondary,
-                      fontWeight: FontWeight.w500,
+                      fontSize: 8,
+                      color: textSecondary,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     value,
                     style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: _textPrimary,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: maincolor1,
                     ),
                   ),
                 ],
               ),
-            ),
-            Icon(
-              Icons.arrow_drop_down_rounded,
-              color: _textLight,
             ),
           ],
         ),
@@ -623,96 +659,122 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
   }
 
   Widget _buildSearchButton(BuildContext context, SearchDataState state) {
-    final isEnabled = state.from != null && state.to != null && 
+    final isEnabled =
+        state.from != null &&
+        state.to != null &&
         (!state.oneWay ? state.returnDate != null : true);
 
-    return SizedBox(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
       width: double.infinity,
-      height: 56,
-      child: ElevatedButton(
-        onPressed: isEnabled
-            ? () {
-                // Validation checks
-                if (state.from == null || state.to == null) {
-                  _showErrorSnackBar(
-                    context,
-                    'Please select both origin and destination',
-                    Icons.error_outline_rounded,
-                  );
-                  return;
-                }
-
-                if (!state.oneWay && state.returnDate == null) {
-                  _showErrorSnackBar(
-                    context,
-                    'Please select return date for round trip',
-                    Icons.calendar_today_rounded,
-                  );
-                  return;
-                }
-
-                // Proceed with flight search if validation passes
-                context.read<TripRequestBloc>().add(
-                  GetTripList(
-                    flightRequestData: FlightSearchRequest(
-                      origin: state.from!.code,
-                      destination: state.to!.code,
-                      onwardDate: state.departureDate,
-                      returnDate: state.returnDate ?? state.departureDate,
-                      adult: state.travellers['adults']!,
-                      child: state.travellers['children']!,
-                      infant: state.travellers['infants']!,
-                      tripMode: state.oneWay ? 'O' : 'R',
-                      travelType: state.from!.countryCode == state.to!.countryCode
-                          ? 'D'
-                          : 'I',
-                      userId: 'userId',
-                      password: 'password',
-                      destinationNation: state.to!.countryCode,
-                      originNation: state.from!.countryCode,
-                      classes: state.seatClass,
-                    ),
-                  ),
-                );
-
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => FlightSearchPage( 
-
-                      tripType:  state.from!.countryCode == state.to!.countryCode
-                          ? 'Domestic'
-                          : 'International',
-                    ),
-                  ),
-                );
-              }
+      height: 60,
+      decoration: BoxDecoration(
+        color: isEnabled ? maincolor1 : maincolor1.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: isEnabled
+            ? [
+                BoxShadow(
+                  color: maincolor1.withOpacity(0.3),
+                  blurRadius: 15,
+                  offset: const Offset(0, 8),
+                ),
+              ]
+            : [],
+        gradient: isEnabled
+            ? LinearGradient(
+                colors: [maincolor1, maincolor1.withOpacity(0.9)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
             : null,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: isEnabled ? _primaryColor : Colors.grey[400],
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: isEnabled
+              ? () {
+                  // Validation checks
+                  if (state.from == null || state.to == null) {
+                    _showErrorSnackBar(
+                      context,
+                      'Please select both origin and destination',
+                      Iconsax.info_circle,
+                    );
+                    return;
+                  }
+
+                  if (!state.oneWay && state.returnDate == null) {
+                    _showErrorSnackBar(
+                      context,
+                      'Please select return date for round trip',
+                      Iconsax.calendar_1,
+                    );
+                    return;
+                  }
+
+                  // Proceed with flight search if validation passes
+                  context.read<TripRequestBloc>().add(
+                    GetTripList(
+                      flightRequestData: FlightSearchRequest(
+                        origin: state.from!.code,
+                        destination: state.to!.code,
+                        onwardDate: state.departureDate,
+                        returnDate: state.returnDate ?? state.departureDate,
+                        adult: state.travellers['adults']!,
+                        child: state.travellers['children']!,
+                        infant: state.travellers['infants']!,
+                        tripMode: state.oneWay ? 'O' : 'R',
+                        travelType:
+                            state.from!.countryCode == state.to!.countryCode
+                            ? 'D'
+                            : 'I',
+                        userId: 'userId',
+                        password: 'password',
+                        destinationNation: state.to!.countryCode,
+                        originNation: state.from!.countryCode,
+                        classes: state.seatClass,
+                      ),
+                    ),
+                  );
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FlightSearchPage(
+                        tripType:
+                            state.from!.countryCode == state.to!.countryCode
+                            ? 'Domestic'
+                            : 'International',
+                      ),
+                    ),
+                  );
+                }
+              : null,
+          borderRadius: BorderRadius.circular(18),
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Iconsax.search_normal_1,
+                  color: isEnabled ? Colors.white : maincolor1.withOpacity(0.2),
+                  size: 22,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Search Flights',
+                  style: TextStyle(
+                    color: isEnabled
+                        ? Colors.white
+                        : maincolor1.withOpacity(0.2),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
+            ),
           ),
-          elevation: 2,
-          shadowColor: isEnabled ? _primaryColor.withOpacity(0.3) : Colors.transparent,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.search_rounded,
-              size: 20,
-            ),
-            const SizedBox(width: 12),
-            Text(
-              "Search Flights",
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
         ),
       ),
     );
@@ -722,9 +784,7 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: EdgeInsets.all(16),
         backgroundColor: _errorColor,
         content: Row(
@@ -791,18 +851,18 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
                       ),
                     ),
                     SizedBox(height: 24),
-                    
+
                     // Title
                     Text(
                       "Travellers",
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: _primaryColor,
+                        color: maincolor1,
                       ),
                     ),
                     SizedBox(height: 24),
-                    
+
                     // Passenger Types
                     _buildPassengerType(
                       context,
@@ -854,7 +914,7 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
                       max: state.travellers['adults'],
                     ),
                     SizedBox(height: 32),
-                    
+
                     // Buttons
                     Row(
                       children: [
@@ -866,11 +926,11 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              side: BorderSide(color: _secondaryColor),
+                              side: BorderSide(color: secondaryColor),
                             ),
                             child: Text(
                               "Cancel",
-                              style: TextStyle(color: _secondaryColor),
+                              style: TextStyle(color: secondaryColor),
                             ),
                           ),
                         ),
@@ -879,7 +939,7 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
                           child: ElevatedButton(
                             onPressed: () => Navigator.pop(context),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: _secondaryColor,
+                              backgroundColor: secondaryColor,
                               padding: EdgeInsets.symmetric(vertical: 15),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -938,18 +998,18 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
                       ),
                     ),
                     SizedBox(height: 24),
-                    
+
                     // Title
                     Text(
                       "Select Class",
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: _primaryColor,
+                        color: maincolor1,
                       ),
                     ),
                     SizedBox(height: 24),
-                    
+
                     // Class Options
                     _buildClassOption(
                       context,
@@ -967,7 +1027,9 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
                       "Premium seating with enhanced services",
                       state.seatClass == 'Business',
                       () => context.read<SearchDataBloc>().add(
-                        const SearchDataEvent.classChange(seatClass: 'Business'),
+                        const SearchDataEvent.classChange(
+                          seatClass: 'Business',
+                        ),
                       ),
                     ),
                     SizedBox(height: 32),
@@ -993,9 +1055,11 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
       child: Container(
         padding: EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: isSelected ? _secondaryColor.withOpacity(0.1) : Colors.transparent,
+          color: isSelected
+              ? secondaryColor.withOpacity(0.1)
+              : Colors.transparent,
           border: Border.all(
-            color: isSelected ? _secondaryColor : Colors.grey.shade300,
+            color: isSelected ? secondaryColor : Colors.grey.shade300,
             width: 1.5,
           ),
           borderRadius: BorderRadius.circular(12),
@@ -1008,8 +1072,8 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected ? _secondaryColor : Colors.grey,
-                  width: isSelected ? 2 :1,
+                  color: isSelected ? secondaryColor : Colors.grey,
+                  width: isSelected ? 2 : 1,
                 ),
               ),
             ),
@@ -1023,16 +1087,13 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: isSelected ? _secondaryColor : _textPrimary,
+                      color: isSelected ? secondaryColor : textPrimary,
                     ),
                   ),
                   SizedBox(height: 4),
                   Text(
                     description,
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: _textSecondary,
-                    ),
+                    style: TextStyle(fontSize: 11, color: textSecondary),
                   ),
                 ],
               ),
@@ -1055,7 +1116,7 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _backgroundColor,
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -1069,16 +1130,13 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: _textPrimary,
+                  color: textPrimary,
                 ),
               ),
               SizedBox(height: 4),
               Text(
                 description,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: _textSecondary,
-                ),
+                style: TextStyle(fontSize: 12, color: textSecondary),
               ),
             ],
           ),
@@ -1090,7 +1148,11 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
                     border: Border.all(color: Colors.grey.shade400),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(Icons.remove, size: 18, color: Colors.grey.shade600),
+                  child: Icon(
+                    Icons.remove,
+                    size: 18,
+                    color: Colors.grey.shade600,
+                  ),
                 ),
                 onPressed: count > min ? () => onChanged(count - 1) : null,
                 padding: EdgeInsets.zero,
@@ -1103,7 +1165,7 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: _textPrimary,
+                    color: textPrimary,
                   ),
                 ),
               ),
@@ -1121,6 +1183,124 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
                 padding: EdgeInsets.zero,
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPromotionalSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Trending Destinations",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: maincolor1,
+                ),
+              ),
+              Text(
+                "See All",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: secondaryColor,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          height: 220,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: [
+              _buildPromoCard(
+                "Dubai",
+                "From \$450",
+                "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=500&auto=format&fit=crop",
+              ),
+              _buildPromoCard(
+                "London",
+                "From \$620",
+                "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?q=80&w=500&auto=format&fit=crop",
+              ),
+              _buildPromoCard(
+                "Paris",
+                "From \$580",
+                "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=500&auto=format&fit=crop",
+              ),
+              _buildPromoCard(
+                "New York",
+                "From \$750",
+                "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=500&auto=format&fit=crop",
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPromoCard(String title, String price, String imageUrl) {
+    return Container(
+      width: 160,
+      margin: const EdgeInsets.only(right: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            child: Image.network(
+              imageUrl,
+              height: 120,
+              width: 160,
+              fit: BoxFit.cover,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  price,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: secondaryColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

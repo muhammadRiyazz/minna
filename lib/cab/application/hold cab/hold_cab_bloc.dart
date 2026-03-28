@@ -19,15 +19,14 @@ class HoldCabBloc extends Bloc<HoldCabEvent, HoldCabState> {
       log('Calling hold cab API...');
 
       try {
-         SharedPreferences preferences = await SharedPreferences.getInstance();
-       final userId = preferences.getString('userId') ?? '';
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        final userId = preferences.getString('userId') ?? '';
 
         /// Step 1: Call HOLD API
         final response = await http.post(
           Uri.parse('http://gozotech2.ddns.net:5192/api/cpapi/booking/hold'),
           headers: {
-            'Authorization':
-                'Basic ZjA2MjljNTIxZjE2MjU0NTA2YmIyMDQzNWI4MTJmMmE=',
+            'Authorization': cabauth,
             'Content-Type': 'application/json',
           },
           body: jsonEncode(event.requestData),
@@ -41,38 +40,47 @@ class HoldCabBloc extends Bloc<HoldCabEvent, HoldCabState> {
         if (holdResponse.success) {
           /// Step 2: Save Hold Data to backend
           try {
-         final saveResponse = await http.post(
-  Uri.parse('${baseUrl}cab-hold'),
-  body: {
-    "request": jsonEncode(event.requestData), // ✅ request JSON
-    "hold": jsonEncode(jsonData),             // ✅ raw hold API response JSON
-    "user_id": userId,                        // ✅ string, no int.parse
-  },
-);
-
+            final saveResponse = await http.post(
+              Uri.parse('${baseUrl}cab-hold'),
+              body: {
+                "request": jsonEncode(event.requestData), // ✅ request JSON
+                "hold": jsonEncode(jsonData), // ✅ raw hold API response JSON
+                "user_id": userId, // ✅ string, no int.parse
+              },
+            );
 
             log("Cab-Hold Save Response: ${saveResponse.body}");
 
             final saveJson = jsonDecode(saveResponse.body);
 
             if (saveJson["status"] == "success") {
-              emit(HoldCabSuccess(
-                requestData: event.requestData,
-                bookingId:holdResponse.data!.bookingId ,tableID:saveJson["booking_id"].toString()   ,
-                
-                data: holdResponse.data!));
+              emit(
+                HoldCabSuccess(
+                  requestData: event.requestData,
+                  bookingId: holdResponse.data!.bookingId,
+                  tableID: saveJson["booking_id"].toString(),
+
+                  data: holdResponse.data!,
+                ),
+              );
             } else {
-              emit(HoldCabError(
-                  message: saveJson["message"] ??
-                      "Failed to save booking. Please try again."));
+              emit(
+                HoldCabError(
+                  message:
+                      saveJson["message"] ??
+                      "Failed to save booking. Please try again.",
+                ),
+              );
             }
           } catch (e) {
             log("Cab-Hold Save Error: $e");
-            emit(HoldCabError(
-                message: "Booking succeeded, but saving failed: $e"));
+            emit(
+              HoldCabError(message: "Booking succeeded, but saving failed: $e"),
+            );
           }
         } else {
-          final errors = (jsonData['errors'] as List<dynamic>?)
+          final errors =
+              (jsonData['errors'] as List<dynamic>?)
                   ?.map((e) => e.toString())
                   .join(', ') ??
               'Unknown error';

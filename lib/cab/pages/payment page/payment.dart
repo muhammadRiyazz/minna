@@ -136,14 +136,15 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
     log("Payment orderId: ${response.orderId}");
     log("Payment signature: ${response.signature}");
 
-    double? amount;
+    // Round to nearest integer to match Razorpay's charge (which uses toStringAsFixed(0))
+    double? amount = _amountWithCommission?.roundToDouble();
     final state = context.read<HoldCabBloc>().state;
 
-    if (state is HoldCabSuccess) {
+    if (amount == null && state is HoldCabSuccess) {
       final BookingData cabData = state.data;
       amount = double.parse(cabData.cabRate!.fare.totalAmount.toString());
     }
-
+    log('paymentDone call');
     context.read<ConfirmBookingBloc>().add(
       ConfirmBookingEvent.paymentDone(
         orderId: response.orderId ?? _orderId ?? '',
@@ -155,7 +156,7 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
         amount: amount ?? 0,
       ),
     );
-
+    log(amount.toString());
     _timer.cancel();
   }
 
@@ -1230,10 +1231,12 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
                   onPressed: (_isTimerExpired || state is ConfirmBookingLoading)
                       ? null
                       : () {
-                          _showServerErrorBottomSheet(context);
-                          // _onBookNow(
-                          //   _amountWithCommission!.toStringAsFixed(0).toString(),
-                          // );
+                          // _showServerErrorBottomSheet(context);
+                          _onBookNow(
+                            _amountWithCommission!
+                                .toStringAsFixed(0)
+                                .toString(),
+                          );
                         },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _isTimerExpired

@@ -23,7 +23,6 @@ class HotelListPage extends StatefulWidget {
     required this.checkOutDate,
     required this.rooms,
     required this.guestNationalityCode,
-
   });
 
   @override
@@ -563,8 +562,7 @@ class _HotelListPageState extends State<HotelListPage> {
                   checkOutDate: widget.checkOutDate,
                   rooms: widget.rooms,
                   hotelSearchData: hotel.hotelSearchItem,
-                                        guestNationalityCode:widget.guestNationalityCode,
-
+                  guestNationalityCode: widget.guestNationalityCode,
                 ),
               ),
             );

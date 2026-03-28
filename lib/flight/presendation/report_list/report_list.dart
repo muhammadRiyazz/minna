@@ -1,10 +1,12 @@
 // screens/report_list_screen.dart
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:minna/flight/domain/report/report_model.dart';
 import 'package:minna/flight/infrastracture/report/report.dart';
 import 'package:minna/flight/presendation/report%20details/report_details.dart';
 import 'package:minna/flight/presendation/report_list/view_more.dart';
+import 'package:minna/comman/const/const.dart';
 
 class ReportListScreen extends StatefulWidget {
   const ReportListScreen({super.key});
@@ -18,17 +20,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
   final ReportApiService _apiService = ReportApiService();
 
   // Updated color scheme matching your cab booking details
-  static final Color _primaryColor = Colors.black;
-  static final Color _secondaryColor = Color(0xFFD4AF37); // Gold
-  static final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
-  static final Color _backgroundColor = Color(0xFFF8F9FA);
-  static final Color _cardColor = Colors.white;
-  static final Color _textPrimary = Colors.black;
-  static final Color _textSecondary = Color(0xFF666666);
-  static final Color _textLight = Color(0xFF999999);
-  static final Color _errorColor = Color(0xFFE53935);
-  static final Color _successColor = Color(0xFF4CAF50);
-  static final Color _warningColor = Color(0xFFFF9800);
+  static final Color _accentColor = secondaryColor; // Gold
 
   @override
   void initState() {
@@ -45,7 +37,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _backgroundColor,
+      backgroundColor: backgroundColor,
       appBar: AppBar(
         toolbarHeight: 40,
         title: Text(
@@ -56,13 +48,13 @@ class _ReportListScreenState extends State<ReportListScreen> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        backgroundColor: _secondaryColor.withOpacity(0.4),
+        backgroundColor: secondaryColor.withOpacity(0.4),
         iconTheme: IconThemeData(color: Colors.white),
         centerTitle: true,
         elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh_rounded, size: 22),
+            icon: Icon(Iconsax.refresh, size: 22),
             onPressed: _refreshReports,
             tooltip: 'Refresh',
           ),
@@ -101,7 +93,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
         return Container(
           margin: EdgeInsets.only(bottom: 16),
           decoration: BoxDecoration(
-            color: _cardColor,
+            color: cardColor,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
@@ -201,12 +193,12 @@ class _ReportListScreenState extends State<ReportListScreen> {
             Container(
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: _errorColor.withOpacity(0.1),
+                color: errorColor.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                Icons.error_outline_rounded,
-                color: _errorColor,
+                Iconsax.danger,
+                color: errorColor,
                 size: 40,
               ),
             ),
@@ -214,7 +206,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
             Text(
               'Failed to Load Data',
               style: TextStyle(
-                color: _textPrimary,
+                color: textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
               ),
@@ -223,14 +215,14 @@ class _ReportListScreenState extends State<ReportListScreen> {
             Text(
               'There was an issue fetching your reports.\n'
               'Please check your connection and try again.',
-              style: TextStyle(color: _textSecondary, fontSize: 14),
+              style: TextStyle(color: textSecondary, fontSize: 14),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 15),
             ElevatedButton.icon(
               onPressed: _refreshReports,
               style: ElevatedButton.styleFrom(
-                backgroundColor: _primaryColor,
+                backgroundColor: maincolor1,
                 foregroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 shape: RoundedRectangleBorder(
@@ -238,7 +230,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
                 ),
                 elevation: 2,
               ),
-              icon: Icon(Icons.refresh_rounded, size: 20),
+              icon: Icon(Iconsax.refresh, size: 20),
               label: Text(
                 'Try Again',
                 style: TextStyle(fontWeight: FontWeight.w600),
@@ -260,12 +252,12 @@ class _ReportListScreenState extends State<ReportListScreen> {
             Container(
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: _warningColor.withOpacity(0.1),
+                color: warningColor.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                Icons.warning_amber_rounded,
-                color: _warningColor,
+                Iconsax.warning_2,
+                color: warningColor,
                 size: 40,
               ),
             ),
@@ -273,7 +265,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
             Text(
               'Unable to Load Reports',
               style: TextStyle(
-                color: _textPrimary,
+                color: textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
               ),
@@ -281,14 +273,14 @@ class _ReportListScreenState extends State<ReportListScreen> {
             SizedBox(height: 8),
             Text(
               message,
-              style: TextStyle(color: _textSecondary, fontSize: 14),
+              style: TextStyle(color: textSecondary, fontSize: 14),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 15),
             ElevatedButton.icon(
               onPressed: _refreshReports,
               style: ElevatedButton.styleFrom(
-                backgroundColor: _secondaryColor,
+                backgroundColor: secondaryColor,
                 foregroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 shape: RoundedRectangleBorder(
@@ -296,7 +288,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
                 ),
                 elevation: 2,
               ),
-              icon: Icon(Icons.refresh_rounded, size: 20),
+              icon: Icon(Iconsax.refresh, size: 20),
               label: Text(
                 'Retry',
                 style: TextStyle(fontWeight: FontWeight.w600),
@@ -318,12 +310,12 @@ class _ReportListScreenState extends State<ReportListScreen> {
             Container(
               padding: EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: _secondaryColor.withOpacity(0.1),
+                color: secondaryColor.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                Icons.airplane_ticket_rounded,
-                color: _secondaryColor,
+                Iconsax.airplane,
+                color: secondaryColor,
                 size: 40,
               ),
             ),
@@ -331,7 +323,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
             Text(
               'No Reports Found',
               style: TextStyle(
-                color: _textPrimary,
+                color: textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
               ),
@@ -339,7 +331,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
             SizedBox(height: 8),
             Text(
               'You have no flight reports at the moment',
-              style: TextStyle(color: _textSecondary, fontSize: 14),
+              style: TextStyle(color: textSecondary, fontSize: 14),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 15),
@@ -400,7 +392,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
                   );
                 },
                 style: TextButton.styleFrom(
-                  foregroundColor: _secondaryColor,
+                  foregroundColor: secondaryColor,
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                 ),
                 child: Row(
@@ -442,7 +434,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
     return Container(
       margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -481,7 +473,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
                             'BOOKING REFERENCE',
                             style: TextStyle(
                               fontSize: 10,
-                              color: _textSecondary,
+                              color: textSecondary,
                               fontWeight: FontWeight.w600,
                               letterSpacing: 1.0,
                             ),
@@ -490,7 +482,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
                           Text(
                             report.pnr ?? 'ID: ${report.bookingId}',
                             style: TextStyle(
-                              color: _textPrimary,
+                              color: textPrimary,
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
                             ),
@@ -505,13 +497,13 @@ class _ReportListScreenState extends State<ReportListScreen> {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: _secondaryColor.withOpacity(0.1),
+                        color: secondaryColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
                         '₹${report.totalAmount}',
                         style: TextStyle(
-                          color: _secondaryColor,
+                          color: secondaryColor,
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                         ),
@@ -526,7 +518,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
                   Container(
                     padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: _backgroundColor,
+                      color: backgroundColor,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(color: Colors.grey.shade200),
                     ),
@@ -540,7 +532,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
                                 'FROM',
                                 style: TextStyle(
                                   fontSize: 10,
-                                  color: _textSecondary,
+                                  color: textSecondary,
                                   fontWeight: FontWeight.w600,
                                   letterSpacing: 1.0,
                                 ),
@@ -559,14 +551,14 @@ class _ReportListScreenState extends State<ReportListScreen> {
                                   Icon(
                                     Icons.calendar_today,
                                     size: 12,
-                                    color: _secondaryColor,
+                                    color: secondaryColor,
                                   ),
                                   SizedBox(width: 4),
                                   Text(
                                     _formatDate(firstLeg.departureTime),
                                     style: TextStyle(
                                       fontSize: 11,
-                                      color: _textSecondary,
+                                      color: textSecondary,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
@@ -582,16 +574,16 @@ class _ReportListScreenState extends State<ReportListScreen> {
                               Container(
                                 padding: EdgeInsets.all(6),
                                 decoration: BoxDecoration(
-                                  color: _secondaryColor.withOpacity(0.1),
+                                  color: secondaryColor.withOpacity(0.1),
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: _secondaryColor.withOpacity(0.3),
+                                    color: secondaryColor.withOpacity(0.3),
                                     width: 2,
                                   ),
                                 ),
                                 child: Icon(
                                   Icons.arrow_forward_rounded,
-                                  color: _secondaryColor,
+                                  color: secondaryColor,
                                   size: 16,
                                 ),
                               ),
@@ -606,7 +598,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
                                 'TO',
                                 style: TextStyle(
                                   fontSize: 10,
-                                  color: _textSecondary,
+                                  color: textSecondary,
                                   fontWeight: FontWeight.w600,
                                   letterSpacing: 1.0,
                                 ),
@@ -627,14 +619,14 @@ class _ReportListScreenState extends State<ReportListScreen> {
                                   Icon(
                                     Icons.calendar_today,
                                     size: 12,
-                                    color: _secondaryColor,
+                                    color: secondaryColor,
                                   ),
                                   SizedBox(width: 4),
                                   Text(
                                     _formatDate(lastLeg.arrivalTime),
                                     style: TextStyle(
                                       fontSize: 11,
-                                      color: _textSecondary,
+                                      color: textSecondary,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
@@ -650,14 +642,14 @@ class _ReportListScreenState extends State<ReportListScreen> {
                   Container(
                     padding: EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: _backgroundColor,
+                      color: backgroundColor,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(color: Colors.grey.shade200),
                     ),
                     child: Center(
                       child: Text(
                         'No flight route available',
-                        style: TextStyle(color: _textSecondary, fontSize: 14),
+                        style: TextStyle(color: textSecondary, fontSize: 14),
                       ),
                     ),
                   ),
@@ -672,12 +664,12 @@ class _ReportListScreenState extends State<ReportListScreen> {
                         Container(
                           padding: EdgeInsets.all(4),
                           decoration: BoxDecoration(
-                            color: _secondaryColor.withOpacity(0.1),
+                            color: secondaryColor.withOpacity(0.1),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             Icons.flight_takeoff_rounded,
-                            color: _secondaryColor,
+                            color: secondaryColor,
                             size: 12,
                           ),
                         ),
@@ -686,7 +678,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
                           '${flightLegs.length} flight${flightLegs.length > 1 ? 's' : ''}',
                           style: TextStyle(
                             fontSize: 10,
-                            color: _textSecondary,
+                            color: textSecondary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -699,12 +691,12 @@ class _ReportListScreenState extends State<ReportListScreen> {
                         Container(
                           padding: EdgeInsets.all(4),
                           decoration: BoxDecoration(
-                            color: _secondaryColor.withOpacity(0.1),
+                            color: secondaryColor.withOpacity(0.1),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             Icons.people_rounded,
-                            color: _secondaryColor,
+                            color: secondaryColor,
                             size: 12,
                           ),
                         ),
@@ -713,7 +705,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
                           '${response.passengers.length} passenger${response.passengers.length > 1 ? 's' : ''}',
                           style: TextStyle(
                             fontSize: 10,
-                            color: _textSecondary,
+                            color: textSecondary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -728,7 +720,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
                           : 'Booking ID: ${report.bookingId}',
                       style: TextStyle(
                         fontSize: 10,
-                        color: _textSecondary,
+                        color: textSecondary,
                         fontWeight: FontWeight.w500,
                       ),
                     ),

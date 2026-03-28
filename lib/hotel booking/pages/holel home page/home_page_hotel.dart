@@ -1,8 +1,8 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:minna/comman/const/const.dart';
 import 'package:minna/hotel%20booking/domain/Nation%20and%20city/city.dart';
 import 'package:minna/hotel%20booking/domain/Nation%20and%20city/nation';
 import 'package:minna/hotel%20booking/functions/hotel_api.dart';
@@ -64,16 +64,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
     return '$totalPeople Guest${totalPeople > 1 ? 's' : ''}, ${rooms.length} Room${rooms.length > 1 ? 's' : ''}';
   }
 
-  // Gold, Black & White Color Theme
-  final Color _primaryColor = Color(0xFF000000); // Black
-  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
-  final Color _accentColor = Color(0xFFB8860B); // Dark Gold
-  final Color _backgroundColor = Color(0xFFFAFAFA); // Off-white
-  final Color _cardColor = Colors.white;
-  final Color _textPrimary = Color(0xFF000000);
-  final Color _textSecondary = Color(0xFF666666);
-  final Color _textLight = Color(0xFF999999);
-  final Color _borderColor = Color(0xFFE0E0E0);
+  static const Color _borderColor = Color(0xFFE0E0E0);
 
   @override
   void initState() {
@@ -141,9 +132,6 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
             await fetchCities(countryName);
           }
         },
-        primaryColor: _primaryColor,
-        secondaryColor: _secondaryColor,
-        accentColor: _accentColor,
       ),
     );
   }
@@ -167,9 +155,6 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
           });
           Navigator.pop(context);
         },
-        primaryColor: _primaryColor,
-        secondaryColor: _secondaryColor,
-        accentColor: _accentColor,
       ),
     );
   }
@@ -183,18 +168,15 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
       builder: (context) => CountryBottomSheet(
         isLoading: isLoadingCountries,
         selectedCountry: guestNationality?.name,
-        onCountrySelected: (countryName) {
+        onCountrySelected: (name) {
           Navigator.pop(context);
-          if (countryName != guestNationality?.name) {
-            final country = countries.firstWhere((c) => c.name == countryName);
+          if (name != guestNationality?.name) {
+            final country = countries.firstWhere((c) => c.name == name);
             setState(() {
               guestNationality = country;
             });
           }
         },
-        primaryColor: _primaryColor,
-        secondaryColor: _secondaryColor,
-        accentColor: _accentColor,
       ),
     );
   }
@@ -209,11 +191,11 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
         return Theme(
           data: ThemeData.light().copyWith(
             colorScheme: ColorScheme.light(
-              primary: _secondaryColor,
+              primary: secondaryColor,
               onPrimary: Colors.white,
-              surface: _cardColor,
+              surface: cardColor,
             ),
-            dialogBackgroundColor: _cardColor,
+            dialogBackgroundColor: cardColor,
           ),
           child: child!,
         );
@@ -239,11 +221,11 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
         return Theme(
           data: ThemeData.light().copyWith(
             colorScheme: ColorScheme.light(
-              primary: _secondaryColor,
+              primary: secondaryColor,
               onPrimary: Colors.white,
-              surface: _cardColor,
+              surface: cardColor,
             ),
-            dialogBackgroundColor: _cardColor,
+            dialogBackgroundColor: cardColor,
           ),
           child: child!,
         );
@@ -270,9 +252,6 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
             rooms = newRooms;
           });
         },
-        primaryColor: _primaryColor,
-        secondaryColor: _secondaryColor,
-        accentColor: _accentColor,
         borderColor: _borderColor,
       ),
     );
@@ -281,157 +260,106 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _backgroundColor,
+      backgroundColor: backgroundColor,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            backgroundColor: _primaryColor,
-            expandedHeight: 130,
+            backgroundColor: maincolor1,
+            expandedHeight: 220,
             floating: false,
             pinned: true,
             elevation: 0,
             leading: IconButton(
-              icon: Icon(Iconsax.arrow_left_2, color: Colors.white, size: 24),
+              icon: const Icon(
+                Iconsax.arrow_left_2,
+                color: Colors.white,
+                size: 24,
+              ),
               onPressed: () => Navigator.pop(context),
             ),
-            shadowColor: Colors.black.withOpacity(0.3),
-            surfaceTintColor: Colors.white,
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
-              expandedTitleScale: 1.2,
-              titlePadding: EdgeInsets.only(bottom: 16),
-              title: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                decoration: BoxDecoration(
-                  // color: Colors.black.withOpacity(0.6),
-                  borderRadius: BorderRadius.circular(20),
-                  // border: Border.all(color: _secondaryColor.withOpacity(0.3), width: 1),
-                ),
-                child: Text(
-                  'Hotel Booking',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.5,
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  // Hero Background Image
+                  Image.network(
+                    'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=1000',
+                    fit: BoxFit.cover,
                   ),
-                ),
-              ),
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [_primaryColor, Color(0xFF1A1A1A)],
-                    stops: [0.0, 1.0],
-                  ),
-                ),
-                child: Stack(
-                  children: [
-                    Positioned(
-                      right: -50,
-                      top: -50,
-                      child: Container(
-                        width: 200,
-                        height: 200,
-                        decoration: BoxDecoration(
-                          color: _secondaryColor.withOpacity(0.15),
-                          shape: BoxShape.circle,
-                        ),
+                  // Premium Gradient Overlay
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          maincolor1.withOpacity(0.3),
+                          maincolor1.withOpacity(0.8),
+                          maincolor1,
+                        ],
+                        stops: const [0.0, 0.7, 1.0],
                       ),
                     ),
-                    Positioned(
-                      left: -30,
-                      bottom: -30,
-                      child: Container(
-                        width: 150,
-                        height: 150,
-                        decoration: BoxDecoration(
-                          color: _secondaryColor.withOpacity(0.1),
-                          shape: BoxShape.circle,
-                        ),
+                  ),
+                  // Header Content
+                  SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 40, 20, 0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const SizedBox(height: 20),
+                          Text(
+                            "EXCEPTIONAL STAYS",
+                            style: TextStyle(
+                              color: secondaryColor,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 2,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "Find Your Perfect\nHotel",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 25,
+                              fontWeight: FontWeight.w900,
+                              height: 1.2,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black.withOpacity(0.3),
+                                  offset: const Offset(0, 2),
+                                  blurRadius: 4,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
 
           SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeaderSection(),
-                  const SizedBox(height: 15),
-                  _buildSearchCardsSection(),
-                  const SizedBox(height: 20),
-                  _buildSearchButton(),
-                  const SizedBox(height: 20),
-                ],
+            child: Transform.translate(
+              offset: const Offset(0, -1),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 13),
+                child: Column(
+                  children: [
+                    _buildSearchCardsSection(),
+                    const SizedBox(height: 20),
+                    _buildSearchButton(),
+                    const SizedBox(height: 32),
+                  ],
+                ),
               ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeaderSection() {
-    return Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [_primaryColor, Color(0xFF1A1A1A)],
-        ),
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: _primaryColor.withOpacity(0.1),
-            blurRadius: 20,
-            offset: Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: _secondaryColor.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(16),
-              // border: Border.all(color: _secondaryColor.withOpacity(0.4), width: 1),
-            ),
-            child: Icon(Iconsax.building_3, color: _secondaryColor, size: 22),
-          ),
-          SizedBox(width: 15),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Find Your Perfect Stay",
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    height: 1.3,
-                  ),
-                ),
-                SizedBox(height: 5),
-                Text(
-                  "Discover luxury hotels with best price guarantee",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white.withOpacity(0.9),
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
             ),
           ),
         ],
@@ -440,89 +368,90 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
   }
 
   Widget _buildSearchCardsSection() {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: _cardColor,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 30,
-            offset: const Offset(0, 8),
-          ),
-        ],
-        // border: Border.all(color: _borderColor, width: 1),
-      ),
-      child: Column(
-        children: [
-          // Country Card
-          _buildLocationCard(
-            title: "Country",
-            value: selectedCountry?.name ?? "Select Country",
-            icon: Iconsax.flag,
-            isLoading: isLoadingCountries,
-            onTap: _showCountryBottomSheet,
-          ),
-          const SizedBox(height: 16),
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: Container(
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: cardColor,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: maincolor1.withOpacity(0.08),
+              blurRadius: 30,
+              offset: const Offset(0, 8),
+            ),
+          ],
+          border: Border.all(color: Colors.grey.shade50, width: 1.5),
+        ),
+        child: Column(
+          children: [
+            // Country & City Selection
+            _buildLocationCard(
+              title: "Country",
+              value: selectedCountry?.name ?? "Select Country",
+              icon: Iconsax.flag,
+              isLoading: isLoadingCountries,
+              onTap: _showCountryBottomSheet,
+              isBold: true,
+            ),
+            const SizedBox(height: 16),
+            _buildLocationCard(
+              title: "City",
+              value: selectedCity ?? (isLoadingCities ? "..." : "Select City"),
+              icon: Iconsax.buildings,
+              isLoading: isLoadingCities,
+              onTap: _showCityBottomSheet,
+              isDisabled: selectedCountry == null || isLoadingCities,
+              isBold: true,
+            ),
+            const SizedBox(height: 16),
 
-          // City Card
-          _buildLocationCard(
-            title: "City",
-            value:
-                selectedCity ??
-                (isLoadingCities ? "Loading cities..." : "Select City"),
-            icon: Iconsax.buildings,
-            isLoading: isLoadingCities,
-            onTap: _showCityBottomSheet,
-            isDisabled: selectedCountry == null || isLoadingCities,
-          ),
-          const SizedBox(height: 16),
+            // Guest Nationality Card
+            _buildLocationCard(
+              title: "Guest Nationality",
+              value: guestNationality?.name ?? "Select Nationality",
+              icon: Iconsax.global,
+              isLoading: isLoadingCountries,
+              onTap: _showNationalityBottomSheet,
+            ),
+            const SizedBox(height: 16),
 
-          // Guest Nationality Card
-          _buildLocationCard(
-            title: "Guest Nationality",
-            value: guestNationality?.name ?? "Select Nationality",
-            icon: Iconsax.global,
-            isLoading: isLoadingCountries,
-            onTap: _showNationalityBottomSheet,
-          ),
-          const SizedBox(height: 16),
-
-          // Dates and Guests Row
-          Row(
-            children: [
-              Expanded(
-                child: _buildDateCard(
-                  title: "Check-in",
-                  value: formattedCheckIn,
-                  icon: Iconsax.calendar_1,
-                  onTap: _selectCheckInDate,
+            // Dates Row
+            Row(
+              children: [
+                Expanded(
+                  child: _buildDateCard(
+                    title: "Check-in",
+                    value: formattedCheckIn,
+                    icon: Iconsax.calendar_1,
+                    onTap: _selectCheckInDate,
+                  ),
                 ),
-              ),
-              SizedBox(width: 12),
-              Expanded(
-                child: _buildDateCard(
-                  title: "Check-out",
-                  value: formattedCheckOut,
-                  icon: Iconsax.calendar_2,
-                  onTap: _selectCheckOutDate,
+                SizedBox(width: 12),
+                Expanded(
+                  child: _buildDateCard(
+                    title: "Check-out",
+                    value: formattedCheckOut,
+                    icon: Iconsax.calendar_2,
+                    onTap: _selectCheckOutDate,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
+              ],
+            ),
+            const SizedBox(height: 16),
 
-          // Guests Card
-          _buildLocationCard(
-            title: "Guests & Rooms",
-            value: formattedGuests,
-            icon: Iconsax.profile_2user,
-            isLoading: false,
-            onTap: _showGuestSelector,
-            isDisabled: false,
-          ),
-        ],
+            // Guests Card
+            _buildLocationCard(
+              title: "Guests & Rooms",
+              value: formattedGuests,
+              icon: Iconsax.profile_2user,
+              isLoading: false,
+              onTap: _showGuestSelector,
+              isDisabled: false,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -534,33 +463,33 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
     required bool isLoading,
     required VoidCallback onTap,
     bool isDisabled = false,
+    bool isBold = false,
   }) {
     return GestureDetector(
       onTap: isDisabled ? null : onTap,
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: isDisabled ? Colors.grey[50] : _cardColor,
-          borderRadius: BorderRadius.circular(18),
+          color: isDisabled ? Colors.grey[50] : cardColor,
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isDisabled ? _borderColor : _secondaryColor.withOpacity(0.3),
-            width: isDisabled ? 0 : 1,
+            color: isDisabled ? _borderColor : secondaryColor.withOpacity(0.15),
+            width: 1,
           ),
         ),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: isDisabled
-                    ? _borderColor
-                    : _secondaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(14),
-                // border: Border.all(color: _secondaryColor.withOpacity(0.2), width: 1),
+                    ? _borderColor.withOpacity(0.3)
+                    : secondaryColor.withOpacity(0.1),
+                shape: BoxShape.circle,
               ),
               child: Icon(
                 icon,
-                color: isDisabled ? Colors.grey[400] : _secondaryColor,
+                color: isDisabled ? Colors.grey[400] : secondaryColor,
                 size: 18,
               ),
             ),
@@ -572,29 +501,32 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
                   Text(
                     title,
                     style: TextStyle(
-                      fontSize: 12,
-                      color: isDisabled ? Colors.grey[400] : _textSecondary,
-                      fontWeight: FontWeight.w500,
+                      fontSize: 10,
+                      color: isDisabled ? Colors.grey[400] : textSecondary,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
                     ),
                   ),
-                  const SizedBox(height: 3),
+                  const SizedBox(height: 2),
                   if (isLoading)
                     Container(
-                      height: 20,
-                      width: 120,
+                      height: 14,
+                      width: 80,
+                      margin: const EdgeInsets.symmetric(vertical: 4),
                       decoration: BoxDecoration(
-                        color: _borderColor,
+                        color: Colors.grey[100],
                         borderRadius: BorderRadius.circular(4),
                       ),
                     )
                   else
                     Text(
                       value,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: isDisabled ? Colors.grey[400] : _textPrimary,
-                        height: 1.3,
+                        fontSize: isBold ? 15 : 13,
+                        fontWeight: isBold ? FontWeight.w900 : FontWeight.w700,
+                        color: isDisabled ? Colors.grey[400] : maincolor1,
                       ),
                     ),
                 ],
@@ -602,8 +534,10 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
             ),
             Icon(
               Iconsax.arrow_right_3,
-              color: isDisabled ? Colors.grey[300] : _secondaryColor,
-              size: 20,
+              color: isDisabled
+                  ? Colors.grey[300]
+                  : secondaryColor.withOpacity(0.5),
+              size: 16,
             ),
           ],
         ),
@@ -620,37 +554,37 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: _cardColor,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: _secondaryColor.withOpacity(0.3), width: 1),
+          color: cardColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: secondaryColor.withOpacity(0.15), width: 1),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Icon(icon, color: _secondaryColor, size: 16),
-                SizedBox(width: 10),
+                Icon(icon, color: secondaryColor, size: 14),
+                const SizedBox(width: 8),
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 12,
-                    color: _textSecondary,
-                    fontWeight: FontWeight.w500,
+                    fontSize: 10,
+                    color: textSecondary,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 6),
             Text(
               value,
               style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: _textPrimary,
-                height: 1.3,
+                fontSize: 13,
+                fontWeight: FontWeight.w900,
+                color: maincolor1,
               ),
             ),
           ],
@@ -667,8 +601,29 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
         guestNationality != null &&
         !isLoadingCities;
 
-    return SizedBox(
+    return Container(
       width: double.infinity,
+      height: 60,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        gradient: isEnabled
+            ? LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [secondaryColor, secondaryColor.withOpacity(0.8)],
+              )
+            : null,
+        color: isEnabled ? null : _borderColor,
+        boxShadow: isEnabled
+            ? [
+                BoxShadow(
+                  color: secondaryColor.withOpacity(0.35),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ]
+            : null,
+      ),
       child: ElevatedButton(
         onPressed: isEnabled
             ? () {
@@ -689,27 +644,25 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
               }
             : null,
         style: ElevatedButton.styleFrom(
-          backgroundColor: isEnabled ? _secondaryColor : _borderColor,
-          foregroundColor: isEnabled ? Colors.black : Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
-          ),
-          padding: EdgeInsets.symmetric(vertical: 20),
-          elevation: 0,
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.white,
           shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          elevation: 0,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Iconsax.search_normal_1, size: 22, color: Colors.white),
+            const Icon(Iconsax.search_normal_1, size: 22, color: Colors.white),
             const SizedBox(width: 12),
-            Text(
+            const Text(
               "Search Hotels",
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.3,
-                color: Colors.white,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0.5,
               ),
             ),
           ],
@@ -725,9 +678,6 @@ class CityBottomSheet extends StatefulWidget {
   final String? selectedCity;
   final List<HotelCityHotel> cities;
   final Function(String, String) onCitySelected;
-  final Color primaryColor;
-  final Color secondaryColor;
-  final Color accentColor;
 
   const CityBottomSheet({
     super.key,
@@ -735,9 +685,6 @@ class CityBottomSheet extends StatefulWidget {
     required this.selectedCity,
     required this.cities,
     required this.onCitySelected,
-    required this.primaryColor,
-    required this.secondaryColor,
-    required this.accentColor,
   });
 
   @override
@@ -758,11 +705,12 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
   void _filterCities() {
     final query = _searchController.text.toLowerCase();
     setState(() {
-      filteredCities = query.isEmpty
-          ? List.from(widget.cities)
-          : widget.cities
-                .where((c) => c.name.toLowerCase().contains(query))
-                .toList();
+      filteredCities =
+          query.isEmpty
+              ? List.from(widget.cities)
+              : widget.cities
+                  .where((c) => c.name.toLowerCase().contains(query))
+                  .toList();
     });
   }
 
@@ -780,28 +728,34 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
       height: screenHeight * 0.85,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(32),
           topRight: Radius.circular(32),
         ),
-        border: Border.all(
-          color: widget.secondaryColor.withOpacity(0.1),
-          width: 1,
-        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, -5),
+          ),
+        ],
       ),
       child: Column(
         children: [
           // Header with drag handle
           Container(
-            padding: EdgeInsets.only(top: 16, bottom: 8),
+            padding: const EdgeInsets.only(top: 12, bottom: 20),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(32),
                 topRight: Radius.circular(32),
               ),
               border: Border(
-                bottom: BorderSide(color: Color(0xFFF0F0F0), width: 1),
+                bottom: BorderSide(
+                  color: maincolor1.withOpacity(0.05),
+                  width: 1,
+                ),
               ),
             ),
             child: Column(
@@ -809,45 +763,75 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
                 Center(
                   child: Container(
                     width: 40,
-                    height: 5,
+                    height: 4,
                     decoration: BoxDecoration(
-                      color: widget.secondaryColor,
-                      borderRadius: BorderRadius.circular(2.5),
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Row(
                     children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: secondaryColor.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Iconsax.map,
+                          color: secondaryColor,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
                       Expanded(
-                        child: Text(
-                          "Select City",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: widget.primaryColor,
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Select City",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w900,
+                                color: maincolor1,
+                                letterSpacing: -0.5,
+                              ),
+                            ),
+                            Text(
+                              "Where would you like to stay?",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: textSecondary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       if (widget.selectedCity != null)
                         Container(
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                             horizontal: 12,
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: widget.secondaryColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
-                            // border: Border.all(color: widget.secondaryColor.withOpacity(0.3), width: 1),
+                            color: secondaryColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: secondaryColor.withOpacity(0.2),
+                              width: 1,
+                            ),
                           ),
                           child: Text(
                             "Selected",
                             style: TextStyle(
-                              color: widget.secondaryColor,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
+                              color: secondaryColor,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
                             ),
                           ),
                         ),
@@ -860,33 +844,40 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
 
           // Search field
           Padding(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
             child: Container(
               decoration: BoxDecoration(
+                color: Colors.grey[50],
                 borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: Offset(0, 3),
-                  ),
-                ],
+                border: Border.all(
+                  color: Colors.grey[200]!,
+                  width: 1,
+                ),
               ),
               child: TextField(
                 controller: _searchController,
+                cursorColor: secondaryColor,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: maincolor1,
+                ),
                 decoration: InputDecoration(
                   hintText: "Search cities...",
-                  hintStyle: TextStyle(color: Colors.grey[500]),
+                  hintStyle: TextStyle(
+                    color: Colors.grey[400],
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
                   prefixIcon: Icon(
                     Iconsax.search_normal,
-                    color: widget.secondaryColor,
+                    color: secondaryColor,
+                    size: 20,
                   ),
-                  filled: true,
-                  fillColor: Colors.white,
-
-                  contentPadding: EdgeInsets.symmetric(
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
                     horizontal: 20,
-                    vertical: 18,
+                    vertical: 16,
                   ),
                 ),
               ),
@@ -895,95 +886,138 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
 
           // Cities list
           Expanded(
-            child: widget.isLoading
-                ? _buildShimmerList()
-                : filteredCities.isEmpty
-                ? _buildEmptyState()
-                : ListView.builder(
-                    padding: EdgeInsets.only(bottom: 24, left: 24, right: 24),
-                    itemCount: filteredCities.length,
-                    itemBuilder: (context, index) {
-                      final city = filteredCities[index];
-                      final isSelected = city.name == widget.selectedCity;
+            child:
+                widget.isLoading
+                    ? _buildShimmerList()
+                    : filteredCities.isEmpty
+                    ? _buildEmptyState()
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(24),
+                        itemCount: filteredCities.length,
+                        itemBuilder: (context, index) {
+                          final city = filteredCities[index];
+                          final isSelected = city.name == widget.selectedCity;
 
-                      return Padding(
-                        padding: EdgeInsets.only(bottom: 12),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () =>
-                                widget.onCitySelected(city.name, city.code),
-                            borderRadius: BorderRadius.circular(16),
-                            child: Container(
-                              padding: EdgeInsets.all(18),
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? widget.secondaryColor.withOpacity(0.1)
-                                    : Colors.white,
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap:
+                                    () => widget.onCitySelected(
+                                      city.name,
+                                      city.code,
+                                    ),
                                 borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: isSelected
-                                      ? widget.secondaryColor.withOpacity(0.0)
-                                      : Color(0xFFF0F0F0),
-                                  width: 1,
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        isSelected
+                                            ? maincolor1.withOpacity(0.02)
+                                            : Colors.white,
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color:
+                                          isSelected
+                                              ? secondaryColor.withOpacity(0.3)
+                                              : Colors.grey[100]!,
+                                      width: isSelected ? 1.5 : 1,
+                                    ),
+                                    boxShadow:
+                                        isSelected
+                                            ? [
+                                              BoxShadow(
+                                                color: secondaryColor
+                                                    .withOpacity(0.05),
+                                                blurRadius: 10,
+                                                offset: const Offset(0, 4),
+                                              ),
+                                            ]
+                                            : [],
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 44,
+                                        height: 44,
+                                        decoration: BoxDecoration(
+                                          color:
+                                              isSelected
+                                                  ? secondaryColor
+                                                      .withOpacity(0.1)
+                                                  : Colors.grey[50],
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        child: Icon(
+                                          Iconsax.buildings,
+                                          color:
+                                              isSelected
+                                                  ? secondaryColor
+                                                  : Colors.grey[400],
+                                          size: 20,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 16),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              city.name,
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight:
+                                                    isSelected
+                                                        ? FontWeight.w900
+                                                        : FontWeight.w600,
+                                                color:
+                                                    isSelected
+                                                        ? maincolor1
+                                                        : Colors.grey[800],
+                                              ),
+                                            ),
+                                            Text(
+                                              "Available Hotels",
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                color: textSecondary,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      if (isSelected)
+                                        Container(
+                                          padding: const EdgeInsets.all(4),
+                                          decoration: BoxDecoration(
+                                            color: secondaryColor,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            Icons.check,
+                                            color: Colors.white,
+                                            size: 14,
+                                          ),
+                                        )
+                                      else
+                                        Icon(
+                                          Iconsax.arrow_right_3,
+                                          color: Colors.grey[300],
+                                          size: 16,
+                                        ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 40,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      color: isSelected
-                                          ? widget.secondaryColor.withOpacity(
-                                              0.15,
-                                            )
-                                          : Color(0xFFFAFAFA),
-                                      borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(
-                                        color: isSelected
-                                            ? widget.secondaryColor.withOpacity(
-                                                0.3,
-                                              )
-                                            : Color(0xFFF0F0F0),
-                                        width: 1,
-                                      ),
-                                    ),
-                                    child: Icon(
-                                      Iconsax.buildings,
-                                      color: isSelected
-                                          ? widget.secondaryColor
-                                          : Color(0xFF999999),
-                                      size: 20,
-                                    ),
-                                  ),
-                                  SizedBox(width: 16),
-                                  Expanded(
-                                    child: Text(
-                                      city.name,
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w600,
-                                        color: isSelected
-                                            ? widget.primaryColor
-                                            : Color(0xFF333333),
-                                      ),
-                                    ),
-                                  ),
-                                  if (isSelected)
-                                    Icon(
-                                      Iconsax.tick_circle,
-                                      color: widget.secondaryColor,
-                                      size: 24,
-                                    ),
-                                ],
-                              ),
                             ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                          );
+                        },
+                      ),
           ),
         ],
       ),
@@ -992,53 +1026,46 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
 
   Widget _buildShimmerList() {
     return ListView.builder(
-      padding: EdgeInsets.all(24),
+      padding: const EdgeInsets.all(24),
       itemCount: 6,
       itemBuilder: (context, index) {
         return Container(
-          margin: EdgeInsets.only(bottom: 12),
-          padding: EdgeInsets.all(18),
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Color(0xFFF0F0F0), width: 1),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.03),
-                blurRadius: 8,
-                offset: Offset(0, 2),
-              ),
-            ],
+            border: Border.all(color: Colors.grey[100]!, width: 1),
           ),
           child: Row(
             children: [
               Container(
-                width: 50,
-                height: 50,
+                width: 44,
+                height: 44,
                 decoration: BoxDecoration(
-                  color: Colors.grey[200],
+                  color: Colors.grey[50],
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      height: 16,
+                      height: 14,
                       width: 120,
                       decoration: BoxDecoration(
-                        color: Colors.grey[200],
+                        color: Colors.grey[50],
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Container(
-                      height: 12,
+                      height: 10,
                       width: 80,
                       decoration: BoxDecoration(
-                        color: Colors.grey[100],
+                        color: Colors.grey[50],
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
@@ -1055,38 +1082,41 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
   Widget _buildEmptyState() {
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(40),
+        padding: const EdgeInsets.all(40),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 120,
-              height: 120,
+              width: 80,
+              height: 80,
               decoration: BoxDecoration(
-                color: Color(0xFFFAFAFA),
+                color: Colors.grey[50],
                 shape: BoxShape.circle,
-                border: Border.all(color: Color(0xFFF0F0F0), width: 2),
               ),
               child: Icon(
                 Iconsax.location_slash,
-                size: 50,
-                color: Color(0xFF999999),
+                size: 32,
+                color: Colors.grey[300],
               ),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 20),
             Text(
               "No cities found",
               style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: widget.primaryColor,
+                fontSize: 16,
+                fontWeight: FontWeight.w900,
+                color: maincolor1,
               ),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 8),
             Text(
-              "Try selecting a different country or search again",
+              "We couldn't find any results for \"${_searchController.text}\"",
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: Color(0xFF666666)),
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.grey[500],
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ],
         ),
@@ -1095,7 +1125,6 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
   }
 }
 
-// Guest Selector Bottom Sheet
 class GuestSelectorBottomSheet extends StatefulWidget {
   final int totalAdults;
   final int totalChildren;
@@ -1103,9 +1132,6 @@ class GuestSelectorBottomSheet extends StatefulWidget {
   final List<Map<String, dynamic>> rooms;
   final Function(int, int, List<int>, List<Map<String, dynamic>>)
   onGuestsChanged;
-  final Color primaryColor;
-  final Color secondaryColor;
-  final Color accentColor;
   final Color borderColor;
 
   const GuestSelectorBottomSheet({
@@ -1115,9 +1141,6 @@ class GuestSelectorBottomSheet extends StatefulWidget {
     required this.childrenAges,
     required this.rooms,
     required this.onGuestsChanged,
-    required this.primaryColor,
-    required this.secondaryColor,
-    required this.accentColor,
     required this.borderColor,
   });
 
@@ -1135,11 +1158,12 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
   @override
   void initState() {
     super.initState();
-    rooms = widget.rooms.isNotEmpty
-        ? List.from(widget.rooms)
-        : [
-            {'adults': 2, 'children': 0, 'childrenAges': <int>[]},
-          ];
+    rooms =
+        widget.rooms.isNotEmpty
+            ? List.from(widget.rooms.map((e) => Map<String, dynamic>.from(e)))
+            : [
+              {'adults': 2, 'children': 0, 'childrenAges': <int>[]},
+            ];
     _calculateTotals();
   }
 
@@ -1164,7 +1188,7 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
   }
 
   void _addRoom() {
-    if (rooms.length >= 4) return; // Max 4 rooms
+    if (rooms.length >= 4) return;
     setState(() {
       rooms.add({'adults': 2, 'children': 0, 'childrenAges': <int>[]});
     });
@@ -1222,35 +1246,34 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
       height: screenHeight * 0.9,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(32),
           topRight: Radius.circular(32),
         ),
-        border: Border.all(
-          color: widget.secondaryColor.withOpacity(0.1),
-          width: 1,
-        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, -5),
+          ),
+        ],
       ),
       child: Column(
         children: [
           // Header with drag handle
           Container(
-            padding: EdgeInsets.only(top: 18, bottom: 24),
+            padding: const EdgeInsets.only(top: 12, bottom: 20),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(32),
                 topRight: Radius.circular(32),
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: Offset(0, 2),
-                ),
-              ],
               border: Border(
-                bottom: BorderSide(color: Color(0xFFF0F0F0), width: 1),
+                bottom: BorderSide(
+                  color: maincolor1.withOpacity(0.05),
+                  width: 1,
+                ),
               ),
             ),
             child: Column(
@@ -1258,62 +1281,73 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
                 Center(
                   child: Container(
                     width: 40,
-                    height: 5,
+                    height: 4,
                     decoration: BoxDecoration(
-                      color: widget.secondaryColor,
-                      borderRadius: BorderRadius.circular(2.5),
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 16),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Guests & Rooms",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: widget.primaryColor,
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: secondaryColor.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Iconsax.profile_2user,
+                          color: secondaryColor,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Guests & Rooms",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w900,
+                                color: maincolor1,
+                                letterSpacing: -0.5,
+                              ),
                             ),
-                          ),
-                          Text(
-                            "Configure your stay details",
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: Color(0xFF666666),
+                            Text(
+                              "Customize your accommodation needs",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: textSecondary,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                       Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: widget.secondaryColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                          // border: Border.all(color: widget.secondaryColor.withOpacity(0.3), width: 1),
+                          color: maincolor1.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
                           children: [
-                            Icon(
-                              Iconsax.home,
-                              size: 16,
-                              color: widget.secondaryColor,
-                            ),
-                            SizedBox(width: 6),
+                            Icon(Iconsax.home, size: 14, color: maincolor1),
+                            const SizedBox(width: 6),
                             Text(
                               "${rooms.length} Room${rooms.length > 1 ? 's' : ''}",
                               style: TextStyle(
-                                color: widget.secondaryColor,
-                                fontWeight: FontWeight.w600,
+                                color: maincolor1,
+                                fontWeight: FontWeight.w800,
                                 fontSize: 10,
                               ),
                             ),
@@ -1327,145 +1361,165 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
             ),
           ),
 
-          // Summary Card
-          Padding(
-            padding: EdgeInsets.all(0),
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-              decoration: BoxDecoration(
-                color: widget.secondaryColor.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(20),
-                // border: Border.all(color: widget.secondaryColor.withOpacity(0.2)),
+          // Total Summary Bar
+          Container(
+            margin: const EdgeInsets.fromLTRB(24, 20, 24, 10),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  maincolor1,
+                  maincolor1.withOpacity(0.85),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: maincolor1.withOpacity(0.3),
+                  blurRadius: 15,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "Total Guests",
+                      const Text(
+                        "Total Capacity",
                         style: TextStyle(
+                          color: Colors.white70,
                           fontSize: 12,
-                          color: Color(0xFF666666),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
-                        "${totalAdults + totalChildren}",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: widget.primaryColor,
+                        "${totalAdults + totalChildren} Persons",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 22,
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
                     ],
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        "Breakdown",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF666666),
-                          fontWeight: FontWeight.w500,
+                ),
+                Container(
+                  width: 1,
+                  height: 40,
+                  color: Colors.white24,
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Occupancy",
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 6),
-                      Text(
-                        "$totalAdults Adult${totalAdults > 1 ? 's' : ''} • $totalChildren Child${totalChildren > 1 ? 'ren' : ''}",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: widget.primaryColor,
-                          fontWeight: FontWeight.w600,
+                        const SizedBox(height: 4),
+                        Text(
+                          "$totalAdults Adult${totalAdults > 1 ? 's' : ''} • $totalChildren Child${totalChildren > 1 ? 'ren' : ''}",
+                          style: const TextStyle(
+                            color: secondaryColor,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
 
           // Rooms List
           Expanded(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.only(bottom: 100),
-              child: Column(
-                children: [
-                  ...rooms.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final room = entry.value;
-                    return _buildRoomCard(index, room);
-                  }),
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(24, 10, 24, 100),
+              children: [
+                ...rooms.asMap().entries.map((entry) {
+                  return _buildRoomCard(entry.key, entry.value);
+                }),
 
-                  // Add Room Button
-                  if (rooms.length < 4)
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 16,
-                      ),
-                      child: OutlinedButton(
-                        onPressed: _addRoom,
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: widget.secondaryColor,
-                          side: BorderSide(
-                            color: widget.secondaryColor,
-                            width: 1,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          padding: EdgeInsets.symmetric(
-                            vertical: 18,
-                            horizontal: 24,
-                          ),
-                          backgroundColor: Colors.white,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Iconsax.add_circle,
-                              size: 16,
-                              color: widget.secondaryColor,
+                // Add Room Button
+                if (rooms.length < 4)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: _addRoom,
+                        borderRadius: BorderRadius.circular(20),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 18),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: secondaryColor.withOpacity(0.3),
+                              width: 2,
+                              style: BorderStyle.none, // Switched to dashed border look via bg
                             ),
-                            SizedBox(width: 10),
-                            Text(
-                              "Add Another Room",
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: widget.secondaryColor,
+                            color: secondaryColor.withOpacity(0.05),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: const BoxDecoration(
+                                  color: secondaryColor,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.add,
+                                  size: 14,
+                                  color: maincolor1,
+                                ),
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 12),
+                              const Text(
+                                "Add Another Room",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w800,
+                                  color: secondaryColor,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                ],
-              ),
+                  ),
+              ],
             ),
           ),
 
           // Bottom Action Bar
           Container(
-            padding: EdgeInsets.all(15),
+            padding: const EdgeInsets.fromLTRB(24, 20, 24, 34),
             decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withOpacity(0.05),
                   blurRadius: 20,
-                  offset: Offset(0, -5),
+                  offset: const Offset(0, -5),
                 ),
               ],
-              border: Border(
-                top: BorderSide(color: Color(0xFFF0F0F0), width: 1),
-              ),
             ),
             child: Row(
               children: [
@@ -1473,29 +1527,30 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
                   child: ElevatedButton(
                     onPressed: () => Navigator.pop(context),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: widget.secondaryColor,
-                      foregroundColor: Colors.black,
+                      backgroundColor: secondaryColor,
+                      foregroundColor: maincolor1,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(18),
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 18),
-                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      elevation: 8,
+                      shadowColor: secondaryColor.withOpacity(0.3),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          Iconsax.tick_circle,
-                          size: 22,
-                          color: Colors.white,
+                          Iconsax.tick_circle5,
+                          size: 20,
+                          color: maincolor1,
                         ),
-                        SizedBox(width: 10),
-                        Text(
-                          "Apply Selection",
+                        const SizedBox(width: 12),
+                        const Text(
+                          "Confirm Configuration",
                           style: TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0.5,
                           ),
                         ),
                       ],
@@ -1515,17 +1570,19 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
     final int adultsCount = room['adults'] as int;
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-      padding: EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        // border: Border.all(color: widget.secondaryColor.withOpacity(0.2), width: 1.5),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: Colors.grey[100]!,
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withOpacity(0.03),
             blurRadius: 15,
-            offset: Offset(0, 5),
+            offset: const Offset(0, 5),
           ),
         ],
       ),
@@ -1533,274 +1590,322 @@ class _GuestSelectorBottomSheetState extends State<GuestSelectorBottomSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Room header
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: widget.secondaryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: widget.secondaryColor.withOpacity(0.2),
-                        width: 1,
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: maincolor1.withOpacity(0.02),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(24),
+                topRight: Radius.circular(24),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: maincolor1.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(
+                        Iconsax.home_hashtag,
+                        color: maincolor1,
+                        size: 16,
                       ),
                     ),
-                    child: Icon(
-                      Iconsax.home_hashtag,
-                      color: widget.secondaryColor,
-                      size: 16,
+                    const SizedBox(width: 12),
+                    Text(
+                      "Room ${index + 1}",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w900,
+                        color: maincolor1,
+                      ),
                     ),
-                  ),
-                  SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Room ${index + 1}",
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: widget.primaryColor,
+                  ],
+                ),
+                if (rooms.length > 1)
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => _removeRoom(index),
+                      borderRadius: BorderRadius.circular(10),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        child: Icon(
+                          Iconsax.trash,
+                          color: Colors.red[400],
+                          size: 18,
                         ),
                       ),
-                      SizedBox(height: 2),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                // Adults Counter
+                _buildModernCounter(
+                  title: "Adults",
+                  subtitle: "12+ years",
+                  value: adultsCount,
+                  minValue: 1,
+                  maxValue: 4,
+                  onIncrement:
+                      () => _updateRoom(index, 'adults', adultsCount + 1),
+                  onDecrement:
+                      () => _updateRoom(index, 'adults', adultsCount - 1),
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Divider(height: 1),
+                ),
+                // Children Counter
+                _buildModernCounter(
+                  title: "Children",
+                  subtitle: "0-11 years",
+                  value: childrenCount,
+                  minValue: 0,
+                  maxValue: 3,
+                  onIncrement:
+                      () => _updateRoom(index, 'children', childrenCount + 1),
+                  onDecrement:
+                      () => _updateRoom(index, 'children', childrenCount - 1),
+                ),
+
+                // Children Ages if children > 0
+                if (childrenCount > 0) ...[
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Container(
+                        width: 4,
+                        height: 16,
+                        decoration: BoxDecoration(
+                          color: secondaryColor,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
                       Text(
-                        "$adultsCount Adult${adultsCount > 1 ? 's' : ''}, $childrenCount Child${childrenCount > 1 ? 'ren' : ''}",
+                        "Children's Ages",
                         style: TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF666666),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          color: maincolor1,
                         ),
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 16),
+                  ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: childrenCount,
+                    separatorBuilder: (context, _) => const SizedBox(height: 12),
+                    itemBuilder: (context, childIndex) {
+                      final ages = rooms[index]['childrenAges'] as List<int>;
+                      final currentAge =
+                          childIndex < ages.length ? ages[childIndex] : 1;
+                      return _buildChildAgeSelector(
+                        roomIndex: index,
+                        childIndex: childIndex,
+                        age: currentAge,
+                      );
+                    },
                   ),
                 ],
-              ),
-              if (rooms.length > 1)
-                IconButton(
-                  onPressed: () => _removeRoom(index),
-                  icon: Icon(Iconsax.trash, color: Color(0xFFDC2626), size: 22),
-                  padding: EdgeInsets.zero,
-                  constraints: BoxConstraints(),
-                  tooltip: "Remove Room",
-                ),
-            ],
-          ),
-
-          SizedBox(height: 20),
-
-          // Adults and Children counters
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Adults",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: widget.primaryColor,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    _buildCounter(
-                      value: adultsCount,
-                      minValue: 1,
-                      maxValue: 4,
-                      onIncrement: () =>
-                          _updateRoom(index, 'adults', adultsCount + 1),
-                      onDecrement: () {
-                        if (adultsCount > 1) {
-                          _updateRoom(index, 'adults', adultsCount - 1);
-                        }
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(width: 20),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Children",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: widget.primaryColor,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    SizedBox(height: 12),
-                    _buildCounter(
-                      value: childrenCount,
-                      minValue: 0,
-                      maxValue: 3,
-                      onIncrement: () =>
-                          _updateRoom(index, 'children', childrenCount + 1),
-                      onDecrement: () {
-                        if (childrenCount > 0) {
-                          _updateRoom(index, 'children', childrenCount - 1);
-                        }
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-
-          // Children Ages if children > 0
-          if (childrenCount > 0) ...[
-            SizedBox(height: 24),
-            Text(
-              "Children's Ages (1-17 years)",
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: widget.primaryColor,
-              ),
+              ],
             ),
-            SizedBox(height: 16),
-            Wrap(
-              spacing: 16,
-              runSpacing: 16,
-              children: List.generate(childrenCount, (childIndex) {
-                final currentAge =
-                    (room['childrenAges'] as List<int>)[childIndex];
-                return SizedBox(
-                  width: 130,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Child ${childIndex + 1}",
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Color(0xFF666666),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: widget.secondaryColor.withOpacity(0.3),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<int>(
-                            value: currentAge,
-                            isExpanded: true,
-                            icon: Icon(
-                              Iconsax.arrow_down_1,
-                              size: 18,
-                              color: widget.secondaryColor,
-                            ),
-                            padding: EdgeInsets.symmetric(horizontal: 12),
-                            dropdownColor: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: widget.primaryColor,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            items: List.generate(17, (age) => age + 1)
-                                .map(
-                                  (age) => DropdownMenuItem(
-                                    value: age,
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                      ),
-                                      child: Text(
-                                        "$age years",
-                                        style: TextStyle(
-                                          color: widget.primaryColor,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                                .toList(),
-                            onChanged: (value) {
-                              if (value != null) {
-                                _updateChildAge(index, childIndex, value);
-                              }
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }),
-            ),
-          ],
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildCounter({
+  Widget _buildModernCounter({
+    required String title,
+    required String subtitle,
     required int value,
     required int minValue,
     required int maxValue,
     required VoidCallback onIncrement,
     required VoidCallback onDecrement,
   }) {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                  color: maincolor1,
+                ),
+              ),
+              Text(
+                subtitle,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: Colors.grey[50],
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: Colors.grey[200]!),
+          ),
+          child: Row(
+            children: [
+              _counterButton(
+                icon: Iconsax.minus,
+                enabled: value > minValue,
+                onTap: onDecrement,
+              ),
+              Container(
+                constraints: const BoxConstraints(minWidth: 40),
+                alignment: Alignment.center,
+                child: Text(
+                  value.toString(),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                    color: maincolor1,
+                  ),
+                ),
+              ),
+              _counterButton(
+                icon: Iconsax.add,
+                enabled: value < maxValue,
+                onTap: onIncrement,
+                isPrimary: true,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _counterButton({
+    required IconData icon,
+    required bool enabled,
+    required VoidCallback onTap,
+    bool isPrimary = false,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: enabled ? onTap : null,
+        borderRadius: BorderRadius.circular(10),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color:
+                enabled
+                    ? (isPrimary ? secondaryColor : Colors.white)
+                    : Colors.transparent,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow:
+                enabled && isPrimary
+                    ? [
+                      BoxShadow(
+                        color: secondaryColor.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ]
+                    : [],
+          ),
+          child: Icon(
+            icon,
+            size: 18,
+            color:
+                enabled
+                    ? (isPrimary ? maincolor1 : maincolor1)
+                    : Colors.grey[300],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildChildAgeSelector({
+    required int roomIndex,
+    required int childIndex,
+    required int age,
+  }) {
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: widget.secondaryColor.withOpacity(0.3),
-          width: 1,
-        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey[200]!),
       ),
       child: Row(
         children: [
-          IconButton(
-            onPressed: value > minValue ? onDecrement : null,
-            icon: Icon(
-              Iconsax.minus,
-              color: value > minValue
-                  ? widget.secondaryColor
-                  : Color(0xFFD1D5DB),
-              size: 20,
-            ),
-            padding: EdgeInsets.all(10),
-            constraints: BoxConstraints(),
-          ),
+          Icon(Iconsax.user_tag, size: 18, color: Colors.grey[400]),
+          const SizedBox(width: 12),
           Expanded(
-            child: Center(
-              child: Text(
-                value.toString(),
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: widget.primaryColor,
-                ),
+            child: Text(
+              "Child ${childIndex + 1} Age",
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[700],
               ),
             ),
           ),
-          IconButton(
-            onPressed: value < maxValue ? onIncrement : null,
-            icon: Icon(
-              Iconsax.add,
-              color: value < maxValue
-                  ? widget.secondaryColor
-                  : Color(0xFFD1D5DB),
-              size: 16,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              color: maincolor1.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(10),
             ),
-            padding: EdgeInsets.all(10),
-            constraints: BoxConstraints(),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<int>(
+                value: age,
+                icon: Icon(
+                  Iconsax.arrow_down_1,
+                  size: 16,
+                  color: maincolor1,
+                ),
+                dropdownColor: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                style: TextStyle(
+                  fontSize: 13,
+                  color: maincolor1,
+                  fontWeight: FontWeight.w800,
+                ),
+                items:
+                    List.generate(17, (i) => i + 1).map((i) {
+                      return DropdownMenuItem(
+                        value: i,
+                        child: Text("$i years"),
+                      );
+                    }).toList(),
+                onChanged: (val) {
+                  if (val != null) _updateChildAge(roomIndex, childIndex, val);
+                },
+              ),
+            ),
           ),
         ],
       ),
@@ -1813,18 +1918,12 @@ class CountryBottomSheet extends StatefulWidget {
   final bool isLoading;
   final String? selectedCountry;
   final Function(String) onCountrySelected;
-  final Color primaryColor;
-  final Color secondaryColor;
-  final Color accentColor;
 
   const CountryBottomSheet({
     super.key,
     required this.isLoading,
     required this.selectedCountry,
     required this.onCountrySelected,
-    required this.primaryColor,
-    required this.secondaryColor,
-    required this.accentColor,
   });
 
   @override
@@ -1846,12 +1945,13 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
     final query = _searchController.text.toLowerCase();
 
     setState(() {
-      filteredCountries = query.isEmpty
-          ? countries.map((e) => e.name).toList()
-          : countries
-                .where((e) => e.name.toLowerCase().contains(query))
-                .map((e) => e.name)
-                .toList();
+      filteredCountries =
+          query.isEmpty
+              ? countries.map((e) => e.name).toList()
+              : countries
+                  .where((e) => e.name.toLowerCase().contains(query))
+                  .map((e) => e.name)
+                  .toList();
     });
   }
 
@@ -1869,28 +1969,34 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
       height: screenHeight * 0.85,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(32),
           topRight: Radius.circular(32),
         ),
-        border: Border.all(
-          color: widget.secondaryColor.withOpacity(0.1),
-          width: 1,
-        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, -5),
+          ),
+        ],
       ),
       child: Column(
         children: [
           // Header with drag handle
           Container(
-            padding: EdgeInsets.only(top: 18, bottom: 8),
+            padding: const EdgeInsets.only(top: 12, bottom: 20),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(32),
                 topRight: Radius.circular(32),
               ),
               border: Border(
-                bottom: BorderSide(color: Color(0xFFF0F0F0), width: 1),
+                bottom: BorderSide(
+                  color: maincolor1.withOpacity(0.05),
+                  width: 1,
+                ),
               ),
             ),
             child: Column(
@@ -1898,44 +2004,75 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
                 Center(
                   child: Container(
                     width: 40,
-                    height: 5,
+                    height: 4,
                     decoration: BoxDecoration(
-                      color: widget.secondaryColor,
-                      borderRadius: BorderRadius.circular(2.5),
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   ),
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 16),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Row(
                     children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: secondaryColor.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Iconsax.global,
+                          color: secondaryColor,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
                       Expanded(
-                        child: Text(
-                          "Select Country",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: widget.primaryColor,
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Select Country",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w900,
+                                color: maincolor1,
+                                letterSpacing: -0.5,
+                              ),
+                            ),
+                            Text(
+                              "Choose your location or nationality",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: textSecondary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       if (widget.selectedCountry != null)
                         Container(
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                             horizontal: 12,
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: widget.secondaryColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
+                            color: secondaryColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: secondaryColor.withOpacity(0.2),
+                              width: 1,
+                            ),
                           ),
                           child: Text(
                             "Selected",
                             style: TextStyle(
-                              color: widget.secondaryColor,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
+                              color: secondaryColor,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
                             ),
                           ),
                         ),
@@ -1948,40 +2085,40 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
 
           // Search field
           Padding(
-            padding: EdgeInsets.all(24),
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
             child: Container(
               decoration: BoxDecoration(
+                color: Colors.grey[50],
                 borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: Offset(0, 3),
-                  ),
-                ],
+                border: Border.all(
+                  color: Colors.grey[200]!,
+                  width: 1,
+                ),
               ),
               child: TextField(
                 controller: _searchController,
+                cursorColor: secondaryColor,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: maincolor1,
+                ),
                 decoration: InputDecoration(
                   hintText: "Search countries...",
-                  hintStyle: TextStyle(color: Colors.grey[500]),
+                  hintStyle: TextStyle(
+                    color: Colors.grey[400],
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
                   prefixIcon: Icon(
                     Iconsax.search_normal,
-                    color: widget.secondaryColor,
+                    color: secondaryColor,
+                    size: 20,
                   ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  // border: OutlineInputBorder(
-                  //   borderRadius: BorderRadius.circular(16),
-                  //   borderSide: BorderSide(color: widget.secondaryColor.withOpacity(0.3), width: 1),
-                  // ),
-                  // focusedBorder: OutlineInputBorder(
-                  //   borderRadius: BorderRadius.circular(16),
-                  //   borderSide: BorderSide(color: widget.accentColor, width: 1.5),
-                  // ),
-                  contentPadding: EdgeInsets.symmetric(
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
                     horizontal: 20,
-                    vertical: 18,
+                    vertical: 16,
                   ),
                 ),
               ),
@@ -1990,94 +2127,134 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
 
           // Countries list
           Expanded(
-            child: widget.isLoading
-                ? _buildShimmerList()
-                : filteredCountries.isEmpty
-                ? _buildEmptyState()
-                : ListView.builder(
-                    padding: EdgeInsets.only(bottom: 24, left: 24, right: 24),
-                    itemCount: filteredCountries.length,
-                    itemBuilder: (context, index) {
-                      final country = filteredCountries[index];
-                      final isSelected = country == widget.selectedCountry;
+            child:
+                widget.isLoading
+                    ? _buildShimmerList()
+                    : filteredCountries.isEmpty
+                    ? _buildEmptyState()
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(24),
+                        itemCount: filteredCountries.length,
+                        itemBuilder: (context, index) {
+                          final country = filteredCountries[index];
+                          final isSelected = country == widget.selectedCountry;
 
-                      return Padding(
-                        padding: EdgeInsets.only(bottom: 12),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () => widget.onCountrySelected(country),
-                            borderRadius: BorderRadius.circular(16),
-                            child: Container(
-                              padding: EdgeInsets.all(18),
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? widget.secondaryColor.withOpacity(0.1)
-                                    : Colors.white,
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () => widget.onCountrySelected(country),
                                 borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: isSelected
-                                      ? widget.secondaryColor.withOpacity(0.0)
-                                      : Color(0xFFF0F0F0),
-                                  width: 1,
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        isSelected
+                                            ? maincolor1.withOpacity(0.02)
+                                            : Colors.white,
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color:
+                                          isSelected
+                                              ? secondaryColor.withOpacity(0.3)
+                                              : Colors.grey[100]!,
+                                      width: isSelected ? 1.5 : 1,
+                                    ),
+                                    boxShadow:
+                                        isSelected
+                                            ? [
+                                              BoxShadow(
+                                                color: secondaryColor
+                                                    .withOpacity(0.05),
+                                                blurRadius: 10,
+                                                offset: const Offset(0, 4),
+                                              ),
+                                            ]
+                                            : [],
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 44,
+                                        height: 44,
+                                        decoration: BoxDecoration(
+                                          color:
+                                              isSelected
+                                                  ? secondaryColor
+                                                      .withOpacity(0.1)
+                                                  : Colors.grey[50],
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        child: Icon(
+                                          Iconsax.flag,
+                                          color:
+                                              isSelected
+                                                  ? secondaryColor
+                                                  : Colors.grey[400],
+                                          size: 20,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 16),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              country,
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight:
+                                                    isSelected
+                                                        ? FontWeight.w900
+                                                        : FontWeight.w600,
+                                                color:
+                                                    isSelected
+                                                        ? maincolor1
+                                                        : Colors.grey[800],
+                                              ),
+                                            ),
+                                            Text(
+                                              "Country Profile",
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                color: textSecondary,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      if (isSelected)
+                                        Container(
+                                          padding: const EdgeInsets.all(4),
+                                          decoration: BoxDecoration(
+                                            color: secondaryColor,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            Icons.check,
+                                            color: Colors.white,
+                                            size: 14,
+                                          ),
+                                        )
+                                      else
+                                        Icon(
+                                          Iconsax.arrow_right_3,
+                                          color: Colors.grey[300],
+                                          size: 16,
+                                        ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 40,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      color: isSelected
-                                          ? widget.secondaryColor.withOpacity(
-                                              0.15,
-                                            )
-                                          : Color(0xFFFAFAFA),
-                                      borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(
-                                        color: isSelected
-                                            ? widget.secondaryColor.withOpacity(
-                                                0.3,
-                                              )
-                                            : Color(0xFFF0F0F0),
-                                        width: 1,
-                                      ),
-                                    ),
-                                    child: Icon(
-                                      Iconsax.flag,
-                                      color: isSelected
-                                          ? widget.secondaryColor
-                                          : Color(0xFF999999),
-                                      size: 20,
-                                    ),
-                                  ),
-                                  SizedBox(width: 16),
-                                  Expanded(
-                                    child: Text(
-                                      country,
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                        color: isSelected
-                                            ? widget.primaryColor
-                                            : Color(0xFF333333),
-                                      ),
-                                    ),
-                                  ),
-                                  if (isSelected)
-                                    Icon(
-                                      Iconsax.tick_circle,
-                                      color: widget.secondaryColor,
-                                      size: 20,
-                                    ),
-                                ],
-                              ),
                             ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                          );
+                        },
+                      ),
           ),
         ],
       ),
@@ -2086,42 +2263,50 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
 
   Widget _buildShimmerList() {
     return ListView.builder(
-      padding: EdgeInsets.all(24),
+      padding: const EdgeInsets.all(24),
       itemCount: 8,
       itemBuilder: (context, index) {
         return Container(
-          margin: EdgeInsets.only(bottom: 12),
-          padding: EdgeInsets.all(18),
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Color(0xFFF0F0F0), width: 1),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.03),
-                blurRadius: 8,
-                offset: Offset(0, 2),
-              ),
-            ],
+            border: Border.all(color: Colors.grey[100]!, width: 1),
           ),
           child: Row(
             children: [
               Container(
-                width: 50,
-                height: 50,
+                width: 44,
+                height: 44,
                 decoration: BoxDecoration(
-                  color: Colors.grey[200],
+                  color: Colors.grey[50],
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Expanded(
-                child: Container(
-                  height: 20,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(4),
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 14,
+                      width: 120,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      height: 10,
+                      width: 80,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -2134,38 +2319,41 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
   Widget _buildEmptyState() {
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(40),
+        padding: const EdgeInsets.all(40),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 120,
-              height: 120,
+              width: 80,
+              height: 80,
               decoration: BoxDecoration(
-                color: Color(0xFFFAFAFA),
+                color: Colors.grey[50],
                 shape: BoxShape.circle,
-                border: Border.all(color: Color(0xFFF0F0F0), width: 2),
               ),
               child: Icon(
                 Iconsax.search_status,
-                size: 50,
-                color: Color(0xFF999999),
+                size: 32,
+                color: Colors.grey[300],
               ),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 20),
             Text(
               "No countries found",
               style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: widget.primaryColor,
+                fontSize: 16,
+                fontWeight: FontWeight.w900,
+                color: maincolor1,
               ),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 8),
             Text(
-              "Try searching with different keywords",
+              "We couldn't find any results for \"${_searchController.text}\"",
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: Color(0xFF666666)),
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.grey[500],
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ],
         ),

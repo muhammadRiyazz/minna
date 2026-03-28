@@ -1,7 +1,9 @@
 // screens/report_detail_screen.dart
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:minna/flight/domain/report/report_model.dart';
+import 'package:minna/comman/const/const.dart';
 
 // Add this class definition at the top of your file
 class AdditionalCharge {
@@ -17,17 +19,7 @@ class ReportDetailScreen extends StatelessWidget {
   const ReportDetailScreen({super.key, required this.report});
 
   // Updated color scheme matching your cab booking details
-  static final Color _primaryColor = Colors.black;
-  static final Color _secondaryColor = Color(0xFFD4AF37); // Gold
-  static final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
-  static final Color _backgroundColor = Color(0xFFF8F9FA);
-  static final Color _cardColor = Colors.white;
-  static final Color _textPrimary = Colors.black;
-  static final Color _textSecondary = Color(0xFF666666);
-  static final Color _textLight = Color(0xFF999999);
-  static final Color _errorColor = Color(0xFFE53935);
-  static final Color _successColor = Color(0xFF4CAF50);
-  static final Color _warningColor = Color(0xFFFF9800);
+  static final Color _accentColor = secondaryColor; // Gold
 
   @override
   Widget build(BuildContext context) {
@@ -35,21 +27,21 @@ class ReportDetailScreen extends StatelessWidget {
 
     if (response == null) {
       return Scaffold(
-        backgroundColor: _backgroundColor,
+        backgroundColor: backgroundColor,
         appBar: AppBar(
           title: Text('Flight Details'),
-          backgroundColor: _primaryColor,
+          backgroundColor: maincolor1,
         ),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.error_outline, color: _errorColor, size: 64),
+              Icon(Iconsax.danger, color: errorColor, size: 64),
               SizedBox(height: 16),
               Text(
                 'Invalid Report Data',
                 style: TextStyle(
-                  color: _textPrimary,
+                  color: textPrimary,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -57,7 +49,7 @@ class ReportDetailScreen extends StatelessWidget {
               SizedBox(height: 8),
               Text(
                 'This report contains invalid data and cannot be displayed.',
-                style: TextStyle(color: _textSecondary, fontSize: 14),
+                style: TextStyle(color: textSecondary, fontSize: 14),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -67,7 +59,7 @@ class ReportDetailScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      backgroundColor: _backgroundColor,
+      backgroundColor: backgroundColor,
       appBar: AppBar(
         title: Text(
           'Flight Details',
@@ -77,7 +69,7 @@ class ReportDetailScreen extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
         ),
-        backgroundColor: _primaryColor,
+        backgroundColor: maincolor1,
         iconTheme: IconThemeData(color: Colors.white),
         centerTitle: true,
         elevation: 0,
@@ -86,7 +78,7 @@ class ReportDetailScreen extends StatelessWidget {
         slivers: [
           // Header Section
           SliverAppBar(
-            backgroundColor: _primaryColor,
+            backgroundColor: maincolor1,
             expandedHeight: 160.0,
             pinned: false,
             floating: false,
@@ -97,7 +89,7 @@ class ReportDetailScreen extends StatelessWidget {
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [_primaryColor, _primaryColor.withOpacity(0.8)],
+                    colors: [maincolor1, maincolor1.withOpacity(0.8)],
                   ),
                 ),
                 child: Column(
@@ -135,10 +127,10 @@ class ReportDetailScreen extends StatelessWidget {
                               vertical: 8,
                             ),
                             decoration: BoxDecoration(
-                              color: _successColor.withOpacity(0.2),
+                              color: successColor.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: _successColor,
+                                color: successColor,
                                 width: 1,
                               ),
                             ),
@@ -146,9 +138,9 @@ class ReportDetailScreen extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(
-                                  Icons.check_circle,
+                                  Iconsax.tick_circle,
                                   size: 12,
-                                  color: _successColor,
+                                  color: successColor,
                                 ),
                                 SizedBox(width: 6),
                                 Text(
@@ -156,7 +148,7 @@ class ReportDetailScreen extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
-                                    color: _successColor,
+                                    color: successColor,
                                   ),
                                 ),
                               ],
@@ -209,9 +201,9 @@ class ReportDetailScreen extends StatelessWidget {
                   child: Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: _errorColor.withOpacity(0.1),
+                      color: errorColor.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: _errorColor.withOpacity(0.3)),
+                      border: Border.all(color: errorColor.withOpacity(0.3)),
                     ),
                     child: Material(
                       color: Colors.transparent,
@@ -226,15 +218,15 @@ class ReportDetailScreen extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
-                                Icons.cancel_outlined,
-                                color: _errorColor,
+                                Iconsax.undo,
+                                color: errorColor,
                                 size: 20,
                               ),
                               SizedBox(width: 12),
                               Text(
                                 'Request Cancellation',
                                 style: TextStyle(
-                                  color: _errorColor,
+                                  color: errorColor,
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -258,7 +250,7 @@ class ReportDetailScreen extends StatelessWidget {
   Widget _buildSummaryCard() {
     return Container(
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -278,7 +270,7 @@ class ReportDetailScreen extends StatelessWidget {
               Text(
                 'BOOKING SUMMARY',
                 style: TextStyle(
-                  color: _textSecondary,
+                  color: textSecondary,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 1.0,
@@ -287,13 +279,13 @@ class ReportDetailScreen extends StatelessWidget {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: _secondaryColor.withOpacity(0.1),
+                  color: secondaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   report.bookingStatus,
                   style: TextStyle(
-                    color: _secondaryColor,
+                    color: secondaryColor,
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
                   ),
@@ -305,7 +297,7 @@ class ReportDetailScreen extends StatelessWidget {
           _buildSummaryItem(
             'PNR Number',
             report.pnr ?? 'N/A',
-            Icons.airplane_ticket,
+            Iconsax.airplane,
           ),
           _buildSummaryItem(
             'Trip Type',
@@ -345,10 +337,10 @@ class ReportDetailScreen extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: _secondaryColor.withOpacity(0.1),
+              color: secondaryColor.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, size: 16, color: _secondaryColor),
+            child: Icon(icon, size: 16, color: secondaryColor),
           ),
           SizedBox(width: 12),
           Expanded(
@@ -359,7 +351,7 @@ class ReportDetailScreen extends StatelessWidget {
                   label,
                   style: TextStyle(
                     fontSize: 12,
-                    color: _textSecondary,
+                    color: textSecondary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -381,7 +373,7 @@ class ReportDetailScreen extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -400,12 +392,12 @@ class ReportDetailScreen extends StatelessWidget {
               Container(
                 padding: EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: _secondaryColor.withOpacity(0.1),
+                  color: secondaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.flight_takeoff,
-                  color: _secondaryColor,
+                  color: secondaryColor,
                   size: 16,
                 ),
               ),
@@ -414,7 +406,7 @@ class ReportDetailScreen extends StatelessWidget {
                 'FLIGHT DETAILS',
                 style: TextStyle(
                   fontSize: 13,
-                  color: _textSecondary,
+                  color: textSecondary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -422,14 +414,14 @@ class ReportDetailScreen extends StatelessWidget {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: _backgroundColor,
+                  color: backgroundColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   '${flightLegs.length}',
                   style: TextStyle(
                     fontSize: 14,
-                    color: _secondaryColor,
+                    color: secondaryColor,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -441,17 +433,17 @@ class ReportDetailScreen extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: _backgroundColor,
+                color: backgroundColor,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
                 children: [
-                  Icon(Icons.flight, size: 40, color: _textLight),
+                  Icon(Icons.flight, size: 40, color: textLight),
                   SizedBox(height: 8),
                   Text(
                     'No flight details available',
                     style: TextStyle(
-                      color: _textSecondary,
+                      color: textSecondary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -470,7 +462,7 @@ class ReportDetailScreen extends StatelessWidget {
       margin: EdgeInsets.only(bottom: 16),
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _backgroundColor,
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.grey.shade200),
       ),
@@ -487,7 +479,7 @@ class ReportDetailScreen extends StatelessWidget {
                       'FROM',
                       style: TextStyle(
                         fontSize: 10,
-                        color: _textSecondary,
+                        color: textSecondary,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 1.0,
                       ),
@@ -508,7 +500,7 @@ class ReportDetailScreen extends StatelessWidget {
                         Icon(
                           Icons.access_time,
                           size: 12,
-                          color: _secondaryColor,
+                          color: secondaryColor,
                         ),
                         SizedBox(width: 6),
                         Expanded(
@@ -516,7 +508,7 @@ class ReportDetailScreen extends StatelessWidget {
                             _formatDateTime(leg.departureTime),
                             style: TextStyle(
                               fontSize: 11,
-                              color: _textSecondary,
+                              color: textSecondary,
                               fontWeight: FontWeight.w500,
                             ),
                             overflow: TextOverflow.ellipsis,
@@ -535,16 +527,16 @@ class ReportDetailScreen extends StatelessWidget {
                     Container(
                       padding: EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: _secondaryColor.withOpacity(0.1),
+                        color: secondaryColor.withOpacity(0.1),
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: _secondaryColor.withOpacity(0.3),
+                          color: secondaryColor.withOpacity(0.3),
                           width: 2,
                         ),
                       ),
                       child: Icon(
                         Icons.arrow_forward_rounded,
-                        color: _secondaryColor,
+                        color: secondaryColor,
                         size: 15,
                       ),
                     ),
@@ -552,7 +544,7 @@ class ReportDetailScreen extends StatelessWidget {
                     Container(
                       width: 2,
                       height: 40,
-                      color: _secondaryColor.withOpacity(0.3),
+                      color: secondaryColor.withOpacity(0.3),
                     ),
                   ],
                 ),
@@ -565,7 +557,7 @@ class ReportDetailScreen extends StatelessWidget {
                       'TO',
                       style: TextStyle(
                         fontSize: 10,
-                        color: _textSecondary,
+                        color: textSecondary,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 1.0,
                       ),
@@ -588,7 +580,7 @@ class ReportDetailScreen extends StatelessWidget {
                         Icon(
                           Icons.access_time,
                           size: 12,
-                          color: _secondaryColor,
+                          color: secondaryColor,
                         ),
                         SizedBox(width: 6),
                         Expanded(
@@ -596,7 +588,7 @@ class ReportDetailScreen extends StatelessWidget {
                             _formatDateTime(leg.arrivalTime),
                             style: TextStyle(
                               fontSize: 11,
-                              color: _textSecondary,
+                              color: textSecondary,
                               fontWeight: FontWeight.w500,
                             ),
                             textAlign: TextAlign.end,
@@ -618,7 +610,7 @@ class ReportDetailScreen extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: _cardColor,
+              color: cardColor,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -646,13 +638,13 @@ class ReportDetailScreen extends StatelessWidget {
   Widget _buildFlightInfoItem(String title, String value, IconData icon) {
     return Column(
       children: [
-        Icon(icon, size: 16, color: _secondaryColor),
+        Icon(icon, size: 16, color: secondaryColor),
         SizedBox(height: 4),
         Text(
           title,
           style: TextStyle(
             fontSize: 10,
-            color: _textSecondary,
+            color: textSecondary,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -670,7 +662,7 @@ class ReportDetailScreen extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -689,12 +681,12 @@ class ReportDetailScreen extends StatelessWidget {
               Container(
                 padding: EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: _secondaryColor.withOpacity(0.1),
+                  color: secondaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.people_rounded,
-                  color: _secondaryColor,
+                  color: secondaryColor,
                   size: 16,
                 ),
               ),
@@ -703,7 +695,7 @@ class ReportDetailScreen extends StatelessWidget {
                 'PASSENGER INFORMATION',
                 style: TextStyle(
                   fontSize: 13,
-                  color: _textSecondary,
+                  color: textSecondary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -711,14 +703,14 @@ class ReportDetailScreen extends StatelessWidget {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: _backgroundColor,
+                  color: backgroundColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   '${passengers.length}',
                   style: TextStyle(
                     fontSize: 14,
-                    color: _secondaryColor,
+                    color: secondaryColor,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -733,7 +725,7 @@ class ReportDetailScreen extends StatelessWidget {
               margin: EdgeInsets.only(bottom: 12),
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: _backgroundColor,
+                color: backgroundColor,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: Colors.grey.shade200),
               ),
@@ -745,7 +737,7 @@ class ReportDetailScreen extends StatelessWidget {
                       Container(
                         padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: _secondaryColor.withOpacity(0.1),
+                          color: secondaryColor.withOpacity(0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Text(
@@ -753,7 +745,7 @@ class ReportDetailScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: _secondaryColor,
+                            color: secondaryColor,
                           ),
                         ),
                       ),
@@ -773,14 +765,14 @@ class ReportDetailScreen extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: _secondaryColor.withOpacity(0.1),
+                          color: secondaryColor.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
                           passenger.paxType,
                           style: TextStyle(
                             fontSize: 12,
-                            color: _secondaryColor,
+                            color: secondaryColor,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -817,7 +809,7 @@ class ReportDetailScreen extends StatelessWidget {
               label,
               style: TextStyle(
                 fontWeight: FontWeight.w600,
-                color: _textSecondary,
+                color: textSecondary,
                 fontSize: 13,
               ),
             ),
@@ -928,7 +920,7 @@ class ReportDetailScreen extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -947,12 +939,12 @@ class ReportDetailScreen extends StatelessWidget {
               Container(
                 padding: EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: _secondaryColor.withOpacity(0.1),
+                  color: secondaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.currency_rupee_rounded,
-                  color: _secondaryColor,
+                  color: secondaryColor,
                   size: 16,
                 ),
               ),
@@ -961,7 +953,7 @@ class ReportDetailScreen extends StatelessWidget {
                 'FARE BREAKDOWN',
                 style: TextStyle(
                   fontSize: 13,
-                  color: _textSecondary,
+                  color: textSecondary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -998,7 +990,7 @@ class ReportDetailScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: _primaryColor,
+                  color: maincolor1,
                 ),
               ),
             ),
@@ -1021,7 +1013,7 @@ class ReportDetailScreen extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: _backgroundColor,
+              color: backgroundColor,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
@@ -1076,7 +1068,7 @@ class ReportDetailScreen extends StatelessWidget {
             label,
             style: TextStyle(
               fontSize: 14,
-              color: isTotal ? _textPrimary : _textSecondary,
+              color: isTotal ? textPrimary : textSecondary,
               fontWeight: isTotal ? FontWeight.w600 : FontWeight.normal,
             ),
           ),
@@ -1084,7 +1076,7 @@ class ReportDetailScreen extends StatelessWidget {
             amount,
             style: TextStyle(
               fontSize: 14,
-              color: isTotal ? _secondaryColor : _textPrimary,
+              color: isTotal ? secondaryColor : textPrimary,
               fontWeight: isTotal ? FontWeight.w700 : FontWeight.normal,
             ),
           ),
@@ -1110,7 +1102,7 @@ class ReportDetailScreen extends StatelessWidget {
                   width: 20,
                   height: 20,
                   decoration: BoxDecoration(
-                    color: _secondaryColor.withOpacity(0.1),
+                    color: secondaryColor.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Center(
@@ -1119,7 +1111,7 @@ class ReportDetailScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
-                        color: _secondaryColor,
+                        color: secondaryColor,
                       ),
                     ),
                   ),
@@ -1130,7 +1122,7 @@ class ReportDetailScreen extends StatelessWidget {
                     label,
                     style: TextStyle(
                       fontSize: 13,
-                      color: _textPrimary,
+                      color: textPrimary,
                       fontWeight: FontWeight.w500,
                     ),
                     maxLines: 2,
@@ -1146,7 +1138,7 @@ class ReportDetailScreen extends StatelessWidget {
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: _textPrimary,
+              color: textPrimary,
             ),
           ),
         ],
@@ -1175,10 +1167,10 @@ class ReportDetailScreen extends StatelessWidget {
               fontSize: isTotal ? 15 : 14,
               fontWeight: isTotal ? FontWeight.w700 : FontWeight.w500,
               color: isDiscount
-                  ? _successColor
+                  ? successColor
                   : (isCommission
-                        ? _secondaryColor
-                        : (isTotal ? _primaryColor : _textPrimary)),
+                        ? secondaryColor
+                        : (isTotal ? maincolor1 : textPrimary)),
             ),
           ),
           Text(
@@ -1187,10 +1179,10 @@ class ReportDetailScreen extends StatelessWidget {
               fontSize: isTotal ? 16 : 14,
               fontWeight: isTotal ? FontWeight.w800 : FontWeight.w600,
               color: isDiscount
-                  ? _successColor
+                  ? successColor
                   : (isCommission
-                        ? _secondaryColor
-                        : (isTotal ? _secondaryColor : _textPrimary)),
+                        ? secondaryColor
+                        : (isTotal ? secondaryColor : textPrimary)),
             ),
           ),
         ],
@@ -1248,7 +1240,7 @@ class ReportDetailScreen extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
-            Icon(Icons.info_outline, color: _secondaryColor),
+            Icon(Icons.info_outline, color: secondaryColor),
             SizedBox(width: 10),
             Text('Cancellation Request'),
           ],
@@ -1260,7 +1252,7 @@ class ReportDetailScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Close', style: TextStyle(color: _primaryColor)),
+            child: Text('Close', style: TextStyle(color: maincolor1)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -1268,7 +1260,7 @@ class ReportDetailScreen extends StatelessWidget {
               // Handle support contact
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: _secondaryColor,
+              backgroundColor: secondaryColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
