@@ -60,20 +60,20 @@ class ReportDetailScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: backgroundColor,
-      appBar: AppBar(
-        title: Text(
-          'Flight Details',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        backgroundColor: maincolor1,
-        iconTheme: IconThemeData(color: Colors.white),
-        centerTitle: true,
-        elevation: 0,
-      ),
+      // appBar: AppBar(
+      //   title: Text(
+      //     'Flight Details',
+      //     style: TextStyle(
+      //       color: Colors.white,
+      //       fontSize: 18,
+      //       fontWeight: FontWeight.w600,
+      //     ),
+      //   ),
+      //   backgroundColor: maincolor1,
+      //   iconTheme: IconThemeData(color: Colors.white),
+      //   centerTitle: true,
+      //   elevation: 0,
+      // ),
       body: CustomScrollView(
         slivers: [
           // Header Section
@@ -83,6 +83,7 @@ class ReportDetailScreen extends StatelessWidget {
             pinned: false,
             floating: false,
             elevation: 0,
+            iconTheme: IconThemeData(color: Colors.white),
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 decoration: BoxDecoration(
@@ -129,10 +130,7 @@ class ReportDetailScreen extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: successColor.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: successColor,
-                                width: 1,
-                              ),
+                              border: Border.all(color: successColor, width: 1),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -217,11 +215,7 @@ class ReportDetailScreen extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
-                                Iconsax.undo,
-                                color: errorColor,
-                                size: 20,
-                              ),
+                              Icon(Iconsax.undo, color: errorColor, size: 20),
                               SizedBox(width: 12),
                               Text(
                                 'Request Cancellation',

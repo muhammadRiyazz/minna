@@ -8,10 +8,7 @@ import 'package:minna/comman/const/const.dart';
 class CabAllBookingsPage extends StatefulWidget {
   final List<CabBooking> allBookings;
 
-  const CabAllBookingsPage({
-    super.key,
-    required this.allBookings,
-  });
+  const CabAllBookingsPage({super.key, required this.allBookings});
 
   @override
   State<CabAllBookingsPage> createState() => _CabAllBookingsPageState();
@@ -42,15 +39,21 @@ class _CabAllBookingsPageState extends State<CabAllBookingsPage> {
   void initState() {
     super.initState();
     final now = DateTime.now();
-    _startDate = DateFormat('yyyy-MM-dd').format(now.subtract(const Duration(days: 30)));
+    _startDate = DateFormat(
+      'yyyy-MM-dd',
+    ).format(now.subtract(const Duration(days: 30)));
     _endDate = DateFormat('yyyy-MM-dd').format(now);
     _originalBookings = _getValidBookings();
     _filteredBookings = _originalBookings;
   }
 
   List<CabBooking> _getValidBookings() {
-    return widget.allBookings.where((booking) => 
-        booking.status != 'Pending' && booking.status != 'Failure').toList();
+    return widget.allBookings
+        .where(
+          (booking) =>
+              booking.status != 'Pending' && booking.status != 'Failure',
+        )
+        .toList();
   }
 
   void _onSearchChanged(String query) {
@@ -63,7 +66,9 @@ class _CabAllBookingsPageState extends State<CabAllBookingsPage> {
   void _clearDateFilter() {
     setState(() {
       final now = DateTime.now();
-      _startDate = DateFormat('yyyy-MM-dd').format(now.subtract(const Duration(days: 30)));
+      _startDate = DateFormat(
+        'yyyy-MM-dd',
+      ).format(now.subtract(const Duration(days: 30)));
       _endDate = DateFormat('yyyy-MM-dd').format(now);
       _isDateFilterActive = false;
       _originalBookings = _getValidBookings();
@@ -76,15 +81,18 @@ class _CabAllBookingsPageState extends State<CabAllBookingsPage> {
 
     if (_isSearchActive && _searchController.text.isNotEmpty) {
       final query = _searchController.text.toLowerCase();
-      filteredList = filteredList.where((booking) => 
-          (booking.bookingId.toLowerCase().contains(query)) ||
-          (booking.firstName.toLowerCase().contains(query)) ||
-          (booking.lastName.toLowerCase().contains(query)) ||
-          (booking.priContact.toLowerCase().contains(query)) ||
-          (booking.cabType.toLowerCase().contains(query)) ||
-          (booking.tripType.toLowerCase().contains(query)) ||
-          (booking.status.toLowerCase().contains(query))
-      ).toList();
+      filteredList = filteredList
+          .where(
+            (booking) =>
+                (booking.bookingId.toLowerCase().contains(query)) ||
+                (booking.firstName.toLowerCase().contains(query)) ||
+                (booking.lastName.toLowerCase().contains(query)) ||
+                (booking.priContact.toLowerCase().contains(query)) ||
+                (booking.cabType.toLowerCase().contains(query)) ||
+                (booking.tripType.toLowerCase().contains(query)) ||
+                (booking.status.toLowerCase().contains(query)),
+          )
+          .toList();
     }
 
     setState(() {
@@ -106,7 +114,11 @@ class _CabAllBookingsPageState extends State<CabAllBookingsPage> {
             children: [
               Row(
                 children: [
-                  Icon(Icons.calendar_month_rounded, color: _secondaryColor, size: 24),
+                  Icon(
+                    Icons.calendar_month_rounded,
+                    color: _secondaryColor,
+                    size: 24,
+                  ),
                   const SizedBox(width: 12),
                   Text(
                     'Select Date Range',
@@ -146,7 +158,11 @@ class _CabAllBookingsPageState extends State<CabAllBookingsPage> {
                   todayHighlightColor: _secondaryColor,
                   headerStyle: DateRangePickerHeaderStyle(
                     textAlign: TextAlign.center,
-                    textStyle: TextStyle(color: _textPrimary, fontWeight: FontWeight.w800, fontSize: 16),
+                    textStyle: TextStyle(
+                      color: _textPrimary,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
               ),
@@ -156,7 +172,14 @@ class _CabAllBookingsPageState extends State<CabAllBookingsPage> {
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: Text('CANCEL', style: TextStyle(color: _textSecondary, fontWeight: FontWeight.w800, fontSize: 12)),
+                    child: Text(
+                      'CANCEL',
+                      style: TextStyle(
+                        color: _textSecondary,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 12,
+                      ),
+                    ),
                   ),
                   const SizedBox(width: 16),
                   ElevatedButton(
@@ -167,10 +190,21 @@ class _CabAllBookingsPageState extends State<CabAllBookingsPage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _primaryColor,
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
                     ),
-                    child: const Text('APPLY', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
+                    child: const Text(
+                      'APPLY',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 12,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -185,12 +219,14 @@ class _CabAllBookingsPageState extends State<CabAllBookingsPage> {
     setState(() {
       final startDateTime = DateTime.parse(_startDate);
       final endDateTime = DateTime.parse(_endDate);
-      
+
       _filteredBookings = _originalBookings.where((booking) {
         try {
           final bookingDate = DateTime.parse(booking.date);
-          return (bookingDate.isAtSameMomentAs(startDateTime) || bookingDate.isAfter(startDateTime)) &&
-                 (bookingDate.isAtSameMomentAs(endDateTime) || bookingDate.isBefore(endDateTime));
+          return (bookingDate.isAtSameMomentAs(startDateTime) ||
+                  bookingDate.isAfter(startDateTime)) &&
+              (bookingDate.isAtSameMomentAs(endDateTime) ||
+                  bookingDate.isBefore(endDateTime));
         } catch (e) {
           return false;
         }
@@ -206,38 +242,9 @@ class _CabAllBookingsPageState extends State<CabAllBookingsPage> {
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
-          SliverAppBar(
-            expandedHeight: 120.0,
-            floating: false,
-            pinned: true,
-            backgroundColor: _primaryColor,
-            elevation: 4,
-            shadowColor: Colors.black.withOpacity(0.2),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
-              onPressed: () => Navigator.pop(context),
-            ),
-            flexibleSpace: FlexibleSpaceBar(
-              centerTitle: true,
-              title: const Text(
-                'All Bookings',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 0.5,
-                ),
-              ),
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [_primaryColor, _primaryColor.withOpacity(0.8)],
-                  ),
-                ),
-              ),
-            ),
+          // Header-less Spacing
+          const SliverToBoxAdapter(
+            child: SizedBox(height: 10),
           ),
 
           SliverToBoxAdapter(
@@ -275,12 +282,26 @@ class _CabAllBookingsPageState extends State<CabAllBookingsPage> {
                                   onChanged: _onSearchChanged,
                                   decoration: InputDecoration(
                                     hintText: 'Search bookings...',
-                                    hintStyle: TextStyle(color: _textLight, fontSize: 14),
-                                    prefixIcon: Icon(Icons.search_rounded, color: _secondaryColor, size: 20),
+                                    hintStyle: TextStyle(
+                                      color: _textLight,
+                                      fontSize: 14,
+                                    ),
+                                    prefixIcon: Icon(
+                                      Icons.search_rounded,
+                                      color: _secondaryColor,
+                                      size: 20,
+                                    ),
                                     border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 14,
+                                    ),
                                   ),
-                                  style: TextStyle(color: _textPrimary, fontSize: 14, fontWeight: FontWeight.w600),
+                                  style: TextStyle(
+                                    color: _textPrimary,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
                             ),
@@ -293,7 +314,11 @@ class _CabAllBookingsPageState extends State<CabAllBookingsPage> {
                                   color: _secondaryColor,
                                   borderRadius: BorderRadius.circular(16),
                                 ),
-                                child: const Icon(Icons.calendar_today_rounded, size: 20, color: Colors.white),
+                                child: const Icon(
+                                  Icons.calendar_today_rounded,
+                                  size: 20,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ],
@@ -302,16 +327,31 @@ class _CabAllBookingsPageState extends State<CabAllBookingsPage> {
                           const SizedBox(height: 12),
                           Row(
                             children: [
-                              Icon(Icons.date_range_rounded, size: 14, color: _secondaryColor),
+                              Icon(
+                                Icons.date_range_rounded,
+                                size: 14,
+                                color: _secondaryColor,
+                              ),
                               const SizedBox(width: 8),
                               Text(
                                 '${DateFormat('MMM dd').format(DateTime.parse(_startDate))} - ${DateFormat('MMM dd').format(DateTime.parse(_endDate))}',
-                                style: TextStyle(fontSize: 12, color: _textPrimary, fontWeight: FontWeight.w800),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: _textPrimary,
+                                  fontWeight: FontWeight.w800,
+                                ),
                               ),
                               const Spacer(),
                               GestureDetector(
                                 onTap: _clearDateFilter,
-                                child: Text('CLEAR', style: TextStyle(fontSize: 10, color: _errorColor, fontWeight: FontWeight.w900)),
+                                child: Text(
+                                  'CLEAR',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: _errorColor,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
                               ),
                             ],
                           ),
@@ -330,7 +370,8 @@ class _CabAllBookingsPageState extends State<CabAllBookingsPage> {
                 ? SliverFillRemaining(child: _buildEmptyState())
                 : SliverList(
                     delegate: SliverChildBuilderDelegate(
-                      (context, index) => _buildCabBookingCard(_filteredBookings[index]),
+                      (context, index) =>
+                          _buildCabBookingCard(_filteredBookings[index]),
                       childCount: _filteredBookings.length,
                     ),
                   ),
@@ -383,30 +424,84 @@ class _CabAllBookingsPageState extends State<CabAllBookingsPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('BOOKING ID', style: TextStyle(fontSize: 10, color: _textLight, fontWeight: FontWeight.w800, letterSpacing: 1)),
+                          Text(
+                            'BOOKING ID',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: _textLight,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 1,
+                            ),
+                          ),
                           const SizedBox(height: 4),
-                          Text(booking.bookingId, style: TextStyle(color: _textPrimary, fontSize: 16, fontWeight: FontWeight.w800), overflow: TextOverflow.ellipsis),
+                          Text(
+                            booking.bookingId,
+                            style: TextStyle(
+                              color: _textPrimary,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ],
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(color: _secondaryColor.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-                      child: Text('₹${booking.total}', style: TextStyle(color: _secondaryColor, fontSize: 14, fontWeight: FontWeight.w800)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _secondaryColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '₹${booking.total}',
+                        style: TextStyle(
+                          color: _secondaryColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    Icon(Icons.calendar_today_rounded, size: 14, color: _secondaryColor),
+                    Icon(
+                      Icons.calendar_today_rounded,
+                      size: 14,
+                      color: _secondaryColor,
+                    ),
                     const SizedBox(width: 8),
-                    Text(_formatDate(booking.date), style: TextStyle(fontSize: 12, color: _textSecondary, fontWeight: FontWeight.w600)),
+                    Text(
+                      _formatDate(booking.date),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: _textSecondary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     const Spacer(),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(color: _getStatusColor(booking.status).withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
-                      child: Text(booking.status.toUpperCase(), style: TextStyle(fontSize: 10, color: _getStatusColor(booking.status), fontWeight: FontWeight.w900, letterSpacing: 0.5)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _getStatusColor(booking.status).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        booking.status.toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: _getStatusColor(booking.status),
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -425,7 +520,14 @@ class _CabAllBookingsPageState extends State<CabAllBookingsPage> {
         children: [
           Icon(Icons.search_off_rounded, size: 64, color: _textLight),
           const SizedBox(height: 16),
-          Text('No bookings found', style: TextStyle(color: _textPrimary, fontSize: 18, fontWeight: FontWeight.w800)),
+          Text(
+            'No bookings found',
+            style: TextStyle(
+              color: _textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
         ],
       ),
     );
@@ -433,10 +535,14 @@ class _CabAllBookingsPageState extends State<CabAllBookingsPage> {
 
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
-      case "confirmed": return _successColor;
-      case "hold": return _warningColor;
-      case "cancelled": return _errorColor;
-      default: return _textLight;
+      case "confirmed":
+        return _successColor;
+      case "hold":
+        return _warningColor;
+      case "cancelled":
+        return _errorColor;
+      default:
+        return _textLight;
     }
   }
 

@@ -69,7 +69,7 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
     return InputDecoration(
       labelText: labelText,
       labelStyle: TextStyle(
-        fontSize: 12,
+        fontSize: 10,
         color: _textSecondary,
         fontWeight: FontWeight.w500,
       ),
@@ -79,7 +79,7 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
       ),
       filled: true,
       fillColor: _cardColor,
-      contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+      contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide(color: _borderColor, width: 1.5),
@@ -90,7 +90,7 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: _secondaryColor, width: 2),
+        borderSide: BorderSide(color: _secondaryColor, width: 1),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
@@ -101,9 +101,9 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
         borderSide: BorderSide(color: _errorColor, width: 2),
       ),
       prefixIcon: Container(
-        padding: EdgeInsets.all(12),
-        margin: EdgeInsets.only(right: 8),
-        child: Icon(prefixIcon, color: _primaryColor, size: 20),
+        padding: EdgeInsets.all(10),
+        margin: EdgeInsets.only(right: 5),
+        child: Icon(prefixIcon, color: _primaryColor, size: 16),
       ),
     );
   }
@@ -471,31 +471,14 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
             ],
           ),
         ),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: _cardColor,
-            borderRadius: const BorderRadius.vertical(
-              bottom: Radius.circular(20),
-            ),
-            border: Border.all(color: _borderColor),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.02),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            children: roomPassengers[roomIndex].asMap().entries.map((entry) {
-              final passengerIndex = entry.key;
-              final passenger = entry.value;
-              final isAdult = passenger['PaxType'] == 1;
+        Column(
+          children: roomPassengers[roomIndex].asMap().entries.map((entry) {
+            final passengerIndex = entry.key;
+            final passenger = entry.value;
+            final isAdult = passenger['PaxType'] == 1;
 
-              return _buildPassengerForm(roomIndex, passengerIndex, isAdult);
-            }).toList(),
-          ),
+            return _buildPassengerForm(roomIndex, passengerIndex, isAdult);
+          }).toList(),
         ),
       ],
     );
@@ -545,7 +528,7 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: _backgroundColor.withOpacity(0.3),
+        color: Colors.white.withOpacity(0.3),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: _borderColor),
       ),
@@ -762,7 +745,7 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
                 },
               ),
             ),
-            SizedBox(width: 12),
+            SizedBox(width: 8),
             Expanded(
               child: TextFormField(
                 initialValue:

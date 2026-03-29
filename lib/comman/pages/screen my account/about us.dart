@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:minna/comman/const/const.dart';
 
 class AboutUsPage extends StatelessWidget {
@@ -6,56 +7,87 @@ class AboutUsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Color Theme
-    final Color primaryColor = Colors.black;
-    final Color secondaryColor = Color(0xFFD4AF37);
-    final Color accentColor = Color(0xFFC19B3C);
-    final Color backgroundColor = Color(0xFFF8F9FA);
-    final Color cardColor = Colors.white;
-    final Color textPrimary = Colors.black;
-    final Color textSecondary = Color(0xFF666666);
-    final Color textLight = Color(0xFF999999);
+    // Theme Variables
+    final Color _primaryColor = maincolor1;
+    final Color _secondaryColor = secondaryColor;
+    final Color _backgroundColor = backgroundColor;
+    final Color _cardColor = cardColor;
+    final Color _textPrimary = textPrimary;
+    final Color _textSecondary = textSecondary;
+    final Color _textLight = textLight;
 
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: _backgroundColor,
       body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
         slivers: [
           SliverAppBar(
-            expandedHeight: 200.0,
-            collapsedHeight: 70.0,
+            expandedHeight: 220.0,
+            collapsedHeight: 80.0,
             pinned: true,
-            snap: false,
-            floating: false,
-            backgroundColor: primaryColor,
-            elevation: 4,
-            shadowColor: Colors.black.withOpacity(0.3),
+            backgroundColor: _primaryColor,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Iconsax.arrow_left_2, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
+            ),
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(32)),
+            ),
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
-              title: Text(
+              title: const Text(
                 'MT Trip',
                 style: TextStyle(
-                  color: cardColor,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.0,
                 ),
               ),
               background: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [primaryColor, primaryColor.withOpacity(0.9)],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
+                    colors: [_primaryColor, _primaryColor.withOpacity(0.8)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                child: Stack(
                   children: [
-                    Icon(
-                      Icons.travel_explore_rounded,
-                      size: 50,
-                      color: secondaryColor,
+                    Positioned(
+                      top: -40,
+                      right: -40,
+                      child: Container(
+                        width: 150,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white.withOpacity(0.05),
+                        ),
+                      ),
                     ),
-                   SizedBox(height: 60,)
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.1),
+                              shape: BoxShape.circle,
+                              border: Border.all(color: _secondaryColor.withOpacity(0.3), width: 1),
+                            ),
+                            child: Icon(
+                              Iconsax.global,
+                              size: 56,
+                              color: _secondaryColor,
+                            ),
+                          ),
+                          const SizedBox(height: 40),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -63,24 +95,24 @@ class AboutUsPage extends StatelessWidget {
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.all(13),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
                   // Description Card
-                  _buildDescriptionCard(cardColor, secondaryColor, textPrimary, textSecondary),
-                  SizedBox(height: 24),
+                  _buildDescriptionCard(_cardColor, _secondaryColor, _textPrimary, _textSecondary),
+                  const SizedBox(height: 24),
 
                   // Services Grid
-                  _buildServicesSection(cardColor, secondaryColor, textPrimary, textSecondary),
-                  SizedBox(height: 24),
+                  _buildServicesSection(_cardColor, _secondaryColor, _textPrimary, _textSecondary),
+                  const SizedBox(height: 24),
 
                   // Why Choose Us
-                  _buildWhyChooseUsSection(cardColor, secondaryColor, textPrimary, textSecondary),
-                  SizedBox(height: 24),
+                  _buildWhyChooseUsSection(_cardColor, _secondaryColor, _textPrimary, _textSecondary),
+                  const SizedBox(height: 24),
 
                   // Final Statement
-                  _buildFinalStatement(secondaryColor, primaryColor, cardColor),
-                  SizedBox(height: 24),
+                  _buildFinalStatement(_secondaryColor, _primaryColor, _cardColor),
+                  const SizedBox(height: 40),
                 ],
               ),
             ),
@@ -94,60 +126,63 @@ class AboutUsPage extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(20),
-        // boxShadow: [
-        //   BoxShadow(
-        //     color: Colors.black.withOpacity(0.08),
-        //     blurRadius: 12,
-        //     offset: const Offset(0, 4),
-        //   ),
-        // ],
-        // border: Border.all(
-        //   color: secondaryColor.withOpacity(0.1),
-        //   width: 1,
-        // ),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+        border: Border.all(
+          color: secondaryColor.withOpacity(0.05),
+          width: 1,
+        ),
       ),
       child: Padding(
-        padding: EdgeInsets.all(15),
+        padding: const EdgeInsets.all(24),
         child: Column(
           children: [
             Row(
               children: [
                 Container(
-                  padding: EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: secondaryColor.withOpacity(0.1),
-                    shape: BoxShape.circle,
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(Icons.flag_rounded, color: secondaryColor, size: 24),
+                  child: Icon(Iconsax.info_circle, color: secondaryColor, size: 24),
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 16),
                 Text(
                   "About MT Trip",
                   style: TextStyle(
                     fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w900,
                     color: textPrimary,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 20),
             Text(
               "MT Trip and Tourism is your trusted companion for unforgettable journeys across India and beyond. Based in Kerala, we specialize in curated travel experiences that blend comfort, culture, and adventure.",
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 15,
                 height: 1.6,
                 color: textSecondary,
+                fontWeight: FontWeight.w500,
               ),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 16),
             Text(
               "Whether you're planning a family vacation, a honeymoon getaway, a business trip, or a group tour, our experienced team ensures every detail is perfectly arranged for a seamless travel experience.",
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 15,
                 height: 1.6,
                 color: textSecondary,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
@@ -158,109 +193,69 @@ class AboutUsPage extends StatelessWidget {
 
   Widget _buildServicesSection(Color cardColor, Color secondaryColor, Color textPrimary, Color textSecondary) {
     final List<Map<String, dynamic>> services = [
-      {
-        'icon': Icons.directions_bus_rounded,
-        'title': 'Bus Booking',
-        'description': 'AC & Non-AC buses across India'
-      },
-      {
-        'icon': Icons.flight_rounded,
-        'title': 'Flight Booking',
-        'description': 'Domestic & international flights'
-      },
-      {
-        'icon': Icons.hotel_rounded,
-        'title': 'Hotel Booking',
-        'description': 'Luxury to budget stays'
-      },
-      {
-        'icon': Icons.local_taxi_rounded,
-        'title': 'Cab Services',
-        'description': 'Outstation & local cabs'
-      },
-      {
-        'icon': Icons.train_rounded,
-        'title': 'Train Booking',
-        'description': 'IRCTC & private trains'
-      },
-      {
-        'icon': Icons.receipt_long_rounded,
-        'title': 'Bill Payments',
-        'description': 'Utility bills & recharges'
-      },
-      {
-        'icon': Icons.phone_android_rounded,
-        'title': 'Mobile Recharge',
-        'description': 'Prepaid & postpaid recharge'
-      },
-      {
-        'icon': Icons.card_travel_rounded,
-        'title': 'Tour Packages',
-        'description': 'Customized holiday packages'
-      },
-      {
-        'icon': Icons.corporate_fare_rounded,
-        'title': 'Corporate Travel',
-        'description': 'Business travel solutions'
-      },
-      {
-        'icon': Icons.beach_access_rounded,
-        'title': 'Holiday Packages',
-        'description': 'Domestic & international tours'
-      },
+      {'icon': Iconsax.bus, 'title': 'Bus Booking', 'description': 'AC & Non-AC'},
+      {'icon': Iconsax.airplane, 'title': 'Flight Booking', 'description': 'Global & Local'},
+      {'icon': Iconsax.house_2, 'title': 'Hotel Booking', 'description': 'Luxury Stays'},
+      {'icon': Iconsax.car, 'title': 'Cab Services', 'description': 'Safe Travel'},
+      {'icon': Iconsax.flash_1, 'title': 'Bill Payments', 'description': 'Quick & Easy'},
+      {'icon': Iconsax.mobile, 'title': 'Mobile Recharge', 'description': 'Instant Refill'},
+      {'icon': Iconsax.map, 'title': 'Tour Packages', 'description': 'Custom Trips'},
+      {'icon': Iconsax.buildings, 'title': 'Corporate', 'description': 'Business Pro'},
+      {'icon': Iconsax.sun, 'title': 'Holidays', 'description': 'Best Vacations'},
     ];
 
     return Container(
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(20),
-        // boxShadow: [
-        //   BoxShadow(
-        //     color: Colors.black.withOpacity(0.08),
-        //     blurRadius: 12,
-        //     offset: const Offset(0, 4),
-        //   ),
-        // ],
-        // border: Border.all(
-        //   color: secondaryColor.withOpacity(0.1),
-        //   width: 1,
-        // ),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+        border: Border.all(
+          color: secondaryColor.withOpacity(0.05),
+          width: 1,
+        ),
       ),
       child: Padding(
-        padding: EdgeInsets.all(15),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Container(
-                  padding: EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: secondaryColor.withOpacity(0.1),
-                    shape: BoxShape.circle,
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(Icons.grid_view_rounded, color: secondaryColor, size: 24),
+                  child: Icon(Iconsax.category, color: secondaryColor, size: 24),
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 16),
                 Text(
                   "Our Services",
                   style: TextStyle(
                     fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w900,
                     color: textPrimary,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 24),
             GridView.builder(
               shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
-                childAspectRatio: 0.5,
+                childAspectRatio: 0.75,
               ),
               itemCount: services.length,
               itemBuilder: (context, index) {
@@ -286,63 +281,49 @@ class AboutUsPage extends StatelessWidget {
       Color cardColor, Color secondaryColor, Color textPrimary, Color textSecondary) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: cardColor,
-        // border: Border.all(
-        //   color: secondaryColor.withOpacity(0.1),
-        //   width: 1,
-        // ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 6,
-            offset: Offset(0, 2),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(16),
+        color: secondaryColor.withOpacity(0.03),
+        border: Border.all(
+          color: secondaryColor.withOpacity(0.05),
+          width: 1,
+        ),
       ),
-      child: Padding(
-        padding: EdgeInsets.all(12),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: secondaryColor.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                color: secondaryColor,
-                size: 20,
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            color: secondaryColor,
+            size: 26,
+          ),
+          const SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Text(
               title,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 11,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w800,
                 color: textPrimary,
               ),
-              maxLines: 2,
+              maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            SizedBox(height: 4),
-            Text(
-              description,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 8,
-                color: textSecondary,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 2),
+          Text(
+            description,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 8,
+              color: textSecondary,
+              fontWeight: FontWeight.w500,
             ),
-          ],
-        ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }
@@ -350,22 +331,22 @@ class AboutUsPage extends StatelessWidget {
   Widget _buildWhyChooseUsSection(Color cardColor, Color secondaryColor, Color textPrimary, Color textSecondary) {
     final List<Map<String, dynamic>> features = [
       {
-        'icon': Icons.verified_user_rounded,
+        'icon': Iconsax.verify,
         'title': 'Trusted Service',
         'description': '10+ years of excellence in travel industry'
       },
       {
-        'icon': Icons.support_agent_rounded,
+        'icon': Iconsax.headphone,
         'title': '24/7 Support',
         'description': 'Round the clock customer support'
       },
       {
-        'icon': Icons.savings_rounded,
+        'icon': Iconsax.wallet_check,
         'title': 'Best Prices',
         'description': 'Guaranteed best deals and offers'
       },
       {
-        'icon': Icons.security_rounded,
+        'icon': Iconsax.security_safe,
         'title': 'Secure Booking',
         'description': '100% secure and reliable bookings'
       },
@@ -374,46 +355,47 @@ class AboutUsPage extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
         border: Border.all(
-          color: secondaryColor.withOpacity(0.1),
+          color: secondaryColor.withOpacity(0.05),
           width: 1,
         ),
       ),
       child: Padding(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Container(
-                  padding: EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: secondaryColor.withOpacity(0.1),
-                    shape: BoxShape.circle,
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(Icons.star_rounded, color: secondaryColor, size: 24),
+                  child: Icon(Iconsax.award, color: secondaryColor, size: 24),
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 16),
                 Text(
-                  "Why Choose MT TRip?",
+                  "Why Choose Us?",
                   style: TextStyle(
                     fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w900,
                     color: textPrimary,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 12),
             Column(
               children: features.map((feature) => _buildFeatureItem(
                 feature['icon'],
@@ -433,24 +415,23 @@ class AboutUsPage extends StatelessWidget {
   Widget _buildFeatureItem(IconData icon, String title, String description, 
       Color secondaryColor, Color textPrimary, Color textSecondary) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 40,
-            height: 40,
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: secondaryColor.withOpacity(0.1),
-              shape: BoxShape.circle,
+              color: secondaryColor.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
               icon,
               color: secondaryColor,
-              size: 20,
+              size: 22,
             ),
           ),
-          SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -459,17 +440,18 @@ class AboutUsPage extends StatelessWidget {
                   title,
                   style: TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w800,
                     color: textPrimary,
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   description,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 13,
                     color: textSecondary,
                     height: 1.4,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
@@ -482,51 +464,51 @@ class AboutUsPage extends StatelessWidget {
 
   Widget _buildFinalStatement(Color secondaryColor, Color primaryColor, Color cardColor) {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [primaryColor, primaryColor.withOpacity(0.9)],
+          colors: [primaryColor, primaryColor.withOpacity(0.8)],
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 12,
-            offset: Offset(0, 4),
+            color: primaryColor.withOpacity(0.2),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
       child: Column(
         children: [
           Icon(
-            Icons.favorite_rounded,
+            Iconsax.heart5,
             color: secondaryColor,
-            size: 32,
+            size: 40,
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 20),
           Text(
             "Our Promise to You",
             style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: cardColor,
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+              letterSpacing: 0.5,
             ),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 16),
           Text(
             "At MT Trip, we believe that every journey should be seamless and memorable. Let us take care of your travel needs while you focus on creating beautiful memories that last a lifetime.",
             style: TextStyle(
-              fontSize: 16,
-              color: cardColor.withOpacity(0.9),
+              fontSize: 15,
+              color: Colors.white.withOpacity(0.8),
               height: 1.6,
+              fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: 16),
-       
         ],
       ),
     );

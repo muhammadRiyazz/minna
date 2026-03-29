@@ -748,13 +748,13 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                     const SizedBox(height: 24),
                   ],
 
-                  // Nearby Attractions
-                  if (fullHotelDetails.attractions.isNotEmpty) ...[
-                    _buildSectionHeader("Nearby Attractions"),
-                    const SizedBox(height: 12),
-                    _buildAttractionsSection(fullHotelDetails.attractions),
-                    const SizedBox(height: 24),
-                  ],
+                  // // Nearby Attractions
+                  // if (fullHotelDetails.attractions.isNotEmpty) ...[
+                  //   _buildSectionHeader("Nearby Attractions"),
+                  //   const SizedBox(height: 12),
+                  //   _buildAttractionsSection(fullHotelDetails.attractions),
+                  //   const SizedBox(height: 24),
+                  // ],
 
                   // Contact
                   _buildSectionHeader("Contact Information"),
@@ -1716,18 +1716,18 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
 
     try {
       // Step 1: Authenticate
-      final authResult = await _apiService.authenticate().timeout(
-        const Duration(seconds: 15),
-        onTimeout: () => throw TimeoutException("Authentication timed out"),
-      );
+      // final authResult = await _apiService.authenticate().timeout(
+      //   const Duration(seconds: 15),
+      //   onTimeout: () => throw TimeoutException("Authentication timed out"),
+      // );
 
-      if (!authResult.isSuccess) {
-        if (mounted)
-          _showErrorSnackBar(
-            authResult.error ?? "Authentication failed. Please login again.",
-          );
-        return;
-      }
+      // if (!authResult.isSuccess) {
+      //   if (mounted)
+      //     _showErrorSnackBar(
+      //       authResult.error ?? "Authentication failed. Please login again.",
+      //     );
+      //   return;
+      // }
 
       // Step 2: Check wallet balance
       // Wrap in try-catch in case balance check throws unexpected network error

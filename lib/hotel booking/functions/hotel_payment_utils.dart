@@ -38,7 +38,9 @@ Future<Map<String, dynamic>?> createHotelRazorpayOrder({
         return null;
       }
     } else {
-      log("❌ HTTP Error in createHotelOrder: ${response.statusCode} - ${response.body}");
+      log(
+        "❌ HTTP Error in createHotelOrder: ${response.statusCode} - ${response.body}",
+      );
       return null;
     }
   } catch (e) {
@@ -48,8 +50,8 @@ Future<Map<String, dynamic>?> createHotelRazorpayOrder({
 }
 
 /// Verifies a hotel Razorpay payment on mttrip.in
-/// Returns true if verification is successful, false otherwise.
-Future<bool> verifyHotelRazorpayPayment({
+/// Returns the response data if successful, null otherwise.
+Future<Map<String, dynamic>?> verifyHotelRazorpayPayment({
   required String paymentId,
   required String orderId,
   required String signature,
@@ -62,6 +64,7 @@ Future<bool> verifyHotelRazorpayPayment({
     log("   orderId: $orderId");
     log("   traceId: $traceId");
     log("   tokenId: $tokenId");
+    log("   signature: $signature");
 
     final response = await http.post(
       Uri.parse("${baseUrl}hotel-api-verify-payment"),
@@ -78,20 +81,21 @@ Future<bool> verifyHotelRazorpayPayment({
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body);
-      // Assuming status: true means success
       if (data['status'] == true) {
         log("✅ Payment verification successful");
-        return true;
+        return data; // Returns the full JSON including message and data
       } else {
         log("❌ Payment verification failed: ${data['message']}");
-        return false;
+        return data; // Return failure structure to handle message
       }
     } else {
-      log("❌ HTTP Error in verifyHotelPayment: ${response.statusCode} - ${response.body}");
-      return false;
+      log(
+        "❌ HTTP Error in verifyHotelPayment: ${response.statusCode} - ${response.body}",
+      );
+      return null;
     }
   } catch (e) {
     log("💥 Exception in verifyHotelRazorpayPayment: $e");
-    return false;
+    return null;
   }
 }

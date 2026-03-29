@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:minna/comman/const/const.dart';
 
 class ContactUsPage extends StatefulWidget {
   const ContactUsPage({super.key});
@@ -8,17 +10,16 @@ class ContactUsPage extends StatefulWidget {
 }
 
 class _ContactUsPageState extends State<ContactUsPage> {
-  // Color Theme
-  final Color _primaryColor = Colors.black;
-  final Color _secondaryColor = Color(0xFFD4AF37);
-  final Color _accentColor = Color(0xFFC19B3C);
-  final Color _backgroundColor = Color(0xFFF8F9FA);
-  final Color _cardColor = Colors.white;
-  final Color _textPrimary = Colors.black;
-  final Color _textSecondary = Color(0xFF666666);
-  final Color _textLight = Color(0xFF999999);
-  final Color _errorColor = Color(0xFFE53935);
-  final Color _successColor = Color(0xFF00C853);
+  // Theme Variables
+  final Color _primaryColor = maincolor1;
+  final Color _secondaryColor = secondaryColor;
+  final Color _backgroundColor = backgroundColor;
+  final Color _cardColor = cardColor;
+  final Color _textPrimary = textPrimary;
+  final Color _textSecondary = textSecondary;
+  final Color _textLight = textLight;
+  final Color _errorColor = errorColor;
+  final Color _successColor = const Color(0xFF0D9488);
 
   final _formKey = GlobalKey<FormState>();
   bool _isSubmitting = false;
@@ -34,9 +35,9 @@ class _ContactUsPageState extends State<ContactUsPage> {
   void initState() {
     super.initState();
     _scrollController.addListener(() {
-      if (_scrollController.offset > 100 && !_showAppBarTitle) {
+      if (_scrollController.offset > 120 && !_showAppBarTitle) {
         setState(() => _showAppBarTitle = true);
-      } else if (_scrollController.offset <= 100 && _showAppBarTitle) {
+      } else if (_scrollController.offset <= 120 && _showAppBarTitle) {
         setState(() => _showAppBarTitle = false);
       }
     });
@@ -47,22 +48,22 @@ class _ContactUsPageState extends State<ContactUsPage> {
       setState(() => _isSubmitting = true);
 
       // Simulate sending message
-      Future.delayed(Duration(seconds: 2), () {
+      Future.delayed(const Duration(seconds: 2), () {
+        if (!mounted) return;
         setState(() => _isSubmitting = false);
+        
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(
               children: [
-                Icon(Icons.check_circle, color: _cardColor),
-                SizedBox(width: 10),
-                Expanded(child: Text("Message sent successfully!")),
+                const Icon(Iconsax.tick_circle, color: Colors.white, size: 20),
+                const SizedBox(width: 10),
+                const Expanded(child: Text("Message sent successfully!", style: TextStyle(fontWeight: FontWeight.w600))),
               ],
             ),
             backgroundColor: _successColor,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             duration: const Duration(seconds: 3),
           ),
@@ -89,68 +90,100 @@ class _ContactUsPageState extends State<ContactUsPage> {
       backgroundColor: _backgroundColor,
       body: CustomScrollView(
         controller: _scrollController,
+        physics: const BouncingScrollPhysics(),
         slivers: [
           SliverAppBar(
-            expandedHeight: 180.0,
-            collapsedHeight: 70.0,
+            expandedHeight: 220.0,
+            collapsedHeight: 80.0,
             pinned: true,
-            snap: false,
-            floating: false,
             backgroundColor: _primaryColor,
-            elevation: 4,
-            shadowColor: Colors.black.withOpacity(0.3),
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Iconsax.arrow_left_2, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
+            ),
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(32)),
+            ),
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
               title: AnimatedOpacity(
                 opacity: _showAppBarTitle ? 1.0 : 0.0,
-                duration: Duration(milliseconds: 200),
-                child: Text(
+                duration: const Duration(milliseconds: 200),
+                child: const Text(
                   'Contact Us',
                   style: TextStyle(
-                    color: _cardColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ),
               background: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [_primaryColor, _primaryColor.withOpacity(0.9)],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
+                    colors: [_primaryColor, _primaryColor.withOpacity(0.8)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                child: Stack(
                   children: [
-                    Icon(
-                      Icons.contact_support_rounded,
-                      size: 50,
-                      color: _secondaryColor,
-                    ),
-                    SizedBox(height: 16),
-                    Text(
-                      "Let's Connect",
-                      style: TextStyle(
-                        color: _cardColor,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 40),
-                      child: Text(
-                        "We're here to help and answer any questions",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: _cardColor.withOpacity(0.8),
-                          fontSize: 14,
+                    Positioned(
+                      top: -30,
+                      left: -30,
+                      child: Container(
+                        width: 120,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white.withOpacity(0.05),
                         ),
                       ),
                     ),
-                    SizedBox(height: 20),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 20),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.1),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: _secondaryColor.withOpacity(0.3), width: 1),
+                          ),
+                          child: Icon(
+                            Iconsax.message_question,
+                            size: 44,
+                            color: _secondaryColor,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          "Let's Connect",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 40),
+                          child: Text(
+                            "We're here to help and answer any questions you might have.",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.7),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -158,7 +191,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -166,124 +199,126 @@ class _ContactUsPageState extends State<ContactUsPage> {
                   Container(
                     decoration: BoxDecoration(
                       color: _cardColor,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.08),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
+                          color: Colors.black.withOpacity(0.04),
+                          blurRadius: 20,
+                          offset: const Offset(0, 8),
                         ),
                       ],
                       border: Border.all(
-                        color: _secondaryColor.withOpacity(0.1),
+                        color: _secondaryColor.withOpacity(0.05),
                         width: 1,
                       ),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(24),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             children: [
                               Container(
-                                padding: EdgeInsets.all(8),
+                                padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                   color: _secondaryColor.withOpacity(0.1),
-                                  shape: BoxShape.circle,
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Icon(
-                                  Icons.contact_page_rounded,
+                                  Iconsax.direct_notification,
                                   color: _secondaryColor,
-                                  size: 20,
+                                  size: 24,
                                 ),
                               ),
-                              SizedBox(width: 12),
+                              const SizedBox(width: 16),
                               Text(
-                                "Contact Information",
+                                "Contact Info",
                                 style: TextStyle(
                                   fontSize: 18,
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight: FontWeight.w900,
                                   color: _textPrimary,
+                                  letterSpacing: 0.5,
                                 ),
                               ),
                             ],
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 24),
                           _buildContactItem(
-                            Icons.email_rounded,
+                            Iconsax.sms,
                             "Email Address",
                             "mttrip2025@gmail.com",
                             _secondaryColor,
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           _buildContactItem(
-                            Icons.phone_rounded,
+                            Iconsax.call,
                             "Phone Number",
                             "+91 9656666556",
                             _secondaryColor,
                           ),
-                          // SizedBox(height: 16),
-                          // _buildContactItem(
-                          //   Icons.location_on_rounded,
-                          //   "Office Address",
-                          //   "123, Your Street, Your City, India",
-                          //   _secondaryColor,
-                          // ),
+                          const SizedBox(height: 16),
+                           _buildContactItem(
+                            Iconsax.clock,
+                            "Business Hours",
+                            "9:00 AM - 9:00 PM",
+                            _secondaryColor,
+                          ),
                         ],
                       ),
                     ),
                   ),
-                  SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
                   // Contact Form Card
                   Container(
                     decoration: BoxDecoration(
                       color: _cardColor,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.08),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
+                          color: Colors.black.withOpacity(0.04),
+                          blurRadius: 20,
+                          offset: const Offset(0, 8),
                         ),
                       ],
                       border: Border.all(
-                        color: _secondaryColor.withOpacity(0.1),
+                        color: _secondaryColor.withOpacity(0.05),
                         width: 1,
                       ),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(24),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             children: [
                               Container(
-                                padding: EdgeInsets.all(8),
+                                padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                   color: _secondaryColor.withOpacity(0.1),
-                                  shape: BoxShape.circle,
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Icon(
-                                  Icons.message_rounded,
+                                  Iconsax.edit_2,
                                   color: _secondaryColor,
-                                  size: 20,
+                                  size: 24,
                                 ),
                               ),
-                              SizedBox(width: 12),
+                              const SizedBox(width: 16),
                               Text(
                                 "Send us a Message",
                                 style: TextStyle(
                                   fontSize: 18,
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight: FontWeight.w900,
                                   color: _textPrimary,
+                                  letterSpacing: 0.5,
                                 ),
                               ),
                             ],
                           ),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 32),
                           Form(
                             key: _formKey,
                             child: Column(
@@ -291,17 +326,17 @@ class _ContactUsPageState extends State<ContactUsPage> {
                                 _buildFormField(
                                   controller: _nameController,
                                   label: "Full Name",
-                                  hint: "Enter your full name",
-                                  icon: Icons.person_outline_rounded,
+                                  hint: "Your name",
+                                  icon: Iconsax.user,
                                   validator: (value) =>
                                       value!.isEmpty ? "Please enter your name" : null,
                                 ),
-                                SizedBox(height: 16),
+                                const SizedBox(height: 20),
                                 _buildFormField(
                                   controller: _emailController,
                                   label: "Email Address",
-                                  hint: "Enter your email address",
-                                  icon: Icons.email_outlined,
+                                  hint: "Your email",
+                                  icon: Iconsax.sms,
                                   validator: (value) {
                                     if (value!.isEmpty) return "Please enter your email";
                                     if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
@@ -310,50 +345,51 @@ class _ContactUsPageState extends State<ContactUsPage> {
                                     return null;
                                   },
                                 ),
-                                SizedBox(height: 16),
+                                const SizedBox(height: 20),
                                 _buildFormField(
                                   controller: _messageController,
                                   label: "Your Message",
-                                  hint: "Tell us how we can help you...",
-                                  icon: Icons.chat_bubble_outline_rounded,
-                                  maxLines: 5,
+                                  hint: "How can we help you?",
+                                  icon: Iconsax.message_text,
+                                  maxLines: 4,
                                   validator: (value) =>
                                       value!.isEmpty ? "Please enter a message" : null,
                                 ),
-                                SizedBox(height: 24),
+                                const SizedBox(height: 32),
                                 SizedBox(
                                   width: double.infinity,
                                   child: ElevatedButton(
                                     onPressed: _isSubmitting ? null : _submitForm,
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: _secondaryColor,
-                                      foregroundColor: _cardColor,
-                                      padding: EdgeInsets.symmetric(vertical: 16),
+                                      foregroundColor: Colors.white,
+                                      disabledBackgroundColor: _secondaryColor.withOpacity(0.4),
+                                      padding: const EdgeInsets.symmetric(vertical: 18),
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
+                                        borderRadius: BorderRadius.circular(16),
                                       ),
-                                      elevation: 2,
-                                      shadowColor: _secondaryColor.withOpacity(0.3),
+                                      elevation: 0,
                                     ),
                                     child: _isSubmitting
-                                        ? SizedBox(
-                                            height: 20,
-                                            width: 20,
+                                        ? const SizedBox(
+                                            height: 22,
+                                            width: 22,
                                             child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                              color: _cardColor,
+                                              strokeWidth: 2.5,
+                                              color: Colors.white,
                                             ),
                                           )
                                         : Row(
                                             mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              Icon(Icons.send_rounded, size: 20),
-                                              SizedBox(width: 8),
+                                            children: const [
+                                              Icon(Iconsax.send_1, size: 20),
+                                              SizedBox(width: 10),
                                               Text(
                                                 "Send Message",
                                                 style: TextStyle(
                                                   fontSize: 16,
-                                                  fontWeight: FontWeight.w600,
+                                                  fontWeight: FontWeight.w900,
+                                                  letterSpacing: 0.5,
                                                 ),
                                               ),
                                             ],
@@ -367,7 +403,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 40),
                 ],
               ),
             ),
@@ -380,36 +416,50 @@ class _ContactUsPageState extends State<ContactUsPage> {
   Widget _buildContactItem(IconData icon, String title, String subtitle, Color color) {
     return Container(
       decoration: BoxDecoration(
-        color: _backgroundColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _textLight.withOpacity(0.2)),
+        color: _backgroundColor.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _secondaryColor.withOpacity(0.05)),
       ),
-      child: ListTile(
-        leading: Container(
-          padding: EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(icon, color: color, size: 20),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: color, size: 20),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: _textLight,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: _textPrimary,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-        title: Text(
-          title,
-          style: TextStyle(
-            fontSize: 12,
-            color: _textLight,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        subtitle: Text(
-          subtitle,
-          style: TextStyle(
-            fontSize: 14,
-            color: _textPrimary,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       ),
     );
   }
@@ -428,12 +478,13 @@ class _ContactUsPageState extends State<ContactUsPage> {
         Text(
           label,
           style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 14,
-            color: _textPrimary,
+            fontWeight: FontWeight.w800,
+            fontSize: 13,
+            color: _textPrimary.withOpacity(0.8),
+            letterSpacing: 0.2,
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 10),
         TextFormField(
           controller: controller,
           maxLines: maxLines,
@@ -441,34 +492,47 @@ class _ContactUsPageState extends State<ContactUsPage> {
           style: TextStyle(
             color: _textPrimary,
             fontSize: 14,
+            fontWeight: FontWeight.w700,
           ),
           decoration: InputDecoration(
-            prefixIcon: Icon(icon, color: _secondaryColor),
+            prefixIcon: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: _secondaryColor.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: _secondaryColor, size: 18),
+              ),
+            ),
             hintText: hint,
-            hintStyle: TextStyle(color: _textLight),
+            hintStyle: TextStyle(color: _textLight, fontWeight: FontWeight.w500),
+            filled: true,
+            fillColor: Colors.white,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: _textLight.withOpacity(0.3)),
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: _secondaryColor.withOpacity(0.1)),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: _textLight.withOpacity(0.3)),
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: _secondaryColor.withOpacity(0.1)),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: _secondaryColor, width: 2),
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: _secondaryColor, width: 1.5),
             ),
             errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide(color: _errorColor),
             ),
             focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: _errorColor, width: 2),
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: _errorColor, width: 1.5),
             ),
-            contentPadding:  EdgeInsets.symmetric(
+            contentPadding: EdgeInsets.symmetric(
               horizontal: 16,
-              vertical: maxLines > 1 ? 16 : 0,
+              vertical: maxLines > 1 ? 16 : 12,
             ),
           ),
         ),

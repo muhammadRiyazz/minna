@@ -43,7 +43,6 @@ class _HotelListPageState extends State<HotelListPage> {
   final HotelApiService _apiService = HotelApiService();
   final ScrollController _scrollController = ScrollController();
 
-
   String _selectedSort = 'Recommended';
   final List<String> _sortOptions = [
     'Recommended',
@@ -197,8 +196,22 @@ class _HotelListPageState extends State<HotelListPage> {
           setState(() {
             isLoading = false;
             _isMoreLoading = false;
-            hasError = !isLoadMore;
-            errorMessage = response.message;
+
+            // Treat "No hotel codes found" or similar as an empty state, not a hard error
+            final lowerMsg = response.message.toLowerCase();
+            final isNoResults =
+                lowerMsg.contains('no hotel') ||
+                lowerMsg.contains('not found') ||
+                lowerMsg.contains('empty');
+
+            if (isNoResults && !isLoadMore) {
+              hasError = false;
+              hotels = [];
+              _totalHotels = 0;
+            } else {
+              hasError = !isLoadMore;
+              errorMessage = response.message;
+            }
           });
         }
       }
@@ -689,7 +702,11 @@ class _HotelListPageState extends State<HotelListPage> {
             border: InputBorder.none,
             suffixIcon: _searchQuery.isNotEmpty
                 ? IconButton(
-                    icon: Icon(Iconsax.close_circle, size: 18, color: textSecondary),
+                    icon: Icon(
+                      Iconsax.close_circle,
+                      size: 18,
+                      color: textSecondary,
+                    ),
                     onPressed: () {
                       setState(() {
                         _searchQuery = '';
@@ -882,56 +899,69 @@ class _HotelListPageState extends State<HotelListPage> {
   Widget _buildError() {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(40),
+        padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(28),
               decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.05),
+                color: const Color(0xFFFFF1F2),
                 shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFFFFE4E6), width: 8),
               ),
               child: const Icon(
                 Iconsax.info_circle,
-                size: 60,
-                color: Colors.redAccent,
+                size: 50,
+                color: Color(0xFFE11D48),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
             Text(
-              'Oops! Something went wrong',
+              'Search Failed',
               style: TextStyle(
-                fontSize: 20,
+                fontSize: 22,
                 fontWeight: FontWeight.w900,
                 color: textPrimary,
+                letterSpacing: -0.5,
               ),
             ),
             const SizedBox(height: 12),
-            Text(
-              errorMessage,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: textSecondary, height: 1.5),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: borderSoft),
+              ),
+              child: Text(
+                errorMessage,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: textSecondary,
+                  height: 1.5,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 40),
             SizedBox(
-              width: 160,
-              height: 54,
+              width: double.infinity,
+              height: 56,
               child: ElevatedButton(
                 onPressed: fetchHotels,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: maincolor1,
+                  foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                   elevation: 0,
                 ),
                 child: const Text(
-                  'Retry Search',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  'RETRY SEARCH',
+                  style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1),
                 ),
               ),
             ),
@@ -948,118 +978,154 @@ class _HotelListPageState extends State<HotelListPage> {
         _filterRating != null;
     final bool isSearching = _searchQuery.isNotEmpty;
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(40),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color:
-                    (isFiltered || isSearching ? Colors.orange : secondaryColor)
-                        .withOpacity(0.05),
-                shape: BoxShape.circle,
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(40, 80, 40, 40),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Icon with decorative background circles
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: 140,
+                    height: 140,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: (isFiltered || isSearching
+                              ? secondaryColor
+                              : maincolor1)
+                          .withOpacity(0.04),
+                    ),
+                  ),
+                  Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: (isFiltered || isSearching
+                              ? secondaryColor
+                              : maincolor1)
+                          .withOpacity(0.08),
+                    ),
+                  ),
+                  Icon(
+                    isSearching
+                        ? Iconsax.search_status
+                        : (isFiltered ? Iconsax.filter_remove : Iconsax.building),
+                    size: 60,
+                    color:
+                        isFiltered || isSearching ? secondaryColor : maincolor1,
+                  ),
+                ],
               ),
-              child: Icon(
+              const SizedBox(height: 40),
+              Text(
                 isSearching
-                    ? Iconsax.search_status
-                    : (isFiltered ? Iconsax.filter_remove : Iconsax.building_3),
-                size: 60,
-                color: isFiltered || isSearching ? Colors.orange : secondaryColor,
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              isSearching
-                  ? 'No Search Results'
-                  : (isFiltered ? 'No Matches Found' : 'No Hotels Found'),
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w900,
-                color: textPrimary,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              isSearching
-                  ? 'We couldn\'t find any hotels matching "$_searchQuery".'
-                  : (isFiltered
-                        ? 'Try relaxing your filters to see more results.'
-                        : 'We couldn\'t find any hotels matching your criteria in ${widget.cityName}.'),
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: textSecondary, height: 1.5),
-            ),
-            const SizedBox(height: 32),
-            if (isSearching)
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _searchQuery = '';
-                    _searchController.clear();
-                    _applyFilters();
-                  });
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: maincolor1,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 16,
-                  ),
-                ),
-                child: const Text(
-                  'Clear Search',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              )
-            else if (isFiltered)
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _filterMinPrice = null;
-                    _filterMaxPrice = null;
-                    _filterRating = null;
-                    _applyFilters();
-                  });
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: maincolor1,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 16,
-                  ),
-                ),
-                child: const Text(
-                  'Clear All Filters',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              )
-            else
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(
-                  'Modify Search',
-                  style: TextStyle(
-                    color: secondaryColor,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 16,
-                  ),
+                    ? 'No Results Found'
+                    : (isFiltered ? 'No Matches Found' : 'No Hotels Found'),
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w900,
+                  color: textPrimary,
+                  letterSpacing: -0.5,
                 ),
               ),
-          ],
+              const SizedBox(height: 16),
+              Text(
+                isSearching
+                    ? 'We couldn\'t find any hotels matching "$_searchQuery". Try a different name.'
+                    : (isFiltered
+                        ? 'None of your selected filters match our current hotel list in this city.'
+                        : 'Currently, there are no available hotels matching your search criteria in ${widget.cityName}.'),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: textSecondary,
+                  height: 1.5,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 48),
+
+              // Action Buttons
+              if (isSearching || isFiltered)
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        if (isSearching) {
+                          _searchQuery = '';
+                          _searchController.clear();
+                        }
+                        if (isFiltered) {
+                          _filterMinPrice = null;
+                          _filterMaxPrice = null;
+                          _filterRating = null;
+                        }
+                        _applyFilters();
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: maincolor1,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      isSearching ? 'CLEAR SEARCH' : 'CLEAR ALL FILTERS',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                  ),
+                )
+              else
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: maincolor1, width: 1.5),
+                      foregroundColor: maincolor1,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    child: const Text(
+                      'MODIFY SEARCH',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 16),
+              if (!isSearching && !isFiltered)
+                TextButton(
+                  onPressed: fetchHotels,
+                  child: Text(
+                    'RETRY',
+                    style: TextStyle(
+                      color: textSecondary,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -1224,7 +1290,11 @@ class _HotelListPageState extends State<HotelListPage> {
                     const SizedBox(height: 2),
                     Row(
                       children: [
-                        Icon(Iconsax.location5, color: secondaryColor, size: 14),
+                        Icon(
+                          Iconsax.location5,
+                          color: secondaryColor,
+                          size: 14,
+                        ),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(

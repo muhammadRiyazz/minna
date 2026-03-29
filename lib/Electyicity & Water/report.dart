@@ -1,9 +1,8 @@
-// lib/water_electricity/presentation/bill_payment_page.dart
-
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:intl/intl.dart';
 import 'package:minna/Electyicity%20&%20Water/application/bill%20report/bill_report_bloc.dart';
 import 'package:minna/Electyicity%20&%20Water/application/bill%20report/bill_report_event.dart';
 import 'package:minna/Electyicity%20&%20Water/application/bill%20report/bill_report_state.dart';
@@ -17,7 +16,7 @@ class BillPaymentPage extends StatefulWidget {
   const BillPaymentPage({
     super.key,
     required this.title,
-    this.billerCategory,
+    required this.billerCategory,
   });
 
   @override
@@ -25,6 +24,19 @@ class BillPaymentPage extends StatefulWidget {
 }
 
 class _BillPaymentPageState extends State<BillPaymentPage> {
+  // Theme Variables
+  final Color _primaryColor = maincolor1;
+  final Color _secondaryColor = secondaryColor;
+  final Color _backgroundColor = backgroundColor;
+  final Color _cardColor = cardColor;
+  final Color _textPrimary = textPrimary;
+  final Color _textSecondary = textSecondary;
+  final Color _textLight = textLight;
+  final Color _errorColor = errorColor;
+  final Color _successColor = const Color(0xFF0D9488);
+  final Color _warningColor = const Color(0xFFD97706);
+  final Color _borderColor = borderSoft;
+
   @override
   void initState() {
     super.initState();
@@ -40,27 +52,51 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: Column(
+    return Container(
+      color: _backgroundColor,
+      child: Column(
         children: [
           // Header
-          // _buildHeader(),
-          
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'RECENT TRANSACTIONS',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: _textLight,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                Text(
+                  DateFormat('MMM dd, yyyy').format(DateTime.now()),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: _secondaryColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
           // Transactions List
           Expanded(
             child: BlocBuilder<BillPaymentBloc, BillPaymentState>(
               builder: (context, state) {
-                if (state is BillPaymentInitial) {
-                  return _buildEmptyState('No bill payments found');
-                } else if (state is BillPaymentLoading) {
-                  return _buildLoadingState();
+                if (state is BillPaymentLoading) {
+                  return _buildShimmerLoading();
                 } else if (state is BillPaymentLoaded) {
                   return _buildTransactionsList(state.transactions);
-                } else if (state is BillPaymentEmpty) {
-                  return _buildEmptyState('No ${widget.billerCategory?.toLowerCase() ?? 'bill'} payments found');
-                } else if (state is BillPaymentError) {
-                  return _buildEmptyState('No bill payments found');
+                } else if (state is BillPaymentEmpty ||
+                    state is BillPaymentInitial ||
+                    state is BillPaymentError) {
+                  return _buildEmptyState(
+                    'No ${widget.title.toLowerCase()} found',
+                  );
                 } else {
                   return _buildEmptyState('No data available');
                 }
@@ -72,172 +108,59 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
     );
   }
 
-  Widget _buildHeader() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [maincolor1, maincolor1.withOpacity(0.8)],
-        ),
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(24),
-          bottomRight: Radius.circular(24),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            widget.title,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 8),
-          BlocBuilder<BillPaymentBloc, BillPaymentState>(
-            builder: (context, state) {
-              if (state is BillPaymentLoaded) {
-                return _buildStats(state.transactions);
-              } else {
-                return Text(
-                  'View your ${widget.billerCategory?.toLowerCase() ?? 'bill'} payment history',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.9),
-                    fontSize: 14,
-                  ),
-                );
-              }
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStats(List<BillPaymentModel> transactions) {
-    final total = transactions.length;
-    final successful = transactions.where((t) => 
-      t.billStatus.toLowerCase() == 'success').length;
-    final totalAmount = transactions.fold(0.0, (sum, transaction) {
-      return sum + (double.tryParse(transaction.txtAmount) ?? 0);
-    });
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        _buildStatItem('Total', '$total', Icons.receipt),
-        _buildStatItem('Success', '$successful', Icons.check_circle),
-        _buildStatItem('Amount', '₹${totalAmount.toStringAsFixed(2)}', Icons.currency_rupee),
-      ],
-    );
-  }
-
-  Widget _buildStatItem(String title, String value, IconData icon) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(icon, color: Colors.white, size: 20),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          value,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Text(
-          title,
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.9),
-            fontSize: 12,
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildTransactionsList(List<BillPaymentModel> transactions) {
-    return Column(
-      children: [ 
-        
-                  SizedBox(height: 10,),
+    if (transactions.isEmpty) return _buildEmptyState('No transactions found');
 
-        Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            '   Recent Transactions',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey[800],
-            ),
-          ),
-          // Text(
-          //   DateFormat('MMM dd, yyyy').format(DateTime.now()),
-          //   style: TextStyle(
-          //     fontSize: 14,
-          //     color: Colors.grey[600],
-          //   ),
-          // ),
-        ],
-      ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: ListView.builder(
-              itemCount: transactions.length,
-              itemBuilder: (context, index) {
-                return _buildTransactionCard(transactions[index]);
-              },
-            ),
-          ),
-        ),
-      ],
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      physics: const BouncingScrollPhysics(),
+      itemCount: transactions.length,
+      itemBuilder: (context, index) {
+        return _buildTransactionCard(transactions[index]);
+      },
     );
   }
 
   Widget _buildTransactionCard(BillPaymentModel transaction) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+    final isSuccess = transaction.billStatus.toLowerCase() == 'success';
+    final statusColor = isSuccess ? _successColor : _errorColor;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+        border: Border.all(color: _borderColor),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             // Header Row
             Row(
               children: [
-                // Status Icon
+                // Status Icon with background
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: transaction.statusColor.withOpacity(0.1),
+                    color: statusColor.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
-                    transaction.statusIcon,
-                    color: transaction.statusColor,
-                    size: 20,
+                    isSuccess ? Iconsax.tick_circle : Iconsax.close_circle,
+                    color: statusColor,
+                    size: 24,
                   ),
                 ),
-                const SizedBox(width: 12),
-                
+                const SizedBox(width: 16),
+
                 // Biller Info
                 Expanded(
                   child: Column(
@@ -245,49 +168,55 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
                     children: [
                       Text(
                         transaction.billerCategory,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          fontWeight: FontWeight.w800,
+                          color: _textPrimary,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Consumer: ${transaction.txtConsumer}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
+                        'Consumer ID: ${transaction.txtConsumer}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: _textSecondary,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
                   ),
                 ),
-                
+
                 // Amount
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      transaction.formattedAmount,
-                      style: const TextStyle(
+                      '₹${transaction.txtAmount}',
+                      style: TextStyle(
                         fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                        fontWeight: FontWeight.w900,
+                        color: _secondaryColor,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 6),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
-                        color: transaction.statusColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
+                        color: statusColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(100),
+                        border: Border.all(color: statusColor.withOpacity(0.2)),
                       ),
                       child: Text(
                         transaction.displayStatus.toUpperCase(),
                         style: TextStyle(
                           fontSize: 10,
-                          color: transaction.statusColor,
-                          fontWeight: FontWeight.w600,
+                          color: statusColor,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.5,
                         ),
                       ),
                     ),
@@ -295,18 +224,23 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
                 ),
               ],
             ),
-            
-            const SizedBox(height: 12),
-            const Divider(height: 1),
-            const SizedBox(height: 12),
-            
+
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              child: Divider(height: 1),
+            ),
+
             // Details Row
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildDetailItem('Mobile', transaction.mobile),
-                _buildDetailItem('Date', transaction.formattedDate),
-                _buildPaymentStatus(transaction),
+                _buildDetailItem('Mobile', transaction.mobile, Iconsax.mobile),
+                _buildDetailItem(
+                  'Date',
+                  transaction.formattedDate,
+                  Iconsax.calendar_1,
+                ),
+                _buildPaymentBadge(transaction),
               ],
             ),
           ],
@@ -315,75 +249,63 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
     );
   }
 
-  Widget _buildDetailItem(String title, String value) {
+  Widget _buildDetailItem(String title, String value, IconData icon) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Colors.grey,
-            fontWeight: FontWeight.w500,
-          ),
+        Row(
+          children: [
+            Icon(icon, size: 12, color: _textLight),
+            const SizedBox(width: 4),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 10,
+                color: _textLight,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 4),
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Colors.black87,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPaymentStatus(BillPaymentModel transaction) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        const Text(
-          'Payment',
           style: TextStyle(
             fontSize: 12,
-            color: Colors.grey,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: transaction.paymentStatusColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Text(
-            transaction.paymentStatusText,
-            style: TextStyle(
-              fontSize: 10,
-              color: transaction.paymentStatusColor,
-              fontWeight: FontWeight.w600,
-            ),
+            color: _textPrimary,
+            fontWeight: FontWeight.w800,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildLoadingState() {
-    return const Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+  Widget _buildPaymentBadge(BillPaymentModel transaction) {
+    final paySuccess = transaction.paymentStatus.toLowerCase() == 'success';
+    final payColor = paySuccess ? _successColor : _warningColor;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: payColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: payColor.withOpacity(0.2)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          CircularProgressIndicator(),
-          SizedBox(height: 16),
+          Icon(
+            paySuccess ? Iconsax.verify : Iconsax.info_circle,
+            size: 14,
+            color: payColor,
+          ),
+          const SizedBox(width: 6),
           Text(
-            'Loading bill payments...',
+            transaction.paymentStatusText.toUpperCase(),
             style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey,
+              fontSize: 10,
+              color: payColor,
+              fontWeight: FontWeight.w900,
             ),
           ),
         ],
@@ -391,65 +313,181 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
     );
   }
 
+  Widget _buildShimmerLoading() {
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      itemCount: 4,
+      itemBuilder: (context, index) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          decoration: BoxDecoration(
+            color: _cardColor,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: _borderColor),
+          ),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  _buildShimmerCircle(size: 48),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildShimmerBox(width: 120, height: 16),
+                        const SizedBox(height: 8),
+                        _buildShimmerBox(width: 100, height: 12),
+                      ],
+                    ),
+                  ),
+                  _buildShimmerBox(width: 60, height: 32, radius: 20),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const Divider(height: 1),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildShimmerBox(width: 80, height: 24, radius: 8),
+                  _buildShimmerBox(width: 80, height: 24, radius: 8),
+                  _buildShimmerBox(width: 60, height: 24, radius: 8),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildShimmerBox({
+    required double width,
+    required double height,
+    double radius = 4,
+  }) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(radius),
+      ),
+    );
+  }
+
+  Widget _buildShimmerCircle({required double size}) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        shape: BoxShape.circle,
+      ),
+    );
+  }
+
   Widget _buildEmptyState(String message) {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.receipt_long,
-              size: 80,
-              color: Colors.grey[400],
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(30),
+            decoration: BoxDecoration(
+              color: _secondaryColor.withOpacity(0.1),
+              shape: BoxShape.circle,
             ),
-            const SizedBox(height: 16),
-            Text(
-              message,
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
+            child: Icon(Iconsax.receipt_2, color: _secondaryColor, size: 48),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'No History',
+            style: TextStyle(
+              color: _textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            message,
+            style: TextStyle(
+              color: _textSecondary,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 32),
+          ElevatedButton.icon(
+            onPressed: _fetchBillPayments,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _primaryColor,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
-              textAlign: TextAlign.center,
             ),
-          ],
-        ),
+            icon: const Icon(Iconsax.refresh, size: 18),
+            label: const Text(
+              'Refresh',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildErrorState(String message) {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: 80,
-              color: Colors.red[400],
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: _errorColor.withOpacity(0.1),
+              shape: BoxShape.circle,
             ),
-            const SizedBox(height: 16),
-            Text(
-              message,
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.red,
+            child: Icon(Iconsax.danger, color: _errorColor, size: 48),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Failed to Load Data',
+            style: TextStyle(
+              color: _textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            message,
+            style: TextStyle(color: _textSecondary, fontSize: 14),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton.icon(
+            onPressed: _fetchBillPayments,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _primaryColor,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
-              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _fetchBillPayments,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: maincolor1,
-                foregroundColor: Colors.white,
-              ),
-              child: const Text('Try Again'),
+            icon: const Icon(Iconsax.refresh, size: 18),
+            label: const Text(
+              'Try Again',
+              style: TextStyle(fontWeight: FontWeight.w700),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

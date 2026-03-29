@@ -419,261 +419,406 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
         return StatefulBuilder(
           builder: (context, setModalState) {
             return Container(
-              height: MediaQuery.of(context).size.height * 0.9,
+              height: MediaQuery.of(context).size.height * 0.95,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: _backgroundColor,
                 borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(28),
+                  top: Radius.circular(32),
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 20,
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 30,
                     spreadRadius: 0,
+                    offset: const Offset(0, -5),
                   ),
                 ],
               ),
               child: Column(
                 children: [
-                  const SizedBox(height: 12),
-
-                  // Header
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(28),
+                  // Premium Drag Handle
+                  Center(
+                    child: Container(
+                      margin: const EdgeInsets.only(top: 12, bottom: 8),
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(2),
                       ),
                     ),
+                  ),
+
+                  // Enhanced Header
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(10, 5, 15, 15),
                     child: Row(
                       children: [
                         IconButton(
-                          icon: Icon(Iconsax.arrow_left, color: _textPrimary),
+                          icon: Icon(
+                            Iconsax.arrow_left_2,
+                            color: _primaryColor,
+                            size: 22,
+                          ),
                           onPressed: () => Navigator.pop(context),
                         ),
-                        const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             _getLocationFieldTitle(fieldType, multiCityIndex),
                             style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: _textPrimary,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w900,
+                              color: _primaryColor,
+                              letterSpacing: -0.5,
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 6),
 
-                  // Current Location Button
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: GestureDetector(
-                      onTap: () => _getCurrentLocation(
-                        setModalState,
-                        fieldType,
-                        multiCityIndex,
-                      ),
-                      child: Container(
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          color: _secondaryColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: _secondaryColor.withOpacity(0.3),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(Iconsax.gps, color: _secondaryColor, size: 24),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                  Expanded(
+                    child: ListView(
+                      physics: const BouncingScrollPhysics(),
+                      children: [
+                        // Redesigned Current Location Card
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: GestureDetector(
+                            onTap: () => _getCurrentLocation(
+                              setModalState,
+                              fieldType,
+                              multiCityIndex,
+                            ),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              padding: const EdgeInsets.all(18),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    _secondaryColor.withOpacity(0.08),
+                                    _secondaryColor.withOpacity(0.02),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(20),
+                                // border: Border.all(
+                                //   color: _secondaryColor.withOpacity(0.2),
+                                //   width: 1.5,
+                                // ),
+                              ),
+                              child: Row(
                                 children: [
-                                  Text(
-                                    'Use Current Location',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: _secondaryColor.withOpacity(0.15),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      Iconsax.gps,
                                       color: _secondaryColor,
+                                      size: 20,
                                     ),
                                   ),
-                                  Text(
-                                    'Get your current location automatically',
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: _secondaryColor.withOpacity(0.7),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'USE CURRENT LOCATION',
+                                          style: TextStyle(
+                                            fontSize: 8,
+                                            fontWeight: FontWeight.w900,
+                                            color: _secondaryColor,
+                                            letterSpacing: 1,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'Quickly pick your precise location',
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            color: _textPrimary.withOpacity(
+                                              0.6,
+                                            ),
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
+                                  if (_isGettingCurrentLocation)
+                                    SizedBox(
+                                      width: 22,
+                                      height: 22,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2.5,
+                                        color: _secondaryColor,
+                                      ),
+                                    )
+                                  else
+                                    Icon(
+                                      Iconsax.arrow_right_3,
+                                      color: _secondaryColor.withOpacity(0.5),
+                                      size: 18,
+                                    ),
                                 ],
                               ),
                             ),
-                            if (_isGettingCurrentLocation)
-                              SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: _secondaryColor,
+                          ),
+                        ),
+
+                        const SizedBox(height: 10),
+
+                        // OR Divider with Premium Style
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Divider(
+                                  color: Colors.grey.withOpacity(0.2),
+                                  thickness: 1,
                                 ),
                               ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Divider
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Divider(color: Colors.grey[300], thickness: 1),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            'OR',
-                            style: TextStyle(
-                              color: _textLight,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Divider(color: Colors.grey[300], thickness: 1),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  // Search Bar
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 5,
-                      horizontal: 15,
-                    ),
-                    child: TextField(
-                      controller: _searchController,
-                      decoration: InputDecoration(
-                        hintText: 'Search for a place...',
-                        hintStyle: TextStyle(color: _textLight),
-                        prefixIcon: Icon(
-                          Iconsax.search_normal_1,
-                          color: _secondaryColor,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide(color: Colors.grey.shade300),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide(
-                            color: _secondaryColor,
-                            width: 2,
-                          ),
-                        ),
-                        filled: true,
-                        fillColor: _backgroundColor,
-                      ),
-                      onChanged: (query) {
-                        if (query.length > 2) {
-                          _searchPlaces(query, setModalState);
-                        } else {
-                          setModalState(() {
-                            _searchResults.clear();
-                            _isSearching = false;
-                          });
-                        }
-                      },
-                    ),
-                  ),
-
-                  // Search Results
-                  Expanded(
-                    child: _isSearching
-                        ? Center(
-                            child: CircularProgressIndicator(
-                              color: _secondaryColor,
-                            ),
-                          )
-                        : _searchResults.isEmpty
-                        ? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Iconsax.location,
-                                  size: 64,
-                                  color: Colors.grey[300],
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
                                 ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  _searchController.text.isEmpty
-                                      ? 'Search for places'
-                                      : 'No results found',
+                                child: Text(
+                                  'OR SEARCH PLACE',
                                   style: TextStyle(
                                     color: _textLight,
-                                    fontSize: 16,
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 10,
+                                    letterSpacing: 1.5,
                                   ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Divider(
+                                  color: Colors.grey.withOpacity(0.2),
+                                  thickness: 1,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 10),
+
+                        // Modernized Search Bar
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.03),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 5),
                                 ),
                               ],
                             ),
-                          )
-                        : ListView.builder(
-                            padding: const EdgeInsets.only(bottom: 10),
-                            itemCount: _searchResults.length,
-                            itemBuilder: (context, index) {
-                              final place = _searchResults[index];
-                              return ListTile(
-                                // contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                                leading: Container(
-                                  width: 44,
-                                  height: 44,
-                                  decoration: BoxDecoration(
-                                    color: _secondaryColor.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(12),
+                            child: TextField(
+                              controller: _searchController,
+                              style: TextStyle(
+                                color: _textPrimary,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
+                              ),
+                              decoration: InputDecoration(
+                                hintText: 'Where to go?',
+                                hintStyle: TextStyle(
+                                  color: _textLight.withOpacity(0.6),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                prefixIcon: Icon(
+                                  Iconsax.search_normal_1,
+                                  color: _secondaryColor,
+                                  size: 20,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: BorderSide.none,
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey.withOpacity(0.1),
+                                    width: 1,
                                   ),
-                                  child: Icon(
-                                    Iconsax.location,
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: BorderSide(
+                                    color: _secondaryColor.withOpacity(0.5),
+                                    width: 1.5,
+                                  ),
+                                ),
+                                filled: true,
+                                fillColor: Colors.white,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 18,
+                                ),
+                              ),
+                              onChanged: (query) {
+                                if (query.length > 2) {
+                                  _searchPlaces(query, setModalState);
+                                } else {
+                                  setModalState(() {
+                                    _searchResults.clear();
+                                    _isSearching = false;
+                                  });
+                                }
+                              },
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // Search Results or Empty State
+                        _isSearching
+                            ? Padding(
+                                padding: const EdgeInsets.only(top: 40),
+                                child: Center(
+                                  child: CircularProgressIndicator(
                                     color: _secondaryColor,
-                                    size: 20,
+                                    strokeWidth: 3,
                                   ),
                                 ),
-                                title: Text(
-                                  place['description'] ?? '',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    color: _textPrimary,
-                                  ),
+                              )
+                            : _searchResults.isEmpty
+                            ? Padding(
+                                padding: const EdgeInsets.only(top: 60),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(24),
+                                      decoration: BoxDecoration(
+                                        color: _secondaryColor.withOpacity(
+                                          0.05,
+                                        ),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        Iconsax.location_add,
+                                        size: 48,
+                                        color: _secondaryColor.withOpacity(0.3),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      _searchController.text.isEmpty
+                                          ? 'Enter a destination to search'
+                                          : 'No matches found',
+                                      style: TextStyle(
+                                        color: _textLight,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                subtitle: place['structured_formatting'] != null
-                                    ? Text(
-                                        place['structured_formatting']['secondary_text'] ??
-                                            '',
+                              )
+                            : ListView.separated(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                padding: const EdgeInsets.fromLTRB(
+                                  20,
+                                  0,
+                                  20,
+                                  30,
+                                ),
+                                itemCount: _searchResults.length,
+                                separatorBuilder: (context, index) =>
+                                    const SizedBox(height: 6),
+                                itemBuilder: (context, index) {
+                                  final place = _searchResults[index];
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(
+                                        color: Colors.grey.withOpacity(0.05),
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.01),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: ListTile(
+                                      contentPadding: const EdgeInsets.all(8),
+                                      leading: Container(
+                                        width: 48,
+                                        height: 48,
+                                        decoration: BoxDecoration(
+                                          color: _primaryColor.withOpacity(
+                                            0.05,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            14,
+                                          ),
+                                        ),
+                                        child: Icon(
+                                          Iconsax.location,
+                                          color: _primaryColor,
+                                          size: 22,
+                                        ),
+                                      ),
+                                      title: Text(
+                                        place['description'] ?? '',
                                         style: TextStyle(
-                                          color: _textSecondary,
+                                          fontWeight: FontWeight.w800,
+                                          color: _primaryColor,
                                           fontSize: 12,
                                         ),
-                                      )
-                                    : null,
-                                onTap: () {
-                                  _selectPlace(
-                                    place,
-                                    fieldType,
-                                    multiCityIndex,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      subtitle:
+                                          place['structured_formatting'] != null
+                                          ? Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 4,
+                                              ),
+                                              child: Text(
+                                                place['structured_formatting']['secondary_text'] ??
+                                                    '',
+                                                style: TextStyle(
+                                                  color: _textSecondary
+                                                      .withOpacity(0.7),
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            )
+                                          : null,
+                                      onTap: () {
+                                        _selectPlace(
+                                          place,
+                                          fieldType,
+                                          multiCityIndex,
+                                        );
+                                        Navigator.pop(context);
+                                      },
+                                    ),
                                   );
-                                  Navigator.pop(context);
                                 },
-                              );
-                            },
-                          ),
+                              ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -1865,12 +2010,12 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Colors.black.withOpacity(0.02),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: _secondaryColor.withOpacity(0.15),
-                width: 1,
-              ),
+              // border: Border.all(
+              //   color: _secondaryColor.withOpacity(0.15),
+              //   width: 1,
+              // ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.02),
@@ -1887,13 +2032,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                     color: _secondaryColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(
-                    Iconsax.car,
-                    color: _selectedCabTypes.isNotEmpty
-                        ? _secondaryColor
-                        : _textLight,
-                    size: 24,
-                  ),
+                  child: Icon(Iconsax.car, color: maincolor1, size: 24),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -1903,7 +2042,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                       Text(
                         'Vehicle Type',
                         style: TextStyle(
-                          fontSize: 10,
+                          fontSize: 8,
                           color: _textLight,
                           fontWeight: FontWeight.w600,
                         ),
@@ -1916,11 +2055,9 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                   .join(", ")
                             : 'Select your preferred vehicle(s)',
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 10,
                           fontWeight: FontWeight.w700,
-                          color: _selectedCabTypes.isNotEmpty
-                              ? _textPrimary
-                              : _textLight,
+                          color: maincolor1,
                         ),
                       ),
                     ],
@@ -2038,9 +2175,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
-                      color: controller.text.isEmpty
-                          ? _textLight
-                          : _primaryColor,
+                      color: _primaryColor,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

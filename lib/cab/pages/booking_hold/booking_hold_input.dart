@@ -8,6 +8,7 @@ import 'package:minna/cab/pages/payment%20page/payment.dart';
 import 'package:minna/comman/application/login/login_bloc.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/pages/log%20in/login_page.dart';
+import 'package:iconsax/iconsax.dart';
 
 class BookingPage extends StatefulWidget {
   final CabRate selectedCab;
@@ -25,10 +26,10 @@ class BookingPage extends StatefulWidget {
 
 class _BookingPageState extends State<BookingPage> {
   final _formKey = GlobalKey<FormState>();
-  
+
   // Only India country code
   final String countryCode = '+91';
-  
+
   String _firstName = '';
   String _lastName = '';
   String _primaryPhone = '';
@@ -54,6 +55,7 @@ class _BookingPageState extends State<BookingPage> {
   final Color _textPrimary = textPrimary;
   final Color _textSecondary = textSecondary;
   final Color _textLight = textLight;
+  final Color _borderColor = borderSoft;
   final Color _errorColor = errorColor;
   final Color _successColor = const Color(0xFF0D9488);
 
@@ -104,7 +106,8 @@ class _BookingPageState extends State<BookingPage> {
       if (t.contains("compact") && t.contains("value")) {
         return 1;
       }
-      if (t.contains("compact") && (t.contains("cng") || t.contains("economy"))) {
+      if (t.contains("compact") &&
+          (t.contains("cng") || t.contains("economy"))) {
         return 72;
       }
       if (t.contains("suv") && t.contains("value")) {
@@ -164,15 +167,15 @@ class _BookingPageState extends State<BookingPage> {
             "coordinates": {
               "latitude": route["source"]["coordinates"]["latitude"],
               "longitude": route["source"]["coordinates"]["longitude"],
-            }
+            },
           },
           "destination": {
             "address": route["destination"]["address"] ?? "",
             "coordinates": {
               "latitude": route["destination"]["coordinates"]["latitude"],
               "longitude": route["destination"]["coordinates"]["longitude"],
-            }
-          }
+            },
+          },
         });
       }
     }
@@ -182,10 +185,7 @@ class _BookingPageState extends State<BookingPage> {
       "referenceId": "tttt",
       "tripType": req["tripType"],
       "cabType": getCabTypeId(cab.cab.type),
-      "fare": {
-        "advanceReceived": 0,
-        "totalAmount": cab.fare.totalAmount ?? 0,
-      },
+      "fare": {"advanceReceived": 0, "totalAmount": cab.fare.totalAmount ?? 0},
       "sendEmail": 1,
       "sendSms": 1,
       "routes": routes,
@@ -201,7 +201,9 @@ class _BookingPageState extends State<BookingPage> {
 
   void _showCustomSnackbar(String message, {bool isError = false}) {
     final color = isError ? _errorColor : _successColor;
-    final icon = isError ? Icons.error_outline_rounded : Icons.check_circle_rounded;
+    final icon = isError
+        ? Icons.error_outline_rounded
+        : Icons.check_circle_rounded;
 
     final snackBar = SnackBar(
       margin: const EdgeInsets.fromLTRB(16, 20, 16, 10),
@@ -216,7 +218,10 @@ class _BookingPageState extends State<BookingPage> {
           Expanded(
             child: Text(
               message,
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],
@@ -244,7 +249,11 @@ class _BookingPageState extends State<BookingPage> {
             backgroundColor: _primaryColor,
             elevation: 0,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+              icon: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
               onPressed: () => Navigator.pop(context),
             ),
             flexibleSpace: FlexibleSpaceBar(
@@ -305,76 +314,100 @@ class _BookingPageState extends State<BookingPage> {
 
   Widget _buildCabCard(CabRate cab) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
         color: _cardColor,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
+            color: _primaryColor.withOpacity(0.08),
+            blurRadius: 30,
+            offset: const Offset(0, 12),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.01),
+            blurRadius: 2,
+            offset: const Offset(0, 2),
           ),
         ],
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(color: _primaryColor.withOpacity(0.05)),
       ),
       child: Row(
         children: [
           // Car Image
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: _backgroundColor,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: _primaryColor.withOpacity(0.03)),
             ),
-            height: 70,
-            width: 85,
+            height: 85,
+            width: 100,
             child: cab.cab.image.isNotEmpty
                 ? ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(20),
                     child: Image.network(
                       cab.cab.image,
                       fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) => 
-                          Icon(Icons.directions_car_rounded, size: 30, color: _secondaryColor),
+                      errorBuilder: (context, error, stackTrace) => Icon(
+                        Icons.directions_car_rounded,
+                        size: 36,
+                        color: _secondaryColor.withOpacity(0.5),
+                      ),
                     ),
                   )
-                : Icon(Icons.directions_car_rounded, size: 30, color: _secondaryColor),
+                : Icon(
+                    Icons.directions_car_rounded,
+                    size: 36,
+                    color: _secondaryColor.withOpacity(0.5),
+                  ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 20),
 
           // Cab Info
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  cab.cab.category.toUpperCase(),
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w800,
-                    color: _secondaryColor,
-                    letterSpacing: 1,
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: _secondaryColor.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    cab.cab.category.toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w900,
+                      color: _secondaryColor,
+                      letterSpacing: 1,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 8),
                 Text(
                   cab.cab.model,
                   style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: _textPrimary,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                    color: _primaryColor,
+                    letterSpacing: -0.5,
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 10),
                 Row(
                   children: [
-                    Icon(Icons.person_outline_rounded, size: 12, color: _textSecondary),
-                    const SizedBox(width: 4),
-                    Text(
+                    _buildCompactSpec(
+                      Icons.person_outline_rounded,
                       "${cab.cab.seatingCapacity} Seats",
-                      style: TextStyle(fontSize: 11, color: _textSecondary, fontWeight: FontWeight.w600),
                     ),
+                    const SizedBox(width: 12),
+                    _buildCompactSpec(Icons.work_outline_rounded, "Luggage"),
                   ],
                 ),
               ],
@@ -382,6 +415,24 @@ class _BookingPageState extends State<BookingPage> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildCompactSpec(IconData icon, String label) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 14, color: _textSecondary),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: _textSecondary,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      ],
     );
   }
 
@@ -414,103 +465,116 @@ class _BookingPageState extends State<BookingPage> {
 
   Widget _buildPassengerInfoForm() {
     return Container(
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: _cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 20,
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 25,
             offset: const Offset(0, 4),
           ),
         ],
+        border: Border.all(color: _primaryColor.withOpacity(0.04)),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(15),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              // Name Row
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildTextFormField(
-                      label: "First Name",
-                      prefixIcon: Icons.person_outline_rounded,
-                      validator: (v) => v!.isEmpty ? "Required" : null,
-                      onChanged: (value) => _firstName = value,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _buildTextFormField(
-                      label: "Last Name",
-                      validator: (v) => v!.isEmpty ? "Required" : null,
-                      onChanged: (value) => _lastName = value,
-                    ),
-                  ),
-                ],
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Full Name Section
+            Text(
+              'Full Name',
+              style: TextStyle(
+                color: _textSecondary,
+                fontWeight: FontWeight.w500,
+                fontSize: 10,
               ),
-              const SizedBox(height: 16),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildTextFormField(
+                    label: "First Name",
+                    prefixIcon: Iconsax.user,
+                    validator: (v) => v!.isEmpty ? "Required" : null,
+                    onChanged: (value) => _firstName = value,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildTextFormField(
+                    label: "Last Name",
+                    prefixIcon: Iconsax.user,
+                    validator: (v) => v!.isEmpty ? "Required" : null,
+                    onChanged: (value) => _lastName = value,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
 
-              // Primary Phone Row
-              Row(
-                children: [
-                  // Country Code (Fixed +91)
-                  SizedBox(
-                    width: 80,
-                    child: _buildCountryCodeField(countryCode),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _buildTextFormField(
-                      label: "Primary Phone",
-                      prefixIcon: Icons.phone_rounded,
-                      keyboardType: TextInputType.phone,
-                      validator: (v) => v!.isEmpty ? "Required" : null,
-                      onChanged: (value) => _primaryPhone = value,
-                    ),
-                  ),
-                ],
+            // Contact Information Section
+            Text(
+              'Contact Information',
+              style: TextStyle(
+                color: _textSecondary,
+                fontWeight: FontWeight.w500,
+                fontSize: 10,
               ),
-              const SizedBox(height: 16),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                // Country Code (Fixed +91)
+                SizedBox(width: 80, child: _buildCountryCodeField(countryCode)),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _buildTextFormField(
+                    label: "Primary Phone",
+                    prefixIcon: Iconsax.mobile,
+                    keyboardType: TextInputType.phone,
+                    validator: (v) => v!.isEmpty ? "Required" : null,
+                    onChanged: (value) => _primaryPhone = value,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
 
-              // Alternate Phone Row
-              Row(
-                children: [
-                  // Country Code (Fixed +91)
-                  SizedBox(
-                    width: 80,
-                    child: _buildCountryCodeField(countryCode),
+            Row(
+              children: [
+                // Country Code (Fixed +91)
+                SizedBox(width: 80, child: _buildCountryCodeField(countryCode)),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _buildTextFormField(
+                    label: "Alternate Phone",
+                    prefixIcon: Iconsax.call,
+                    keyboardType: TextInputType.phone,
+                    onChanged: (value) => _alternatePhone = value,
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _buildTextFormField(
-                      label: "Alternate Phone (Optional)",
-                      prefixIcon: Icons.phone_rounded,
-                      keyboardType: TextInputType.phone,
-                      onChanged: (value) => _alternatePhone = value,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
 
-              // Email Field
-              _buildTextFormField(
-                label: "Email",
-                prefixIcon: Icons.email_rounded,
-                keyboardType: TextInputType.emailAddress,
-                validator: (v) {
-                  if (v!.isEmpty) return "Required";
-                  if (!v.contains('@')) return "Invalid email";
-                  return null;
-                },
-                onChanged: (value) => _email = value,
-              ),
-            ],
-          ),
+            // Email Field
+            _buildTextFormField(
+              label: "Email Address",
+              prefixIcon: Iconsax.sms,
+              keyboardType: TextInputType.emailAddress,
+              validator: (v) {
+                if (v!.isEmpty) return "Email is required";
+                if (!RegExp(r'\S+@\S+\.\S+').hasMatch(v))
+                  return "Invalid email format";
+                return null;
+              },
+              onChanged: (value) => _email = value,
+            ),
+          ],
         ),
       ),
     );
@@ -519,8 +583,9 @@ class _BookingPageState extends State<BookingPage> {
   Widget _buildCountryCodeField(String code) {
     return Container(
       decoration: BoxDecoration(
-        color: _backgroundColor,
+        color: _cardColor,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: borderSoft, width: 1.5),
       ),
       child: TextFormField(
         initialValue: code,
@@ -528,99 +593,206 @@ class _BookingPageState extends State<BookingPage> {
         textAlign: TextAlign.center,
         decoration: InputDecoration(
           labelText: "CODE",
-          labelStyle: TextStyle(color: _textLight, fontSize: 10, fontWeight: FontWeight.w800),
+          labelStyle: TextStyle(
+            fontSize: 9,
+            color: _textSecondary,
+            fontWeight: FontWeight.w500,
+          ),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 16),
+          contentPadding: const EdgeInsets.symmetric(vertical: 15),
           isDense: true,
         ),
-        style: TextStyle(fontSize: 14, color: _textPrimary, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          fontSize: 14,
+          color: _textPrimary,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }
 
   Widget _buildAdditionalInfoSection() {
     return Container(
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: _cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 20,
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 25,
             offset: const Offset(0, 4),
           ),
         ],
+        border: Border.all(color: _primaryColor.withOpacity(0.03)),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            _buildTextFormField(
-              label: "Special Instructions",
-              prefixIcon: Icons.note_alt_rounded,
-              maxLines: 2,
-              onChanged: (value) => _specialInstructions = value,
+      child: Column(
+        children: [
+          _buildTextFormField(
+            label: "Special Instructions",
+            prefixIcon: Iconsax.note_21,
+            maxLines: 2,
+            onChanged: (value) => _specialInstructions = value,
+          ),
+          const SizedBox(height: 24),
+
+          // Counters Selection Card
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: _backgroundColor,
+              borderRadius: BorderRadius.circular(20),
             ),
-            const SizedBox(height: 16),
-            _buildTextFormField(
-              label: "No. of Persons",
-              prefixIcon: Icons.people_alt_rounded,
-              keyboardType: TextInputType.number,
-              initialValue: _numPersons.toString(),
-              onChanged: (value) => _numPersons = int.tryParse(value) ?? 1,
-            ),
-            const SizedBox(height: 16),
-            Row(
+            child: Column(
               children: [
-                Expanded(
-                  child: _buildTextFormField(
-                    label: "Large Bags",
-                    prefixIcon: Icons.work_outline_rounded,
-                    keyboardType: TextInputType.number,
-                    initialValue: _numLargeBags.toString(),
-                    onChanged: (value) => _numLargeBags = int.tryParse(value) ?? 0,
-                  ),
+                _buildNumericSelector(
+                  label: "Number of Persons",
+                  value: _numPersons,
+                  icon: Iconsax.user_tick,
+                  onChanged: (v) => setState(() => _numPersons = v),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildTextFormField(
-                    label: "Small Bags",
-                    prefixIcon: Icons.work_outlined,
-                    keyboardType: TextInputType.number,
-                    initialValue: _numSmallBags.toString(),
-                    onChanged: (value) => _numSmallBags = int.tryParse(value) ?? 0,
-                  ),
+                const Divider(height: 24),
+                _buildNumericSelector(
+                  label: "Large Bags",
+                  value: _numLargeBags,
+                  icon: Iconsax.bag_2,
+                  onChanged: (v) => setState(() => _numLargeBags = v),
+                ),
+                const Divider(height: 24),
+                _buildNumericSelector(
+                  label: "Small Bags",
+                  value: _numSmallBags,
+                  icon: Iconsax.bag_tick,
+                  onChanged: (v) => setState(() => _numSmallBags = v),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            Divider(height: 1, color: Colors.grey.shade200),
-            const SizedBox(height: 16),
-            _buildSwitchTile(
-              title: "Carrier Required",
-              value: _carrierRequired,
-              icon: Icons.luggage_rounded,
-              onChanged: (value) => setState(() => _carrierRequired = value),
+          ),
+
+          const SizedBox(height: 24),
+
+          // Toggle Services Row (Wrap for responsiveness)
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: [
+              _buildServiceToggle(
+                "Kids",
+                _kidsTravelling,
+                (v) => setState(() => _kidsTravelling = v),
+              ),
+              _buildServiceToggle(
+                "Carrier",
+                _carrierRequired,
+                (v) => setState(() => _carrierRequired = v),
+              ),
+              _buildServiceToggle(
+                "Senior Citizen",
+                _seniorCitizenTravelling,
+                (v) => setState(() => _seniorCitizenTravelling = v),
+              ),
+              _buildServiceToggle(
+                "Woman",
+                _womanTravelling,
+                (v) => setState(() => _womanTravelling = v),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNumericSelector({
+    required String label,
+    required int value,
+    required IconData icon,
+    required Function(int) onChanged,
+  }) {
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: _secondaryColor),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: _textPrimary,
             ),
-            _buildSwitchTile(
-              title: "Kids Travelling",
-              value: _kidsTravelling,
-              icon: Icons.child_care_rounded,
-              onChanged: (value) => setState(() => _kidsTravelling = value),
+          ),
+        ),
+        Row(
+          children: [
+            _buildIconButton(
+              Icons.remove_rounded,
+              () => value > 0 ? onChanged(value - 1) : null,
             ),
-            _buildSwitchTile(
-              title: "Senior Citizen",
-              value: _seniorCitizenTravelling,
-              icon: Icons.elderly_rounded,
-              onChanged: (value) => setState(() => _seniorCitizenTravelling = value),
+            SizedBox(
+              width: 40,
+              child: Text(
+                "$value",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w900,
+                  color: _primaryColor,
+                ),
+              ),
             ),
-            _buildSwitchTile(
-              title: "Woman Travelling",
-              value: _womanTravelling,
-              icon: Icons.female_rounded,
-              onChanged: (value) => setState(() => _womanTravelling = value),
-            ),
+            _buildIconButton(Icons.add_rounded, () => onChanged(value + 1)),
           ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildIconButton(IconData icon, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: _primaryColor.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(icon, size: 20, color: _primaryColor),
+      ),
+    );
+  }
+
+  Widget _buildServiceToggle(
+    String label,
+    bool value,
+    Function(bool) onChanged,
+  ) {
+    return GestureDetector(
+      onTap: () => onChanged(!value),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: value ? _primaryColor : _backgroundColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: value ? _primaryColor : _primaryColor.withOpacity(0.1),
+          ),
+          boxShadow: value
+              ? [
+                  BoxShadow(
+                    color: _primaryColor.withOpacity(0.2),
+                    blurRadius: 8,
+                  ),
+                ]
+              : null,
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w800,
+            color: value ? Colors.white : _textPrimary,
+          ),
         ),
       ),
     );
@@ -651,18 +823,8 @@ class _BookingPageState extends State<BookingPage> {
 
         return SizedBox(
           width: double.infinity,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: _primaryColor,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 18),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              elevation: 2,
-              shadowColor: _secondaryColor.withOpacity(0.3),
-            ),
-            onPressed: isLoading
+          child: GestureDetector(
+            onTap: isLoading
                 ? null
                 : () async {
                     if (_formKey.currentState!.validate()) {
@@ -670,36 +832,69 @@ class _BookingPageState extends State<BookingPage> {
                       if (bookingData.isEmpty) return;
                       log(bookingData.toString());
                       context.read<HoldCabBloc>().add(
-                            HoldCabEvent.holdCab(requestData: bookingData),
-                          );
+                        HoldCabEvent.holdCab(requestData: bookingData),
+                      );
                     } else {
-                      _showCustomSnackbar('Please fill all required fields', isError: true);
+                      _showCustomSnackbar(
+                        'Please fill all required fields',
+                        isError: true,
+                      );
                     }
                   },
-            child: isLoading
-                ? SizedBox(
-                    height: 24,
-                    width: 24,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
-                    ),
-                  )
-                : Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.arrow_forward_rounded, size: 20),
-                      const SizedBox(width: 12),
-                      Text(
-                        "CONFIRM BOOKING",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.5,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: isLoading
+                      ? [Colors.grey.shade400, Colors.grey.shade600]
+                      : [_primaryColor, const Color(0xFF004D9D)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: isLoading
+                    ? null
+                    : [
+                        BoxShadow(
+                          color: _primaryColor.withOpacity(0.35),
+                          blurRadius: 15,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: isLoading
+                  ? Center(
+                      child: SizedBox(
+                        height: 24,
+                        width: 24,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2.5,
                         ),
                       ),
-                    ],
-                  ),
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Text(
+                          "CONFIRM BOOKING",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                        SizedBox(width: 12),
+                        Icon(
+                          Icons.arrow_forward_rounded,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+            ),
           ),
         );
       },
@@ -707,8 +902,8 @@ class _BookingPageState extends State<BookingPage> {
   }
 
   Widget _buildTextFormField({
-    String? label,
-    IconData? prefixIcon,
+    required String label,
+    required IconData prefixIcon,
     TextInputType? keyboardType,
     String? initialValue,
     int maxLines = 1,
@@ -719,21 +914,56 @@ class _BookingPageState extends State<BookingPage> {
       initialValue: initialValue,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(color: _textLight, fontSize: 12, fontWeight: FontWeight.w600),
-        prefixIcon: prefixIcon != null
-            ? Icon(prefixIcon, color: _secondaryColor, size: 20)
-            : null,
+        labelStyle: TextStyle(
+          fontSize: 10,
+          color: _textSecondary,
+          fontWeight: FontWeight.w500,
+        ),
+        floatingLabelStyle: TextStyle(
+          color: _secondaryColor,
+          fontWeight: FontWeight.bold,
+        ),
         filled: true,
-        fillColor: _backgroundColor,
-        border: _outlineInputBorder(Colors.transparent),
-        enabledBorder: _outlineInputBorder(Colors.transparent),
-        focusedBorder: _outlineInputBorder(_secondaryColor),
-        errorBorder: _outlineInputBorder(_errorColor),
-        focusedErrorBorder: _outlineInputBorder(_errorColor),
-        contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        fillColor: _cardColor,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 15,
+          vertical: 15,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: _borderColor, width: 1.5),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: _borderColor, width: 1.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: _secondaryColor, width: 1),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(
+            color: _errorColor.withOpacity(0.5),
+            width: 1.5,
+          ),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: _errorColor, width: 2),
+        ),
+        prefixIcon: Container(
+          padding: const EdgeInsets.all(10),
+          margin: const EdgeInsets.only(right: 5),
+          child: Icon(prefixIcon, color: _primaryColor, size: 16),
+        ),
         isDense: true,
       ),
-      style: TextStyle(fontSize: 14, color: _textPrimary, fontWeight: FontWeight.w600),
+      style: TextStyle(
+        fontSize: 12,
+        color: _textPrimary,
+        fontWeight: FontWeight.bold,
+      ),
       keyboardType: keyboardType,
       maxLines: maxLines,
       validator: validator,
@@ -741,7 +971,11 @@ class _BookingPageState extends State<BookingPage> {
     );
   }
 
-  Widget _buildInfoItem({required IconData icon, required String text, Color? textColor}) {
+  Widget _buildInfoItem({
+    required IconData icon,
+    required String text,
+    Color? textColor,
+  }) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -777,7 +1011,11 @@ class _BookingPageState extends State<BookingPage> {
       ),
       title: Text(
         title,
-        style: TextStyle(fontSize: 15, color: _textPrimary, fontWeight: FontWeight.w500),
+        style: TextStyle(
+          fontSize: 15,
+          color: _textPrimary,
+          fontWeight: FontWeight.w500,
+        ),
       ),
       trailing: Switch(
         value: value,
@@ -785,13 +1023,6 @@ class _BookingPageState extends State<BookingPage> {
         activeThumbColor: _secondaryColor,
         activeTrackColor: _secondaryColor.withOpacity(0.5),
       ),
-    );
-  }
-
-  OutlineInputBorder _outlineInputBorder([Color color = Colors.grey]) {
-    return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(16),
-      borderSide: BorderSide(color: color.withOpacity(0.5), width: 1.5),
     );
   }
 }

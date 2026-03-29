@@ -2,32 +2,22 @@ part of 'hotel_booking_confirm_bloc.dart';
 
 @freezed
 class HotelBookingConfirmEvent with _$HotelBookingConfirmEvent {
-  const factory HotelBookingConfirmEvent.paymentDone({
-    required String orderId,
-    required String transactionId,
-    required String bookingId,
+  const factory HotelBookingConfirmEvent.createOrder({
+    required String userId,
+    required Map<String, dynamic> bookingPayload,
     required double amount,
-    required String prebookId,
-    required Map<String, dynamic> bookingRequest,
-  }) = _PaymentDone;
+    required double serviceCharge,
+  }) = _CreateOrder;
 
-  const factory HotelBookingConfirmEvent.paymentFail({
+  const factory HotelBookingConfirmEvent.verifyPayment({
+    required String paymentId,
     required String orderId,
-    required String prebookId,
-    required String bookingId,
-  }) = _PaymentFail;
+    required String signature,
+    required String traceId,
+    required String tokenId,
+  }) = _VerifyPayment;
 
-  const factory HotelBookingConfirmEvent.initiateRefund({
-    required String orderId,
-    required String transactionId,
-    required double amount,
-
-        required String booktableId,
-
-    required String bookingId,
-  }) = _InitiateRefund;
-
+  const factory HotelBookingConfirmEvent.reset() = _Reset;
   const factory HotelBookingConfirmEvent.startLoading() = _StartLoading;
-  
   const factory HotelBookingConfirmEvent.stopLoading() = _StopLoading;
 }

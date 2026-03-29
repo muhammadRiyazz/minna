@@ -15,7 +15,6 @@ import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:minna/comman/application/login/login_bloc.dart';
 import 'package:minna/comman/pages/log%20in/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:minna/hotel%20booking/functions/hotel_payment_utils.dart';
 import 'package:minna/hotel%20booking/functions/auth.dart';
 
 class HotelBookingConfirmationPage extends StatefulWidget {
@@ -71,10 +70,15 @@ class _HotelBookingConfirmationPageState
   // Service Charge
   double _serviceChargePercentage = 0.0;
   final AuthApiService _apiService = AuthApiService();
+  late HotelBookingConfirmBloc _confirmBloc;
 
   @override
   void initState() {
     super.initState();
+    _confirmBloc = context.read<HotelBookingConfirmBloc>();
+    _confirmBloc.add(
+      const HotelBookingConfirmEvent.reset(),
+    );
     context.read<LoginBloc>().add(const LoginEvent.loginInfo());
     _startOptimizedTimer();
     _initRazorpay();
@@ -100,6 +104,9 @@ class _HotelBookingConfirmationPageState
   void dispose() {
     _timer.cancel();
     _razorpay.clear();
+    _confirmBloc.add(
+      const HotelBookingConfirmEvent.reset(),
+    );
     super.dispose();
   }
 
@@ -136,74 +143,30 @@ class _HotelBookingConfirmationPageState
   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
-    log("Hotel Payment Success: ${response.paymentId}");
+    log("Hotel Payment Success Callback: ${response.paymentId}");
 
-    try {
-      context.read<HotelBookingConfirmBloc>().add(
-        HotelBookingConfirmEvent.startLoading(),
-      );
-
-      final bookingRequest = await _generateBookingRequest();
-      final totalAmount = _getTotalAmount();
-
-      // NEW: Verify payment before proceeding
-      log("🔹 Verifying Hotel Payment...");
-      final isVerified = await verifyHotelRazorpayPayment(
+    context.read<HotelBookingConfirmBloc>().add(
+      HotelBookingConfirmEvent.verifyPayment(
         paymentId: response.paymentId ?? '',
         orderId: response.orderId ?? _orderId ?? '',
         signature: response.signature ?? '',
-        traceId: "", // As per current implementation logic
+        traceId: "",
         tokenId: widget.preBookResponse.token,
-      );
-
-      if (!isVerified) {
-        log("❌ Hotel Payment Verification Failed");
-        context.read<HotelBookingConfirmBloc>().add(
-          HotelBookingConfirmEvent.stopLoading(),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text(
-              "Payment verification failed. Please contact support.",
-            ),
-            backgroundColor: _errorColor,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-        return;
-      }
-
-      log("✅ Hotel Payment Verified. Proceeding to book...");
-
-      context.read<HotelBookingConfirmBloc>().add(
-        HotelBookingConfirmEvent.paymentDone(
-          prebookId: widget.prebookId,
-          orderId: response.orderId ?? _orderId ?? '',
-          transactionId: response.paymentId ?? '',
-          bookingId: widget.bookingId,
-          amount: totalAmount,
-          bookingRequest: bookingRequest,
-        ),
-      );
-
-      _timer.cancel();
-    } catch (e) {
-      log("Error in payment success handler: $e");
-      context.read<HotelBookingConfirmBloc>().add(
-        HotelBookingConfirmEvent.stopLoading(),
-      );
-    }
+      ),
+    );
+    _timer.cancel();
   }
 
   void _handlePaymentError(PaymentFailureResponse response) async {
-    log("Hotel Payment Failed: ${response.message}");
-
+    log("Hotel Payment Failed Callback: ${response.message}");
     context.read<HotelBookingConfirmBloc>().add(
-      HotelBookingConfirmEvent.paymentFail(
-        orderId: _orderId ?? '',
-        prebookId: widget.prebookId,
-        bookingId: widget.bookingId,
-      ),
+      const HotelBookingConfirmEvent.stopLoading(),
+    );
+    // Error View will handle this via Bloc state if we emit error,
+    // but Razorpay cancellation is usually just a stop loading or a specific error emit.
+    // For now, let's just show an error state in the Bloc.
+    context.read<HotelBookingConfirmBloc>().add(
+      const HotelBookingConfirmEvent.reset(), // Reset to initial to allow retry
     );
   }
 
@@ -294,7 +257,7 @@ class _HotelBookingConfirmationPageState
     );
   }
 
-  double _getTotalAmount() {
+  double _getBaseAmount() {
     final preBookRoom = widget
         .preBookResponse
         .preBookResponse
@@ -302,22 +265,22 @@ class _HotelBookingConfirmationPageState
         .firstOrNull
         ?.rooms
         .firstOrNull;
-
-    double baseAmount;
     if (preBookRoom != null) {
-      // This returns the base amount (room fare + taxes)
-      baseAmount = preBookRoom.totalFare + preBookRoom.totalTax;
-    } else {
-      // Fallback to widget.room data
-      baseAmount = widget.room.totalFare + widget.room.totalTax;
+      return preBookRoom.totalFare + preBookRoom.totalTax;
     }
+    return widget.room.totalFare + widget.room.totalTax;
+  }
 
+  double _calculateServiceCharge(double baseAmount) {
     if (_serviceChargePercentage > 0) {
-      final serviceCharge = (baseAmount * _serviceChargePercentage) / 100;
-      return baseAmount + serviceCharge;
+      return (baseAmount * _serviceChargePercentage) / 100;
     }
+    return 0.0;
+  }
 
-    return baseAmount;
+  double _getTotalAmount() {
+    final baseAmount = _getBaseAmount();
+    return baseAmount + _calculateServiceCharge(baseAmount);
   }
 
   // Add a new method to get just the net amount (room fare without taxes)
@@ -493,6 +456,15 @@ class _HotelBookingConfirmationPageState
   }
 
   Future<bool> _onWillPop() async {
+    // If we're already in a success state, we don't need a confirmation dialog
+    final currentState = _confirmBloc.state;
+    if (currentState is HotelBookingConfirmSuccess) {
+      if (context.mounted) {
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      }
+      return false;
+    }
+
     final shouldExit = await showModalBottomSheet<bool>(
       context: context,
       backgroundColor: Colors.transparent,
@@ -596,7 +568,10 @@ class _HotelBookingConfirmationPageState
     return shouldExit ?? false;
   }
 
-  void _onProceedToPayment() async {
+  void _onProceedToPayment({
+    required double totalAmount,
+    required double serviceChargeAmount,
+  }) async {
     final isLoggedIn = context.read<LoginBloc>().state.isLoggedIn ?? false;
 
     if (!isLoggedIn) {
@@ -607,184 +582,69 @@ class _HotelBookingConfirmationPageState
         builder: (context) => const LoginBottomSheet(login: 1),
       );
 
-      // Re-check login status after bottom sheet is closed
       final newLoginState = context.read<LoginBloc>().state;
-      if (newLoginState.isLoggedIn != true) {
-        return;
-      }
+      if (newLoginState.isLoggedIn != true) return;
     }
 
     if (_isTimerExpired) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Booking time has expired. Please try again."),
-          backgroundColor: _errorColor,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-      );
+      _showErrorDialog("Booking time has expired. Please try again.");
       return;
     }
 
-    context.read<HotelBookingConfirmBloc>().add(
-      HotelBookingConfirmEvent.startLoading(),
-    );
-
     try {
-      // Get the TOTAL amount (room fare + taxes) for Razorpay
-      final totalAmount = _getTotalAmount();
-      final netAmount = _getNetAmount();
-      final totalRooms = widget.roomPassengers?.length ?? 1;
-      final isSingleRoom = totalRooms == 1;
-
-      // 1. Get User ID
       SharedPreferences preferences = await SharedPreferences.getInstance();
       final userId = preferences.getString('userId') ?? '';
-
-      // 2. Get Service Charge
-      double serviceChargeAmount = 0;
-      final baseAmountForServiceCharge =
-          widget
-                  .preBookResponse
-                  .preBookResponse
-                  .hotelResult
-                  .firstOrNull
-                  ?.rooms
-                  .firstOrNull !=
-              null
-          ? (widget
-                    .preBookResponse
-                    .preBookResponse
-                    .hotelResult
-                    .firstOrNull!
-                    .rooms
-                    .firstOrNull!
-                    .totalFare +
-                widget
-                    .preBookResponse
-                    .preBookResponse
-                    .hotelResult
-                    .firstOrNull!
-                    .rooms
-                    .firstOrNull!
-                    .totalTax)
-          : (widget.room.totalFare + widget.room.totalTax);
-
-      if (_serviceChargePercentage > 0) {
-        serviceChargeAmount =
-            (baseAmountForServiceCharge * _serviceChargePercentage) / 100;
-        log(
-          "✅ Using state service charge: $_serviceChargePercentage% -> $serviceChargeAmount",
-        );
-      } else {
-        try {
-          final chargeResult = await _apiService.getServiceCharge();
-          if (chargeResult.isSuccess && chargeResult.data != null) {
-            final percentage = chargeResult.data!.percentage;
-            serviceChargeAmount =
-                (baseAmountForServiceCharge * percentage) / 100;
-            log(
-              "✅ Fetched service charge in payment: $percentage% -> $serviceChargeAmount",
-            );
-          }
-        } catch (e) {
-          log("⚠️ Could not fetch service charge, using 0: $e");
-        }
-      }
-
-      // 3. Generate Booking Payload
       final bookingPayload = await _generateBookingRequest();
 
-      // 4. Create Order using Hotel-specific API
-      final orderData = await createHotelRazorpayOrder(
-        userId: userId,
-        bookingPayload: bookingPayload,
-        amount: totalAmount,
-        serviceCharge: serviceChargeAmount,
-      );
-
-      if (orderData == null) {
-        log("Order ID creation failed");
-        context.read<HotelBookingConfirmBloc>().add(
-          HotelBookingConfirmEvent.stopLoading(),
-        );
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text("Failed to create order. Please try again."),
-            backgroundColor: _errorColor,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-        );
-        return;
-      }
-
-      final orderId = orderData['order_id']?.toString();
-      if (orderId == null) {
-        log("Invalid order data received");
-        context.read<HotelBookingConfirmBloc>().add(
-          HotelBookingConfirmEvent.stopLoading(),
-        );
-        return;
-      }
-
-      setState(() {
-        _orderId = orderId;
-      });
-
-      final leadPassenger = _getLeadPassenger();
-      final name =
-          "${leadPassenger['Title']} ${leadPassenger['FirstName']} ${leadPassenger['LastName']}"
-              .trim();
-      final phone = leadPassenger['Phone'] ?? leadPassenger['Phoneno'] ?? '';
-      final email = leadPassenger['Email'] ?? '';
-
-      var options = {
-        'key': razorpaykey,
-        'amount': (totalAmount * 100)
-            .toInt(), // Charge TOTAL amount (with taxes)
-        'name': 'MT Hotels',
-        'order_id': orderId,
-        'description': 'Hotel Booking - ${widget.hotel.hotelDetails.hotelName}',
-        'prefill': {'contact': phone, 'email': email, 'name': name},
-        'theme': {'color': '#000000'},
-      };
-
-      try {
-        _razorpay.open(options);
-      } catch (e) {
-        log("Razorpay Error: $e");
-        context.read<HotelBookingConfirmBloc>().add(
-          HotelBookingConfirmEvent.stopLoading(),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Payment error: ${e.toString()}"),
-            backgroundColor: _errorColor,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-        );
-      }
-    } catch (e) {
-      log("Error in payment process: $e");
       context.read<HotelBookingConfirmBloc>().add(
-        HotelBookingConfirmEvent.stopLoading(),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("An error occurred: ${e.toString()}"),
-          backgroundColor: _errorColor,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        HotelBookingConfirmEvent.createOrder(
+          userId: userId,
+          bookingPayload: bookingPayload,
+          amount: totalAmount,
+          serviceCharge: serviceChargeAmount,
         ),
       );
+    } catch (e) {
+      log("Error initiating payment: $e");
+      _showErrorDialog("Failed to prepare booking. Please try again.");
     }
+  }
+
+  void _openRazorpay(Map<String, dynamic> orderData, double totalAmount) {
+    _orderId = orderData['order_id']?.toString();
+    final leadPassenger = _getLeadPassenger();
+    final name =
+        "${leadPassenger['Title'] ?? 'Mr.'} ${leadPassenger['FirstName'] ?? ''} ${leadPassenger['LastName'] ?? ''}"
+            .trim();
+    final phone = leadPassenger['Phone'] ?? leadPassenger['Phoneno'] ?? '';
+    final email = leadPassenger['Email'] ?? '';
+
+    var options = {
+      'key': razorpaykey,
+      'amount': (totalAmount * 100).toInt(),
+      'name': 'MT Hotels',
+      'order_id': _orderId,
+      'description': 'Hotel Booking - ${widget.hotel.hotelDetails.hotelName}',
+      'prefill': {'contact': phone, 'email': email, 'name': name},
+      'theme': {'color': '#002855'}, // Deep Ocean Blue
+    };
+
+    try {
+      _razorpay.open(options);
+    } catch (e) {
+      log("Razorpay Open Error: $e");
+      _showErrorDialog("Could not open payment gateway.");
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      builder: (context) => _buildErrorViewContent(
+        message,
+      ), // Using the full-screen view as a template or just show it via Bloc
+    );
   }
 
   Map<String, dynamic> _getLeadPassenger() {
@@ -856,61 +716,76 @@ class _HotelBookingConfirmationPageState
   Widget build(BuildContext context) {
     final totalAmount = _getTotalAmount();
 
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<HotelBookingConfirmBloc, HotelBookingConfirmState>(
-          listener: (context, state) {
-            // state.maybeWhen(
-            //   paymentFail: (orderId, prebookId, bookingId) {
-            //     _showPaymentFailedSheet();
-            //   },
-            //   serverError: () {
-            //     _showServerErrorBottomSheet(context);
-            //   },
-            //   orElse: () {},
-            // );
+    return BlocConsumer<HotelBookingConfirmBloc, HotelBookingConfirmState>(
+      listener: (context, state) {
+        state.maybeWhen(
+          orderCreated: (orderData) => _openRazorpay(orderData, totalAmount),
+          orElse: () {},
+        );
+      },
+      builder: (context, state) {
+        return PopScope(
+          canPop: false,
+          onPopInvoked: (didPop) async {
+            if (didPop) return;
+
+            // 1. If Booking Successful -> Go back to Home
+            if (state is HotelBookingConfirmSuccess) {
+              if (context.mounted) {
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              }
+              return;
+            }
+
+            // 2. If Loading -> DON'T ALLOW BACK
+            if (state is HotelBookingConfirmLoading) {
+              return;
+            }
+
+            // 3. Otherwise -> Normal confirm exit
+            final shouldExit = await _onWillPop();
+            if (shouldExit && context.mounted) {
+              Navigator.of(context).pop();
+            }
           },
-        ),
-      ],
-      child: PopScope(
-        canPop: false,
-        onPopInvoked: (didPop) async {
-          if (didPop) return;
-          final shouldExit = await _onWillPop();
-          if (shouldExit && context.mounted) {
-            Navigator.of(context).pop();
-          }
-        },
-        child: Scaffold(
-          backgroundColor: _backgroundColor,
-          body: CustomScrollView(
-            physics: const BouncingScrollPhysics(),
-            slivers: [
-              _buildAppBar(),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      _buildTimerSection(),
-                      const SizedBox(height: 16),
-                      _buildHotelSummaryCard(),
-                      const SizedBox(height: 16),
-                      _buildRoomInfoCard(),
-                      const SizedBox(height: 16),
-                      _buildPassengerSummaryCard(),
-                      const SizedBox(height: 16),
-                      _buildPriceDetailedCard(totalAmount),
-                      const SizedBox(height: 120), // Spacing for bottom bar
-                    ],
+          child: state.maybeWhen(
+            success: (data) => _buildSuccessViewContent(data),
+            error: (message, data) => _buildErrorViewContent(message),
+            orElse: () => Scaffold(
+              backgroundColor: _backgroundColor,
+              body: CustomScrollView(
+                physics: const BouncingScrollPhysics(),
+                slivers: [
+                  _buildAppBar(),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
+                          _buildTimerSection(),
+                          const SizedBox(height: 16),
+                          _buildHotelSummaryCard(),
+                          const SizedBox(height: 16),
+                          _buildRoomInfoCard(),
+                          const SizedBox(height: 16),
+                          _buildPassengerSummaryCard(),
+                          const SizedBox(height: 16),
+                          _buildPriceDetailedCard(totalAmount),
+                          const SizedBox(height: 120),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
+              bottomNavigationBar: _buildBottomActionBar(
+                totalAmount,
+                state is HotelBookingConfirmLoading,
+              ),
+            ),
           ),
-          bottomNavigationBar: _buildBottomActionBar(totalAmount),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -1142,76 +1017,76 @@ class _HotelBookingConfirmationPageState
     );
   }
 
-  Widget _buildPriceBreakdown(PreBookRoom? preBookRoom) {
-    final totalAmount = _getTotalAmount();
-    final roomFare = preBookRoom?.totalFare ?? widget.room.totalFare;
-    final roomTax = preBookRoom?.totalTax ?? widget.room.totalTax;
-    final baseAmountForServiceCharge = roomFare + roomTax;
-    final serviceChargeAmount = (_serviceChargePercentage > 0)
-        ? (baseAmountForServiceCharge * _serviceChargePercentage) / 100
-        : 0.0;
+  // Widget _buildPriceBreakdown(PreBookRoom? preBookRoom) {
+  //   final totalAmount = _getTotalAmount();
+  //   final roomFare = preBookRoom?.totalFare ?? widget.room.totalFare;
+  //   final roomTax = preBookRoom?.totalTax ?? widget.room.totalTax;
+  //   final baseAmountForServiceCharge = roomFare + roomTax;
+  //   final serviceChargeAmount = (_serviceChargePercentage > 0)
+  //       ? (baseAmountForServiceCharge * _serviceChargePercentage) / 100
+  //       : 0.0;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: _cardColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 12,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildSectionHeader('Price Breakdown', Icons.receipt_long_rounded),
-            SizedBox(height: 16),
-            _buildPriceRow('Room Fare', roomFare),
-            SizedBox(height: 8),
-            _buildPriceRow('Taxes & Fees', roomTax),
-            SizedBox(height: 8),
-            _buildPriceRow('Service Charge', serviceChargeAmount),
-            Divider(height: 20, color: Colors.grey.shade300),
-            _buildPriceRow('Total Amount', totalAmount, isTotal: true),
-            SizedBox(height: 12),
-            if (preBookRoom?.isRefundable == true)
-              Container(
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: _successColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: _successColor.withOpacity(0.3)),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.check_circle_rounded,
-                      color: _successColor,
-                      size: 20,
-                    ),
-                    SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'Fully Refundable - Free cancellation available',
-                        style: TextStyle(
-                          color: _successColor,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
+  //   return Container(
+  //     decoration: BoxDecoration(
+  //       color: _cardColor,
+  //       borderRadius: BorderRadius.circular(16),
+  //       boxShadow: [
+  //         BoxShadow(
+  //           color: Colors.black.withOpacity(0.08),
+  //           blurRadius: 12,
+  //           offset: Offset(0, 4),
+  //         ),
+  //       ],
+  //     ),
+  //     child: Padding(
+  //       padding: EdgeInsets.all(20),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           _buildSectionHeader('Price Breakdown', Icons.receipt_long_rounded),
+  //           SizedBox(height: 16),
+  //           _buildPriceRow('Room Fare', roomFare),
+  //           SizedBox(height: 8),
+  //           _buildPriceRow('Taxes & Fees', roomTax),
+  //           SizedBox(height: 8),
+  //           _buildPriceRow('Service Charge', serviceChargeAmount),
+  //           Divider(height: 20, color: Colors.grey.shade300),
+  //           _buildPriceRow('Total Amount', totalAmount, isTotal: true),
+  //           SizedBox(height: 12),
+  //           if (preBookRoom?.isRefundable == true)
+  //             Container(
+  //               padding: EdgeInsets.all(16),
+  //               decoration: BoxDecoration(
+  //                 color: _successColor.withOpacity(0.1),
+  //                 borderRadius: BorderRadius.circular(12),
+  //                 border: Border.all(color: _successColor.withOpacity(0.3)),
+  //               ),
+  //               child: Row(
+  //                 children: [
+  //                   Icon(
+  //                     Icons.check_circle_rounded,
+  //                     color: _successColor,
+  //                     size: 20,
+  //                   ),
+  //                   SizedBox(width: 12),
+  //                   Expanded(
+  //                     child: Text(
+  //                       'Fully Refundable - Free cancellation available',
+  //                       style: TextStyle(
+  //                         color: _successColor,
+  //                         fontSize: 14,
+  //                         fontWeight: FontWeight.w500,
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _buildCancellationPolicy(PreBookRoom preBookRoom) {
     String formatPolicyDate(String dateString) {
@@ -1492,7 +1367,13 @@ class _HotelBookingConfirmationPageState
                       ? null
                       : () {
                           // _showServerErrorBottomSheet(context);
-                          _onProceedToPayment();
+                          final baseAmount = _getBaseAmount();
+                          final calculatedServiceCharge =
+                              _calculateServiceCharge(baseAmount);
+                          _onProceedToPayment(
+                            totalAmount: totalAmount,
+                            serviceChargeAmount: calculatedServiceCharge,
+                          );
                         },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _isTimerExpired
@@ -1895,7 +1776,7 @@ class _HotelBookingConfirmationPageState
             color: Colors.white,
             size: 20,
           ),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => _onWillPop(),
         ),
       ),
       flexibleSpace: FlexibleSpaceBar(
@@ -2223,6 +2104,9 @@ class _HotelBookingConfirmationPageState
   }
 
   Widget _buildPriceDetailedCard(double totalAmount) {
+    final baseAmount = _getBaseAmount();
+    final serviceChargeAmount = _calculateServiceCharge(baseAmount);
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -2243,12 +2127,20 @@ class _HotelBookingConfirmationPageState
             '₹${widget.room.totalFare.toStringAsFixed(2)}',
             Colors.white70,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           _buildSummaryPriceRow(
             'Taxes & Fees',
             '₹${widget.room.totalTax.toStringAsFixed(2)}',
             Colors.white70,
           ),
+          const SizedBox(height: 8),
+
+          _buildSummaryPriceRow(
+            'Service Charge',
+            serviceChargeAmount.toStringAsFixed(2),
+            Colors.white70,
+          ),
+
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 16),
             child: Divider(color: Colors.white24),
@@ -2296,7 +2188,7 @@ class _HotelBookingConfirmationPageState
     );
   }
 
-  Widget _buildBottomActionBar(double totalAmount) {
+  Widget _buildBottomActionBar(double totalAmount, bool isLoading) {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
       decoration: BoxDecoration(
@@ -2336,7 +2228,18 @@ class _HotelBookingConfirmationPageState
           Expanded(
             flex: 2,
             child: ElevatedButton(
-              onPressed: _onProceedToPayment,
+              onPressed: isLoading
+                  ? null
+                  : () {
+                      final baseAmount = _getBaseAmount();
+                      final calculatedServiceCharge = _calculateServiceCharge(
+                        baseAmount,
+                      );
+                      _onProceedToPayment(
+                        totalAmount: totalAmount,
+                        serviceChargeAmount: calculatedServiceCharge,
+                      );
+                    },
               style: ElevatedButton.styleFrom(
                 backgroundColor: _secondaryColor,
                 foregroundColor: Colors.white,
@@ -2346,20 +2249,502 @@ class _HotelBookingConfirmationPageState
                 ),
                 elevation: 0,
               ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: isLoading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Confirm & Pay',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Icon(Icons.arrow_forward_rounded, size: 20),
+                      ],
+                    ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSuccessViewContent(Map<String, dynamic> response) {
+    final data = response['data'] ?? {};
+    final hotelName = data['hotel_name'] ?? widget.hotel.hotelDetails.hotelName;
+    final confNo = data['confirmation_no'] ?? 'N/A';
+    final checkIn = data['check_in'] ?? '';
+    final checkOut = data['check_out'] ?? '';
+    final double totalAmount =
+        double.tryParse(data['total_amount']?.toString() ?? '0') ?? 0.0;
+    final bookingId = data['booking_id']?.toString() ?? '';
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8FAFC),
+      body: Stack(
+        children: [
+          // Background Gradient decoration
+          Positioned(
+            top: -100,
+            right: -100,
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: const Color(0xFF002855).withOpacity(0.05),
+              ),
+            ),
+          ),
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              child: Column(
                 children: [
-                  Text(
-                    'Confirm & Pay',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  const SizedBox(height: 40),
+                  // Success Header
+                  Center(
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.green.withOpacity(0.2),
+                                blurRadius: 20,
+                                spreadRadius: 5,
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.check_circle_rounded,
+                            size: 80,
+                            color: Colors.green,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        const Text(
+                          'Booking Confirmed!',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w900,
+                            color: Color(0xFF002855),
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Your reservation at $hotelName is all set.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.blueGrey[600],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  SizedBox(width: 8),
-                  Icon(Icons.arrow_forward_rounded, size: 20),
+                  const SizedBox(height: 48),
+
+                  // Ticket Layout
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.06),
+                          blurRadius: 24,
+                          offset: const Offset(0, 12),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        // Top part of ticket
+                        Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    'VOUCHER DETAILS',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w800,
+                                      color: Color(0xFF94A3B8),
+                                      letterSpacing: 1.5,
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(
+                                        0xFF002855,
+                                      ).withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: const Text(
+                                      'PAID',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w900,
+                                        color: Color(0xFF002855),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 20),
+                              _buildTicketRow('Booking ID', '#$bookingId'),
+                              const SizedBox(height: 12),
+                              _buildTicketRow(
+                                'Confirmation No',
+                                confNo,
+                                isBold: true,
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // DASHED LINE with circular cutouts
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 12,
+                              height: 24,
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF8FAFC),
+                                  borderRadius: const BorderRadius.only(
+                                    topRight: Radius.circular(12),
+                                    bottomRight: Radius.circular(12),
+                                  ),
+                                  border: Border.all(
+                                    color: Colors.black.withOpacity(0.05),
+                                    width: 0.5,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                ),
+                                child: LayoutBuilder(
+                                  builder: (context, constraints) {
+                                    return Flex(
+                                      direction: Axis.horizontal,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: List.generate(
+                                        (constraints.constrainWidth() / 10)
+                                            .floor(),
+                                        (index) => SizedBox(
+                                          width: 5,
+                                          height: 1,
+                                          child: DecoratedBox(
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey[300],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 12,
+                              height: 24,
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF8FAFC),
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(12),
+                                    bottomLeft: Radius.circular(12),
+                                  ),
+                                  border: Border.all(
+                                    color: Colors.black.withOpacity(0.05),
+                                    width: 0.5,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        // Bottom part of ticket
+                        Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _buildInfoItem(
+                                      'CHECK-IN',
+                                      checkIn,
+                                      Icons.login_rounded,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: _buildInfoItem(
+                                      'CHECK-OUT',
+                                      checkOut,
+                                      Icons.logout_rounded,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const Divider(height: 48, thickness: 0.5),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    'Total Amount Paid',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF64748B),
+                                    ),
+                                  ),
+                                  Text(
+                                    '₹${(totalAmount.toStringAsFixed(2))}',
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w900,
+                                      color: Color(0xFF002855),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 60),
+                  // Actions
+                  Column(
+                    children: [
+                      _buildActionButton('GO TO MY BOOKINGS', () {
+                        // Navigate to bookings page logic
+                        Navigator.of(
+                          context,
+                        ).popUntil((route) => route.isFirst);
+                      }, isPrimary: true),
+                      const SizedBox(height: 16),
+                      _buildActionButton(
+                        'BACK TO HOME',
+                        () => Navigator.of(
+                          context,
+                        ).popUntil((route) => route.isFirst),
+                        isPrimary: false,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 40),
                 ],
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTicketRow(String label, String value, {bool isBold = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF64748B),
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: isBold ? FontWeight.w800 : FontWeight.w600,
+            color: const Color(0xFF1E293B),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInfoItem(String label, String value, IconData icon) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, size: 14, color: const Color(0xFF94A3B8)),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF94A3B8),
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF1E293B),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildErrorViewContent(String message) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Spacer(),
+              Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF1F2),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: const Color(0xFFFFE4E6), width: 8),
+                ),
+                child: const Icon(
+                  Icons.sentiment_dissatisfied_rounded,
+                  size: 60,
+                  color: Color(0xFFE11D48),
+                ),
+              ),
+              const SizedBox(height: 40),
+              const Text(
+                'Something Went Wrong',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFF002855),
+                  letterSpacing: -0.5,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                ),
+                child: Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.blueGrey[700],
+                    height: 1.6,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+              const Text(
+                'If your money was debited, it will be refunded automatically within 5-7 working days.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Color(0xFF64748B),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const Spacer(),
+              _buildActionButton('TRY AGAIN', () {
+                context.read<HotelBookingConfirmBloc>().add(
+                  const HotelBookingConfirmEvent.reset(),
+                );
+              }),
+              const SizedBox(height: 16),
+              _buildActionButton('CONTACT SUPPORT', () {
+                // Navigate to support logic
+              }, isPrimary: false),
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionButton(
+    String label,
+    VoidCallback onPressed, {
+    bool isPrimary = true,
+  }) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isPrimary ? const Color(0xFF002855) : Colors.white,
+          foregroundColor: isPrimary ? Colors.white : const Color(0xFF002855),
+          side: isPrimary
+              ? null
+              : const BorderSide(color: Color(0xFF002855), width: 1.5),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 18),
+          elevation: isPrimary ? 2 : 0,
+        ),
+        onPressed: onPressed,
+        child: Text(
+          label,
+          style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1),
+        ),
       ),
     );
   }

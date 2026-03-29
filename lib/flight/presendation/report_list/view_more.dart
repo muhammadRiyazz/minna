@@ -1,5 +1,5 @@
-// screens/flight_all_reports_page.dart
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:minna/flight/domain/report/report_model.dart';
@@ -9,18 +9,24 @@ import 'package:minna/comman/const/const.dart';
 class FlightAllReportsPage extends StatefulWidget {
   final List<ReportData> allReports;
 
-  const FlightAllReportsPage({
-    super.key,
-    required this.allReports,
-  });
+  const FlightAllReportsPage({super.key, required this.allReports});
 
   @override
   State<FlightAllReportsPage> createState() => _FlightAllReportsPageState();
 }
 
 class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
-  // Theme Colors
-  final Color _accentColor = secondaryColor;
+  // Theme Variables
+  final Color _primaryColor = maincolor1;
+  final Color _secondaryColor = secondaryColor;
+  final Color _backgroundColor = backgroundColor;
+  final Color _cardColor = cardColor;
+  final Color _textPrimary = textPrimary;
+  final Color _textSecondary = textSecondary;
+  final Color _textLight = textLight;
+  final Color _errorColor = errorColor;
+  final Color _successColor = const Color(0xFF0D9488);
+  final Color _borderColor = borderSoft;
 
   final TextEditingController _searchController = TextEditingController();
   String _startDate = '';
@@ -35,14 +41,18 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
   void initState() {
     super.initState();
     final now = DateTime.now();
-    _startDate = DateFormat('yyyy-MM-dd').format(now.subtract(Duration(days: 30)));
+    _startDate = DateFormat(
+      'yyyy-MM-dd',
+    ).format(now.subtract(const Duration(days: 30)));
     _endDate = DateFormat('yyyy-MM-dd').format(now);
     _originalReports = _getValidReports();
     _filteredReports = _originalReports;
   }
 
   List<ReportData> _getValidReports() {
-    return widget.allReports.where((report) => report.response != null).toList();
+    return widget.allReports
+        .where((report) => report.response != null)
+        .toList();
   }
 
   void _onSearchChanged(String query) {
@@ -63,7 +73,9 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
   void _clearDateFilter() {
     setState(() {
       final now = DateTime.now();
-      _startDate = DateFormat('yyyy-MM-dd').format(now.subtract(Duration(days: 30)));
+      _startDate = DateFormat(
+        'yyyy-MM-dd',
+      ).format(now.subtract(const Duration(days: 30)));
       _endDate = DateFormat('yyyy-MM-dd').format(now);
       _isDateFilterActive = false;
       _originalReports = _getValidReports();
@@ -74,19 +86,27 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
   void _applySearchFilter() {
     List<ReportData> filteredList = List.from(_originalReports);
 
-    // Apply search filter if active
     if (_isSearchActive && _searchController.text.isNotEmpty) {
       final query = _searchController.text.toLowerCase();
-      filteredList = filteredList.where((report) => 
-          (report.pnr?.toLowerCase().contains(query) ?? false) ||
-          (report.bookingId.toLowerCase().contains(query)) ||
-          (report.response?.journey.flightOption.flightLegs.any((leg) => 
-            leg.origin.toLowerCase().contains(query) || 
-            leg.destination.toLowerCase().contains(query)) ?? false) ||
-          (report.response?.passengers.any((passenger) => 
-            passenger.firstName.toLowerCase().contains(query) || 
-            passenger.lastName.toLowerCase().contains(query)) ?? false)
-      ).toList();
+      filteredList = filteredList
+          .where(
+            (report) =>
+                (report.pnr?.toLowerCase().contains(query) ?? false) ||
+                (report.bookingId.toLowerCase().contains(query)) ||
+                (report.response?.journey.flightOption.flightLegs.any(
+                      (leg) =>
+                          leg.origin.toLowerCase().contains(query) ||
+                          leg.destination.toLowerCase().contains(query),
+                    ) ??
+                    false) ||
+                (report.response?.passengers.any(
+                      (passenger) =>
+                          passenger.firstName.toLowerCase().contains(query) ||
+                          passenger.lastName.toLowerCase().contains(query),
+                    ) ??
+                    false),
+          )
+          .toList();
     }
 
     setState(() {
@@ -99,42 +119,25 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
     showDialog(
       context: context,
       builder: (_) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        elevation: 8,
-        backgroundColor: cardColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        elevation: 0,
+        backgroundColor: _cardColor,
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(24.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Header
-              Container(
-                padding: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: backgroundColor, width: 1),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.calendar_month_rounded, color: secondaryColor, size: 24),
-                    const SizedBox(width: 12),
-                    Text(
-                      'Select Date Range',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: maincolor1,
-                      ),
-                    ),
-                  ],
+              Text(
+                'Select Date Range',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                  color: _primaryColor,
                 ),
               ),
-              const SizedBox(height: 16),
-              
-              // Date Picker
+              const SizedBox(height: 24),
               SizedBox(
-                height: 350,
+                height: 320,
                 child: SfDateRangePicker(
                   selectionMode: DateRangePickerSelectionMode.range,
                   onSelectionChanged: (args) {
@@ -153,74 +156,62 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                     DateTime.parse(_startDate),
                     DateTime.parse(_endDate),
                   ),
-                  selectionColor: secondaryColor.withOpacity(0.3),
-                  startRangeSelectionColor: secondaryColor,
-                  endRangeSelectionColor: secondaryColor,
-                  rangeSelectionColor: secondaryColor.withOpacity(0.1),
-                  todayHighlightColor: secondaryColor,
-                  monthViewSettings: const DateRangePickerMonthViewSettings(
-                    showTrailingAndLeadingDates: true,
-                  ),
+                  selectionColor: _secondaryColor,
+                  startRangeSelectionColor: _secondaryColor,
+                  endRangeSelectionColor: _secondaryColor,
+                  rangeSelectionColor: _secondaryColor.withOpacity(0.12),
+                  todayHighlightColor: _secondaryColor,
                   headerStyle: DateRangePickerHeaderStyle(
-                    textAlign: TextAlign.center,
                     textStyle: TextStyle(
-                      color: maincolor1,
-                      fontWeight: FontWeight.w600,
+                      color: _primaryColor,
+                      fontWeight: FontWeight.w800,
                       fontSize: 16,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
-              
-              // Action Buttons
+              const SizedBox(height: 24),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Action Buttons Row
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: TextButton.styleFrom(
-                      foregroundColor: textSecondary,
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    ),
-                    child: Text('Cancel'),
-                  ),
-                  SizedBox(width: 8),
-                  
-                  // Apply Button
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [secondaryColor, _accentColor],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: secondaryColor.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: Offset(0, 4),
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                      ],
+                      ),
+                      child: Text(
+                        'Cancel',
+                        style: TextStyle(
+                          color: _textSecondary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        shadowColor: Colors.transparent,
+                        backgroundColor: _secondaryColor,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 5),
+                        elevation: 0,
                       ),
                       onPressed: () {
                         Navigator.pop(context);
                         _filterByDateRange();
                       },
-                      child: Text(
-                        'Apply Dates',
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12),
+                      child: const Text(
+                        'Apply',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
                     ),
                   ),
@@ -237,14 +228,22 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
     setState(() {
       final startDateTime = DateTime.parse(_startDate);
       final endDateTime = DateTime.parse(_endDate);
-      
+
       _filteredReports = _originalReports.where((report) {
         try {
-          String? dateStr = report.response?.journey.flightOption.flightLegs.firstOrNull?.departureTime;
+          String? dateStr = report
+              .response
+              ?.journey
+              .flightOption
+              .flightLegs
+              .firstOrNull
+              ?.departureTime;
           if (dateStr == null) return false;
           final reportDate = DateTime.parse(dateStr);
-          return (reportDate.isAtSameMomentAs(startDateTime) || reportDate.isAfter(startDateTime)) &&
-                 (reportDate.isAtSameMomentAs(endDateTime) || reportDate.isBefore(endDateTime));
+          return (reportDate.isAtSameMomentAs(startDateTime) ||
+                  reportDate.isAfter(startDateTime)) &&
+              (reportDate.isAtSameMomentAs(endDateTime) ||
+                  reportDate.isBefore(endDateTime));
         } catch (e) {
           return false;
         }
@@ -254,396 +253,204 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
     });
   }
 
-  Widget _buildDateRangeText() {
-    return Align(
-      alignment: Alignment.bottomLeft,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-        decoration: BoxDecoration(
-          color: secondaryColor.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(6)
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.calendar_today_rounded, size: 12, color: secondaryColor),
-            const SizedBox(width: 8),
-            Text(
-              '${DateFormat('MMM dd, yyyy').format(DateTime.parse(_startDate))}  -  '
-              '${DateFormat('MMM dd, yyyy').format(DateTime.parse(_endDate))}',
-              style: TextStyle(fontSize: 12, color: textPrimary, fontWeight: FontWeight.w500),
-            ),
-            if (_isDateFilterActive) ...[
-              SizedBox(width: 8),
-              GestureDetector(
-                onTap: _clearDateFilter,
-                child: Container(
-                  padding: EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    color: errorColor.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(Icons.close, size: 12, color: errorColor),
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFilterChip({required String label, required VoidCallback onClear, bool isClearAll = false}) {
-    return Container(
-      decoration: BoxDecoration(
-        color: isClearAll ? errorColor.withOpacity(0.1) : secondaryColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isClearAll ? errorColor.withOpacity(0.3) : secondaryColor.withOpacity(0.3),
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                color: isClearAll ? errorColor : textPrimary,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            SizedBox(width: 4),
-            GestureDetector(
-              onTap: onClear,
-              child: Container(
-                padding: EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  color: isClearAll ? errorColor : secondaryColor,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  isClearAll ? Icons.clear_all : Icons.close,
-                  size: 12,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   void _clearAllFilters() {
     _clearSearch();
     _clearDateFilter();
   }
 
-  Widget _buildShimmerCard() {
-    return Container(
-      margin: EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 20,
-            offset: Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(15.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header Shimmer
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+  @override
+  Widget build(BuildContext context) {
+    return KeyboardDismisser(
+      child: Scaffold(
+        backgroundColor: _backgroundColor,
+        body: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            // Header-less Spacing
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 10),
+            ),
+
+            // Search and Filter Section
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
+                child: Column(
                   children: [
                     Container(
-                      width: 80,
-                      height: 10,
                       decoration: BoxDecoration(
-                        color: backgroundColor,
-                        borderRadius: BorderRadius.circular(4),
+                        color: _cardColor,
+                        borderRadius: BorderRadius.circular(22),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.06),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                        border: Border.all(color: _borderColor),
+                      ),
+                      child: Column(
+                        children: [
+                          // Search Bar
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: _searchController,
+                                  onChanged: _onSearchChanged,
+                                  decoration: InputDecoration(
+                                    hintText: 'Search PNR, Route, Passenger...',
+                                    hintStyle: TextStyle(
+                                      color: _textLight,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    prefixIcon: Icon(
+                                      Iconsax.search_normal_1,
+                                      color: _secondaryColor,
+                                      size: 18,
+                                    ),
+                                    suffixIcon:
+                                        _searchController.text.isNotEmpty
+                                        ? IconButton(
+                                            icon: Icon(
+                                              Iconsax.close_circle,
+                                              color: _textLight,
+                                              size: 16,
+                                            ),
+                                            onPressed: _clearSearch,
+                                          )
+                                        : null,
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 15,
+                                    ),
+                                  ),
+                                  style: TextStyle(
+                                    color: _textPrimary,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(right: 8),
+                                padding: const EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                  color: _secondaryColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: IconButton(
+                                  onPressed: _showDatePickerDialog,
+                                  icon: Icon(
+                                    Iconsax.calendar_tick,
+                                    size: 20,
+                                    color: _secondaryColor,
+                                  ),
+                                  constraints: const BoxConstraints(),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          if (_isDateFilterActive)
+                            Container(
+                              padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                              child: _buildDateRangeBadge(),
+                            ),
+                        ],
                       ),
                     ),
-                    SizedBox(height: 8),
-                    Container(
-                      width: 120,
-                      height: 16,
-                      decoration: BoxDecoration(
-                        color: backgroundColor,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
+
+                    const SizedBox(height: 20),
+
+                    // Results Count
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'SEARCH RESULTS',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
+                            color: _textLight,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _secondaryColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Text(
+                            '${_filteredReports.length} ${_filteredReports.length == 1 ? 'REPORT' : 'REPORTS'}',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w900,
+                              color: _secondaryColor,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-                Container(
-                  width: 80,
-                  height: 30,
-                  decoration: BoxDecoration(
-                    color: backgroundColor,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-
-            // Route Card Shimmer
-            Container(
-              padding: EdgeInsets.all(13),
-              decoration: BoxDecoration(
-                color: backgroundColor,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: 40,
-                          height: 10,
-                          decoration: BoxDecoration(
-                            color: cardColor,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Container(
-                          width: 80,
-                          height: 14,
-                          decoration: BoxDecoration(
-                            color: cardColor,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: 30,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      color: cardColor,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Container(
-                          width: 30,
-                          height: 10,
-                          decoration: BoxDecoration(
-                            color: cardColor,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Container(
-                          width: 80,
-                          height: 14,
-                          decoration: BoxDecoration(
-                            color: cardColor,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
               ),
             ),
-            SizedBox(height: 16),
 
-            // Footer Shimmer
-            Row(
-              children: [
-                Container(
-                  width: 60,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    color: backgroundColor,
-                    borderRadius: BorderRadius.circular(10),
+            // Reports List
+            _filteredReports.isEmpty
+                ? SliverFillRemaining(child: _buildEmptyState())
+                : SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) =>
+                            _buildReportCard(_filteredReports[index]),
+                        childCount: _filteredReports.length,
+                      ),
+                    ),
                   ),
-                ),
-                Spacer(),
-                Container(
-                  width: 70,
-                  height: 25,
-                  decoration: BoxDecoration(
-                    color: backgroundColor,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ],
-            ),
           ],
         ),
       ),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      appBar: AppBar(
-        backgroundColor: maincolor1,
-        iconTheme: IconThemeData(color: Colors.white),
-        centerTitle: true,
-        elevation: 0,
-        actions: [
-          if (_isFilterActive)
-            IconButton(
-              onPressed: _clearAllFilters,
-              icon: Icon(Icons.filter_alt_off_rounded, color: Colors.white),
-              tooltip: 'Clear all filters',
-            ),
-        ],
+  Widget _buildDateRangeBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: _secondaryColor.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _secondaryColor.withOpacity(0.1)),
       ),
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            // Search and Filter Section
-            Container(
-              margin: EdgeInsets.all(12),
-              padding: EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: cardColor,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
-                    blurRadius: 20,
-                    offset: Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  // Search Bar with Clear Button
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: backgroundColor,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: TextField(
-                            controller: _searchController,
-                            onChanged: _onSearchChanged,
-                            decoration: InputDecoration(
-                              hintText: 'Search by PNR, Route, or Passenger...',
-                              hintStyle: TextStyle(color: textLight, fontSize: 14),
-                              prefixIcon: Icon(Icons.search_rounded, color: secondaryColor, size: 20),
-                              suffixIcon: _searchController.text.isNotEmpty
-                                  ? IconButton(
-                                      icon: Icon(Icons.clear_rounded, color: textLight, size: 18),
-                                      onPressed: _clearSearch,
-                                    )
-                                  : null,
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                            ),
-                            style: TextStyle(color: textPrimary, fontSize: 14),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 5),
-                      Container(
-                        decoration: BoxDecoration(
-                         color: secondaryColor,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: IconButton(
-                          onPressed: _showDatePickerDialog,
-                          icon: Icon(Icons.calendar_today_rounded, size: 20, color: cardColor),
-                          tooltip: 'Select Date Range',
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  _buildDateRangeText()
-                ],
+      child: Row(
+        children: [
+          Icon(Iconsax.calendar_1, size: 14, color: _secondaryColor),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              '${DateFormat('dd MMM').format(DateTime.parse(_startDate))} - ${DateFormat('dd MMM').format(DateTime.parse(_endDate))}',
+              style: TextStyle(
+                fontSize: 11,
+                color: _textPrimary,
+                fontWeight: FontWeight.w800,
               ),
             ),
-
-            // Results Count
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'All Flight Reports',
-                    style: TextStyle(
-                      color: textPrimary,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: backgroundColor,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.confirmation_number_rounded, size: 12, color: secondaryColor),
-                        SizedBox(width: 6),
-                        Text(
-                          '${_filteredReports.length} ${_filteredReports.length == 1 ? 'report' : 'reports'}',
-                          style: TextStyle(
-                            color: secondaryColor,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 10),
-
-            // Reports List
-            Expanded(
-              child: _filteredReports.isEmpty
-                  ? _buildEmptyState()
-                  : KeyboardDismisser(
-                      child: ListView.builder(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        itemCount: _filteredReports.length,
-                        itemBuilder: (context, index) {
-                          final item = _filteredReports[index];
-                          return _buildReportCard(item);
-                        },
-                      ),
-                    ),
-            ),
-          ],
-        ),
+          ),
+          GestureDetector(
+            onTap: _clearDateFilter,
+            child: Icon(Iconsax.close_circle, size: 14, color: _errorColor),
+          ),
+        ],
       ),
     );
   }
@@ -655,403 +462,298 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
     final lastLeg = flightLegs.isNotEmpty ? flightLegs.last : null;
 
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(20),
+        color: _cardColor,
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withOpacity(0.06),
             blurRadius: 20,
-            offset: Offset(0, 8),
+            offset: const Offset(0, 8),
           ),
         ],
+        border: Border.all(color: _borderColor),
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ReportDetailScreen(report: report),
-              ),
-            );
-          },
-          borderRadius: BorderRadius.circular(20),
-          child: Padding(
-            padding: EdgeInsets.all(15.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header Row with PNR and Amount
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'BOOKING REFERENCE',
-                            style: TextStyle(
-                              fontSize: 8,
-                              color: textSecondary,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 1.0,
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            report.pnr ?? 'ID: ${report.bookingId}',
-                            style: TextStyle(
-                              color: textPrimary,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ReportDetailScreen(report: report),
+            ),
+          );
+        },
+        borderRadius: BorderRadius.circular(24),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header Row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: secondaryColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            '₹${report.amount}',
-                            style: TextStyle(
-                              color: secondaryColor,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                            ),
+                        Text(
+                          'PNR / BOOKING ID',
+                          style: TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w900,
+                            color: _textLight,
+                            letterSpacing: 0.8,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
-                          report.response != null && report.response!.journey.flightOption.flightLegs.isNotEmpty
-                            ? _formatDate(report.response!.journey.flightOption.flightLegs.first.departureTime)
-                            : 'N/A',
+                          report.pnr ?? report.bookingId,
                           style: TextStyle(
-                            color: textLight,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                            color: _textPrimary,
                           ),
                         ),
                       ],
                     ),
-                  ],
-                ),
-                SizedBox(height: 16),
-
-                // Route Information Card
-                Container(
-                  padding: EdgeInsets.all(13),
-                  decoration: BoxDecoration(
-                    color: backgroundColor,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.grey.shade200),
                   ),
-                  child: Row(
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'FROM',
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: textSecondary,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 1.0,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              firstLeg?.origin ?? 'N/A',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            SizedBox(height: 6),
-                            Row(
-                              children: [
-                                Icon(Icons.calendar_today, size: 12, color: secondaryColor),
-                                SizedBox(width: 4),
-                                Text(
-                                  firstLeg != null ? _formatDate(firstLeg.departureTime) : 'N/A',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: textSecondary,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                      Text(
+                        '₹${report.amount}',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                          color: _secondaryColor,
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8),
-                        child: Column(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: secondaryColor.withOpacity(0.1),
-                                shape: BoxShape.circle,
-                                border: Border.all(color: secondaryColor.withOpacity(0.3), width: 2),
-                              ),
-                              child: Icon(
-                                Icons.arrow_forward_rounded,
-                                color: secondaryColor,
-                                size: 16,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              'TO',
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: textSecondary,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 1.0,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              lastLeg?.destination ?? 'N/A',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                              ),
-                              textAlign: TextAlign.end,
-                            ),
-                            SizedBox(height: 6),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Icon(Icons.calendar_today, size: 12, color: secondaryColor),
-                                SizedBox(width: 4),
-                                Text(
-                                  lastLeg != null ? _formatDate(lastLeg.arrivalTime) : 'N/A',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: textSecondary,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                      const SizedBox(height: 4),
+                      Text(
+                        _formatDate(firstLeg?.departureTime ?? ''),
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: _textLight,
                         ),
                       ),
                     ],
                   ),
-                ),
-                SizedBox(height: 16),
+                ],
+              ),
 
-                // Footer Information
-                Row(
-                  children: [
-                    // Flight count
-                    Row(
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: Divider(height: 1),
+              ),
+
+              // Route Section
+              Row(
+                children: [
+                  _buildCityInfo(firstLeg?.origin ?? '---', 'ORIGIN', true),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        const Icon(
+                          Iconsax.airplane,
+                          size: 16,
+                          color: Colors.grey,
+                        ),
+                        const SizedBox(height: 4),
+                        Container(height: 1, width: 40, color: _borderColor),
+                      ],
+                    ),
+                  ),
+                  _buildCityInfo(
+                    lastLeg?.destination ?? '---',
+                    'DESTINATION',
+                    false,
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 24),
+
+              // Footer Badges
+              Row(
+                children: [
+                  _buildFooterBadge(
+                    Iconsax.user,
+                    '${response.passengers.length} PAX',
+                  ),
+                  const SizedBox(width: 8),
+                  _buildFooterBadge(Iconsax.clock, '${flightLegs.length} LEGS'),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _successColor.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: Row(
                       children: [
                         Container(
-                          padding: EdgeInsets.all(4),
+                          width: 5,
+                          height: 5,
                           decoration: BoxDecoration(
-                            color: secondaryColor.withOpacity(0.1),
+                            color: _successColor,
                             shape: BoxShape.circle,
                           ),
-                          child: Icon(
-                            Icons.flight_takeoff_rounded,
-                            color: secondaryColor,
-                            size: 12,
-                          ),
                         ),
-                        SizedBox(width: 6),
+                        const SizedBox(width: 6),
                         Text(
-                          '${flightLegs.length} flight${flightLegs.length > 1 ? 's' : ''}',
+                          'CONFIRMED',
                           style: TextStyle(
-                            fontSize: 10,
-                            color: textSecondary,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 9,
+                            fontWeight: FontWeight.w900,
+                            color: _successColor,
+                            letterSpacing: 0.5,
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(width: 16),
-                    // Passenger count
-                    Row(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: secondaryColor.withOpacity(0.1),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.people_rounded,
-                            color: secondaryColor,
-                            size: 12,
-                          ),
-                        ),
-                        SizedBox(width: 6),
-                        Text(
-                          '${response.passengers.length} passenger${response.passengers.length > 1 ? 's' : ''}',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: textSecondary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Spacer(),
-                    // Status Badge
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: successColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: successColor.withOpacity(0.3)),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 6,
-                            height: 6,
-                            decoration: BoxDecoration(
-                              color: successColor,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          SizedBox(width: 6),
-                          Text(
-                            'CONFIRMED',
-                            style: TextStyle(
-                              fontSize: 8,
-                              color: successColor,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
+  Widget _buildCityInfo(String city, String label, bool isStart) {
+    return Expanded(
+      flex: 2,
+      child: Column(
+        crossAxisAlignment: isStart
+            ? CrossAxisAlignment.start
+            : CrossAxisAlignment.end,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 8,
+              fontWeight: FontWeight.w900,
+              color: _textLight,
+              letterSpacing: 0.8,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            city.length > 3
+                ? city.substring(0, 3).toUpperCase()
+                : city.toUpperCase(),
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+              color: _textPrimary,
+              letterSpacing: 1,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            city,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: _textSecondary,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFooterBadge(IconData icon, String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: _backgroundColor,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: _borderColor),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: _textSecondary),
+          const SizedBox(width: 6),
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+              color: _textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildEmptyState() {
-    return SingleChildScrollView(
-      physics: AlwaysScrollableScrollPhysics(),
-      padding: EdgeInsets.all(20),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          minHeight: MediaQuery.of(context).size.height * 0.6,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [secondaryColor.withOpacity(0.1), _accentColor.withOpacity(0.1)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(30),
+            decoration: BoxDecoration(
+              color: _secondaryColor.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Iconsax.ticket, color: _secondaryColor, size: 48),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            _isFilterActive ? 'No Matches Found' : 'No Reports Found',
+            style: TextStyle(
+              color: _textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            _isFilterActive
+                ? 'Try adjusting your filters'
+                : 'You haven\'t made any bookings yet',
+            style: TextStyle(
+              color: _textSecondary,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          if (_isFilterActive) ...[
+            const SizedBox(height: 32),
+            ElevatedButton.icon(
+              onPressed: _clearAllFilters,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _primaryColor,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
                 ),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.airplane_ticket_rounded,
-                color: secondaryColor,
-                size: 64,
-              ),
-            ),
-            SizedBox(height: 20),
-            Text(
-              _isFilterActive ? 'No Matching Reports' : 'No Reports Found',
-              style: TextStyle(
-                color: textPrimary,
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                _isFilterActive 
-                    ? 'No reports match your current filters.\nTry adjusting your search criteria.'
-                    : 'You don\'t have any flight reports yet.\nStart by booking your first flight!',
-                style: TextStyle(
-                  color: textSecondary,
-                  fontSize: 14,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            SizedBox(height: 20),
-            if (_isFilterActive)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [secondaryColor, _accentColor],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: secondaryColor.withOpacity(0.3),
-                        blurRadius: 8,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    ),
-                    onPressed: _clearAllFilters,
-                    child: Text(
-                      'Clear All Filters',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-                    ),
-                  ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
                 ),
               ),
+              icon: const Icon(Iconsax.refresh, size: 18),
+              label: const Text(
+                'Clear Filters',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ),
           ],
-        ),
+        ],
       ),
     );
   }
@@ -1066,19 +768,14 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
   }
 }
 
-// Helper widget to dismiss keyboard when scrolling
 class KeyboardDismisser extends StatelessWidget {
   final Widget child;
-
   const KeyboardDismisser({super.key, required this.child});
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: () {
-        FocusScope.of(context).unfocus();
-      },
+      onTap: () => FocusScope.of(context).unfocus(),
       child: child,
     );
   }

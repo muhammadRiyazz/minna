@@ -20,101 +20,88 @@ mixin _$HotelBookingConfirmEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(
-      String orderId,
-      String transactionId,
-      String bookingId,
+      String userId,
+      Map<String, dynamic> bookingPayload,
       double amount,
-      String prebookId,
-      Map<String, dynamic> bookingRequest,
+      double serviceCharge,
     )
-    paymentDone,
+    createOrder,
     required TResult Function(
+      String paymentId,
       String orderId,
-      String prebookId,
-      String bookingId,
+      String signature,
+      String traceId,
+      String tokenId,
     )
-    paymentFail,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    initiateRefund,
+    verifyPayment,
+    required TResult Function() reset,
     required TResult Function() startLoading,
     required TResult Function() stopLoading,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(
-      String orderId,
-      String transactionId,
-      String bookingId,
+      String userId,
+      Map<String, dynamic> bookingPayload,
       double amount,
-      String prebookId,
-      Map<String, dynamic> bookingRequest,
+      double serviceCharge,
     )?
-    paymentDone,
-    TResult? Function(String orderId, String prebookId, String bookingId)?
-    paymentFail,
+    createOrder,
     TResult? Function(
+      String paymentId,
       String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
+      String signature,
+      String traceId,
+      String tokenId,
     )?
-    initiateRefund,
+    verifyPayment,
+    TResult? Function()? reset,
     TResult? Function()? startLoading,
     TResult? Function()? stopLoading,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(
-      String orderId,
-      String transactionId,
-      String bookingId,
+      String userId,
+      Map<String, dynamic> bookingPayload,
       double amount,
-      String prebookId,
-      Map<String, dynamic> bookingRequest,
+      double serviceCharge,
     )?
-    paymentDone,
-    TResult Function(String orderId, String prebookId, String bookingId)?
-    paymentFail,
+    createOrder,
     TResult Function(
+      String paymentId,
       String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
+      String signature,
+      String traceId,
+      String tokenId,
     )?
-    initiateRefund,
+    verifyPayment,
+    TResult Function()? reset,
     TResult Function()? startLoading,
     TResult Function()? stopLoading,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(_PaymentDone value) paymentDone,
-    required TResult Function(_PaymentFail value) paymentFail,
-    required TResult Function(_InitiateRefund value) initiateRefund,
+    required TResult Function(_CreateOrder value) createOrder,
+    required TResult Function(_VerifyPayment value) verifyPayment,
+    required TResult Function(_Reset value) reset,
     required TResult Function(_StartLoading value) startLoading,
     required TResult Function(_StopLoading value) stopLoading,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_PaymentDone value)? paymentDone,
-    TResult? Function(_PaymentFail value)? paymentFail,
-    TResult? Function(_InitiateRefund value)? initiateRefund,
+    TResult? Function(_CreateOrder value)? createOrder,
+    TResult? Function(_VerifyPayment value)? verifyPayment,
+    TResult? Function(_Reset value)? reset,
     TResult? Function(_StartLoading value)? startLoading,
     TResult? Function(_StopLoading value)? stopLoading,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(_PaymentDone value)? paymentDone,
-    TResult Function(_PaymentFail value)? paymentFail,
-    TResult Function(_InitiateRefund value)? initiateRefund,
+    TResult Function(_CreateOrder value)? createOrder,
+    TResult Function(_VerifyPayment value)? verifyPayment,
+    TResult Function(_Reset value)? reset,
     TResult Function(_StartLoading value)? startLoading,
     TResult Function(_StopLoading value)? stopLoading,
     required TResult orElse(),
@@ -147,29 +134,27 @@ class _$HotelBookingConfirmEventCopyWithImpl<
 }
 
 /// @nodoc
-abstract class _$$PaymentDoneImplCopyWith<$Res> {
-  factory _$$PaymentDoneImplCopyWith(
-    _$PaymentDoneImpl value,
-    $Res Function(_$PaymentDoneImpl) then,
-  ) = __$$PaymentDoneImplCopyWithImpl<$Res>;
+abstract class _$$CreateOrderImplCopyWith<$Res> {
+  factory _$$CreateOrderImplCopyWith(
+    _$CreateOrderImpl value,
+    $Res Function(_$CreateOrderImpl) then,
+  ) = __$$CreateOrderImplCopyWithImpl<$Res>;
   @useResult
   $Res call({
-    String orderId,
-    String transactionId,
-    String bookingId,
+    String userId,
+    Map<String, dynamic> bookingPayload,
     double amount,
-    String prebookId,
-    Map<String, dynamic> bookingRequest,
+    double serviceCharge,
   });
 }
 
 /// @nodoc
-class __$$PaymentDoneImplCopyWithImpl<$Res>
-    extends _$HotelBookingConfirmEventCopyWithImpl<$Res, _$PaymentDoneImpl>
-    implements _$$PaymentDoneImplCopyWith<$Res> {
-  __$$PaymentDoneImplCopyWithImpl(
-    _$PaymentDoneImpl _value,
-    $Res Function(_$PaymentDoneImpl) _then,
+class __$$CreateOrderImplCopyWithImpl<$Res>
+    extends _$HotelBookingConfirmEventCopyWithImpl<$Res, _$CreateOrderImpl>
+    implements _$$CreateOrderImplCopyWith<$Res> {
+  __$$CreateOrderImplCopyWithImpl(
+    _$CreateOrderImpl _value,
+    $Res Function(_$CreateOrderImpl) _then,
   ) : super(_value, _then);
 
   /// Create a copy of HotelBookingConfirmEvent
@@ -177,594 +162,293 @@ class __$$PaymentDoneImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? orderId = null,
-    Object? transactionId = null,
-    Object? bookingId = null,
+    Object? userId = null,
+    Object? bookingPayload = null,
     Object? amount = null,
-    Object? prebookId = null,
-    Object? bookingRequest = null,
+    Object? serviceCharge = null,
   }) {
     return _then(
-      _$PaymentDoneImpl(
-        orderId: null == orderId
-            ? _value.orderId
-            : orderId // ignore: cast_nullable_to_non_nullable
+      _$CreateOrderImpl(
+        userId: null == userId
+            ? _value.userId
+            : userId // ignore: cast_nullable_to_non_nullable
                   as String,
-        transactionId: null == transactionId
-            ? _value.transactionId
-            : transactionId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        bookingId: null == bookingId
-            ? _value.bookingId
-            : bookingId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        amount: null == amount
-            ? _value.amount
-            : amount // ignore: cast_nullable_to_non_nullable
-                  as double,
-        prebookId: null == prebookId
-            ? _value.prebookId
-            : prebookId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        bookingRequest: null == bookingRequest
-            ? _value._bookingRequest
-            : bookingRequest // ignore: cast_nullable_to_non_nullable
+        bookingPayload: null == bookingPayload
+            ? _value._bookingPayload
+            : bookingPayload // ignore: cast_nullable_to_non_nullable
                   as Map<String, dynamic>,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-
-class _$PaymentDoneImpl implements _PaymentDone {
-  const _$PaymentDoneImpl({
-    required this.orderId,
-    required this.transactionId,
-    required this.bookingId,
-    required this.amount,
-    required this.prebookId,
-    required final Map<String, dynamic> bookingRequest,
-  }) : _bookingRequest = bookingRequest;
-
-  @override
-  final String orderId;
-  @override
-  final String transactionId;
-  @override
-  final String bookingId;
-  @override
-  final double amount;
-  @override
-  final String prebookId;
-  final Map<String, dynamic> _bookingRequest;
-  @override
-  Map<String, dynamic> get bookingRequest {
-    if (_bookingRequest is EqualUnmodifiableMapView) return _bookingRequest;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableMapView(_bookingRequest);
-  }
-
-  @override
-  String toString() {
-    return 'HotelBookingConfirmEvent.paymentDone(orderId: $orderId, transactionId: $transactionId, bookingId: $bookingId, amount: $amount, prebookId: $prebookId, bookingRequest: $bookingRequest)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$PaymentDoneImpl &&
-            (identical(other.orderId, orderId) || other.orderId == orderId) &&
-            (identical(other.transactionId, transactionId) ||
-                other.transactionId == transactionId) &&
-            (identical(other.bookingId, bookingId) ||
-                other.bookingId == bookingId) &&
-            (identical(other.amount, amount) || other.amount == amount) &&
-            (identical(other.prebookId, prebookId) ||
-                other.prebookId == prebookId) &&
-            const DeepCollectionEquality().equals(
-              other._bookingRequest,
-              _bookingRequest,
-            ));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    orderId,
-    transactionId,
-    bookingId,
-    amount,
-    prebookId,
-    const DeepCollectionEquality().hash(_bookingRequest),
-  );
-
-  /// Create a copy of HotelBookingConfirmEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$PaymentDoneImplCopyWith<_$PaymentDoneImpl> get copyWith =>
-      __$$PaymentDoneImplCopyWithImpl<_$PaymentDoneImpl>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      String bookingId,
-      double amount,
-      String prebookId,
-      Map<String, dynamic> bookingRequest,
-    )
-    paymentDone,
-    required TResult Function(
-      String orderId,
-      String prebookId,
-      String bookingId,
-    )
-    paymentFail,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    initiateRefund,
-    required TResult Function() startLoading,
-    required TResult Function() stopLoading,
-  }) {
-    return paymentDone(
-      orderId,
-      transactionId,
-      bookingId,
-      amount,
-      prebookId,
-      bookingRequest,
-    );
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      String bookingId,
-      double amount,
-      String prebookId,
-      Map<String, dynamic> bookingRequest,
-    )?
-    paymentDone,
-    TResult? Function(String orderId, String prebookId, String bookingId)?
-    paymentFail,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    initiateRefund,
-    TResult? Function()? startLoading,
-    TResult? Function()? stopLoading,
-  }) {
-    return paymentDone?.call(
-      orderId,
-      transactionId,
-      bookingId,
-      amount,
-      prebookId,
-      bookingRequest,
-    );
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(
-      String orderId,
-      String transactionId,
-      String bookingId,
-      double amount,
-      String prebookId,
-      Map<String, dynamic> bookingRequest,
-    )?
-    paymentDone,
-    TResult Function(String orderId, String prebookId, String bookingId)?
-    paymentFail,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    initiateRefund,
-    TResult Function()? startLoading,
-    TResult Function()? stopLoading,
-    required TResult orElse(),
-  }) {
-    if (paymentDone != null) {
-      return paymentDone(
-        orderId,
-        transactionId,
-        bookingId,
-        amount,
-        prebookId,
-        bookingRequest,
-      );
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_PaymentDone value) paymentDone,
-    required TResult Function(_PaymentFail value) paymentFail,
-    required TResult Function(_InitiateRefund value) initiateRefund,
-    required TResult Function(_StartLoading value) startLoading,
-    required TResult Function(_StopLoading value) stopLoading,
-  }) {
-    return paymentDone(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_PaymentDone value)? paymentDone,
-    TResult? Function(_PaymentFail value)? paymentFail,
-    TResult? Function(_InitiateRefund value)? initiateRefund,
-    TResult? Function(_StartLoading value)? startLoading,
-    TResult? Function(_StopLoading value)? stopLoading,
-  }) {
-    return paymentDone?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_PaymentDone value)? paymentDone,
-    TResult Function(_PaymentFail value)? paymentFail,
-    TResult Function(_InitiateRefund value)? initiateRefund,
-    TResult Function(_StartLoading value)? startLoading,
-    TResult Function(_StopLoading value)? stopLoading,
-    required TResult orElse(),
-  }) {
-    if (paymentDone != null) {
-      return paymentDone(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class _PaymentDone implements HotelBookingConfirmEvent {
-  const factory _PaymentDone({
-    required final String orderId,
-    required final String transactionId,
-    required final String bookingId,
-    required final double amount,
-    required final String prebookId,
-    required final Map<String, dynamic> bookingRequest,
-  }) = _$PaymentDoneImpl;
-
-  String get orderId;
-  String get transactionId;
-  String get bookingId;
-  double get amount;
-  String get prebookId;
-  Map<String, dynamic> get bookingRequest;
-
-  /// Create a copy of HotelBookingConfirmEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$PaymentDoneImplCopyWith<_$PaymentDoneImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$PaymentFailImplCopyWith<$Res> {
-  factory _$$PaymentFailImplCopyWith(
-    _$PaymentFailImpl value,
-    $Res Function(_$PaymentFailImpl) then,
-  ) = __$$PaymentFailImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({String orderId, String prebookId, String bookingId});
-}
-
-/// @nodoc
-class __$$PaymentFailImplCopyWithImpl<$Res>
-    extends _$HotelBookingConfirmEventCopyWithImpl<$Res, _$PaymentFailImpl>
-    implements _$$PaymentFailImplCopyWith<$Res> {
-  __$$PaymentFailImplCopyWithImpl(
-    _$PaymentFailImpl _value,
-    $Res Function(_$PaymentFailImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of HotelBookingConfirmEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? orderId = null,
-    Object? prebookId = null,
-    Object? bookingId = null,
-  }) {
-    return _then(
-      _$PaymentFailImpl(
-        orderId: null == orderId
-            ? _value.orderId
-            : orderId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        prebookId: null == prebookId
-            ? _value.prebookId
-            : prebookId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        bookingId: null == bookingId
-            ? _value.bookingId
-            : bookingId // ignore: cast_nullable_to_non_nullable
-                  as String,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-
-class _$PaymentFailImpl implements _PaymentFail {
-  const _$PaymentFailImpl({
-    required this.orderId,
-    required this.prebookId,
-    required this.bookingId,
-  });
-
-  @override
-  final String orderId;
-  @override
-  final String prebookId;
-  @override
-  final String bookingId;
-
-  @override
-  String toString() {
-    return 'HotelBookingConfirmEvent.paymentFail(orderId: $orderId, prebookId: $prebookId, bookingId: $bookingId)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$PaymentFailImpl &&
-            (identical(other.orderId, orderId) || other.orderId == orderId) &&
-            (identical(other.prebookId, prebookId) ||
-                other.prebookId == prebookId) &&
-            (identical(other.bookingId, bookingId) ||
-                other.bookingId == bookingId));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, orderId, prebookId, bookingId);
-
-  /// Create a copy of HotelBookingConfirmEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$PaymentFailImplCopyWith<_$PaymentFailImpl> get copyWith =>
-      __$$PaymentFailImplCopyWithImpl<_$PaymentFailImpl>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      String bookingId,
-      double amount,
-      String prebookId,
-      Map<String, dynamic> bookingRequest,
-    )
-    paymentDone,
-    required TResult Function(
-      String orderId,
-      String prebookId,
-      String bookingId,
-    )
-    paymentFail,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    initiateRefund,
-    required TResult Function() startLoading,
-    required TResult Function() stopLoading,
-  }) {
-    return paymentFail(orderId, prebookId, bookingId);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      String bookingId,
-      double amount,
-      String prebookId,
-      Map<String, dynamic> bookingRequest,
-    )?
-    paymentDone,
-    TResult? Function(String orderId, String prebookId, String bookingId)?
-    paymentFail,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    initiateRefund,
-    TResult? Function()? startLoading,
-    TResult? Function()? stopLoading,
-  }) {
-    return paymentFail?.call(orderId, prebookId, bookingId);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(
-      String orderId,
-      String transactionId,
-      String bookingId,
-      double amount,
-      String prebookId,
-      Map<String, dynamic> bookingRequest,
-    )?
-    paymentDone,
-    TResult Function(String orderId, String prebookId, String bookingId)?
-    paymentFail,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    initiateRefund,
-    TResult Function()? startLoading,
-    TResult Function()? stopLoading,
-    required TResult orElse(),
-  }) {
-    if (paymentFail != null) {
-      return paymentFail(orderId, prebookId, bookingId);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_PaymentDone value) paymentDone,
-    required TResult Function(_PaymentFail value) paymentFail,
-    required TResult Function(_InitiateRefund value) initiateRefund,
-    required TResult Function(_StartLoading value) startLoading,
-    required TResult Function(_StopLoading value) stopLoading,
-  }) {
-    return paymentFail(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_PaymentDone value)? paymentDone,
-    TResult? Function(_PaymentFail value)? paymentFail,
-    TResult? Function(_InitiateRefund value)? initiateRefund,
-    TResult? Function(_StartLoading value)? startLoading,
-    TResult? Function(_StopLoading value)? stopLoading,
-  }) {
-    return paymentFail?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_PaymentDone value)? paymentDone,
-    TResult Function(_PaymentFail value)? paymentFail,
-    TResult Function(_InitiateRefund value)? initiateRefund,
-    TResult Function(_StartLoading value)? startLoading,
-    TResult Function(_StopLoading value)? stopLoading,
-    required TResult orElse(),
-  }) {
-    if (paymentFail != null) {
-      return paymentFail(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class _PaymentFail implements HotelBookingConfirmEvent {
-  const factory _PaymentFail({
-    required final String orderId,
-    required final String prebookId,
-    required final String bookingId,
-  }) = _$PaymentFailImpl;
-
-  String get orderId;
-  String get prebookId;
-  String get bookingId;
-
-  /// Create a copy of HotelBookingConfirmEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$PaymentFailImplCopyWith<_$PaymentFailImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$InitiateRefundImplCopyWith<$Res> {
-  factory _$$InitiateRefundImplCopyWith(
-    _$InitiateRefundImpl value,
-    $Res Function(_$InitiateRefundImpl) then,
-  ) = __$$InitiateRefundImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({
-    String orderId,
-    String transactionId,
-    double amount,
-    String booktableId,
-    String bookingId,
-  });
-}
-
-/// @nodoc
-class __$$InitiateRefundImplCopyWithImpl<$Res>
-    extends _$HotelBookingConfirmEventCopyWithImpl<$Res, _$InitiateRefundImpl>
-    implements _$$InitiateRefundImplCopyWith<$Res> {
-  __$$InitiateRefundImplCopyWithImpl(
-    _$InitiateRefundImpl _value,
-    $Res Function(_$InitiateRefundImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of HotelBookingConfirmEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? orderId = null,
-    Object? transactionId = null,
-    Object? amount = null,
-    Object? booktableId = null,
-    Object? bookingId = null,
-  }) {
-    return _then(
-      _$InitiateRefundImpl(
-        orderId: null == orderId
-            ? _value.orderId
-            : orderId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        transactionId: null == transactionId
-            ? _value.transactionId
-            : transactionId // ignore: cast_nullable_to_non_nullable
-                  as String,
         amount: null == amount
             ? _value.amount
             : amount // ignore: cast_nullable_to_non_nullable
                   as double,
-        booktableId: null == booktableId
-            ? _value.booktableId
-            : booktableId // ignore: cast_nullable_to_non_nullable
+        serviceCharge: null == serviceCharge
+            ? _value.serviceCharge
+            : serviceCharge // ignore: cast_nullable_to_non_nullable
+                  as double,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+
+class _$CreateOrderImpl implements _CreateOrder {
+  const _$CreateOrderImpl({
+    required this.userId,
+    required final Map<String, dynamic> bookingPayload,
+    required this.amount,
+    required this.serviceCharge,
+  }) : _bookingPayload = bookingPayload;
+
+  @override
+  final String userId;
+  final Map<String, dynamic> _bookingPayload;
+  @override
+  Map<String, dynamic> get bookingPayload {
+    if (_bookingPayload is EqualUnmodifiableMapView) return _bookingPayload;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_bookingPayload);
+  }
+
+  @override
+  final double amount;
+  @override
+  final double serviceCharge;
+
+  @override
+  String toString() {
+    return 'HotelBookingConfirmEvent.createOrder(userId: $userId, bookingPayload: $bookingPayload, amount: $amount, serviceCharge: $serviceCharge)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CreateOrderImpl &&
+            (identical(other.userId, userId) || other.userId == userId) &&
+            const DeepCollectionEquality().equals(
+              other._bookingPayload,
+              _bookingPayload,
+            ) &&
+            (identical(other.amount, amount) || other.amount == amount) &&
+            (identical(other.serviceCharge, serviceCharge) ||
+                other.serviceCharge == serviceCharge));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    userId,
+    const DeepCollectionEquality().hash(_bookingPayload),
+    amount,
+    serviceCharge,
+  );
+
+  /// Create a copy of HotelBookingConfirmEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CreateOrderImplCopyWith<_$CreateOrderImpl> get copyWith =>
+      __$$CreateOrderImplCopyWithImpl<_$CreateOrderImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(
+      String userId,
+      Map<String, dynamic> bookingPayload,
+      double amount,
+      double serviceCharge,
+    )
+    createOrder,
+    required TResult Function(
+      String paymentId,
+      String orderId,
+      String signature,
+      String traceId,
+      String tokenId,
+    )
+    verifyPayment,
+    required TResult Function() reset,
+    required TResult Function() startLoading,
+    required TResult Function() stopLoading,
+  }) {
+    return createOrder(userId, bookingPayload, amount, serviceCharge);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(
+      String userId,
+      Map<String, dynamic> bookingPayload,
+      double amount,
+      double serviceCharge,
+    )?
+    createOrder,
+    TResult? Function(
+      String paymentId,
+      String orderId,
+      String signature,
+      String traceId,
+      String tokenId,
+    )?
+    verifyPayment,
+    TResult? Function()? reset,
+    TResult? Function()? startLoading,
+    TResult? Function()? stopLoading,
+  }) {
+    return createOrder?.call(userId, bookingPayload, amount, serviceCharge);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(
+      String userId,
+      Map<String, dynamic> bookingPayload,
+      double amount,
+      double serviceCharge,
+    )?
+    createOrder,
+    TResult Function(
+      String paymentId,
+      String orderId,
+      String signature,
+      String traceId,
+      String tokenId,
+    )?
+    verifyPayment,
+    TResult Function()? reset,
+    TResult Function()? startLoading,
+    TResult Function()? stopLoading,
+    required TResult orElse(),
+  }) {
+    if (createOrder != null) {
+      return createOrder(userId, bookingPayload, amount, serviceCharge);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_CreateOrder value) createOrder,
+    required TResult Function(_VerifyPayment value) verifyPayment,
+    required TResult Function(_Reset value) reset,
+    required TResult Function(_StartLoading value) startLoading,
+    required TResult Function(_StopLoading value) stopLoading,
+  }) {
+    return createOrder(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_CreateOrder value)? createOrder,
+    TResult? Function(_VerifyPayment value)? verifyPayment,
+    TResult? Function(_Reset value)? reset,
+    TResult? Function(_StartLoading value)? startLoading,
+    TResult? Function(_StopLoading value)? stopLoading,
+  }) {
+    return createOrder?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_CreateOrder value)? createOrder,
+    TResult Function(_VerifyPayment value)? verifyPayment,
+    TResult Function(_Reset value)? reset,
+    TResult Function(_StartLoading value)? startLoading,
+    TResult Function(_StopLoading value)? stopLoading,
+    required TResult orElse(),
+  }) {
+    if (createOrder != null) {
+      return createOrder(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _CreateOrder implements HotelBookingConfirmEvent {
+  const factory _CreateOrder({
+    required final String userId,
+    required final Map<String, dynamic> bookingPayload,
+    required final double amount,
+    required final double serviceCharge,
+  }) = _$CreateOrderImpl;
+
+  String get userId;
+  Map<String, dynamic> get bookingPayload;
+  double get amount;
+  double get serviceCharge;
+
+  /// Create a copy of HotelBookingConfirmEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CreateOrderImplCopyWith<_$CreateOrderImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$VerifyPaymentImplCopyWith<$Res> {
+  factory _$$VerifyPaymentImplCopyWith(
+    _$VerifyPaymentImpl value,
+    $Res Function(_$VerifyPaymentImpl) then,
+  ) = __$$VerifyPaymentImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({
+    String paymentId,
+    String orderId,
+    String signature,
+    String traceId,
+    String tokenId,
+  });
+}
+
+/// @nodoc
+class __$$VerifyPaymentImplCopyWithImpl<$Res>
+    extends _$HotelBookingConfirmEventCopyWithImpl<$Res, _$VerifyPaymentImpl>
+    implements _$$VerifyPaymentImplCopyWith<$Res> {
+  __$$VerifyPaymentImplCopyWithImpl(
+    _$VerifyPaymentImpl _value,
+    $Res Function(_$VerifyPaymentImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of HotelBookingConfirmEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? paymentId = null,
+    Object? orderId = null,
+    Object? signature = null,
+    Object? traceId = null,
+    Object? tokenId = null,
+  }) {
+    return _then(
+      _$VerifyPaymentImpl(
+        paymentId: null == paymentId
+            ? _value.paymentId
+            : paymentId // ignore: cast_nullable_to_non_nullable
                   as String,
-        bookingId: null == bookingId
-            ? _value.bookingId
-            : bookingId // ignore: cast_nullable_to_non_nullable
+        orderId: null == orderId
+            ? _value.orderId
+            : orderId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        signature: null == signature
+            ? _value.signature
+            : signature // ignore: cast_nullable_to_non_nullable
+                  as String,
+        traceId: null == traceId
+            ? _value.traceId
+            : traceId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        tokenId: null == tokenId
+            ? _value.tokenId
+            : tokenId // ignore: cast_nullable_to_non_nullable
                   as String,
       ),
     );
@@ -773,173 +457,132 @@ class __$$InitiateRefundImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$InitiateRefundImpl implements _InitiateRefund {
-  const _$InitiateRefundImpl({
+class _$VerifyPaymentImpl implements _VerifyPayment {
+  const _$VerifyPaymentImpl({
+    required this.paymentId,
     required this.orderId,
-    required this.transactionId,
-    required this.amount,
-    required this.booktableId,
-    required this.bookingId,
+    required this.signature,
+    required this.traceId,
+    required this.tokenId,
   });
 
   @override
+  final String paymentId;
+  @override
   final String orderId;
   @override
-  final String transactionId;
+  final String signature;
   @override
-  final double amount;
+  final String traceId;
   @override
-  final String booktableId;
-  @override
-  final String bookingId;
+  final String tokenId;
 
   @override
   String toString() {
-    return 'HotelBookingConfirmEvent.initiateRefund(orderId: $orderId, transactionId: $transactionId, amount: $amount, booktableId: $booktableId, bookingId: $bookingId)';
+    return 'HotelBookingConfirmEvent.verifyPayment(paymentId: $paymentId, orderId: $orderId, signature: $signature, traceId: $traceId, tokenId: $tokenId)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$InitiateRefundImpl &&
+            other is _$VerifyPaymentImpl &&
+            (identical(other.paymentId, paymentId) ||
+                other.paymentId == paymentId) &&
             (identical(other.orderId, orderId) || other.orderId == orderId) &&
-            (identical(other.transactionId, transactionId) ||
-                other.transactionId == transactionId) &&
-            (identical(other.amount, amount) || other.amount == amount) &&
-            (identical(other.booktableId, booktableId) ||
-                other.booktableId == booktableId) &&
-            (identical(other.bookingId, bookingId) ||
-                other.bookingId == bookingId));
+            (identical(other.signature, signature) ||
+                other.signature == signature) &&
+            (identical(other.traceId, traceId) || other.traceId == traceId) &&
+            (identical(other.tokenId, tokenId) || other.tokenId == tokenId));
   }
 
   @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    orderId,
-    transactionId,
-    amount,
-    booktableId,
-    bookingId,
-  );
+  int get hashCode =>
+      Object.hash(runtimeType, paymentId, orderId, signature, traceId, tokenId);
 
   /// Create a copy of HotelBookingConfirmEvent
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$InitiateRefundImplCopyWith<_$InitiateRefundImpl> get copyWith =>
-      __$$InitiateRefundImplCopyWithImpl<_$InitiateRefundImpl>(
-        this,
-        _$identity,
-      );
+  _$$VerifyPaymentImplCopyWith<_$VerifyPaymentImpl> get copyWith =>
+      __$$VerifyPaymentImplCopyWithImpl<_$VerifyPaymentImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(
-      String orderId,
-      String transactionId,
-      String bookingId,
+      String userId,
+      Map<String, dynamic> bookingPayload,
       double amount,
-      String prebookId,
-      Map<String, dynamic> bookingRequest,
+      double serviceCharge,
     )
-    paymentDone,
+    createOrder,
     required TResult Function(
+      String paymentId,
       String orderId,
-      String prebookId,
-      String bookingId,
+      String signature,
+      String traceId,
+      String tokenId,
     )
-    paymentFail,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    initiateRefund,
+    verifyPayment,
+    required TResult Function() reset,
     required TResult Function() startLoading,
     required TResult Function() stopLoading,
   }) {
-    return initiateRefund(
-      orderId,
-      transactionId,
-      amount,
-      booktableId,
-      bookingId,
-    );
+    return verifyPayment(paymentId, orderId, signature, traceId, tokenId);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(
-      String orderId,
-      String transactionId,
-      String bookingId,
+      String userId,
+      Map<String, dynamic> bookingPayload,
       double amount,
-      String prebookId,
-      Map<String, dynamic> bookingRequest,
+      double serviceCharge,
     )?
-    paymentDone,
-    TResult? Function(String orderId, String prebookId, String bookingId)?
-    paymentFail,
+    createOrder,
     TResult? Function(
+      String paymentId,
       String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
+      String signature,
+      String traceId,
+      String tokenId,
     )?
-    initiateRefund,
+    verifyPayment,
+    TResult? Function()? reset,
     TResult? Function()? startLoading,
     TResult? Function()? stopLoading,
   }) {
-    return initiateRefund?.call(
-      orderId,
-      transactionId,
-      amount,
-      booktableId,
-      bookingId,
-    );
+    return verifyPayment?.call(paymentId, orderId, signature, traceId, tokenId);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(
-      String orderId,
-      String transactionId,
-      String bookingId,
+      String userId,
+      Map<String, dynamic> bookingPayload,
       double amount,
-      String prebookId,
-      Map<String, dynamic> bookingRequest,
+      double serviceCharge,
     )?
-    paymentDone,
-    TResult Function(String orderId, String prebookId, String bookingId)?
-    paymentFail,
+    createOrder,
     TResult Function(
+      String paymentId,
       String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
+      String signature,
+      String traceId,
+      String tokenId,
     )?
-    initiateRefund,
+    verifyPayment,
+    TResult Function()? reset,
     TResult Function()? startLoading,
     TResult Function()? stopLoading,
     required TResult orElse(),
   }) {
-    if (initiateRefund != null) {
-      return initiateRefund(
-        orderId,
-        transactionId,
-        amount,
-        booktableId,
-        bookingId,
-      );
+    if (verifyPayment != null) {
+      return verifyPayment(paymentId, orderId, signature, traceId, tokenId);
     }
     return orElse();
   }
@@ -947,64 +590,228 @@ class _$InitiateRefundImpl implements _InitiateRefund {
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(_PaymentDone value) paymentDone,
-    required TResult Function(_PaymentFail value) paymentFail,
-    required TResult Function(_InitiateRefund value) initiateRefund,
+    required TResult Function(_CreateOrder value) createOrder,
+    required TResult Function(_VerifyPayment value) verifyPayment,
+    required TResult Function(_Reset value) reset,
     required TResult Function(_StartLoading value) startLoading,
     required TResult Function(_StopLoading value) stopLoading,
   }) {
-    return initiateRefund(this);
+    return verifyPayment(this);
   }
 
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_PaymentDone value)? paymentDone,
-    TResult? Function(_PaymentFail value)? paymentFail,
-    TResult? Function(_InitiateRefund value)? initiateRefund,
+    TResult? Function(_CreateOrder value)? createOrder,
+    TResult? Function(_VerifyPayment value)? verifyPayment,
+    TResult? Function(_Reset value)? reset,
     TResult? Function(_StartLoading value)? startLoading,
     TResult? Function(_StopLoading value)? stopLoading,
   }) {
-    return initiateRefund?.call(this);
+    return verifyPayment?.call(this);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(_PaymentDone value)? paymentDone,
-    TResult Function(_PaymentFail value)? paymentFail,
-    TResult Function(_InitiateRefund value)? initiateRefund,
+    TResult Function(_CreateOrder value)? createOrder,
+    TResult Function(_VerifyPayment value)? verifyPayment,
+    TResult Function(_Reset value)? reset,
     TResult Function(_StartLoading value)? startLoading,
     TResult Function(_StopLoading value)? stopLoading,
     required TResult orElse(),
   }) {
-    if (initiateRefund != null) {
-      return initiateRefund(this);
+    if (verifyPayment != null) {
+      return verifyPayment(this);
     }
     return orElse();
   }
 }
 
-abstract class _InitiateRefund implements HotelBookingConfirmEvent {
-  const factory _InitiateRefund({
+abstract class _VerifyPayment implements HotelBookingConfirmEvent {
+  const factory _VerifyPayment({
+    required final String paymentId,
     required final String orderId,
-    required final String transactionId,
-    required final double amount,
-    required final String booktableId,
-    required final String bookingId,
-  }) = _$InitiateRefundImpl;
+    required final String signature,
+    required final String traceId,
+    required final String tokenId,
+  }) = _$VerifyPaymentImpl;
 
+  String get paymentId;
   String get orderId;
-  String get transactionId;
-  double get amount;
-  String get booktableId;
-  String get bookingId;
+  String get signature;
+  String get traceId;
+  String get tokenId;
 
   /// Create a copy of HotelBookingConfirmEvent
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$InitiateRefundImplCopyWith<_$InitiateRefundImpl> get copyWith =>
+  _$$VerifyPaymentImplCopyWith<_$VerifyPaymentImpl> get copyWith =>
       throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$ResetImplCopyWith<$Res> {
+  factory _$$ResetImplCopyWith(
+    _$ResetImpl value,
+    $Res Function(_$ResetImpl) then,
+  ) = __$$ResetImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$ResetImplCopyWithImpl<$Res>
+    extends _$HotelBookingConfirmEventCopyWithImpl<$Res, _$ResetImpl>
+    implements _$$ResetImplCopyWith<$Res> {
+  __$$ResetImplCopyWithImpl(
+    _$ResetImpl _value,
+    $Res Function(_$ResetImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of HotelBookingConfirmEvent
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$ResetImpl implements _Reset {
+  const _$ResetImpl();
+
+  @override
+  String toString() {
+    return 'HotelBookingConfirmEvent.reset()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$ResetImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(
+      String userId,
+      Map<String, dynamic> bookingPayload,
+      double amount,
+      double serviceCharge,
+    )
+    createOrder,
+    required TResult Function(
+      String paymentId,
+      String orderId,
+      String signature,
+      String traceId,
+      String tokenId,
+    )
+    verifyPayment,
+    required TResult Function() reset,
+    required TResult Function() startLoading,
+    required TResult Function() stopLoading,
+  }) {
+    return reset();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(
+      String userId,
+      Map<String, dynamic> bookingPayload,
+      double amount,
+      double serviceCharge,
+    )?
+    createOrder,
+    TResult? Function(
+      String paymentId,
+      String orderId,
+      String signature,
+      String traceId,
+      String tokenId,
+    )?
+    verifyPayment,
+    TResult? Function()? reset,
+    TResult? Function()? startLoading,
+    TResult? Function()? stopLoading,
+  }) {
+    return reset?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(
+      String userId,
+      Map<String, dynamic> bookingPayload,
+      double amount,
+      double serviceCharge,
+    )?
+    createOrder,
+    TResult Function(
+      String paymentId,
+      String orderId,
+      String signature,
+      String traceId,
+      String tokenId,
+    )?
+    verifyPayment,
+    TResult Function()? reset,
+    TResult Function()? startLoading,
+    TResult Function()? stopLoading,
+    required TResult orElse(),
+  }) {
+    if (reset != null) {
+      return reset();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_CreateOrder value) createOrder,
+    required TResult Function(_VerifyPayment value) verifyPayment,
+    required TResult Function(_Reset value) reset,
+    required TResult Function(_StartLoading value) startLoading,
+    required TResult Function(_StopLoading value) stopLoading,
+  }) {
+    return reset(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_CreateOrder value)? createOrder,
+    TResult? Function(_VerifyPayment value)? verifyPayment,
+    TResult? Function(_Reset value)? reset,
+    TResult? Function(_StartLoading value)? startLoading,
+    TResult? Function(_StopLoading value)? stopLoading,
+  }) {
+    return reset?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_CreateOrder value)? createOrder,
+    TResult Function(_VerifyPayment value)? verifyPayment,
+    TResult Function(_Reset value)? reset,
+    TResult Function(_StartLoading value)? startLoading,
+    TResult Function(_StopLoading value)? stopLoading,
+    required TResult orElse(),
+  }) {
+    if (reset != null) {
+      return reset(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _Reset implements HotelBookingConfirmEvent {
+  const factory _Reset() = _$ResetImpl;
 }
 
 /// @nodoc
@@ -1051,28 +858,21 @@ class _$StartLoadingImpl implements _StartLoading {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(
-      String orderId,
-      String transactionId,
-      String bookingId,
+      String userId,
+      Map<String, dynamic> bookingPayload,
       double amount,
-      String prebookId,
-      Map<String, dynamic> bookingRequest,
+      double serviceCharge,
     )
-    paymentDone,
+    createOrder,
     required TResult Function(
+      String paymentId,
       String orderId,
-      String prebookId,
-      String bookingId,
+      String signature,
+      String traceId,
+      String tokenId,
     )
-    paymentFail,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    initiateRefund,
+    verifyPayment,
+    required TResult Function() reset,
     required TResult Function() startLoading,
     required TResult Function() stopLoading,
   }) {
@@ -1083,24 +883,21 @@ class _$StartLoadingImpl implements _StartLoading {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(
-      String orderId,
-      String transactionId,
-      String bookingId,
+      String userId,
+      Map<String, dynamic> bookingPayload,
       double amount,
-      String prebookId,
-      Map<String, dynamic> bookingRequest,
+      double serviceCharge,
     )?
-    paymentDone,
-    TResult? Function(String orderId, String prebookId, String bookingId)?
-    paymentFail,
+    createOrder,
     TResult? Function(
+      String paymentId,
       String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
+      String signature,
+      String traceId,
+      String tokenId,
     )?
-    initiateRefund,
+    verifyPayment,
+    TResult? Function()? reset,
     TResult? Function()? startLoading,
     TResult? Function()? stopLoading,
   }) {
@@ -1111,24 +908,21 @@ class _$StartLoadingImpl implements _StartLoading {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(
-      String orderId,
-      String transactionId,
-      String bookingId,
+      String userId,
+      Map<String, dynamic> bookingPayload,
       double amount,
-      String prebookId,
-      Map<String, dynamic> bookingRequest,
+      double serviceCharge,
     )?
-    paymentDone,
-    TResult Function(String orderId, String prebookId, String bookingId)?
-    paymentFail,
+    createOrder,
     TResult Function(
+      String paymentId,
       String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
+      String signature,
+      String traceId,
+      String tokenId,
     )?
-    initiateRefund,
+    verifyPayment,
+    TResult Function()? reset,
     TResult Function()? startLoading,
     TResult Function()? stopLoading,
     required TResult orElse(),
@@ -1142,9 +936,9 @@ class _$StartLoadingImpl implements _StartLoading {
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(_PaymentDone value) paymentDone,
-    required TResult Function(_PaymentFail value) paymentFail,
-    required TResult Function(_InitiateRefund value) initiateRefund,
+    required TResult Function(_CreateOrder value) createOrder,
+    required TResult Function(_VerifyPayment value) verifyPayment,
+    required TResult Function(_Reset value) reset,
     required TResult Function(_StartLoading value) startLoading,
     required TResult Function(_StopLoading value) stopLoading,
   }) {
@@ -1154,9 +948,9 @@ class _$StartLoadingImpl implements _StartLoading {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_PaymentDone value)? paymentDone,
-    TResult? Function(_PaymentFail value)? paymentFail,
-    TResult? Function(_InitiateRefund value)? initiateRefund,
+    TResult? Function(_CreateOrder value)? createOrder,
+    TResult? Function(_VerifyPayment value)? verifyPayment,
+    TResult? Function(_Reset value)? reset,
     TResult? Function(_StartLoading value)? startLoading,
     TResult? Function(_StopLoading value)? stopLoading,
   }) {
@@ -1166,9 +960,9 @@ class _$StartLoadingImpl implements _StartLoading {
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(_PaymentDone value)? paymentDone,
-    TResult Function(_PaymentFail value)? paymentFail,
-    TResult Function(_InitiateRefund value)? initiateRefund,
+    TResult Function(_CreateOrder value)? createOrder,
+    TResult Function(_VerifyPayment value)? verifyPayment,
+    TResult Function(_Reset value)? reset,
     TResult Function(_StartLoading value)? startLoading,
     TResult Function(_StopLoading value)? stopLoading,
     required TResult orElse(),
@@ -1228,28 +1022,21 @@ class _$StopLoadingImpl implements _StopLoading {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(
-      String orderId,
-      String transactionId,
-      String bookingId,
+      String userId,
+      Map<String, dynamic> bookingPayload,
       double amount,
-      String prebookId,
-      Map<String, dynamic> bookingRequest,
+      double serviceCharge,
     )
-    paymentDone,
+    createOrder,
     required TResult Function(
+      String paymentId,
       String orderId,
-      String prebookId,
-      String bookingId,
+      String signature,
+      String traceId,
+      String tokenId,
     )
-    paymentFail,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    initiateRefund,
+    verifyPayment,
+    required TResult Function() reset,
     required TResult Function() startLoading,
     required TResult Function() stopLoading,
   }) {
@@ -1260,24 +1047,21 @@ class _$StopLoadingImpl implements _StopLoading {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(
-      String orderId,
-      String transactionId,
-      String bookingId,
+      String userId,
+      Map<String, dynamic> bookingPayload,
       double amount,
-      String prebookId,
-      Map<String, dynamic> bookingRequest,
+      double serviceCharge,
     )?
-    paymentDone,
-    TResult? Function(String orderId, String prebookId, String bookingId)?
-    paymentFail,
+    createOrder,
     TResult? Function(
+      String paymentId,
       String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
+      String signature,
+      String traceId,
+      String tokenId,
     )?
-    initiateRefund,
+    verifyPayment,
+    TResult? Function()? reset,
     TResult? Function()? startLoading,
     TResult? Function()? stopLoading,
   }) {
@@ -1288,24 +1072,21 @@ class _$StopLoadingImpl implements _StopLoading {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(
-      String orderId,
-      String transactionId,
-      String bookingId,
+      String userId,
+      Map<String, dynamic> bookingPayload,
       double amount,
-      String prebookId,
-      Map<String, dynamic> bookingRequest,
+      double serviceCharge,
     )?
-    paymentDone,
-    TResult Function(String orderId, String prebookId, String bookingId)?
-    paymentFail,
+    createOrder,
     TResult Function(
+      String paymentId,
       String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
+      String signature,
+      String traceId,
+      String tokenId,
     )?
-    initiateRefund,
+    verifyPayment,
+    TResult Function()? reset,
     TResult Function()? startLoading,
     TResult Function()? stopLoading,
     required TResult orElse(),
@@ -1319,9 +1100,9 @@ class _$StopLoadingImpl implements _StopLoading {
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(_PaymentDone value) paymentDone,
-    required TResult Function(_PaymentFail value) paymentFail,
-    required TResult Function(_InitiateRefund value) initiateRefund,
+    required TResult Function(_CreateOrder value) createOrder,
+    required TResult Function(_VerifyPayment value) verifyPayment,
+    required TResult Function(_Reset value) reset,
     required TResult Function(_StartLoading value) startLoading,
     required TResult Function(_StopLoading value) stopLoading,
   }) {
@@ -1331,9 +1112,9 @@ class _$StopLoadingImpl implements _StopLoading {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_PaymentDone value)? paymentDone,
-    TResult? Function(_PaymentFail value)? paymentFail,
-    TResult? Function(_InitiateRefund value)? initiateRefund,
+    TResult? Function(_CreateOrder value)? createOrder,
+    TResult? Function(_VerifyPayment value)? verifyPayment,
+    TResult? Function(_Reset value)? reset,
     TResult? Function(_StartLoading value)? startLoading,
     TResult? Function(_StopLoading value)? stopLoading,
   }) {
@@ -1343,9 +1124,9 @@ class _$StopLoadingImpl implements _StopLoading {
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(_PaymentDone value)? paymentDone,
-    TResult Function(_PaymentFail value)? paymentFail,
-    TResult Function(_InitiateRefund value)? initiateRefund,
+    TResult Function(_CreateOrder value)? createOrder,
+    TResult Function(_VerifyPayment value)? verifyPayment,
+    TResult Function(_Reset value)? reset,
     TResult Function(_StartLoading value)? startLoading,
     TResult Function(_StopLoading value)? stopLoading,
     required TResult orElse(),
@@ -1367,225 +1148,51 @@ mixin _$HotelBookingConfirmState {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function(HotelBookingConfirmState? previousState) loading,
-    required TResult Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )
-    success,
-    required TResult Function(String message, String orderId, String bookingId)
-    paymentFailed,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )
-    paymentSavedFailed,
-    required TResult Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    error,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    refundProcessing,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    refundInitiated,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )
-    refundFailed,
+    required TResult Function(Map<String, dynamic> orderData) orderCreated,
+    required TResult Function(Map<String, dynamic> data) success,
+    required TResult Function(String message, Map<String, dynamic>? data) error,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function(HotelBookingConfirmState? previousState)? loading,
-    TResult? Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )?
-    success,
-    TResult? Function(String message, String orderId, String bookingId)?
-    paymentFailed,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )?
-    paymentSavedFailed,
-    TResult? Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    error,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundProcessing,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundInitiated,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )?
-    refundFailed,
+    TResult? Function(Map<String, dynamic> orderData)? orderCreated,
+    TResult? Function(Map<String, dynamic> data)? success,
+    TResult? Function(String message, Map<String, dynamic>? data)? error,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function(HotelBookingConfirmState? previousState)? loading,
-    TResult Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )?
-    success,
-    TResult Function(String message, String orderId, String bookingId)?
-    paymentFailed,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )?
-    paymentSavedFailed,
-    TResult Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    error,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundProcessing,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundInitiated,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )?
-    refundFailed,
+    TResult Function(Map<String, dynamic> orderData)? orderCreated,
+    TResult Function(Map<String, dynamic> data)? success,
+    TResult Function(String message, Map<String, dynamic>? data)? error,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(HotelBookingConfirmInitial value) initial,
     required TResult Function(HotelBookingConfirmLoading value) loading,
+    required TResult Function(HotelBookingConfirmOrderCreated value)
+    orderCreated,
     required TResult Function(HotelBookingConfirmSuccess value) success,
-    required TResult Function(HotelBookingConfirmPaymentFailed value)
-    paymentFailed,
-    required TResult Function(HotelBookingConfirmPaymentSavedFailed value)
-    paymentSavedFailed,
     required TResult Function(HotelBookingConfirmError value) error,
-    required TResult Function(HotelBookingConfirmRefundProcessing value)
-    refundProcessing,
-    required TResult Function(HotelBookingConfirmRefundInitiated value)
-    refundInitiated,
-    required TResult Function(HotelBookingConfirmRefundFailed value)
-    refundFailed,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(HotelBookingConfirmInitial value)? initial,
     TResult? Function(HotelBookingConfirmLoading value)? loading,
+    TResult? Function(HotelBookingConfirmOrderCreated value)? orderCreated,
     TResult? Function(HotelBookingConfirmSuccess value)? success,
-    TResult? Function(HotelBookingConfirmPaymentFailed value)? paymentFailed,
-    TResult? Function(HotelBookingConfirmPaymentSavedFailed value)?
-    paymentSavedFailed,
     TResult? Function(HotelBookingConfirmError value)? error,
-    TResult? Function(HotelBookingConfirmRefundProcessing value)?
-    refundProcessing,
-    TResult? Function(HotelBookingConfirmRefundInitiated value)?
-    refundInitiated,
-    TResult? Function(HotelBookingConfirmRefundFailed value)? refundFailed,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(HotelBookingConfirmInitial value)? initial,
     TResult Function(HotelBookingConfirmLoading value)? loading,
+    TResult Function(HotelBookingConfirmOrderCreated value)? orderCreated,
     TResult Function(HotelBookingConfirmSuccess value)? success,
-    TResult Function(HotelBookingConfirmPaymentFailed value)? paymentFailed,
-    TResult Function(HotelBookingConfirmPaymentSavedFailed value)?
-    paymentSavedFailed,
     TResult Function(HotelBookingConfirmError value)? error,
-    TResult Function(HotelBookingConfirmRefundProcessing value)?
-    refundProcessing,
-    TResult Function(HotelBookingConfirmRefundInitiated value)? refundInitiated,
-    TResult Function(HotelBookingConfirmRefundFailed value)? refundFailed,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
 }
@@ -1665,60 +1272,9 @@ class _$HotelBookingConfirmInitialImpl implements HotelBookingConfirmInitial {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function(HotelBookingConfirmState? previousState) loading,
-    required TResult Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )
-    success,
-    required TResult Function(String message, String orderId, String bookingId)
-    paymentFailed,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )
-    paymentSavedFailed,
-    required TResult Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    error,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    refundProcessing,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    refundInitiated,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )
-    refundFailed,
+    required TResult Function(Map<String, dynamic> orderData) orderCreated,
+    required TResult Function(Map<String, dynamic> data) success,
+    required TResult Function(String message, Map<String, dynamic>? data) error,
   }) {
     return initial();
   }
@@ -1728,60 +1284,9 @@ class _$HotelBookingConfirmInitialImpl implements HotelBookingConfirmInitial {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function(HotelBookingConfirmState? previousState)? loading,
-    TResult? Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )?
-    success,
-    TResult? Function(String message, String orderId, String bookingId)?
-    paymentFailed,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )?
-    paymentSavedFailed,
-    TResult? Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    error,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundProcessing,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundInitiated,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )?
-    refundFailed,
+    TResult? Function(Map<String, dynamic> orderData)? orderCreated,
+    TResult? Function(Map<String, dynamic> data)? success,
+    TResult? Function(String message, Map<String, dynamic>? data)? error,
   }) {
     return initial?.call();
   }
@@ -1791,60 +1296,9 @@ class _$HotelBookingConfirmInitialImpl implements HotelBookingConfirmInitial {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function(HotelBookingConfirmState? previousState)? loading,
-    TResult Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )?
-    success,
-    TResult Function(String message, String orderId, String bookingId)?
-    paymentFailed,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )?
-    paymentSavedFailed,
-    TResult Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    error,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundProcessing,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundInitiated,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )?
-    refundFailed,
+    TResult Function(Map<String, dynamic> orderData)? orderCreated,
+    TResult Function(Map<String, dynamic> data)? success,
+    TResult Function(String message, Map<String, dynamic>? data)? error,
     required TResult orElse(),
   }) {
     if (initial != null) {
@@ -1858,18 +1312,10 @@ class _$HotelBookingConfirmInitialImpl implements HotelBookingConfirmInitial {
   TResult map<TResult extends Object?>({
     required TResult Function(HotelBookingConfirmInitial value) initial,
     required TResult Function(HotelBookingConfirmLoading value) loading,
+    required TResult Function(HotelBookingConfirmOrderCreated value)
+    orderCreated,
     required TResult Function(HotelBookingConfirmSuccess value) success,
-    required TResult Function(HotelBookingConfirmPaymentFailed value)
-    paymentFailed,
-    required TResult Function(HotelBookingConfirmPaymentSavedFailed value)
-    paymentSavedFailed,
     required TResult Function(HotelBookingConfirmError value) error,
-    required TResult Function(HotelBookingConfirmRefundProcessing value)
-    refundProcessing,
-    required TResult Function(HotelBookingConfirmRefundInitiated value)
-    refundInitiated,
-    required TResult Function(HotelBookingConfirmRefundFailed value)
-    refundFailed,
   }) {
     return initial(this);
   }
@@ -1879,16 +1325,9 @@ class _$HotelBookingConfirmInitialImpl implements HotelBookingConfirmInitial {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(HotelBookingConfirmInitial value)? initial,
     TResult? Function(HotelBookingConfirmLoading value)? loading,
+    TResult? Function(HotelBookingConfirmOrderCreated value)? orderCreated,
     TResult? Function(HotelBookingConfirmSuccess value)? success,
-    TResult? Function(HotelBookingConfirmPaymentFailed value)? paymentFailed,
-    TResult? Function(HotelBookingConfirmPaymentSavedFailed value)?
-    paymentSavedFailed,
     TResult? Function(HotelBookingConfirmError value)? error,
-    TResult? Function(HotelBookingConfirmRefundProcessing value)?
-    refundProcessing,
-    TResult? Function(HotelBookingConfirmRefundInitiated value)?
-    refundInitiated,
-    TResult? Function(HotelBookingConfirmRefundFailed value)? refundFailed,
   }) {
     return initial?.call(this);
   }
@@ -1898,15 +1337,9 @@ class _$HotelBookingConfirmInitialImpl implements HotelBookingConfirmInitial {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(HotelBookingConfirmInitial value)? initial,
     TResult Function(HotelBookingConfirmLoading value)? loading,
+    TResult Function(HotelBookingConfirmOrderCreated value)? orderCreated,
     TResult Function(HotelBookingConfirmSuccess value)? success,
-    TResult Function(HotelBookingConfirmPaymentFailed value)? paymentFailed,
-    TResult Function(HotelBookingConfirmPaymentSavedFailed value)?
-    paymentSavedFailed,
     TResult Function(HotelBookingConfirmError value)? error,
-    TResult Function(HotelBookingConfirmRefundProcessing value)?
-    refundProcessing,
-    TResult Function(HotelBookingConfirmRefundInitiated value)? refundInitiated,
-    TResult Function(HotelBookingConfirmRefundFailed value)? refundFailed,
     required TResult orElse(),
   }) {
     if (initial != null) {
@@ -2018,60 +1451,9 @@ class _$HotelBookingConfirmLoadingImpl implements HotelBookingConfirmLoading {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function(HotelBookingConfirmState? previousState) loading,
-    required TResult Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )
-    success,
-    required TResult Function(String message, String orderId, String bookingId)
-    paymentFailed,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )
-    paymentSavedFailed,
-    required TResult Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    error,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    refundProcessing,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    refundInitiated,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )
-    refundFailed,
+    required TResult Function(Map<String, dynamic> orderData) orderCreated,
+    required TResult Function(Map<String, dynamic> data) success,
+    required TResult Function(String message, Map<String, dynamic>? data) error,
   }) {
     return loading(previousState);
   }
@@ -2081,60 +1463,9 @@ class _$HotelBookingConfirmLoadingImpl implements HotelBookingConfirmLoading {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function(HotelBookingConfirmState? previousState)? loading,
-    TResult? Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )?
-    success,
-    TResult? Function(String message, String orderId, String bookingId)?
-    paymentFailed,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )?
-    paymentSavedFailed,
-    TResult? Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    error,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundProcessing,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundInitiated,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )?
-    refundFailed,
+    TResult? Function(Map<String, dynamic> orderData)? orderCreated,
+    TResult? Function(Map<String, dynamic> data)? success,
+    TResult? Function(String message, Map<String, dynamic>? data)? error,
   }) {
     return loading?.call(previousState);
   }
@@ -2144,60 +1475,9 @@ class _$HotelBookingConfirmLoadingImpl implements HotelBookingConfirmLoading {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function(HotelBookingConfirmState? previousState)? loading,
-    TResult Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )?
-    success,
-    TResult Function(String message, String orderId, String bookingId)?
-    paymentFailed,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )?
-    paymentSavedFailed,
-    TResult Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    error,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundProcessing,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundInitiated,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )?
-    refundFailed,
+    TResult Function(Map<String, dynamic> orderData)? orderCreated,
+    TResult Function(Map<String, dynamic> data)? success,
+    TResult Function(String message, Map<String, dynamic>? data)? error,
     required TResult orElse(),
   }) {
     if (loading != null) {
@@ -2211,18 +1491,10 @@ class _$HotelBookingConfirmLoadingImpl implements HotelBookingConfirmLoading {
   TResult map<TResult extends Object?>({
     required TResult Function(HotelBookingConfirmInitial value) initial,
     required TResult Function(HotelBookingConfirmLoading value) loading,
+    required TResult Function(HotelBookingConfirmOrderCreated value)
+    orderCreated,
     required TResult Function(HotelBookingConfirmSuccess value) success,
-    required TResult Function(HotelBookingConfirmPaymentFailed value)
-    paymentFailed,
-    required TResult Function(HotelBookingConfirmPaymentSavedFailed value)
-    paymentSavedFailed,
     required TResult Function(HotelBookingConfirmError value) error,
-    required TResult Function(HotelBookingConfirmRefundProcessing value)
-    refundProcessing,
-    required TResult Function(HotelBookingConfirmRefundInitiated value)
-    refundInitiated,
-    required TResult Function(HotelBookingConfirmRefundFailed value)
-    refundFailed,
   }) {
     return loading(this);
   }
@@ -2232,16 +1504,9 @@ class _$HotelBookingConfirmLoadingImpl implements HotelBookingConfirmLoading {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(HotelBookingConfirmInitial value)? initial,
     TResult? Function(HotelBookingConfirmLoading value)? loading,
+    TResult? Function(HotelBookingConfirmOrderCreated value)? orderCreated,
     TResult? Function(HotelBookingConfirmSuccess value)? success,
-    TResult? Function(HotelBookingConfirmPaymentFailed value)? paymentFailed,
-    TResult? Function(HotelBookingConfirmPaymentSavedFailed value)?
-    paymentSavedFailed,
     TResult? Function(HotelBookingConfirmError value)? error,
-    TResult? Function(HotelBookingConfirmRefundProcessing value)?
-    refundProcessing,
-    TResult? Function(HotelBookingConfirmRefundInitiated value)?
-    refundInitiated,
-    TResult? Function(HotelBookingConfirmRefundFailed value)? refundFailed,
   }) {
     return loading?.call(this);
   }
@@ -2251,15 +1516,9 @@ class _$HotelBookingConfirmLoadingImpl implements HotelBookingConfirmLoading {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(HotelBookingConfirmInitial value)? initial,
     TResult Function(HotelBookingConfirmLoading value)? loading,
+    TResult Function(HotelBookingConfirmOrderCreated value)? orderCreated,
     TResult Function(HotelBookingConfirmSuccess value)? success,
-    TResult Function(HotelBookingConfirmPaymentFailed value)? paymentFailed,
-    TResult Function(HotelBookingConfirmPaymentSavedFailed value)?
-    paymentSavedFailed,
     TResult Function(HotelBookingConfirmError value)? error,
-    TResult Function(HotelBookingConfirmRefundProcessing value)?
-    refundProcessing,
-    TResult Function(HotelBookingConfirmRefundInitiated value)? refundInitiated,
-    TResult Function(HotelBookingConfirmRefundFailed value)? refundFailed,
     required TResult orElse(),
   }) {
     if (loading != null) {
@@ -2284,19 +1543,200 @@ abstract class HotelBookingConfirmLoading implements HotelBookingConfirmState {
 }
 
 /// @nodoc
+abstract class _$$HotelBookingConfirmOrderCreatedImplCopyWith<$Res> {
+  factory _$$HotelBookingConfirmOrderCreatedImplCopyWith(
+    _$HotelBookingConfirmOrderCreatedImpl value,
+    $Res Function(_$HotelBookingConfirmOrderCreatedImpl) then,
+  ) = __$$HotelBookingConfirmOrderCreatedImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({Map<String, dynamic> orderData});
+}
+
+/// @nodoc
+class __$$HotelBookingConfirmOrderCreatedImplCopyWithImpl<$Res>
+    extends
+        _$HotelBookingConfirmStateCopyWithImpl<
+          $Res,
+          _$HotelBookingConfirmOrderCreatedImpl
+        >
+    implements _$$HotelBookingConfirmOrderCreatedImplCopyWith<$Res> {
+  __$$HotelBookingConfirmOrderCreatedImplCopyWithImpl(
+    _$HotelBookingConfirmOrderCreatedImpl _value,
+    $Res Function(_$HotelBookingConfirmOrderCreatedImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of HotelBookingConfirmState
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? orderData = null}) {
+    return _then(
+      _$HotelBookingConfirmOrderCreatedImpl(
+        orderData: null == orderData
+            ? _value._orderData
+            : orderData // ignore: cast_nullable_to_non_nullable
+                  as Map<String, dynamic>,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+
+class _$HotelBookingConfirmOrderCreatedImpl
+    implements HotelBookingConfirmOrderCreated {
+  const _$HotelBookingConfirmOrderCreatedImpl({
+    required final Map<String, dynamic> orderData,
+  }) : _orderData = orderData;
+
+  final Map<String, dynamic> _orderData;
+  @override
+  Map<String, dynamic> get orderData {
+    if (_orderData is EqualUnmodifiableMapView) return _orderData;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_orderData);
+  }
+
+  @override
+  String toString() {
+    return 'HotelBookingConfirmState.orderCreated(orderData: $orderData)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$HotelBookingConfirmOrderCreatedImpl &&
+            const DeepCollectionEquality().equals(
+              other._orderData,
+              _orderData,
+            ));
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(_orderData));
+
+  /// Create a copy of HotelBookingConfirmState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$HotelBookingConfirmOrderCreatedImplCopyWith<
+    _$HotelBookingConfirmOrderCreatedImpl
+  >
+  get copyWith =>
+      __$$HotelBookingConfirmOrderCreatedImplCopyWithImpl<
+        _$HotelBookingConfirmOrderCreatedImpl
+      >(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() initial,
+    required TResult Function(HotelBookingConfirmState? previousState) loading,
+    required TResult Function(Map<String, dynamic> orderData) orderCreated,
+    required TResult Function(Map<String, dynamic> data) success,
+    required TResult Function(String message, Map<String, dynamic>? data) error,
+  }) {
+    return orderCreated(orderData);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initial,
+    TResult? Function(HotelBookingConfirmState? previousState)? loading,
+    TResult? Function(Map<String, dynamic> orderData)? orderCreated,
+    TResult? Function(Map<String, dynamic> data)? success,
+    TResult? Function(String message, Map<String, dynamic>? data)? error,
+  }) {
+    return orderCreated?.call(orderData);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
+    TResult Function(HotelBookingConfirmState? previousState)? loading,
+    TResult Function(Map<String, dynamic> orderData)? orderCreated,
+    TResult Function(Map<String, dynamic> data)? success,
+    TResult Function(String message, Map<String, dynamic>? data)? error,
+    required TResult orElse(),
+  }) {
+    if (orderCreated != null) {
+      return orderCreated(orderData);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(HotelBookingConfirmInitial value) initial,
+    required TResult Function(HotelBookingConfirmLoading value) loading,
+    required TResult Function(HotelBookingConfirmOrderCreated value)
+    orderCreated,
+    required TResult Function(HotelBookingConfirmSuccess value) success,
+    required TResult Function(HotelBookingConfirmError value) error,
+  }) {
+    return orderCreated(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(HotelBookingConfirmInitial value)? initial,
+    TResult? Function(HotelBookingConfirmLoading value)? loading,
+    TResult? Function(HotelBookingConfirmOrderCreated value)? orderCreated,
+    TResult? Function(HotelBookingConfirmSuccess value)? success,
+    TResult? Function(HotelBookingConfirmError value)? error,
+  }) {
+    return orderCreated?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(HotelBookingConfirmInitial value)? initial,
+    TResult Function(HotelBookingConfirmLoading value)? loading,
+    TResult Function(HotelBookingConfirmOrderCreated value)? orderCreated,
+    TResult Function(HotelBookingConfirmSuccess value)? success,
+    TResult Function(HotelBookingConfirmError value)? error,
+    required TResult orElse(),
+  }) {
+    if (orderCreated != null) {
+      return orderCreated(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class HotelBookingConfirmOrderCreated
+    implements HotelBookingConfirmState {
+  const factory HotelBookingConfirmOrderCreated({
+    required final Map<String, dynamic> orderData,
+  }) = _$HotelBookingConfirmOrderCreatedImpl;
+
+  Map<String, dynamic> get orderData;
+
+  /// Create a copy of HotelBookingConfirmState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$HotelBookingConfirmOrderCreatedImplCopyWith<
+    _$HotelBookingConfirmOrderCreatedImpl
+  >
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
 abstract class _$$HotelBookingConfirmSuccessImplCopyWith<$Res> {
   factory _$$HotelBookingConfirmSuccessImplCopyWith(
     _$HotelBookingConfirmSuccessImpl value,
     $Res Function(_$HotelBookingConfirmSuccessImpl) then,
   ) = __$$HotelBookingConfirmSuccessImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({
-    Map<String, dynamic> data,
-    String bookingId,
-    String confirmationNo,
-    String bookingRefNo,
-    String booktableId,
-  });
+  $Res call({Map<String, dynamic> data});
 }
 
 /// @nodoc
@@ -2316,35 +1756,13 @@ class __$$HotelBookingConfirmSuccessImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? data = null,
-    Object? bookingId = null,
-    Object? confirmationNo = null,
-    Object? bookingRefNo = null,
-    Object? booktableId = null,
-  }) {
+  $Res call({Object? data = null}) {
     return _then(
       _$HotelBookingConfirmSuccessImpl(
         data: null == data
             ? _value._data
             : data // ignore: cast_nullable_to_non_nullable
                   as Map<String, dynamic>,
-        bookingId: null == bookingId
-            ? _value.bookingId
-            : bookingId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        confirmationNo: null == confirmationNo
-            ? _value.confirmationNo
-            : confirmationNo // ignore: cast_nullable_to_non_nullable
-                  as String,
-        bookingRefNo: null == bookingRefNo
-            ? _value.bookingRefNo
-            : bookingRefNo // ignore: cast_nullable_to_non_nullable
-                  as String,
-        booktableId: null == booktableId
-            ? _value.booktableId
-            : booktableId // ignore: cast_nullable_to_non_nullable
-                  as String,
       ),
     );
   }
@@ -2355,10 +1773,6 @@ class __$$HotelBookingConfirmSuccessImplCopyWithImpl<$Res>
 class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
   const _$HotelBookingConfirmSuccessImpl({
     required final Map<String, dynamic> data,
-    required this.bookingId,
-    required this.confirmationNo,
-    required this.bookingRefNo,
-    required this.booktableId,
   }) : _data = data;
 
   final Map<String, dynamic> _data;
@@ -2370,17 +1784,8 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
   }
 
   @override
-  final String bookingId;
-  @override
-  final String confirmationNo;
-  @override
-  final String bookingRefNo;
-  @override
-  final String booktableId;
-
-  @override
   String toString() {
-    return 'HotelBookingConfirmState.success(data: $data, bookingId: $bookingId, confirmationNo: $confirmationNo, bookingRefNo: $bookingRefNo, booktableId: $booktableId)';
+    return 'HotelBookingConfirmState.success(data: $data)';
   }
 
   @override
@@ -2388,26 +1793,12 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$HotelBookingConfirmSuccessImpl &&
-            const DeepCollectionEquality().equals(other._data, _data) &&
-            (identical(other.bookingId, bookingId) ||
-                other.bookingId == bookingId) &&
-            (identical(other.confirmationNo, confirmationNo) ||
-                other.confirmationNo == confirmationNo) &&
-            (identical(other.bookingRefNo, bookingRefNo) ||
-                other.bookingRefNo == bookingRefNo) &&
-            (identical(other.booktableId, booktableId) ||
-                other.booktableId == booktableId));
+            const DeepCollectionEquality().equals(other._data, _data));
   }
 
   @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    const DeepCollectionEquality().hash(_data),
-    bookingId,
-    confirmationNo,
-    bookingRefNo,
-    booktableId,
-  );
+  int get hashCode =>
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(_data));
 
   /// Create a copy of HotelBookingConfirmState
   /// with the given fields replaced by the non-null parameter values.
@@ -2425,62 +1816,11 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function(HotelBookingConfirmState? previousState) loading,
-    required TResult Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )
-    success,
-    required TResult Function(String message, String orderId, String bookingId)
-    paymentFailed,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )
-    paymentSavedFailed,
-    required TResult Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    error,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    refundProcessing,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    refundInitiated,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )
-    refundFailed,
+    required TResult Function(Map<String, dynamic> orderData) orderCreated,
+    required TResult Function(Map<String, dynamic> data) success,
+    required TResult Function(String message, Map<String, dynamic>? data) error,
   }) {
-    return success(data, bookingId, confirmationNo, bookingRefNo, booktableId);
+    return success(data);
   }
 
   @override
@@ -2488,68 +1828,11 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function(HotelBookingConfirmState? previousState)? loading,
-    TResult? Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )?
-    success,
-    TResult? Function(String message, String orderId, String bookingId)?
-    paymentFailed,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )?
-    paymentSavedFailed,
-    TResult? Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    error,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundProcessing,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundInitiated,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )?
-    refundFailed,
+    TResult? Function(Map<String, dynamic> orderData)? orderCreated,
+    TResult? Function(Map<String, dynamic> data)? success,
+    TResult? Function(String message, Map<String, dynamic>? data)? error,
   }) {
-    return success?.call(
-      data,
-      bookingId,
-      confirmationNo,
-      bookingRefNo,
-      booktableId,
-    );
+    return success?.call(data);
   }
 
   @override
@@ -2557,70 +1840,13 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function(HotelBookingConfirmState? previousState)? loading,
-    TResult Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )?
-    success,
-    TResult Function(String message, String orderId, String bookingId)?
-    paymentFailed,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )?
-    paymentSavedFailed,
-    TResult Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    error,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundProcessing,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundInitiated,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )?
-    refundFailed,
+    TResult Function(Map<String, dynamic> orderData)? orderCreated,
+    TResult Function(Map<String, dynamic> data)? success,
+    TResult Function(String message, Map<String, dynamic>? data)? error,
     required TResult orElse(),
   }) {
     if (success != null) {
-      return success(
-        data,
-        bookingId,
-        confirmationNo,
-        bookingRefNo,
-        booktableId,
-      );
+      return success(data);
     }
     return orElse();
   }
@@ -2630,18 +1856,10 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
   TResult map<TResult extends Object?>({
     required TResult Function(HotelBookingConfirmInitial value) initial,
     required TResult Function(HotelBookingConfirmLoading value) loading,
+    required TResult Function(HotelBookingConfirmOrderCreated value)
+    orderCreated,
     required TResult Function(HotelBookingConfirmSuccess value) success,
-    required TResult Function(HotelBookingConfirmPaymentFailed value)
-    paymentFailed,
-    required TResult Function(HotelBookingConfirmPaymentSavedFailed value)
-    paymentSavedFailed,
     required TResult Function(HotelBookingConfirmError value) error,
-    required TResult Function(HotelBookingConfirmRefundProcessing value)
-    refundProcessing,
-    required TResult Function(HotelBookingConfirmRefundInitiated value)
-    refundInitiated,
-    required TResult Function(HotelBookingConfirmRefundFailed value)
-    refundFailed,
   }) {
     return success(this);
   }
@@ -2651,16 +1869,9 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(HotelBookingConfirmInitial value)? initial,
     TResult? Function(HotelBookingConfirmLoading value)? loading,
+    TResult? Function(HotelBookingConfirmOrderCreated value)? orderCreated,
     TResult? Function(HotelBookingConfirmSuccess value)? success,
-    TResult? Function(HotelBookingConfirmPaymentFailed value)? paymentFailed,
-    TResult? Function(HotelBookingConfirmPaymentSavedFailed value)?
-    paymentSavedFailed,
     TResult? Function(HotelBookingConfirmError value)? error,
-    TResult? Function(HotelBookingConfirmRefundProcessing value)?
-    refundProcessing,
-    TResult? Function(HotelBookingConfirmRefundInitiated value)?
-    refundInitiated,
-    TResult? Function(HotelBookingConfirmRefundFailed value)? refundFailed,
   }) {
     return success?.call(this);
   }
@@ -2670,15 +1881,9 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(HotelBookingConfirmInitial value)? initial,
     TResult Function(HotelBookingConfirmLoading value)? loading,
+    TResult Function(HotelBookingConfirmOrderCreated value)? orderCreated,
     TResult Function(HotelBookingConfirmSuccess value)? success,
-    TResult Function(HotelBookingConfirmPaymentFailed value)? paymentFailed,
-    TResult Function(HotelBookingConfirmPaymentSavedFailed value)?
-    paymentSavedFailed,
     TResult Function(HotelBookingConfirmError value)? error,
-    TResult Function(HotelBookingConfirmRefundProcessing value)?
-    refundProcessing,
-    TResult Function(HotelBookingConfirmRefundInitiated value)? refundInitiated,
-    TResult Function(HotelBookingConfirmRefundFailed value)? refundFailed,
     required TResult orElse(),
   }) {
     if (success != null) {
@@ -2691,847 +1896,14 @@ class _$HotelBookingConfirmSuccessImpl implements HotelBookingConfirmSuccess {
 abstract class HotelBookingConfirmSuccess implements HotelBookingConfirmState {
   const factory HotelBookingConfirmSuccess({
     required final Map<String, dynamic> data,
-    required final String bookingId,
-    required final String confirmationNo,
-    required final String bookingRefNo,
-    required final String booktableId,
   }) = _$HotelBookingConfirmSuccessImpl;
 
   Map<String, dynamic> get data;
-  String get bookingId;
-  String get confirmationNo;
-  String get bookingRefNo;
-  String get booktableId;
 
   /// Create a copy of HotelBookingConfirmState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$HotelBookingConfirmSuccessImplCopyWith<_$HotelBookingConfirmSuccessImpl>
-  get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$HotelBookingConfirmPaymentFailedImplCopyWith<$Res> {
-  factory _$$HotelBookingConfirmPaymentFailedImplCopyWith(
-    _$HotelBookingConfirmPaymentFailedImpl value,
-    $Res Function(_$HotelBookingConfirmPaymentFailedImpl) then,
-  ) = __$$HotelBookingConfirmPaymentFailedImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({String message, String orderId, String bookingId});
-}
-
-/// @nodoc
-class __$$HotelBookingConfirmPaymentFailedImplCopyWithImpl<$Res>
-    extends
-        _$HotelBookingConfirmStateCopyWithImpl<
-          $Res,
-          _$HotelBookingConfirmPaymentFailedImpl
-        >
-    implements _$$HotelBookingConfirmPaymentFailedImplCopyWith<$Res> {
-  __$$HotelBookingConfirmPaymentFailedImplCopyWithImpl(
-    _$HotelBookingConfirmPaymentFailedImpl _value,
-    $Res Function(_$HotelBookingConfirmPaymentFailedImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of HotelBookingConfirmState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? message = null,
-    Object? orderId = null,
-    Object? bookingId = null,
-  }) {
-    return _then(
-      _$HotelBookingConfirmPaymentFailedImpl(
-        message: null == message
-            ? _value.message
-            : message // ignore: cast_nullable_to_non_nullable
-                  as String,
-        orderId: null == orderId
-            ? _value.orderId
-            : orderId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        bookingId: null == bookingId
-            ? _value.bookingId
-            : bookingId // ignore: cast_nullable_to_non_nullable
-                  as String,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-
-class _$HotelBookingConfirmPaymentFailedImpl
-    implements HotelBookingConfirmPaymentFailed {
-  const _$HotelBookingConfirmPaymentFailedImpl({
-    required this.message,
-    required this.orderId,
-    required this.bookingId,
-  });
-
-  @override
-  final String message;
-  @override
-  final String orderId;
-  @override
-  final String bookingId;
-
-  @override
-  String toString() {
-    return 'HotelBookingConfirmState.paymentFailed(message: $message, orderId: $orderId, bookingId: $bookingId)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$HotelBookingConfirmPaymentFailedImpl &&
-            (identical(other.message, message) || other.message == message) &&
-            (identical(other.orderId, orderId) || other.orderId == orderId) &&
-            (identical(other.bookingId, bookingId) ||
-                other.bookingId == bookingId));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, message, orderId, bookingId);
-
-  /// Create a copy of HotelBookingConfirmState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$HotelBookingConfirmPaymentFailedImplCopyWith<
-    _$HotelBookingConfirmPaymentFailedImpl
-  >
-  get copyWith =>
-      __$$HotelBookingConfirmPaymentFailedImplCopyWithImpl<
-        _$HotelBookingConfirmPaymentFailedImpl
-      >(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function(HotelBookingConfirmState? previousState) loading,
-    required TResult Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )
-    success,
-    required TResult Function(String message, String orderId, String bookingId)
-    paymentFailed,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )
-    paymentSavedFailed,
-    required TResult Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    error,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    refundProcessing,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    refundInitiated,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )
-    refundFailed,
-  }) {
-    return paymentFailed(message, orderId, bookingId);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function(HotelBookingConfirmState? previousState)? loading,
-    TResult? Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )?
-    success,
-    TResult? Function(String message, String orderId, String bookingId)?
-    paymentFailed,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )?
-    paymentSavedFailed,
-    TResult? Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    error,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundProcessing,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundInitiated,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )?
-    refundFailed,
-  }) {
-    return paymentFailed?.call(message, orderId, bookingId);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function(HotelBookingConfirmState? previousState)? loading,
-    TResult Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )?
-    success,
-    TResult Function(String message, String orderId, String bookingId)?
-    paymentFailed,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )?
-    paymentSavedFailed,
-    TResult Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    error,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundProcessing,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundInitiated,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )?
-    refundFailed,
-    required TResult orElse(),
-  }) {
-    if (paymentFailed != null) {
-      return paymentFailed(message, orderId, bookingId);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(HotelBookingConfirmInitial value) initial,
-    required TResult Function(HotelBookingConfirmLoading value) loading,
-    required TResult Function(HotelBookingConfirmSuccess value) success,
-    required TResult Function(HotelBookingConfirmPaymentFailed value)
-    paymentFailed,
-    required TResult Function(HotelBookingConfirmPaymentSavedFailed value)
-    paymentSavedFailed,
-    required TResult Function(HotelBookingConfirmError value) error,
-    required TResult Function(HotelBookingConfirmRefundProcessing value)
-    refundProcessing,
-    required TResult Function(HotelBookingConfirmRefundInitiated value)
-    refundInitiated,
-    required TResult Function(HotelBookingConfirmRefundFailed value)
-    refundFailed,
-  }) {
-    return paymentFailed(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(HotelBookingConfirmInitial value)? initial,
-    TResult? Function(HotelBookingConfirmLoading value)? loading,
-    TResult? Function(HotelBookingConfirmSuccess value)? success,
-    TResult? Function(HotelBookingConfirmPaymentFailed value)? paymentFailed,
-    TResult? Function(HotelBookingConfirmPaymentSavedFailed value)?
-    paymentSavedFailed,
-    TResult? Function(HotelBookingConfirmError value)? error,
-    TResult? Function(HotelBookingConfirmRefundProcessing value)?
-    refundProcessing,
-    TResult? Function(HotelBookingConfirmRefundInitiated value)?
-    refundInitiated,
-    TResult? Function(HotelBookingConfirmRefundFailed value)? refundFailed,
-  }) {
-    return paymentFailed?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(HotelBookingConfirmInitial value)? initial,
-    TResult Function(HotelBookingConfirmLoading value)? loading,
-    TResult Function(HotelBookingConfirmSuccess value)? success,
-    TResult Function(HotelBookingConfirmPaymentFailed value)? paymentFailed,
-    TResult Function(HotelBookingConfirmPaymentSavedFailed value)?
-    paymentSavedFailed,
-    TResult Function(HotelBookingConfirmError value)? error,
-    TResult Function(HotelBookingConfirmRefundProcessing value)?
-    refundProcessing,
-    TResult Function(HotelBookingConfirmRefundInitiated value)? refundInitiated,
-    TResult Function(HotelBookingConfirmRefundFailed value)? refundFailed,
-    required TResult orElse(),
-  }) {
-    if (paymentFailed != null) {
-      return paymentFailed(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class HotelBookingConfirmPaymentFailed
-    implements HotelBookingConfirmState {
-  const factory HotelBookingConfirmPaymentFailed({
-    required final String message,
-    required final String orderId,
-    required final String bookingId,
-  }) = _$HotelBookingConfirmPaymentFailedImpl;
-
-  String get message;
-  String get orderId;
-  String get bookingId;
-
-  /// Create a copy of HotelBookingConfirmState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$HotelBookingConfirmPaymentFailedImplCopyWith<
-    _$HotelBookingConfirmPaymentFailedImpl
-  >
-  get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$HotelBookingConfirmPaymentSavedFailedImplCopyWith<$Res> {
-  factory _$$HotelBookingConfirmPaymentSavedFailedImplCopyWith(
-    _$HotelBookingConfirmPaymentSavedFailedImpl value,
-    $Res Function(_$HotelBookingConfirmPaymentSavedFailedImpl) then,
-  ) = __$$HotelBookingConfirmPaymentSavedFailedImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({
-    String message,
-    String orderId,
-    String transactionId,
-    double amount,
-    String bookingId,
-    bool shouldRefund,
-  });
-}
-
-/// @nodoc
-class __$$HotelBookingConfirmPaymentSavedFailedImplCopyWithImpl<$Res>
-    extends
-        _$HotelBookingConfirmStateCopyWithImpl<
-          $Res,
-          _$HotelBookingConfirmPaymentSavedFailedImpl
-        >
-    implements _$$HotelBookingConfirmPaymentSavedFailedImplCopyWith<$Res> {
-  __$$HotelBookingConfirmPaymentSavedFailedImplCopyWithImpl(
-    _$HotelBookingConfirmPaymentSavedFailedImpl _value,
-    $Res Function(_$HotelBookingConfirmPaymentSavedFailedImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of HotelBookingConfirmState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? message = null,
-    Object? orderId = null,
-    Object? transactionId = null,
-    Object? amount = null,
-    Object? bookingId = null,
-    Object? shouldRefund = null,
-  }) {
-    return _then(
-      _$HotelBookingConfirmPaymentSavedFailedImpl(
-        message: null == message
-            ? _value.message
-            : message // ignore: cast_nullable_to_non_nullable
-                  as String,
-        orderId: null == orderId
-            ? _value.orderId
-            : orderId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        transactionId: null == transactionId
-            ? _value.transactionId
-            : transactionId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        amount: null == amount
-            ? _value.amount
-            : amount // ignore: cast_nullable_to_non_nullable
-                  as double,
-        bookingId: null == bookingId
-            ? _value.bookingId
-            : bookingId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        shouldRefund: null == shouldRefund
-            ? _value.shouldRefund
-            : shouldRefund // ignore: cast_nullable_to_non_nullable
-                  as bool,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-
-class _$HotelBookingConfirmPaymentSavedFailedImpl
-    implements HotelBookingConfirmPaymentSavedFailed {
-  const _$HotelBookingConfirmPaymentSavedFailedImpl({
-    required this.message,
-    required this.orderId,
-    required this.transactionId,
-    required this.amount,
-    required this.bookingId,
-    required this.shouldRefund,
-  });
-
-  @override
-  final String message;
-  @override
-  final String orderId;
-  @override
-  final String transactionId;
-  @override
-  final double amount;
-  @override
-  final String bookingId;
-  @override
-  final bool shouldRefund;
-
-  @override
-  String toString() {
-    return 'HotelBookingConfirmState.paymentSavedFailed(message: $message, orderId: $orderId, transactionId: $transactionId, amount: $amount, bookingId: $bookingId, shouldRefund: $shouldRefund)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$HotelBookingConfirmPaymentSavedFailedImpl &&
-            (identical(other.message, message) || other.message == message) &&
-            (identical(other.orderId, orderId) || other.orderId == orderId) &&
-            (identical(other.transactionId, transactionId) ||
-                other.transactionId == transactionId) &&
-            (identical(other.amount, amount) || other.amount == amount) &&
-            (identical(other.bookingId, bookingId) ||
-                other.bookingId == bookingId) &&
-            (identical(other.shouldRefund, shouldRefund) ||
-                other.shouldRefund == shouldRefund));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    message,
-    orderId,
-    transactionId,
-    amount,
-    bookingId,
-    shouldRefund,
-  );
-
-  /// Create a copy of HotelBookingConfirmState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$HotelBookingConfirmPaymentSavedFailedImplCopyWith<
-    _$HotelBookingConfirmPaymentSavedFailedImpl
-  >
-  get copyWith =>
-      __$$HotelBookingConfirmPaymentSavedFailedImplCopyWithImpl<
-        _$HotelBookingConfirmPaymentSavedFailedImpl
-      >(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function(HotelBookingConfirmState? previousState) loading,
-    required TResult Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )
-    success,
-    required TResult Function(String message, String orderId, String bookingId)
-    paymentFailed,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )
-    paymentSavedFailed,
-    required TResult Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    error,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    refundProcessing,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    refundInitiated,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )
-    refundFailed,
-  }) {
-    return paymentSavedFailed(
-      message,
-      orderId,
-      transactionId,
-      amount,
-      bookingId,
-      shouldRefund,
-    );
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function(HotelBookingConfirmState? previousState)? loading,
-    TResult? Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )?
-    success,
-    TResult? Function(String message, String orderId, String bookingId)?
-    paymentFailed,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )?
-    paymentSavedFailed,
-    TResult? Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    error,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundProcessing,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundInitiated,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )?
-    refundFailed,
-  }) {
-    return paymentSavedFailed?.call(
-      message,
-      orderId,
-      transactionId,
-      amount,
-      bookingId,
-      shouldRefund,
-    );
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function(HotelBookingConfirmState? previousState)? loading,
-    TResult Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )?
-    success,
-    TResult Function(String message, String orderId, String bookingId)?
-    paymentFailed,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )?
-    paymentSavedFailed,
-    TResult Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    error,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundProcessing,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundInitiated,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )?
-    refundFailed,
-    required TResult orElse(),
-  }) {
-    if (paymentSavedFailed != null) {
-      return paymentSavedFailed(
-        message,
-        orderId,
-        transactionId,
-        amount,
-        bookingId,
-        shouldRefund,
-      );
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(HotelBookingConfirmInitial value) initial,
-    required TResult Function(HotelBookingConfirmLoading value) loading,
-    required TResult Function(HotelBookingConfirmSuccess value) success,
-    required TResult Function(HotelBookingConfirmPaymentFailed value)
-    paymentFailed,
-    required TResult Function(HotelBookingConfirmPaymentSavedFailed value)
-    paymentSavedFailed,
-    required TResult Function(HotelBookingConfirmError value) error,
-    required TResult Function(HotelBookingConfirmRefundProcessing value)
-    refundProcessing,
-    required TResult Function(HotelBookingConfirmRefundInitiated value)
-    refundInitiated,
-    required TResult Function(HotelBookingConfirmRefundFailed value)
-    refundFailed,
-  }) {
-    return paymentSavedFailed(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(HotelBookingConfirmInitial value)? initial,
-    TResult? Function(HotelBookingConfirmLoading value)? loading,
-    TResult? Function(HotelBookingConfirmSuccess value)? success,
-    TResult? Function(HotelBookingConfirmPaymentFailed value)? paymentFailed,
-    TResult? Function(HotelBookingConfirmPaymentSavedFailed value)?
-    paymentSavedFailed,
-    TResult? Function(HotelBookingConfirmError value)? error,
-    TResult? Function(HotelBookingConfirmRefundProcessing value)?
-    refundProcessing,
-    TResult? Function(HotelBookingConfirmRefundInitiated value)?
-    refundInitiated,
-    TResult? Function(HotelBookingConfirmRefundFailed value)? refundFailed,
-  }) {
-    return paymentSavedFailed?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(HotelBookingConfirmInitial value)? initial,
-    TResult Function(HotelBookingConfirmLoading value)? loading,
-    TResult Function(HotelBookingConfirmSuccess value)? success,
-    TResult Function(HotelBookingConfirmPaymentFailed value)? paymentFailed,
-    TResult Function(HotelBookingConfirmPaymentSavedFailed value)?
-    paymentSavedFailed,
-    TResult Function(HotelBookingConfirmError value)? error,
-    TResult Function(HotelBookingConfirmRefundProcessing value)?
-    refundProcessing,
-    TResult Function(HotelBookingConfirmRefundInitiated value)? refundInitiated,
-    TResult Function(HotelBookingConfirmRefundFailed value)? refundFailed,
-    required TResult orElse(),
-  }) {
-    if (paymentSavedFailed != null) {
-      return paymentSavedFailed(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class HotelBookingConfirmPaymentSavedFailed
-    implements HotelBookingConfirmState {
-  const factory HotelBookingConfirmPaymentSavedFailed({
-    required final String message,
-    required final String orderId,
-    required final String transactionId,
-    required final double amount,
-    required final String bookingId,
-    required final bool shouldRefund,
-  }) = _$HotelBookingConfirmPaymentSavedFailedImpl;
-
-  String get message;
-  String get orderId;
-  String get transactionId;
-  double get amount;
-  String get bookingId;
-  bool get shouldRefund;
-
-  /// Create a copy of HotelBookingConfirmState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$HotelBookingConfirmPaymentSavedFailedImplCopyWith<
-    _$HotelBookingConfirmPaymentSavedFailedImpl
-  >
   get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -3542,15 +1914,7 @@ abstract class _$$HotelBookingConfirmErrorImplCopyWith<$Res> {
     $Res Function(_$HotelBookingConfirmErrorImpl) then,
   ) = __$$HotelBookingConfirmErrorImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({
-    String message,
-    bool shouldRefund,
-    String orderId,
-    String transactionId,
-    double amount,
-    String booktableId,
-    String bookingId,
-  });
+  $Res call({String message, Map<String, dynamic>? data});
 }
 
 /// @nodoc
@@ -3570,45 +1934,17 @@ class __$$HotelBookingConfirmErrorImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? message = null,
-    Object? shouldRefund = null,
-    Object? orderId = null,
-    Object? transactionId = null,
-    Object? amount = null,
-    Object? booktableId = null,
-    Object? bookingId = null,
-  }) {
+  $Res call({Object? message = null, Object? data = freezed}) {
     return _then(
       _$HotelBookingConfirmErrorImpl(
         message: null == message
             ? _value.message
             : message // ignore: cast_nullable_to_non_nullable
                   as String,
-        shouldRefund: null == shouldRefund
-            ? _value.shouldRefund
-            : shouldRefund // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        orderId: null == orderId
-            ? _value.orderId
-            : orderId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        transactionId: null == transactionId
-            ? _value.transactionId
-            : transactionId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        amount: null == amount
-            ? _value.amount
-            : amount // ignore: cast_nullable_to_non_nullable
-                  as double,
-        booktableId: null == booktableId
-            ? _value.booktableId
-            : booktableId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        bookingId: null == bookingId
-            ? _value.bookingId
-            : bookingId // ignore: cast_nullable_to_non_nullable
-                  as String,
+        data: freezed == data
+            ? _value._data
+            : data // ignore: cast_nullable_to_non_nullable
+                  as Map<String, dynamic>?,
       ),
     );
   }
@@ -3619,32 +1955,24 @@ class __$$HotelBookingConfirmErrorImplCopyWithImpl<$Res>
 class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
   const _$HotelBookingConfirmErrorImpl({
     required this.message,
-    required this.shouldRefund,
-    required this.orderId,
-    required this.transactionId,
-    required this.amount,
-    required this.booktableId,
-    required this.bookingId,
-  });
+    final Map<String, dynamic>? data,
+  }) : _data = data;
 
   @override
   final String message;
+  final Map<String, dynamic>? _data;
   @override
-  final bool shouldRefund;
-  @override
-  final String orderId;
-  @override
-  final String transactionId;
-  @override
-  final double amount;
-  @override
-  final String booktableId;
-  @override
-  final String bookingId;
+  Map<String, dynamic>? get data {
+    final value = _data;
+    if (value == null) return null;
+    if (_data is EqualUnmodifiableMapView) return _data;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(value);
+  }
 
   @override
   String toString() {
-    return 'HotelBookingConfirmState.error(message: $message, shouldRefund: $shouldRefund, orderId: $orderId, transactionId: $transactionId, amount: $amount, booktableId: $booktableId, bookingId: $bookingId)';
+    return 'HotelBookingConfirmState.error(message: $message, data: $data)';
   }
 
   @override
@@ -3653,28 +1981,14 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
         (other.runtimeType == runtimeType &&
             other is _$HotelBookingConfirmErrorImpl &&
             (identical(other.message, message) || other.message == message) &&
-            (identical(other.shouldRefund, shouldRefund) ||
-                other.shouldRefund == shouldRefund) &&
-            (identical(other.orderId, orderId) || other.orderId == orderId) &&
-            (identical(other.transactionId, transactionId) ||
-                other.transactionId == transactionId) &&
-            (identical(other.amount, amount) || other.amount == amount) &&
-            (identical(other.booktableId, booktableId) ||
-                other.booktableId == booktableId) &&
-            (identical(other.bookingId, bookingId) ||
-                other.bookingId == bookingId));
+            const DeepCollectionEquality().equals(other._data, _data));
   }
 
   @override
   int get hashCode => Object.hash(
     runtimeType,
     message,
-    shouldRefund,
-    orderId,
-    transactionId,
-    amount,
-    booktableId,
-    bookingId,
+    const DeepCollectionEquality().hash(_data),
   );
 
   /// Create a copy of HotelBookingConfirmState
@@ -3693,70 +2007,11 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function(HotelBookingConfirmState? previousState) loading,
-    required TResult Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )
-    success,
-    required TResult Function(String message, String orderId, String bookingId)
-    paymentFailed,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )
-    paymentSavedFailed,
-    required TResult Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    error,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    refundProcessing,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    refundInitiated,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )
-    refundFailed,
+    required TResult Function(Map<String, dynamic> orderData) orderCreated,
+    required TResult Function(Map<String, dynamic> data) success,
+    required TResult Function(String message, Map<String, dynamic>? data) error,
   }) {
-    return error(
-      message,
-      shouldRefund,
-      orderId,
-      transactionId,
-      amount,
-      booktableId,
-      bookingId,
-    );
+    return error(message, data);
   }
 
   @override
@@ -3764,70 +2019,11 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function(HotelBookingConfirmState? previousState)? loading,
-    TResult? Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )?
-    success,
-    TResult? Function(String message, String orderId, String bookingId)?
-    paymentFailed,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )?
-    paymentSavedFailed,
-    TResult? Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    error,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundProcessing,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundInitiated,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )?
-    refundFailed,
+    TResult? Function(Map<String, dynamic> orderData)? orderCreated,
+    TResult? Function(Map<String, dynamic> data)? success,
+    TResult? Function(String message, Map<String, dynamic>? data)? error,
   }) {
-    return error?.call(
-      message,
-      shouldRefund,
-      orderId,
-      transactionId,
-      amount,
-      booktableId,
-      bookingId,
-    );
+    return error?.call(message, data);
   }
 
   @override
@@ -3835,72 +2031,13 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function(HotelBookingConfirmState? previousState)? loading,
-    TResult Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )?
-    success,
-    TResult Function(String message, String orderId, String bookingId)?
-    paymentFailed,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )?
-    paymentSavedFailed,
-    TResult Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    error,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundProcessing,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundInitiated,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )?
-    refundFailed,
+    TResult Function(Map<String, dynamic> orderData)? orderCreated,
+    TResult Function(Map<String, dynamic> data)? success,
+    TResult Function(String message, Map<String, dynamic>? data)? error,
     required TResult orElse(),
   }) {
     if (error != null) {
-      return error(
-        message,
-        shouldRefund,
-        orderId,
-        transactionId,
-        amount,
-        booktableId,
-        bookingId,
-      );
+      return error(message, data);
     }
     return orElse();
   }
@@ -3910,18 +2047,10 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
   TResult map<TResult extends Object?>({
     required TResult Function(HotelBookingConfirmInitial value) initial,
     required TResult Function(HotelBookingConfirmLoading value) loading,
+    required TResult Function(HotelBookingConfirmOrderCreated value)
+    orderCreated,
     required TResult Function(HotelBookingConfirmSuccess value) success,
-    required TResult Function(HotelBookingConfirmPaymentFailed value)
-    paymentFailed,
-    required TResult Function(HotelBookingConfirmPaymentSavedFailed value)
-    paymentSavedFailed,
     required TResult Function(HotelBookingConfirmError value) error,
-    required TResult Function(HotelBookingConfirmRefundProcessing value)
-    refundProcessing,
-    required TResult Function(HotelBookingConfirmRefundInitiated value)
-    refundInitiated,
-    required TResult Function(HotelBookingConfirmRefundFailed value)
-    refundFailed,
   }) {
     return error(this);
   }
@@ -3931,16 +2060,9 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(HotelBookingConfirmInitial value)? initial,
     TResult? Function(HotelBookingConfirmLoading value)? loading,
+    TResult? Function(HotelBookingConfirmOrderCreated value)? orderCreated,
     TResult? Function(HotelBookingConfirmSuccess value)? success,
-    TResult? Function(HotelBookingConfirmPaymentFailed value)? paymentFailed,
-    TResult? Function(HotelBookingConfirmPaymentSavedFailed value)?
-    paymentSavedFailed,
     TResult? Function(HotelBookingConfirmError value)? error,
-    TResult? Function(HotelBookingConfirmRefundProcessing value)?
-    refundProcessing,
-    TResult? Function(HotelBookingConfirmRefundInitiated value)?
-    refundInitiated,
-    TResult? Function(HotelBookingConfirmRefundFailed value)? refundFailed,
   }) {
     return error?.call(this);
   }
@@ -3950,15 +2072,9 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(HotelBookingConfirmInitial value)? initial,
     TResult Function(HotelBookingConfirmLoading value)? loading,
+    TResult Function(HotelBookingConfirmOrderCreated value)? orderCreated,
     TResult Function(HotelBookingConfirmSuccess value)? success,
-    TResult Function(HotelBookingConfirmPaymentFailed value)? paymentFailed,
-    TResult Function(HotelBookingConfirmPaymentSavedFailed value)?
-    paymentSavedFailed,
     TResult Function(HotelBookingConfirmError value)? error,
-    TResult Function(HotelBookingConfirmRefundProcessing value)?
-    refundProcessing,
-    TResult Function(HotelBookingConfirmRefundInitiated value)? refundInitiated,
-    TResult Function(HotelBookingConfirmRefundFailed value)? refundFailed,
     required TResult orElse(),
   }) {
     if (error != null) {
@@ -3971,1325 +2087,15 @@ class _$HotelBookingConfirmErrorImpl implements HotelBookingConfirmError {
 abstract class HotelBookingConfirmError implements HotelBookingConfirmState {
   const factory HotelBookingConfirmError({
     required final String message,
-    required final bool shouldRefund,
-    required final String orderId,
-    required final String transactionId,
-    required final double amount,
-    required final String booktableId,
-    required final String bookingId,
+    final Map<String, dynamic>? data,
   }) = _$HotelBookingConfirmErrorImpl;
 
   String get message;
-  bool get shouldRefund;
-  String get orderId;
-  String get transactionId;
-  double get amount;
-  String get booktableId;
-  String get bookingId;
+  Map<String, dynamic>? get data;
 
   /// Create a copy of HotelBookingConfirmState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$HotelBookingConfirmErrorImplCopyWith<_$HotelBookingConfirmErrorImpl>
-  get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$HotelBookingConfirmRefundProcessingImplCopyWith<$Res> {
-  factory _$$HotelBookingConfirmRefundProcessingImplCopyWith(
-    _$HotelBookingConfirmRefundProcessingImpl value,
-    $Res Function(_$HotelBookingConfirmRefundProcessingImpl) then,
-  ) = __$$HotelBookingConfirmRefundProcessingImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({
-    String orderId,
-    String transactionId,
-    double amount,
-    String booktableId,
-    String bookingId,
-  });
-}
-
-/// @nodoc
-class __$$HotelBookingConfirmRefundProcessingImplCopyWithImpl<$Res>
-    extends
-        _$HotelBookingConfirmStateCopyWithImpl<
-          $Res,
-          _$HotelBookingConfirmRefundProcessingImpl
-        >
-    implements _$$HotelBookingConfirmRefundProcessingImplCopyWith<$Res> {
-  __$$HotelBookingConfirmRefundProcessingImplCopyWithImpl(
-    _$HotelBookingConfirmRefundProcessingImpl _value,
-    $Res Function(_$HotelBookingConfirmRefundProcessingImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of HotelBookingConfirmState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? orderId = null,
-    Object? transactionId = null,
-    Object? amount = null,
-    Object? booktableId = null,
-    Object? bookingId = null,
-  }) {
-    return _then(
-      _$HotelBookingConfirmRefundProcessingImpl(
-        orderId: null == orderId
-            ? _value.orderId
-            : orderId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        transactionId: null == transactionId
-            ? _value.transactionId
-            : transactionId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        amount: null == amount
-            ? _value.amount
-            : amount // ignore: cast_nullable_to_non_nullable
-                  as double,
-        booktableId: null == booktableId
-            ? _value.booktableId
-            : booktableId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        bookingId: null == bookingId
-            ? _value.bookingId
-            : bookingId // ignore: cast_nullable_to_non_nullable
-                  as String,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-
-class _$HotelBookingConfirmRefundProcessingImpl
-    implements HotelBookingConfirmRefundProcessing {
-  const _$HotelBookingConfirmRefundProcessingImpl({
-    required this.orderId,
-    required this.transactionId,
-    required this.amount,
-    required this.booktableId,
-    required this.bookingId,
-  });
-
-  @override
-  final String orderId;
-  @override
-  final String transactionId;
-  @override
-  final double amount;
-  @override
-  final String booktableId;
-  @override
-  final String bookingId;
-
-  @override
-  String toString() {
-    return 'HotelBookingConfirmState.refundProcessing(orderId: $orderId, transactionId: $transactionId, amount: $amount, booktableId: $booktableId, bookingId: $bookingId)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$HotelBookingConfirmRefundProcessingImpl &&
-            (identical(other.orderId, orderId) || other.orderId == orderId) &&
-            (identical(other.transactionId, transactionId) ||
-                other.transactionId == transactionId) &&
-            (identical(other.amount, amount) || other.amount == amount) &&
-            (identical(other.booktableId, booktableId) ||
-                other.booktableId == booktableId) &&
-            (identical(other.bookingId, bookingId) ||
-                other.bookingId == bookingId));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    orderId,
-    transactionId,
-    amount,
-    booktableId,
-    bookingId,
-  );
-
-  /// Create a copy of HotelBookingConfirmState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$HotelBookingConfirmRefundProcessingImplCopyWith<
-    _$HotelBookingConfirmRefundProcessingImpl
-  >
-  get copyWith =>
-      __$$HotelBookingConfirmRefundProcessingImplCopyWithImpl<
-        _$HotelBookingConfirmRefundProcessingImpl
-      >(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function(HotelBookingConfirmState? previousState) loading,
-    required TResult Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )
-    success,
-    required TResult Function(String message, String orderId, String bookingId)
-    paymentFailed,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )
-    paymentSavedFailed,
-    required TResult Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    error,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    refundProcessing,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    refundInitiated,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )
-    refundFailed,
-  }) {
-    return refundProcessing(
-      orderId,
-      transactionId,
-      amount,
-      booktableId,
-      bookingId,
-    );
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function(HotelBookingConfirmState? previousState)? loading,
-    TResult? Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )?
-    success,
-    TResult? Function(String message, String orderId, String bookingId)?
-    paymentFailed,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )?
-    paymentSavedFailed,
-    TResult? Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    error,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundProcessing,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundInitiated,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )?
-    refundFailed,
-  }) {
-    return refundProcessing?.call(
-      orderId,
-      transactionId,
-      amount,
-      booktableId,
-      bookingId,
-    );
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function(HotelBookingConfirmState? previousState)? loading,
-    TResult Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )?
-    success,
-    TResult Function(String message, String orderId, String bookingId)?
-    paymentFailed,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )?
-    paymentSavedFailed,
-    TResult Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    error,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundProcessing,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundInitiated,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )?
-    refundFailed,
-    required TResult orElse(),
-  }) {
-    if (refundProcessing != null) {
-      return refundProcessing(
-        orderId,
-        transactionId,
-        amount,
-        booktableId,
-        bookingId,
-      );
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(HotelBookingConfirmInitial value) initial,
-    required TResult Function(HotelBookingConfirmLoading value) loading,
-    required TResult Function(HotelBookingConfirmSuccess value) success,
-    required TResult Function(HotelBookingConfirmPaymentFailed value)
-    paymentFailed,
-    required TResult Function(HotelBookingConfirmPaymentSavedFailed value)
-    paymentSavedFailed,
-    required TResult Function(HotelBookingConfirmError value) error,
-    required TResult Function(HotelBookingConfirmRefundProcessing value)
-    refundProcessing,
-    required TResult Function(HotelBookingConfirmRefundInitiated value)
-    refundInitiated,
-    required TResult Function(HotelBookingConfirmRefundFailed value)
-    refundFailed,
-  }) {
-    return refundProcessing(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(HotelBookingConfirmInitial value)? initial,
-    TResult? Function(HotelBookingConfirmLoading value)? loading,
-    TResult? Function(HotelBookingConfirmSuccess value)? success,
-    TResult? Function(HotelBookingConfirmPaymentFailed value)? paymentFailed,
-    TResult? Function(HotelBookingConfirmPaymentSavedFailed value)?
-    paymentSavedFailed,
-    TResult? Function(HotelBookingConfirmError value)? error,
-    TResult? Function(HotelBookingConfirmRefundProcessing value)?
-    refundProcessing,
-    TResult? Function(HotelBookingConfirmRefundInitiated value)?
-    refundInitiated,
-    TResult? Function(HotelBookingConfirmRefundFailed value)? refundFailed,
-  }) {
-    return refundProcessing?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(HotelBookingConfirmInitial value)? initial,
-    TResult Function(HotelBookingConfirmLoading value)? loading,
-    TResult Function(HotelBookingConfirmSuccess value)? success,
-    TResult Function(HotelBookingConfirmPaymentFailed value)? paymentFailed,
-    TResult Function(HotelBookingConfirmPaymentSavedFailed value)?
-    paymentSavedFailed,
-    TResult Function(HotelBookingConfirmError value)? error,
-    TResult Function(HotelBookingConfirmRefundProcessing value)?
-    refundProcessing,
-    TResult Function(HotelBookingConfirmRefundInitiated value)? refundInitiated,
-    TResult Function(HotelBookingConfirmRefundFailed value)? refundFailed,
-    required TResult orElse(),
-  }) {
-    if (refundProcessing != null) {
-      return refundProcessing(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class HotelBookingConfirmRefundProcessing
-    implements HotelBookingConfirmState {
-  const factory HotelBookingConfirmRefundProcessing({
-    required final String orderId,
-    required final String transactionId,
-    required final double amount,
-    required final String booktableId,
-    required final String bookingId,
-  }) = _$HotelBookingConfirmRefundProcessingImpl;
-
-  String get orderId;
-  String get transactionId;
-  double get amount;
-  String get booktableId;
-  String get bookingId;
-
-  /// Create a copy of HotelBookingConfirmState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$HotelBookingConfirmRefundProcessingImplCopyWith<
-    _$HotelBookingConfirmRefundProcessingImpl
-  >
-  get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$HotelBookingConfirmRefundInitiatedImplCopyWith<$Res> {
-  factory _$$HotelBookingConfirmRefundInitiatedImplCopyWith(
-    _$HotelBookingConfirmRefundInitiatedImpl value,
-    $Res Function(_$HotelBookingConfirmRefundInitiatedImpl) then,
-  ) = __$$HotelBookingConfirmRefundInitiatedImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({
-    String message,
-    String orderId,
-    String transactionId,
-    double amount,
-    String booktableId,
-    String bookingId,
-  });
-}
-
-/// @nodoc
-class __$$HotelBookingConfirmRefundInitiatedImplCopyWithImpl<$Res>
-    extends
-        _$HotelBookingConfirmStateCopyWithImpl<
-          $Res,
-          _$HotelBookingConfirmRefundInitiatedImpl
-        >
-    implements _$$HotelBookingConfirmRefundInitiatedImplCopyWith<$Res> {
-  __$$HotelBookingConfirmRefundInitiatedImplCopyWithImpl(
-    _$HotelBookingConfirmRefundInitiatedImpl _value,
-    $Res Function(_$HotelBookingConfirmRefundInitiatedImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of HotelBookingConfirmState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? message = null,
-    Object? orderId = null,
-    Object? transactionId = null,
-    Object? amount = null,
-    Object? booktableId = null,
-    Object? bookingId = null,
-  }) {
-    return _then(
-      _$HotelBookingConfirmRefundInitiatedImpl(
-        message: null == message
-            ? _value.message
-            : message // ignore: cast_nullable_to_non_nullable
-                  as String,
-        orderId: null == orderId
-            ? _value.orderId
-            : orderId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        transactionId: null == transactionId
-            ? _value.transactionId
-            : transactionId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        amount: null == amount
-            ? _value.amount
-            : amount // ignore: cast_nullable_to_non_nullable
-                  as double,
-        booktableId: null == booktableId
-            ? _value.booktableId
-            : booktableId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        bookingId: null == bookingId
-            ? _value.bookingId
-            : bookingId // ignore: cast_nullable_to_non_nullable
-                  as String,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-
-class _$HotelBookingConfirmRefundInitiatedImpl
-    implements HotelBookingConfirmRefundInitiated {
-  const _$HotelBookingConfirmRefundInitiatedImpl({
-    required this.message,
-    required this.orderId,
-    required this.transactionId,
-    required this.amount,
-    required this.booktableId,
-    required this.bookingId,
-  });
-
-  @override
-  final String message;
-  @override
-  final String orderId;
-  @override
-  final String transactionId;
-  @override
-  final double amount;
-  @override
-  final String booktableId;
-  @override
-  final String bookingId;
-
-  @override
-  String toString() {
-    return 'HotelBookingConfirmState.refundInitiated(message: $message, orderId: $orderId, transactionId: $transactionId, amount: $amount, booktableId: $booktableId, bookingId: $bookingId)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$HotelBookingConfirmRefundInitiatedImpl &&
-            (identical(other.message, message) || other.message == message) &&
-            (identical(other.orderId, orderId) || other.orderId == orderId) &&
-            (identical(other.transactionId, transactionId) ||
-                other.transactionId == transactionId) &&
-            (identical(other.amount, amount) || other.amount == amount) &&
-            (identical(other.booktableId, booktableId) ||
-                other.booktableId == booktableId) &&
-            (identical(other.bookingId, bookingId) ||
-                other.bookingId == bookingId));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    message,
-    orderId,
-    transactionId,
-    amount,
-    booktableId,
-    bookingId,
-  );
-
-  /// Create a copy of HotelBookingConfirmState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$HotelBookingConfirmRefundInitiatedImplCopyWith<
-    _$HotelBookingConfirmRefundInitiatedImpl
-  >
-  get copyWith =>
-      __$$HotelBookingConfirmRefundInitiatedImplCopyWithImpl<
-        _$HotelBookingConfirmRefundInitiatedImpl
-      >(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function(HotelBookingConfirmState? previousState) loading,
-    required TResult Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )
-    success,
-    required TResult Function(String message, String orderId, String bookingId)
-    paymentFailed,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )
-    paymentSavedFailed,
-    required TResult Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    error,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    refundProcessing,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    refundInitiated,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )
-    refundFailed,
-  }) {
-    return refundInitiated(
-      message,
-      orderId,
-      transactionId,
-      amount,
-      booktableId,
-      bookingId,
-    );
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function(HotelBookingConfirmState? previousState)? loading,
-    TResult? Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )?
-    success,
-    TResult? Function(String message, String orderId, String bookingId)?
-    paymentFailed,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )?
-    paymentSavedFailed,
-    TResult? Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    error,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundProcessing,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundInitiated,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )?
-    refundFailed,
-  }) {
-    return refundInitiated?.call(
-      message,
-      orderId,
-      transactionId,
-      amount,
-      booktableId,
-      bookingId,
-    );
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function(HotelBookingConfirmState? previousState)? loading,
-    TResult Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )?
-    success,
-    TResult Function(String message, String orderId, String bookingId)?
-    paymentFailed,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )?
-    paymentSavedFailed,
-    TResult Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    error,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundProcessing,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundInitiated,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )?
-    refundFailed,
-    required TResult orElse(),
-  }) {
-    if (refundInitiated != null) {
-      return refundInitiated(
-        message,
-        orderId,
-        transactionId,
-        amount,
-        booktableId,
-        bookingId,
-      );
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(HotelBookingConfirmInitial value) initial,
-    required TResult Function(HotelBookingConfirmLoading value) loading,
-    required TResult Function(HotelBookingConfirmSuccess value) success,
-    required TResult Function(HotelBookingConfirmPaymentFailed value)
-    paymentFailed,
-    required TResult Function(HotelBookingConfirmPaymentSavedFailed value)
-    paymentSavedFailed,
-    required TResult Function(HotelBookingConfirmError value) error,
-    required TResult Function(HotelBookingConfirmRefundProcessing value)
-    refundProcessing,
-    required TResult Function(HotelBookingConfirmRefundInitiated value)
-    refundInitiated,
-    required TResult Function(HotelBookingConfirmRefundFailed value)
-    refundFailed,
-  }) {
-    return refundInitiated(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(HotelBookingConfirmInitial value)? initial,
-    TResult? Function(HotelBookingConfirmLoading value)? loading,
-    TResult? Function(HotelBookingConfirmSuccess value)? success,
-    TResult? Function(HotelBookingConfirmPaymentFailed value)? paymentFailed,
-    TResult? Function(HotelBookingConfirmPaymentSavedFailed value)?
-    paymentSavedFailed,
-    TResult? Function(HotelBookingConfirmError value)? error,
-    TResult? Function(HotelBookingConfirmRefundProcessing value)?
-    refundProcessing,
-    TResult? Function(HotelBookingConfirmRefundInitiated value)?
-    refundInitiated,
-    TResult? Function(HotelBookingConfirmRefundFailed value)? refundFailed,
-  }) {
-    return refundInitiated?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(HotelBookingConfirmInitial value)? initial,
-    TResult Function(HotelBookingConfirmLoading value)? loading,
-    TResult Function(HotelBookingConfirmSuccess value)? success,
-    TResult Function(HotelBookingConfirmPaymentFailed value)? paymentFailed,
-    TResult Function(HotelBookingConfirmPaymentSavedFailed value)?
-    paymentSavedFailed,
-    TResult Function(HotelBookingConfirmError value)? error,
-    TResult Function(HotelBookingConfirmRefundProcessing value)?
-    refundProcessing,
-    TResult Function(HotelBookingConfirmRefundInitiated value)? refundInitiated,
-    TResult Function(HotelBookingConfirmRefundFailed value)? refundFailed,
-    required TResult orElse(),
-  }) {
-    if (refundInitiated != null) {
-      return refundInitiated(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class HotelBookingConfirmRefundInitiated
-    implements HotelBookingConfirmState {
-  const factory HotelBookingConfirmRefundInitiated({
-    required final String message,
-    required final String orderId,
-    required final String transactionId,
-    required final double amount,
-    required final String booktableId,
-    required final String bookingId,
-  }) = _$HotelBookingConfirmRefundInitiatedImpl;
-
-  String get message;
-  String get orderId;
-  String get transactionId;
-  double get amount;
-  String get booktableId;
-  String get bookingId;
-
-  /// Create a copy of HotelBookingConfirmState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$HotelBookingConfirmRefundInitiatedImplCopyWith<
-    _$HotelBookingConfirmRefundInitiatedImpl
-  >
-  get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$HotelBookingConfirmRefundFailedImplCopyWith<$Res> {
-  factory _$$HotelBookingConfirmRefundFailedImplCopyWith(
-    _$HotelBookingConfirmRefundFailedImpl value,
-    $Res Function(_$HotelBookingConfirmRefundFailedImpl) then,
-  ) = __$$HotelBookingConfirmRefundFailedImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({
-    String message,
-    String orderId,
-    String transactionId,
-    double amount,
-    String bookingId,
-  });
-}
-
-/// @nodoc
-class __$$HotelBookingConfirmRefundFailedImplCopyWithImpl<$Res>
-    extends
-        _$HotelBookingConfirmStateCopyWithImpl<
-          $Res,
-          _$HotelBookingConfirmRefundFailedImpl
-        >
-    implements _$$HotelBookingConfirmRefundFailedImplCopyWith<$Res> {
-  __$$HotelBookingConfirmRefundFailedImplCopyWithImpl(
-    _$HotelBookingConfirmRefundFailedImpl _value,
-    $Res Function(_$HotelBookingConfirmRefundFailedImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of HotelBookingConfirmState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? message = null,
-    Object? orderId = null,
-    Object? transactionId = null,
-    Object? amount = null,
-    Object? bookingId = null,
-  }) {
-    return _then(
-      _$HotelBookingConfirmRefundFailedImpl(
-        message: null == message
-            ? _value.message
-            : message // ignore: cast_nullable_to_non_nullable
-                  as String,
-        orderId: null == orderId
-            ? _value.orderId
-            : orderId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        transactionId: null == transactionId
-            ? _value.transactionId
-            : transactionId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        amount: null == amount
-            ? _value.amount
-            : amount // ignore: cast_nullable_to_non_nullable
-                  as double,
-        bookingId: null == bookingId
-            ? _value.bookingId
-            : bookingId // ignore: cast_nullable_to_non_nullable
-                  as String,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-
-class _$HotelBookingConfirmRefundFailedImpl
-    implements HotelBookingConfirmRefundFailed {
-  const _$HotelBookingConfirmRefundFailedImpl({
-    required this.message,
-    required this.orderId,
-    required this.transactionId,
-    required this.amount,
-    required this.bookingId,
-  });
-
-  @override
-  final String message;
-  @override
-  final String orderId;
-  @override
-  final String transactionId;
-  @override
-  final double amount;
-  // required String tableId,
-  @override
-  final String bookingId;
-
-  @override
-  String toString() {
-    return 'HotelBookingConfirmState.refundFailed(message: $message, orderId: $orderId, transactionId: $transactionId, amount: $amount, bookingId: $bookingId)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$HotelBookingConfirmRefundFailedImpl &&
-            (identical(other.message, message) || other.message == message) &&
-            (identical(other.orderId, orderId) || other.orderId == orderId) &&
-            (identical(other.transactionId, transactionId) ||
-                other.transactionId == transactionId) &&
-            (identical(other.amount, amount) || other.amount == amount) &&
-            (identical(other.bookingId, bookingId) ||
-                other.bookingId == bookingId));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    message,
-    orderId,
-    transactionId,
-    amount,
-    bookingId,
-  );
-
-  /// Create a copy of HotelBookingConfirmState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$HotelBookingConfirmRefundFailedImplCopyWith<
-    _$HotelBookingConfirmRefundFailedImpl
-  >
-  get copyWith =>
-      __$$HotelBookingConfirmRefundFailedImplCopyWithImpl<
-        _$HotelBookingConfirmRefundFailedImpl
-      >(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function(HotelBookingConfirmState? previousState) loading,
-    required TResult Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )
-    success,
-    required TResult Function(String message, String orderId, String bookingId)
-    paymentFailed,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )
-    paymentSavedFailed,
-    required TResult Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    error,
-    required TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    refundProcessing,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )
-    refundInitiated,
-    required TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )
-    refundFailed,
-  }) {
-    return refundFailed(message, orderId, transactionId, amount, bookingId);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function(HotelBookingConfirmState? previousState)? loading,
-    TResult? Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )?
-    success,
-    TResult? Function(String message, String orderId, String bookingId)?
-    paymentFailed,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )?
-    paymentSavedFailed,
-    TResult? Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    error,
-    TResult? Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundProcessing,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundInitiated,
-    TResult? Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )?
-    refundFailed,
-  }) {
-    return refundFailed?.call(
-      message,
-      orderId,
-      transactionId,
-      amount,
-      bookingId,
-    );
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function(HotelBookingConfirmState? previousState)? loading,
-    TResult Function(
-      Map<String, dynamic> data,
-      String bookingId,
-      String confirmationNo,
-      String bookingRefNo,
-      String booktableId,
-    )?
-    success,
-    TResult Function(String message, String orderId, String bookingId)?
-    paymentFailed,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-      bool shouldRefund,
-    )?
-    paymentSavedFailed,
-    TResult Function(
-      String message,
-      bool shouldRefund,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    error,
-    TResult Function(
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundProcessing,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String booktableId,
-      String bookingId,
-    )?
-    refundInitiated,
-    TResult Function(
-      String message,
-      String orderId,
-      String transactionId,
-      double amount,
-      String bookingId,
-    )?
-    refundFailed,
-    required TResult orElse(),
-  }) {
-    if (refundFailed != null) {
-      return refundFailed(message, orderId, transactionId, amount, bookingId);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(HotelBookingConfirmInitial value) initial,
-    required TResult Function(HotelBookingConfirmLoading value) loading,
-    required TResult Function(HotelBookingConfirmSuccess value) success,
-    required TResult Function(HotelBookingConfirmPaymentFailed value)
-    paymentFailed,
-    required TResult Function(HotelBookingConfirmPaymentSavedFailed value)
-    paymentSavedFailed,
-    required TResult Function(HotelBookingConfirmError value) error,
-    required TResult Function(HotelBookingConfirmRefundProcessing value)
-    refundProcessing,
-    required TResult Function(HotelBookingConfirmRefundInitiated value)
-    refundInitiated,
-    required TResult Function(HotelBookingConfirmRefundFailed value)
-    refundFailed,
-  }) {
-    return refundFailed(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(HotelBookingConfirmInitial value)? initial,
-    TResult? Function(HotelBookingConfirmLoading value)? loading,
-    TResult? Function(HotelBookingConfirmSuccess value)? success,
-    TResult? Function(HotelBookingConfirmPaymentFailed value)? paymentFailed,
-    TResult? Function(HotelBookingConfirmPaymentSavedFailed value)?
-    paymentSavedFailed,
-    TResult? Function(HotelBookingConfirmError value)? error,
-    TResult? Function(HotelBookingConfirmRefundProcessing value)?
-    refundProcessing,
-    TResult? Function(HotelBookingConfirmRefundInitiated value)?
-    refundInitiated,
-    TResult? Function(HotelBookingConfirmRefundFailed value)? refundFailed,
-  }) {
-    return refundFailed?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(HotelBookingConfirmInitial value)? initial,
-    TResult Function(HotelBookingConfirmLoading value)? loading,
-    TResult Function(HotelBookingConfirmSuccess value)? success,
-    TResult Function(HotelBookingConfirmPaymentFailed value)? paymentFailed,
-    TResult Function(HotelBookingConfirmPaymentSavedFailed value)?
-    paymentSavedFailed,
-    TResult Function(HotelBookingConfirmError value)? error,
-    TResult Function(HotelBookingConfirmRefundProcessing value)?
-    refundProcessing,
-    TResult Function(HotelBookingConfirmRefundInitiated value)? refundInitiated,
-    TResult Function(HotelBookingConfirmRefundFailed value)? refundFailed,
-    required TResult orElse(),
-  }) {
-    if (refundFailed != null) {
-      return refundFailed(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class HotelBookingConfirmRefundFailed
-    implements HotelBookingConfirmState {
-  const factory HotelBookingConfirmRefundFailed({
-    required final String message,
-    required final String orderId,
-    required final String transactionId,
-    required final double amount,
-    required final String bookingId,
-  }) = _$HotelBookingConfirmRefundFailedImpl;
-
-  String get message;
-  String get orderId;
-  String get transactionId;
-  double get amount; // required String tableId,
-  String get bookingId;
-
-  /// Create a copy of HotelBookingConfirmState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$HotelBookingConfirmRefundFailedImplCopyWith<
-    _$HotelBookingConfirmRefundFailedImpl
-  >
   get copyWith => throw _privateConstructorUsedError;
 }
