@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:minna/Electyicity%20&%20Water/application/confirm%20bill/confirm_bill_bloc.dart';
@@ -23,7 +22,6 @@ class WaterBillDetailsPage extends StatefulWidget {
   const WaterBillDetailsPage({
     super.key,
     required this.provider,
-
     required this.providerID,
     required this.phoneNo,
     required this.consumerId,
@@ -38,6 +36,9 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
   String? _currentOrderId;
   String? _currentReceiptId;
 
+  // Premium Theme Colors
+
+
   @override
   void initState() {
     super.initState();
@@ -50,7 +51,6 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
-    log("Razorpay initialized");
   }
 
   @override
@@ -60,17 +60,14 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
-    // Get the current bill from FetchBillBloc state
     final fetchState = context.read<FetchBillBloc>().state;
-
-    // Use pattern matching with freezed methods
     fetchState.maybeWhen(
-      success: (bill, receiptId) {
+      success: (bill, fetchReceiptId) {
         context.read<ConfirmBillBloc>().add(
           ProcessPaymentSuccess(
             orderId: _currentOrderId ?? '',
             transactionId: response.paymentId ?? '',
-            receiptId: receiptId,
+            receiptId: fetchReceiptId,
             providerID: widget.providerID,
             phoneNo: widget.phoneNo,
             consumerId: widget.consumerId,
@@ -80,8 +77,7 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
         );
       },
       orElse: () {
-        log("Error: No bill data available in FetchBillBloc state");
-        _showAlertDialog('Error', 'No bill data available. Please try again.');
+        _showCustomSnackbar('No bill data available. Please try again.', isError: true);
       },
     );
   }
@@ -98,57 +94,40 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
   }
 
   void _handleExternalWallet(ExternalWalletResponse response) {
-    _showAlertDialog('External Wallet', '${response.walletName}');
+    log("External wallet: ${response.walletName}");
   }
 
-  void _showAlertDialog(String title, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: Text(title),
+  void _showCustomSnackbar(String message, {bool isError = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
         content: Text(message),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
-          ),
-        ],
+        backgroundColor: isError ? errorColor : successColor,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }
 
   void _openCheckout(double amount, ElectricityBillModel bill) {
-    log("_openCheckout--- amount: $amount, orderId: $_currentOrderId");
-
     if (_currentOrderId == null || _currentOrderId!.isEmpty) {
-      log("Invalid order ID");
-      _showAlertDialog('Payment Error', 'Invalid order ID. Please try again.');
-      return;
-    }
-
-    if (amount <= 0) {
-      log("Invalid amount: $amount");
-      _showAlertDialog('Payment Error', 'Invalid amount. Please try again.');
+      _showCustomSnackbar('Invalid order ID. Please try again.', isError: true);
       return;
     }
 
     final options = {
       'key': razorpaykey,
       'amount': (amount * 100).toInt(),
-      'name': 'MT Trip',
-      'description': 'Payment for ${widget.provider} Bill',
+      'name': 'Bill Payment',
+      'description': 'Payment for ${widget.provider}',
       'order_id': _currentOrderId,
       'prefill': {'contact': widget.phoneNo, 'email': 'customer@example.com'},
-      'theme': {'color': maincolor1.value},
+      'theme': {'color': '#000D34'},
     };
-
-    log("Razorpay Options: $options");
 
     try {
       _razorpay.open(options);
     } catch (e) {
-      log("Razorpay open error: $e");
-      _showAlertDialog('Payment Error', 'Failed to open payment gateway: $e');
+      _showCustomSnackbar('Failed to open payment gateway', isError: true);
     }
   }
 
@@ -158,15 +137,9 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
       listener: (context, state) {
         state.whenOrNull(
           orderCreated: (orderId, receiptId, bill) {
-            log(
-              "orderCreated listener triggered - orderId: $orderId, receiptId: $receiptId",
-            );
             _currentOrderId = orderId;
             _currentReceiptId = receiptId;
             _openCheckout(double.parse(bill.billAmount), bill);
-          },
-          walletBalanceError: (message) {
-            _showWalletBalanceBottomSheet(message);
           },
           billPaymentResponse: (responseData) {
             Navigator.pushReplacement(
@@ -201,53 +174,89 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
               ),
             );
           },
-          paymentError: (message) {
-            _showErrorBottomSheet(message);
-          },
+          paymentError: (message) => _showCustomSnackbar(message, isError: true),
         );
       },
       builder: (context, confirmState) {
         return Scaffold(
-          appBar: AppBar(
-            backgroundColor: maincolor1,
-            iconTheme: IconThemeData(color: Colors.white),
-          ),
-          body: BlocBuilder<FetchBillBloc, FetchBillState>(
-            builder: (context, state) {
-              return state.maybeWhen(
-                loading: () => _buildShimmer(),
-                error: (message) => _buildErrorState(message),
-                success: (bill, receiptId) =>
-                    _buildBillContent(bill, receiptId),
-                orElse: () => const SizedBox.shrink(),
-              );
-            },
-          ),
-        );
-      },
-    );
-  }
-  Widget _buildBillContent(ElectricityBillModel bill, String receiptId) {
-    final amount = double.tryParse(bill.billAmount) ?? 0;
-
-    if (amount == 0 || bill.billAmount == "0") {
-      return _buildNoDueState();
-    }
-
-    return BlocBuilder<ConfirmBillBloc, ConfirmBillState>(
-      builder: (context, confirmState) {
-        return SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          backgroundColor: backgroundColor,
+          body: Stack(
             children: [
-              _buildAmountCard(bill),
-              const SizedBox(height: 20),
-              _buildBillDetailsCard(bill),
-              const SizedBox(height: 20),
-              confirmState.maybeWhen(
-                paymentProcessing: () => _buildProcessingButton(),
-                orElse: () => _buildPayButton(bill, amount, receiptId),
+              // 1. Immersive Header
+              Container(
+                height: 280,
+                width: double.infinity,
+                decoration: BoxDecoration(color: maincolor1),
+                child: Stack(
+                  children: [
+                    Positioned(
+                      top: -40,
+                      right: -40,
+                      child: Container(
+                        width: 180,
+                        height: 180,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.04),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                    SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(24, 60, 24, 0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Water Bill\nDetails',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 32,
+                                fontWeight: FontWeight.w900,
+                                height: 1.1,
+                                letterSpacing: -1,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // 2. Main content
+              BlocBuilder<FetchBillBloc, FetchBillState>(
+                builder: (context, state) {
+                  return state.maybeWhen(
+                    loading: () => _buildShimmer(),
+                    error: (message) => _buildErrorState(message),
+                    success: (bill, receiptId) => _buildBillContent(bill, receiptId),
+                    orElse: () => const SizedBox.shrink(),
+                  );
+                },
+              ),
+
+              // 3. Navigation
+              SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 18),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
@@ -256,189 +265,173 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
     );
   }
 
-  Widget _buildAmountCard(ElectricityBillModel bill) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [maincolor1, maincolor1.withOpacity(0.8)],
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: maincolor1.withOpacity(0.3),
-            blurRadius: 10,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Text(
-            "Due Amount",
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.white.withOpacity(0.9),
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          SizedBox(height: 8),
-          Text(
-            "₹ ${bill.billAmount}",
-            style: TextStyle(
-              fontSize: 36,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          SizedBox(height: 4),
-          Text(
-            widget.provider,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.white.withOpacity(0.8),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget _buildBillContent(ElectricityBillModel bill, String receiptId) {
+    final amount = double.tryParse(bill.billAmount) ?? 0;
 
-  Widget _buildBillDetailsCard(ElectricityBillModel bill) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 2,
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+    if (amount <= 0) {
+      return _buildNoDueState();
+    }
+
+    return Column(
+      children: [
+        const SizedBox(height: 180),
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              children: [
+                // Amount Card
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: cardColor,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.06),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        "Total Payable Amount",
+                        style: TextStyle(color: textSecondary, fontWeight: FontWeight.w700, fontSize: 13),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "₹ ${bill.billAmount}",
+                        style: TextStyle(
+                          fontSize: 36,
+                          fontWeight: FontWeight.w900,
+                          color: maincolor1,
+                          letterSpacing: -1,
+                        ),
+                      ),
+                      const Divider(height: 32),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.water_drop_rounded, color: Colors.blue, size: 16),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              widget.provider,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: maincolor1, fontWeight: FontWeight.w800, fontSize: 14),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // Details Card
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: cardColor,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.06),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      _buildDetailRow("Consumer Name", bill.customerName),
+                      const Divider(height: 24),
+                      _buildDetailRow("Consumer Number", bill.billNumber),
+                      const Divider(height: 24),
+                      _buildDetailRow("Bill Period", bill.billPeriod.isNotEmpty ? bill.billPeriod : "N/A"),
+                      const Divider(height: 24),
+                      _buildDetailRow("Due Date", bill.dueDate),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 120),
+              ],
+            ),
           ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Bill Details",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[800],
-              ),
-            ),
-            SizedBox(height: 16),
-            _buildDetailRow("Account Holder Name", bill.customerName),
-            _buildDetailRowDivider(),
-            _buildDetailRow("Consumer Number", bill.billNumber),
-            _buildDetailRowDivider(),
-            _buildDetailRow(
-              "Bill Period",
-              bill.billPeriod.isNotEmpty ? bill.billPeriod : "N/A",
-            ),
-            _buildDetailRowDivider(),
-            _buildDetailRow("Bill Due Date", bill.dueDate),
-            _buildDetailRowDivider(),
-            _buildDetailRow("Bill Number", bill.billNumber),
-          ],
         ),
-      ),
+        _buildBottomAction(bill, amount, receiptId),
+      ],
     );
   }
 
   Widget _buildDetailRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 2,
-            child: Text(
-              label,
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: Colors.grey[700],
-                fontSize: 14,
-              ),
-            ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: TextStyle(color: textSecondary, fontSize: 12, fontWeight: FontWeight.w600)),
+        Flexible(
+          child: Text(
+            value,
+            textAlign: TextAlign.right,
+            style: TextStyle(color: maincolor1, fontSize: 14, fontWeight: FontWeight.w800),
           ),
-          Expanded(
-            flex: 3,
-            child: Text(
-              value,
-              style: TextStyle(
-                color: Colors.black87,
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-              ),
-              textAlign: TextAlign.right,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  Widget _buildDetailRowDivider() {
-    return Divider(height: 1, thickness: 1, color: Colors.grey[200]);
-  }
-
-  Widget _buildPayButton(
-    ElectricityBillModel bill,
-    double amount,
-    String receiptId,
-  ) {
-    return SizedBox(
-      width: double.infinity,
-      height: 56,
-      child: ElevatedButton.icon(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: maincolor1,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          foregroundColor: Colors.white,
-          elevation: 2,
-        ),
-        icon: Icon(Icons.payment, size: 24),
-        label: Text(
-          "Pay Now",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-        ),
-        onPressed: () async {
-          final isLoggedIn = context.read<LoginBloc>().state.isLoggedIn ?? false;
-
-          if (!isLoggedIn) {
-            await showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              backgroundColor: Colors.transparent,
-              builder: (context) => const LoginBottomSheet(login: 1),
-            );
-
-            // Re-check login status after bottom sheet is closed
-            final newLoginState = context.read<LoginBloc>().state;
-            if (newLoginState.isLoggedIn != true) {
-              return;
-            }
-          }
-
-          context.read<ConfirmBillBloc>().add(
-            InitiatePayment(
-              bill: bill,
-              providerID: widget.providerID,
-              phoneNo: widget.phoneNo,
-              consumerId: widget.consumerId,
-              providerName: widget.provider,
-              receiptId: receiptId,
+  Widget _buildBottomAction(ElectricityBillModel bill, double amount, String receiptId) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5)),
+        ],
+      ),
+      child: BlocBuilder<ConfirmBillBloc, ConfirmBillState>(
+        builder: (context, confirmState) {
+          final bool isProcessing = confirmState.maybeWhen(paymentProcessing: () => true, orElse: () => false);
+          return SizedBox(
+            width: double.infinity,
+            height: 60,
+            child: ElevatedButton(
+              onPressed: isProcessing ? null : () async {
+                final isLoggedIn = context.read<LoginBloc>().state.isLoggedIn ?? false;
+                if (!isLoggedIn) {
+                  await showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => const LoginBottomSheet(login: 1),
+                  );
+                  if (context.read<LoginBloc>().state.isLoggedIn != true) return;
+                }
+                context.read<ConfirmBillBloc>().add(
+                  InitiatePayment(
+                    bill: bill,
+                    providerID: widget.providerID,
+                    phoneNo: widget.phoneNo,
+                    consumerId: widget.consumerId,
+                    providerName: widget.provider,
+                    receiptId: receiptId,
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: maincolor1,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                elevation: 0,
+              ),
+              child: isProcessing
+                  ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3))
+                  : const Text(
+                      'PAY SECURELY NOW',
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: 1),
+                    ),
             ),
           );
         },
@@ -446,103 +439,33 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
     );
   }
 
-  Widget _buildProcessingButton() {
-    return SizedBox(
-      width: double.infinity,
-      height: 56,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.grey[400],
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          foregroundColor: Colors.white,
-        ),
-        onPressed: null,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              ),
-            ),
-            SizedBox(width: 12),
-            Text(
-              "Processing...",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildNoDueState() {
     return Center(
-      child: Padding(
-        padding: EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.check_circle_outline,
-                size: 60,
-                color: Colors.green,
-              ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.check_circle_rounded, color: successColor, size: 80),
+          const SizedBox(height: 16),
+          Text(
+            "No Dues Found",
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: maincolor1),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "Your water bill is fully paid.\nThank you!",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: textSecondary, fontSize: 15),
+          ),
+          const SizedBox(height: 32),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: maincolor1,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             ),
-            SizedBox(height: 24),
-            Text(
-              "No Dues Found!",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey[800],
-              ),
-            ),
-            SizedBox(height: 12),
-            Text(
-              "Your ${widget.provider} bill is already paid\nand there are no pending dues.",
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[600],
-                height: 1.4,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 32),
-            Container(
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.green.withOpacity(0.2)),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.info_outline, color: Colors.green, size: 24),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      "You can check back later for new bills",
-                      style: TextStyle(color: Colors.green[700], fontSize: 14),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+            child: const Text('Go Back', style: TextStyle(color: Colors.white)),
+          ),
+        ],
       ),
     );
   }
@@ -550,86 +473,30 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
   Widget _buildErrorState(String message) {
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(24),
+        padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(Icons.info_outline, size: 60, color: Colors.orange),
-            ),
-            SizedBox(height: 24),
+            Icon(Icons.error_outline_rounded, color: errorColor, size: 80),
+            const SizedBox(height: 16),
             Text(
-              "Unable to Fetch Bill",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey[800],
-              ),
+              "Oops!",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: maincolor1),
             ),
-            SizedBox(height: 12),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                message,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                  height: 1.4,
-                ),
-                textAlign: TextAlign.center,
-              ),
+            const SizedBox(height: 8),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: textSecondary, fontSize: 15),
             ),
-            SizedBox(height: 32),
-            Container(
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.orange.withOpacity(0.2)),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.lightbulb_outline, color: Colors.orange, size: 24),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      "Please check your consumer ID and try again",
-                      style: TextStyle(color: Colors.orange[700], fontSize: 14),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 20),
+            const SizedBox(height: 32),
             ElevatedButton(
-              onPressed: () {
-                context.read<FetchBillBloc>().add(
-                  FetchBillEvent.fetchElectricityBill(
-                    providerID: widget.providerID,
-                    consumerId: widget.consumerId,
-                    phoneNo: widget.phoneNo,
-                    providerName: widget.provider,
-                  ),
-                );
-              },
+              onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
                 backgroundColor: maincolor1,
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
-              child: Text(
-                "Try Again",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-              ),
+              child: const Text('Try Again', style: TextStyle(color: Colors.white)),
             ),
           ],
         ),
@@ -638,210 +505,28 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
   }
 
   Widget _buildShimmer() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Shimmer.fromColors(
-            baseColor: Colors.grey.shade300,
-            highlightColor: Colors.grey.shade100,
+          const SizedBox(height: 180),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Container(
-              width: double.infinity,
-              height: 140,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
+              height: 150,
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)),
             ),
           ),
-          SizedBox(height: 20),
-          Shimmer.fromColors(
-            baseColor: Colors.grey.shade300,
-            highlightColor: Colors.grey.shade100,
+          const SizedBox(height: 24),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Container(
-              width: double.infinity,
-              height: 280,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-          ),
-          SizedBox(height: 20),
-          Shimmer.fromColors(
-            baseColor: Colors.grey.shade300,
-            highlightColor: Colors.grey.shade100,
-            child: Container(
-              width: double.infinity,
-              height: 56,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
+              height: 250,
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)),
             ),
           ),
         ],
-      ),
-    );
-  }
-  void _showErrorBottomSheet(String message) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.error_outline, color: Colors.red, size: 50),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Payment Failed',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                message,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-              ),
-              const SizedBox(height: 32),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text('Close'),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showWalletBalanceBottomSheet(String message) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: Colors.orange.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.account_balance_wallet_outlined,
-                  color: Colors.orange,
-                  size: 50,
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Insufficient Balance',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.orange,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                message,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-              ),
-              const SizedBox(height: 32),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.pop(context),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text('Cancel'),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AmountEntryPage(
-                              phoneNo: widget.phoneNo,
-                              operator: 'Wallet Topup',
-                            ),
-                          ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: maincolor1,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text('Add Money'),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

@@ -1,0 +1,19 @@
+Analyzing dth_rechargelist.dart...                              
+
+   info • Invalid use of a private type in a public API • lib/DTH & Mobile/DTH/pages/dth packageslist/dth_rechargelist.dart:20:3 • library_private_types_in_public_api
+warning • The value of the field '_textPrimary' isn't used • lib/DTH & Mobile/DTH/pages/dth packageslist/dth_rechargelist.dart:30:15 • unused_field
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/DTH & Mobile/DTH/pages/dth packageslist/dth_rechargelist.dart:87:43 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/DTH & Mobile/DTH/pages/dth packageslist/dth_rechargelist.dart:98:41 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/DTH & Mobile/DTH/pages/dth packageslist/dth_rechargelist.dart:139:45 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/DTH & Mobile/DTH/pages/dth packageslist/dth_rechargelist.dart:155:33 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/DTH & Mobile/DTH/pages/dth packageslist/dth_rechargelist.dart:160:35 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/DTH & Mobile/DTH/pages/dth packageslist/dth_rechargelist.dart:212:54 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/DTH & Mobile/DTH/pages/dth packageslist/dth_rechargelist.dart:225:59 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/DTH & Mobile/DTH/pages/dth packageslist/dth_rechargelist.dart:267:60 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/DTH & Mobile/DTH/pages/dth packageslist/dth_rechargelist.dart:359:67 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/DTH & Mobile/DTH/pages/dth packageslist/dth_rechargelist.dart:367:64 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/DTH & Mobile/DTH/pages/dth packageslist/dth_rechargelist.dart:445:62 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/DTH & Mobile/DTH/pages/dth packageslist/dth_rechargelist.dart:522:45 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/DTH & Mobile/DTH/pages/dth packageslist/dth_rechargelist.dart:525:47 • deprecated_member_use
+
+15 issues found. (ran in 3.6s)

@@ -1,9 +1,11 @@
+import 'package:iconsax/iconsax.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:minna/Electyicity%20&%20Water/application/fetch%20bill/fetch_bill_bloc.dart';
 import 'package:minna/Electyicity%20&%20Water/application/providers/providers_bloc.dart';
 import 'package:minna/Electyicity%20&%20Water/water%20bill/water%20bill%20info%20/bill%20confirm%20page.dart';
+import 'package:minna/comman/const/const.dart';
 
 class WaterBillInputPage extends StatefulWidget {
   const WaterBillInputPage({super.key});
@@ -18,16 +20,8 @@ class _WaterBillInputPageState extends State<WaterBillInputPage> {
   final _formKey = GlobalKey<FormState>();
   BillerModel? selectedProvider;
 
-  // New color scheme
-  final Color _primaryColor = Colors.black;
-  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
-  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
-  final Color _backgroundColor = Color(0xFFF8F9FA);
-  final Color _cardColor = Colors.white;
-  final Color _textPrimary = Colors.black;
-  final Color _textSecondary = Color(0xFF666666);
-  final Color _textLight = Color(0xFF999999);
-  final Color _errorColor = Color(0xFFE53935);
+  // Use standardized theme colors from const.dart
+
 
   @override
   void initState() {
@@ -35,425 +29,341 @@ class _WaterBillInputPageState extends State<WaterBillInputPage> {
     context.read<ProvidersBloc>().add(getWaterProviders());
   }
 
-  OutlineInputBorder customBorder(Color color) => OutlineInputBorder(
-    borderRadius: BorderRadius.circular(12),
-    borderSide: BorderSide(color: color, width: 1.5),
+  OutlineInputBorder customBorder(Color color, {double width = 1.0}) => OutlineInputBorder(
+    borderRadius: BorderRadius.circular(20),
+    borderSide: BorderSide(color: color, width: width),
   );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _backgroundColor,
-      appBar: AppBar(
-        backgroundColor: _primaryColor,
-        elevation: 0,
-        iconTheme: IconThemeData(color: Colors.white),
-        title: const Text(
-          'Water Bill Payment',
-          style: TextStyle(
-            fontSize: 18,
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: BlocBuilder<ProvidersBloc, ProvidersState>(
-        builder: (context, state) {
-          return SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                
-                   Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: _primaryColor,
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(24),
-                  bottomRight: Radius.circular(24),
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [  Container(
-                          width: 30,
-                          height: 30,
-                          decoration: BoxDecoration(
-                            color: _secondaryColor.withOpacity(0.1),
-                            shape: BoxShape.circle,
-                            border: Border.all(color: _secondaryColor.withOpacity(0.3)),
-                          ),
-                          child: Icon(
-                            Icons.water_drop_outlined,
-                            color: _secondaryColor,
-                            size: 20,
-                          ),
-                        ),
-                        SizedBox(width: 12,),
-                      Text(
-                        'Water Bill Payment',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '           Pay your water bill instantly',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.white.withOpacity(0.8),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-                  const SizedBox(height: 15),
-                  
-                  // Input Card
-                  Container(margin: EdgeInsets.symmetric(horizontal: 12),
+      backgroundColor: backgroundColor,
+      body: Stack(
+        children: [
+          // 1. Immersive Header Background
+          Container(
+            height: 230,
+            width: double.infinity,
+            color: maincolor1,
+            child: Stack(
+              children: [
+                Positioned(
+                  top: -50,
+                  right: -50,
+                  child: Container(
+                    width: 200,
+                    height: 200,
                     decoration: BoxDecoration(
-                      color: _cardColor,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 15,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
+                      color: Colors.white.withOpacity(0.02),
+                      shape: BoxShape.circle,
                     ),
-                    padding: const EdgeInsets.all(15),
+                  ),
+                ),
+                Positioned(
+                  bottom: -10,
+                  left: -10,
+                  child: Icon(
+                    Iconsax.drop,
+                    size: 140,
+                    color: Colors.white.withOpacity(0.04),
+                  ),
+                ),
+                
+                SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Provider Selection
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: _secondaryColor.withOpacity(0.1),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                Icons.business_outlined,
-                                color: _secondaryColor,
-                                size: 15,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              'Water Provider',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: _primaryColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        
-                        DropdownSearch<BillerModel>(
-                          items: state.waterList ?? [],
-                          selectedItem: selectedProvider,
-                          onChanged: (value) {
-                            setState(() => selectedProvider = value);
-                          },
-                          itemAsString: (BillerModel? item) => item?.name ?? '',
-                          dropdownDecoratorProps: DropDownDecoratorProps(
-                            dropdownSearchDecoration: InputDecoration(
-                              labelText: "Select Water Provider",
-                              labelStyle: TextStyle(
-                                fontSize: 13,
-                                color: _textSecondary,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              hintText: "Choose your water provider",
-                              hintStyle: TextStyle(color: _textLight),
-                              prefixIcon: Icon(
-                                Icons.search,
-                                color: _textLight,
-                              ),
-                              filled: true,
-                              fillColor: _backgroundColor,
-                              border: customBorder(Colors.grey.shade300),
-                              enabledBorder: customBorder(Colors.grey.shade300),
-                              focusedBorder: customBorder(_secondaryColor),
-                           
-                            ),
-                          ),
-                          popupProps: PopupProps.menu(
-                            showSearchBox: true,
-                            searchFieldProps: TextFieldProps(
-                              decoration: InputDecoration(
-                                hintText: 'Search water provider...',
-                                hintStyle: TextStyle(fontSize: 14, color: _textLight),
-                                prefixIcon: Icon(Icons.search, color: _textLight),
-                                // contentPadding: const EdgeInsets.symmetric(
-                                //   horizontal: 16,
-                                //   vertical: 12,
-                                // ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(color: Colors.grey.shade300),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(color: _secondaryColor),
-                                ),
-                              ),
-                            ),
-                            // constraints: const BoxConstraints(maxHeight: 300),
-                            emptyBuilder: (context, _) => Container(
-                              padding: const EdgeInsets.all(20),
-                              child: Text(
-                                "No water providers found",
-                                style: TextStyle(
-                                  color: _textSecondary,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                            itemBuilder: (context, item, isSelected) => Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 12,
-                              ),
-                              decoration: BoxDecoration(
-                                color: isSelected ? _secondaryColor.withOpacity(0.1) : Colors.transparent,
-                                border: Border(
-                                  bottom: BorderSide(color: Colors.grey.shade200),
-                                ),
-                              ),
-                              child: Text(
-                                item.name,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: _textPrimary,
-                                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                                ),
-                              ),
-                            ),
-                          ),
-                          validator: (value) => value == null
-                              ? 'Please select a water provider'
-                              : null,
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        // Customer ID
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: _secondaryColor.withOpacity(0.1),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                Icons.badge_outlined,
-                                color: _secondaryColor,
-                                size: 12,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              'Customer ID',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: _primaryColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        
-                        TextFormField(
-                          controller: customerIdController,
+                        const SizedBox(height: 60), // Space for fixed back button
+                        Text(
+                          'Pay Your\nWater Bills',
                           style: TextStyle(
-                            fontSize: 16,
-                            color: _textPrimary,
-                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                            fontSize: 32,
+                            fontWeight: FontWeight.w900,
+                            height: 1.1,
+                            letterSpacing: -1,
                           ),
-                          decoration: InputDecoration(
-                            hintText: "Enter your customer ID",
-                            hintStyle: TextStyle(color: _textLight,fontSize: 12),
-                            filled: true,
-                            fillColor: _backgroundColor,
-                            border: customBorder(Colors.grey.shade300),
-                            enabledBorder: customBorder(Colors.grey.shade300),
-                            focusedBorder: customBorder(_secondaryColor),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 16,
-                            ),
-                            prefixIcon: Icon(
-                              Icons.credit_card_outlined,
-                              color: _textLight,
-                            ),
-                          ),
-                          validator: (value) => value == null || value.isEmpty
-                              ? 'Please enter Customer ID'
-                              : null,
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        // Mobile Number
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: _secondaryColor.withOpacity(0.1),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                Icons.phone_iphone_outlined,
-                                color: _secondaryColor,
-                                size: 12,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              'Mobile Number',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: _primaryColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        
-                        TextFormField(
-                          controller: mobileNumberController,
-                          keyboardType: TextInputType.phone,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: _textPrimary,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: "Enter 10-digit mobile number",
-                            hintStyle: TextStyle(color: _textLight,fontSize: 12),
-                            filled: true,
-                            fillColor: _backgroundColor,
-                            border: customBorder(Colors.grey.shade300),
-                            enabledBorder: customBorder(Colors.grey.shade300),
-                            focusedBorder: customBorder(_secondaryColor),
-                            // contentPadding: const EdgeInsets.symmetric(
-                            //   horizontal: 16,
-                            //   vertical: 16,
-                            // ),
-                            prefixIcon: Icon(
-                              Icons.phone_outlined,
-                              color: _textLight,
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter mobile number';
-                            }
-                            if (!RegExp(r'^\d{10}$').hasMatch(value)) {
-                              return 'Enter valid 10-digit number';
-                            }
-                            return null;
-                          },
                         ),
                       ],
                     ),
                   ),
-                  
-                  const SizedBox(height: 12),
-                  
-                  // Fetch Bill Button
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: SizedBox(
+                ),
+              ],
+            ),
+          ),
+
+          // 2. Main Form
+          SingleChildScrollView(
+            child: BlocBuilder<ProvidersBloc, ProvidersState>(
+              builder: (context, state) {
+                return Column(
+                  children: [
+                    const SizedBox(height: 195),
+                    Container(
                       width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _primaryColor,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          elevation: 4,
-                          shadowColor: _primaryColor.withOpacity(0.3),
+                      decoration: BoxDecoration(
+                        color: backgroundColor,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(35),
+                          topRight: Radius.circular(35),
                         ),
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            final providerId = selectedProvider?.id ?? '';
-                            final phone = mobileNumberController.text.trim();
-                            final consumer = customerIdController.text.trim();
-                            final providerName = selectedProvider?.name ?? '';
-                    
-                            // Dispatch event to fetch bill
-                            context.read<FetchBillBloc>().add(
-                              FetchBillEvent.fetchWaterBill(
-                                providerName: providerName,
-                                providerID: providerId,
-                                phoneNo: phone,
-                                consumerId: consumer,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(24, 32, 24, 40),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(Iconsax.flash, color: maincolor1, size: 22),
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    'Bill Details',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w900,
+                                      color: maincolor1,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            );
-                    
-                            // Navigate to Bill Details Page
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => WaterBillDetailsPage(
-                                  phoneNo: phone,
-                                  providerID: providerId,
-                                  consumerId: consumer,
-                                  provider: providerName,
+                              const SizedBox(height: 24),
+
+                              // Provider Selection
+                              Text(
+                                'WATER AUTHORITY',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w800,
+                                  color: textSecondary,
+                                  letterSpacing: 1,
                                 ),
                               ),
-                            );
-                          }
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Fetch Bill Details",
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                              const SizedBox(height: 10),
+                              DropdownSearch<BillerModel>(
+                                items: state.waterList ?? [],
+                                selectedItem: selectedProvider,
+                                onChanged: (value) => setState(() => selectedProvider = value),
+                                itemAsString: (BillerModel? item) => item?.name ?? '',
+                                dropdownDecoratorProps: DropDownDecoratorProps(
+                                  dropdownSearchDecoration: InputDecoration(
+                                    hintText: "Select Water Provider",
+                                    hintStyle: TextStyle(color: textLight, fontWeight: FontWeight.w400),
+                                    prefixIcon: Icon(Iconsax.building, color: maincolor1.withOpacity(0.5), size: 20),
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    contentPadding: const EdgeInsets.all(20),
+                                    border: customBorder(borderSoft),
+                                    enabledBorder: customBorder(borderSoft),
+                                    focusedBorder: customBorder(secondaryColor, width: 2),
+                                  ),
+                                ),
+                                popupProps: PopupProps.menu(
+                                  showSearchBox: true,
+                                  searchFieldProps: TextFieldProps(
+                                    decoration: InputDecoration(
+                                      hintText: 'Search water authority...',
+                                      hintStyle: TextStyle(fontSize: 14, color: textLight),
+                                      prefixIcon: const Icon(Iconsax.search_normal, size: 18),
+                                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: borderSoft)),
+                                      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: secondaryColor)),
+                                    ),
+                                  ),
+                                  constraints: const BoxConstraints(maxHeight: 400),
+                                  emptyBuilder: (context, _) => Center(child: Text("No authorities found", style: TextStyle(color: textSecondary))),
+                                  itemBuilder: (context, item, isSelected) => Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                                    decoration: BoxDecoration(
+                                      color: isSelected ? secondaryColor.withOpacity(0.1) : Colors.transparent,
+                                      border: Border(bottom: BorderSide(color: borderSoft.withOpacity(0.5))),
+                                    ),
+                                    child: Text(
+                                      item.name,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: isSelected ? maincolor1 : textSecondary,
+                                        fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                validator: (value) => value == null ? 'Please select a provider' : null,
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            Icon(
-                              Icons.arrow_forward_rounded,
-                              size: 18,
-                            ),
-                          ],
+
+                              const SizedBox(height: 24),
+
+                              // Consumer ID
+                              Text(
+                                'CONSUMER ID / NUMBER',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w800,
+                                  color: textSecondary,
+                                  letterSpacing: 1,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              TextFormField(
+                                controller: customerIdController,
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: textPrimary),
+                                decoration: InputDecoration(
+                                  prefixIcon: Icon(Iconsax.card, color: maincolor1.withOpacity(0.5), size: 20),
+                                  hintText: "Enter consumer ID",
+                                  hintStyle: TextStyle(color: textLight, fontWeight: FontWeight.w400),
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                  border: customBorder(borderSoft),
+                                  enabledBorder: customBorder(borderSoft),
+                                  focusedBorder: customBorder(secondaryColor, width: 2),
+                                  contentPadding: const EdgeInsets.all(20),
+                                ),
+                                validator: (value) => value == null || value.isEmpty ? 'Required' : null,
+                              ),
+
+                              const SizedBox(height: 24),
+
+                              // Mobile Number
+                              Text(
+                                'REGISTERED MOBILE',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w800,
+                                  color: textSecondary,
+                                  letterSpacing: 1,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              TextFormField(
+                                controller: mobileNumberController,
+                                keyboardType: TextInputType.phone,
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: textPrimary),
+                                decoration: InputDecoration(
+                                  prefixIcon: Icon(Iconsax.mobile, color: maincolor1.withOpacity(0.5), size: 20),
+                                  hintText: "0000 000 000",
+                                  hintStyle: TextStyle(color: textLight, fontWeight: FontWeight.w400),
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                  border: customBorder(borderSoft),
+                                  enabledBorder: customBorder(borderSoft),
+                                  focusedBorder: customBorder(secondaryColor, width: 2),
+                                  contentPadding: const EdgeInsets.all(20),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) return 'Required';
+                                  if (!RegExp(r'^\d{10}$').hasMatch(value)) return 'Invalid mobile';
+                                  return null;
+                                },
+                              ),
+
+                              const SizedBox(height: 48),
+
+                              // Fetch Button
+                              SizedBox(
+                                width: double.infinity,
+                                height: 60,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: secondaryColor,
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                    elevation: 8,
+                                    shadowColor: secondaryColor.withOpacity(0.4),
+                                  ),
+                                  onPressed: () {
+                                    if (_formKey.currentState!.validate()) {
+                                      final providerId = selectedProvider?.id ?? '';
+                                      final phone = mobileNumberController.text.trim();
+                                      final consumer = customerIdController.text.trim();
+                                      final providerName = selectedProvider?.name ?? '';
+                              
+                                      context.read<FetchBillBloc>().add(
+                                        FetchBillEvent.fetchWaterBill(
+                                          providerName: providerName,
+                                          providerID: providerId,
+                                          phoneNo: phone,
+                                          consumerId: consumer,
+                                        ),
+                                      );
+                              
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => WaterBillDetailsPage(
+                                            phoneNo: phone,
+                                            providerID: providerId,
+                                            consumerId: consumer,
+                                            provider: providerName,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  child: const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text("FETCH BILL", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1.5)),
+                                      SizedBox(width: 12),
+                                      Icon(Iconsax.arrow_right_3, size: 20),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                            ],
+                          ),
                         ),
                       ),
                     ),
+                  ],
+                );
+              },
+            ),
+          ),
+          
+          // 3. Fixed Header Controls
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.1),
+                        ),
+                      ),
+                      child: const Icon(
+                        Iconsax.arrow_left_2,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
                   ),
-                  
-                  const SizedBox(height: 20),
+                  Text(
+                    'WATER BILL',
+                    style: TextStyle(
+                      color: secondaryColor,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                  const SizedBox(width: 40),
                 ],
               ),
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }

@@ -24,18 +24,8 @@ class BillPaymentPage extends StatefulWidget {
 }
 
 class _BillPaymentPageState extends State<BillPaymentPage> {
-  // Theme Variables
-  final Color _primaryColor = maincolor1;
-  final Color _secondaryColor = secondaryColor;
-  final Color _backgroundColor = backgroundColor;
-  final Color _cardColor = cardColor;
-  final Color _textPrimary = textPrimary;
-  final Color _textSecondary = textSecondary;
-  final Color _textLight = textLight;
-  final Color _errorColor = errorColor;
-  final Color _successColor = const Color(0xFF0D9488);
-  final Color _warningColor = const Color(0xFFD97706);
-  final Color _borderColor = borderSoft;
+  // Use standardized theme colors from const.dart
+
 
   @override
   void initState() {
@@ -53,7 +43,7 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: _backgroundColor,
+      color: backgroundColor,
       child: Column(
         children: [
           // Header
@@ -67,7 +57,7 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
-                    color: _textLight,
+                    color: textLight,
                     letterSpacing: 1.2,
                   ),
                 ),
@@ -76,7 +66,7 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: _secondaryColor,
+                    color: secondaryColor,
                   ),
                 ),
               ],
@@ -123,12 +113,12 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
 
   Widget _buildTransactionCard(BillPaymentModel transaction) {
     final isSuccess = transaction.billStatus.toLowerCase() == 'success';
-    final statusColor = isSuccess ? _successColor : _errorColor;
+    final statusColor = isSuccess ? successColor : errorColor;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
@@ -137,7 +127,7 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
             offset: const Offset(0, 8),
           ),
         ],
-        border: Border.all(color: _borderColor),
+        border: Border.all(color: borderSoft),
       ),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -171,7 +161,7 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
-                          color: _textPrimary,
+                          color: textPrimary,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -179,7 +169,7 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
                         'Consumer ID: ${transaction.txtConsumer}',
                         style: TextStyle(
                           fontSize: 12,
-                          color: _textSecondary,
+                          color: textSecondary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -196,7 +186,7 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w900,
-                        color: _secondaryColor,
+                        color: secondaryColor,
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -255,13 +245,13 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
       children: [
         Row(
           children: [
-            Icon(icon, size: 12, color: _textLight),
+            Icon(icon, size: 12, color: textLight),
             const SizedBox(width: 4),
             Text(
               title,
               style: TextStyle(
                 fontSize: 10,
-                color: _textLight,
+                color: textLight,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -272,7 +262,7 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
           value,
           style: TextStyle(
             fontSize: 12,
-            color: _textPrimary,
+            color: textPrimary,
             fontWeight: FontWeight.w800,
           ),
         ),
@@ -282,7 +272,7 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
 
   Widget _buildPaymentBadge(BillPaymentModel transaction) {
     final paySuccess = transaction.paymentStatus.toLowerCase() == 'success';
-    final payColor = paySuccess ? _successColor : _warningColor;
+    final payColor = paySuccess ? successColor : warningColor;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -321,9 +311,9 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
         return Container(
           margin: const EdgeInsets.only(bottom: 16),
           decoration: BoxDecoration(
-            color: _cardColor,
+            color: cardColor,
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: _borderColor),
+            border: Border.all(color: borderSoft),
           ),
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -397,16 +387,16 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
           Container(
             padding: const EdgeInsets.all(30),
             decoration: BoxDecoration(
-              color: _secondaryColor.withOpacity(0.1),
+              color: secondaryColor.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(Iconsax.receipt_2, color: _secondaryColor, size: 48),
+            child: Icon(Iconsax.receipt_2, color: secondaryColor, size: 48),
           ),
           const SizedBox(height: 24),
           Text(
             'No History',
             style: TextStyle(
-              color: _textPrimary,
+              color: textPrimary,
               fontSize: 18,
               fontWeight: FontWeight.w800,
             ),
@@ -415,7 +405,7 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
           Text(
             message,
             style: TextStyle(
-              color: _textSecondary,
+              color: textSecondary,
               fontSize: 14,
               fontWeight: FontWeight.w500,
             ),
@@ -424,7 +414,7 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
           ElevatedButton.icon(
             onPressed: _fetchBillPayments,
             style: ElevatedButton.styleFrom(
-              backgroundColor: _primaryColor,
+              backgroundColor: maincolor1,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               shape: RoundedRectangleBorder(
@@ -450,16 +440,16 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: _errorColor.withOpacity(0.1),
+              color: errorColor.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(Iconsax.danger, color: _errorColor, size: 48),
+            child: Icon(Iconsax.danger, color: errorColor, size: 48),
           ),
           const SizedBox(height: 24),
           Text(
             'Failed to Load Data',
             style: TextStyle(
-              color: _textPrimary,
+              color: textPrimary,
               fontSize: 18,
               fontWeight: FontWeight.w800,
             ),
@@ -467,14 +457,14 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
           const SizedBox(height: 12),
           Text(
             message,
-            style: TextStyle(color: _textSecondary, fontSize: 14),
+            style: TextStyle(color: textSecondary, fontSize: 14),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: _fetchBillPayments,
             style: ElevatedButton.styleFrom(
-              backgroundColor: _primaryColor,
+              backgroundColor: maincolor1,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               shape: RoundedRectangleBorder(

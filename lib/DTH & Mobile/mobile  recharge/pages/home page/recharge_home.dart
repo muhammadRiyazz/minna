@@ -1,3 +1,4 @@
+import 'package:iconsax/iconsax.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:minna/comman/const/const.dart';
@@ -18,6 +19,10 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
   String? selectedOperator;
   final _formKey = GlobalKey<FormState>();
 
+  // Use standardized theme colors from const.dart
+  // Use standardized theme colors from const.dart
+
+
   Color _getOperatorColor(String operatorName) {
     switch (operatorName.toUpperCase()) {
       case 'AIRTEL':
@@ -34,7 +39,7 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
       case 'MTNL':
         return Colors.orange;
       default:
-        return const Color(0xFFD4AF37); // Fallback to Secondary Gold
+        return secondaryColor;
     }
   }
 
@@ -60,414 +65,423 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
 
   Widget _buildTextFallback(String opName) {
     return Container(
-      color: _getOperatorColor(opName).withOpacity(0.15),
+      color: _getOperatorColor(opName).withOpacity(0.1),
       child: Center(
         child: Text(
           opName.isNotEmpty ? opName[0].toUpperCase() : '?',
           style: TextStyle(
             color: _getOperatorColor(opName),
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
+            fontWeight: FontWeight.w900,
+            fontSize: 22,
           ),
         ),
       ),
     );
   }
 
-  // New color scheme
-  final Color _primaryColor = Colors.black;
-  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
-  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
-  final Color _backgroundColor = Color(0xFFF8F9FA);
-  final Color _cardColor = Colors.white;
-  final Color _textPrimary = Colors.black;
-  final Color _textSecondary = Color(0xFF666666);
-  final Color _textLight = Color(0xFF999999);
-  final Color _errorColor = Color(0xFFE53935);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _backgroundColor,
-      appBar: AppBar(
-        backgroundColor: _primaryColor,
-        elevation: 0,
-        iconTheme: IconThemeData(color: Colors.white, size: 20),
-        title: const Text(
-          'Mobile Recharge',
-          style: TextStyle(
-            fontSize: 18,
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          children: [
-            const SizedBox(height: 20),
-
-            // Header Section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Mobile Recharge',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: _primaryColor,
+      backgroundColor: backgroundColor,
+      body: Stack(
+        children: [
+          // 1. Immersive Header Background
+          Container(
+            height: 230,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: maincolor1,
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(0),
+                bottomRight: Radius.circular(0),
+              ),
+            ),
+            child: Stack(
+              children: [
+                // Decorative circles
+                Positioned(
+                  top: -50,
+                  right: -50,
+                  child: Container(
+                    width: 200,
+                    height: 200,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.03),
+                      shape: BoxShape.circle,
                     ),
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Recharge your mobile instantly',
-                    style: TextStyle(fontSize: 13, color: _textSecondary),
+                ),
+                Positioned(
+                  bottom: 20,
+                  left: -30,
+                  child: Icon(
+                    Iconsax.mobile_programming,
+                    size: 150,
+                    color: Colors.white.withOpacity(0.04),
                   ),
+                ),
+                
+                // Header Content
+                SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 60), // Space for fixed back button
+                        Text(
+                          'Instant\nRecharge',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 32,
+                            fontWeight: FontWeight.w900,
+                            height: 1.1,
+                            letterSpacing: -1,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // 2. Main Content Card
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(height: 190),
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: backgroundColor,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(35),
+                      topRight: Radius.circular(35),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 32, 24, 40),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Input Section Title
+                          Row(
+                            children: [
+                              Icon(Iconsax.device_message, color: maincolor1, size: 22),
+                              const SizedBox(width: 12),
+                              Text(
+                                'Recharge Details',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w900,
+                                  color: maincolor1,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 24),
+
+                          // Mobile Number Input
+                          Text(
+                            'MOBILE NUMBER',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w800,
+                              color: textSecondary,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          TextFormField(
+                            controller: phoneController,
+                            keyboardType: TextInputType.phone,
+                            maxLength: 10,
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: textPrimary),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Required';
+                              } else if (value.length != 10) {
+                                return 'Enter 10 digits';
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                              prefixIcon: Container(
+                                padding: const EdgeInsets.only(left: 16, right: 12),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(Iconsax.mobile_programming, size: 20),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      '+91',
+                                      style: TextStyle(
+                                        color: textPrimary,
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Container(width: 1, height: 20, color: borderSoft),
+                                  ],
+                                ),
+                              ),
+                              counterText: '',
+                              hintText: '0000 000 000',
+                              hintStyle: TextStyle(color: textLight, fontWeight: FontWeight.w400),
+                              filled: true,
+                              fillColor: Colors.white,
+                              contentPadding: const EdgeInsets.all(20),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                borderSide: BorderSide(color: borderSoft),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                borderSide: BorderSide(color: borderSoft),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                borderSide: BorderSide(color: secondaryColor, width: 2),
+                              ),
+                            ),
+                          ),
+                          
+                          const SizedBox(height: 32),
+
+                          // Operator Selection Title
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'SELECT OPERATOR',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w800,
+                                  color: textSecondary,
+                                  letterSpacing: 1,
+                                ),
+                              ),
+                              if (selectedOperator != null)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: secondaryColor.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    selectedOperator!,
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w900,
+                                      color: secondaryColor,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+
+                          BlocBuilder<OperatorsBloc, OperatorsState>(
+                            builder: (context, state) {
+                              if (state.isLoading) {
+                                return buildShimmerLoading();
+                              } else if (state.opList == null || state.opList!.isEmpty) {
+                                return Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(30),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(color: borderSoft),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Icon(Iconsax.info_circle, color: textLight, size: 40),
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        "Service temporarily unavailable",
+                                        style: TextStyle(color: textSecondary, fontSize: 14, fontWeight: FontWeight.w600),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              } else {
+                                return GridView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    childAspectRatio: 2.2,
+                                    crossAxisSpacing: 12,
+                                    mainAxisSpacing: 12,
+                                  ),
+                                  itemCount: state.opList!.length,
+                                  itemBuilder: (context, index) {
+                                    final opName = state.opList![index];
+                                    final isSelected = selectedOperator == opName;
+                                    return GestureDetector(
+                                      onTap: () => setState(() => selectedOperator = opName),
+                                      child: AnimatedContainer(
+                                        duration: const Duration(milliseconds: 200),
+                                        decoration: BoxDecoration(
+                                          color: isSelected ? Colors.white : Colors.white.withOpacity(0.7),
+                                          borderRadius: BorderRadius.circular(16),
+                                          border: Border.all(
+                                            color: isSelected ? secondaryColor : borderSoft,
+                                            width: isSelected ? 2 : 1,
+                                          ),
+                                          boxShadow: isSelected 
+                                            ? [BoxShadow(color: secondaryColor.withOpacity(0.15), blurRadius: 10, offset: const Offset(0, 4))]
+                                            : [],
+                                        ),
+                                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              width: 36,
+                                              height: 36,
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius: BorderRadius.circular(10),
+                                                border: Border.all(color: borderSoft.withOpacity(0.5)),
+                                              ),
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.circular(8),
+                                                child: _getOperatorImageURL(opName).isNotEmpty
+                                                  ? Image.network(
+                                                      _getOperatorImageURL(opName),
+                                                      fit: BoxFit.contain,
+                                                      errorBuilder: (c, e, s) => _buildTextFallback(opName),
+                                                    )
+                                                  : _buildTextFallback(opName),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 10),
+                                            Expanded(
+                                              child: Text(
+                                                opName == 'Vodafone' ? 'VI' : opName,
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  fontWeight: isSelected ? FontWeight.w900 : FontWeight.w700,
+                                                  color: isSelected ? maincolor1 : textSecondary,
+                                                ),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              }
+                            },
+                          ),
+
+                          const SizedBox(height: 48),
+
+                          // Action Button
+                          SizedBox(
+                            width: double.infinity,
+                            height: 60,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  if (selectedOperator == null) {
+                                    _showSelectOperatorSnackbar(context);
+                                  } else {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => MobileRechargePlansPage(
+                                          operator: selectedOperator.toString(),
+                                          mobileNumber: phoneController.text,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: secondaryColor,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                elevation: 8,
+                                shadowColor: secondaryColor.withOpacity(0.4),
+                              ),
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'VIEW PLANS',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: 1,
+                                    ),
+                                  ),
+                                  SizedBox(width: 12),
+                                  Icon(Iconsax.arrow_right_3, size: 20),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // 3. Fixed Header Controls
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.1),
+                        ),
+                      ),
+                      child: const Icon(
+                        Iconsax.arrow_left_2,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    'MOBILE RECHARGE',
+                    style: TextStyle(
+                      color: secondaryColor,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                  const SizedBox(width: 40),
                 ],
               ),
             ),
-
-            const SizedBox(height: 15),
-
-            // Input Card
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: _cardColor,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Mobile Number Section
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: _secondaryColor.withOpacity(0.1),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.phone_iphone,
-                              color: _secondaryColor,
-                              size: 12,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            'Mobile Number',
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: _primaryColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: phoneController,
-                        keyboardType: TextInputType.phone,
-                        maxLength: 10,
-                        style: TextStyle(fontSize: 16, color: _textPrimary),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter mobile number';
-                          } else if (value.length != 10) {
-                            return 'Mobile number must be 10 digits';
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                          prefixText: '+91 ',
-                          prefixStyle: TextStyle(
-                            color: _textPrimary,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          counterText: '',
-                          hintText: 'Enter 10-digit number',
-                          hintStyle: TextStyle(color: _textLight),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: _textLight),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: _secondaryColor,
-                              width: 2,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: _textLight),
-                          ),
-                          filled: true,
-                          fillColor: _backgroundColor,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Operator Section
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: _secondaryColor.withOpacity(0.1),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.sim_card,
-                              color: _secondaryColor,
-                              size: 13,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            'Select Operator',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: _primaryColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      BlocBuilder<OperatorsBloc, OperatorsState>(
-                        builder: (context, state) {
-                          if (state.isLoading) {
-                            return buildShimmerLoading();
-                          } else if (state.opList == []) {
-                            return Container(
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                color: _backgroundColor,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  "No operators available",
-                                  style: TextStyle(
-                                    color: _textSecondary,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
-                            );
-                          } else {
-                            return Column(
-                              children: state.opList!.map((opName) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 8.0),
-                                  child: InkWell(
-                                    onTap: () => setState(
-                                      () => selectedOperator = opName,
-                                    ),
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        // color: selectedOperator == opName
-                                        //     ? _secondaryColor.withOpacity(0.1)
-                                        //     : _cardColor,
-                                        border: Border.all(
-                                          color: selectedOperator == opName
-                                              ? _secondaryColor
-                                              : Colors.grey.shade100,
-                                          width: 1,
-                                        ),
-                                        borderRadius: BorderRadius.circular(12),
-                                        // boxShadow: selectedOperator == opName
-                                        //     ? [
-                                        //         BoxShadow(
-                                        //           color: _secondaryColor.withOpacity(0.2),
-                                        //           blurRadius: 8,
-                                        //           offset: const Offset(0, 2),
-                                        //         )
-                                        //       ]
-                                        //     : [
-                                        //         BoxShadow(
-                                        //           color: Colors.black.withOpacity(0.03),
-                                        //           blurRadius: 4,
-                                        //           offset: const Offset(0, 2),
-                                        //         )
-                                        //       ],
-                                      ),
-                                      padding: const EdgeInsets.all(16),
-                                      child: Row(
-                                        children: [
-                                          // Operator Icon
-                                          Container(
-                                            width: 44,
-                                            height: 44,
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              // shape: BoxShape.circle,
-                                              // border: Border.all(
-                                              //   color:
-                                              //       selectedOperator == opName
-                                              //       ? _getOperatorColor(opName)
-                                              //       : Colors.transparent,
-                                              //   width: 2,
-                                              // ),
-                                            ),
-                                            child: ClipRRect(
-                                              // borderRadius:
-                                              //     BorderRadius.circular(22),
-                                              child:
-                                                  _getOperatorImageURL(
-                                                    opName,
-                                                  ).isNotEmpty
-                                                  ? Image.network(
-                                                      _getOperatorImageURL(
-                                                        opName,
-                                                      ),
-                                                      fit: BoxFit.contain,
-                                                      errorBuilder:
-                                                          (
-                                                            context,
-                                                            error,
-                                                            stackTrace,
-                                                          ) {
-                                                            return _buildTextFallback(
-                                                              opName,
-                                                            );
-                                                          },
-                                                    )
-                                                  : _buildTextFallback(opName),
-                                            ),
-                                          ),
-                                          const SizedBox(width: 12),
-                                          Expanded(
-                                            child: Text(
-                                              opName == 'Vodafone'
-                                                  ? 'VI'
-                                                  : opName,
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w500,
-                                                color: _textPrimary,
-                                              ),
-                                            ),
-                                          ),
-                                          Container(
-                                            width: 24,
-                                            height: 24,
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              border: Border.all(
-                                                color:
-                                                    selectedOperator == opName
-                                                    ? _secondaryColor
-                                                    : _textLight,
-                                                width: 2,
-                                              ),
-                                            ),
-                                            child: selectedOperator == opName
-                                                ? Container(
-                                                    margin:
-                                                        const EdgeInsets.all(4),
-                                                    decoration: BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      color: _secondaryColor,
-                                                    ),
-                                                  )
-                                                : null,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
-                            );
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 32),
-
-            // Next Button
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    if (selectedOperator == null) {
-                      _showSelectOperatorSnackbar(context);
-                    } else {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => MobileRechargePlansPage(
-                            operator: selectedOperator.toString(),
-                            mobileNumber: phoneController.text,
-                          ),
-                        ),
-                      );
-                    }
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 56),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  backgroundColor: _primaryColor,
-                  elevation: 4,
-                  shadowColor: _primaryColor.withOpacity(0.3),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Continue to Plans',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Icon(
-                      Icons.arrow_forward_rounded,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -477,106 +491,48 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
       SnackBar(
         content: Row(
           children: [
-            Icon(Icons.error_outline, color: Colors.white),
-            const SizedBox(width: 8),
-            Expanded(
+            const Icon(Iconsax.danger, color: Colors.white, size: 20),
+            const SizedBox(width: 12),
+            const Expanded(
               child: Text(
-                'Please select an operator',
-                style: TextStyle(color: Colors.white),
+                'Please select a network provider',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
               ),
             ),
           ],
         ),
-        backgroundColor: _errorColor,
+        backgroundColor: errorColor,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        margin: const EdgeInsets.all(20),
         duration: const Duration(seconds: 3),
-        action: SnackBarAction(
-          label: 'OK',
-          textColor: Colors.white,
-          onPressed: () {
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          },
-        ),
       ),
     );
   }
 }
 
 Widget buildShimmerLoading() {
-  final Color baseColor = Colors.grey[300]!;
-  final Color highlightColor = Colors.grey[100]!;
-
-  return Shimmer.fromColors(
-    baseColor: baseColor,
-    highlightColor: highlightColor,
-    child: Column(
-      children: List.generate(
-        4,
-        (index) => Padding(
-          padding: const EdgeInsets.only(bottom: 12.0),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey.shade200),
-            ),
-            child: Row(
-              children: [
-                // Operator icon placeholder
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                // Text content
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Main title
-                      Container(
-                        width: 120,
-                        height: 16,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      // Subtitle
-                      Container(
-                        width: 80,
-                        height: 12,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // Radio button placeholder
-                Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.grey.shade300),
-                  ),
-                ),
-              ],
-            ),
+  return GridView.builder(
+    shrinkWrap: true,
+    physics: const NeverScrollableScrollPhysics(),
+    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: 2,
+      childAspectRatio: 2.2,
+      crossAxisSpacing: 12,
+      mainAxisSpacing: 12,
+    ),
+    itemCount: 4,
+    itemBuilder: (context, index) {
+      return Shimmer.fromColors(
+        baseColor: Colors.grey[300]!,
+        highlightColor: Colors.grey[100]!,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
           ),
         ),
-      ),
-    ),
+      );
+    },
   );
 }
