@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:minna/cab/domain/confirm%20model/confirm_model.dart';
 import 'package:minna/comman/pages/main%20home/home.dart';
+import 'package:minna/comman/const/const.dart';
 
 class CabSuccessPage extends StatelessWidget {
   final BookingConfirmData bookingResponse;
@@ -8,13 +9,7 @@ class CabSuccessPage extends StatelessWidget {
   const CabSuccessPage({super.key, required this.bookingResponse});
 
   // Color Theme - Black & Gold Premium (matching booked_cab_details.dart)
-  static const Color _primaryColor = Colors.black;
-  static const Color _secondaryColor = Color(0xFFD4AF37); // Gold
-  static const Color _backgroundColor = Color(0xFFF8F9FA);
-  static const Color _cardColor = Colors.white;
-  static const Color _textPrimary = Colors.black;
-  static const Color _textSecondary = Color(0xFF666666);
-  static const Color _textLight = Color(0xFF999999);
+  // Theme standardizing: Use global constants directly from const.dart
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +25,7 @@ class CabSuccessPage extends StatelessWidget {
         return false;
       },
       child: Scaffold(
-        backgroundColor: _backgroundColor,
+        backgroundColor: backgroundColor,
         body: Container(
           color: Colors.green,
           child: Column(
@@ -80,7 +75,7 @@ class CabSuccessPage extends StatelessWidget {
                 child: Container(
                   width: double.infinity,
                   decoration: const BoxDecoration(
-                    color: _backgroundColor,
+                    color: backgroundColor,
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(30),
                       topRight: Radius.circular(30),
@@ -117,7 +112,7 @@ class CabSuccessPage extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: _textPrimary,
+                            color: textPrimary,
                           ),
                         ),
 
@@ -133,7 +128,7 @@ class CabSuccessPage extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: _textPrimary,
+                            color: textPrimary,
                           ),
                         ),
 
@@ -149,7 +144,7 @@ class CabSuccessPage extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: _textPrimary,
+                            color: textPrimary,
                           ),
                         ),
 
@@ -174,7 +169,7 @@ class CabSuccessPage extends StatelessWidget {
                                   );
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: _primaryColor,
+                                  backgroundColor: maincolor1,
                                   foregroundColor: Colors.white,
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 16,
@@ -215,7 +210,7 @@ class CabSuccessPage extends StatelessWidget {
   }) {
     return Card(
       elevation: 0,
-      color: _cardColor,
+      color: cardColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -225,13 +220,13 @@ class CabSuccessPage extends StatelessWidget {
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: highlight
-                    ? _secondaryColor.withOpacity(0.1)
-                    : _backgroundColor,
+                    ? secondaryColor.withOpacity(0.1)
+                    : backgroundColor,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
                 icon,
-                color: highlight ? _secondaryColor : _textSecondary,
+                color: highlight ? secondaryColor : textSecondary,
                 size: 24,
               ),
             ),
@@ -244,7 +239,7 @@ class CabSuccessPage extends StatelessWidget {
                     title,
                     style: TextStyle(
                       fontSize: 12,
-                      color: _textSecondary,
+                      color: textSecondary,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -254,7 +249,7 @@ class CabSuccessPage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: highlight ? _secondaryColor : _textPrimary,
+                      color: highlight ? secondaryColor : textPrimary,
                     ),
                   ),
                 ],
@@ -286,7 +281,7 @@ class CabSuccessPage extends StatelessWidget {
 
     return Card(
       elevation: 0,
-      color: _cardColor,
+      color: cardColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -297,7 +292,7 @@ class CabSuccessPage extends StatelessWidget {
               width: 70,
               height: 70,
               decoration: BoxDecoration(
-                color: _secondaryColor.withOpacity(0.1),
+                color: secondaryColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
@@ -308,14 +303,14 @@ class CabSuccessPage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: _secondaryColor,
+                      color: secondaryColor,
                     ),
                   ),
                   Text(
                     _getMonthAbbreviation(date.month),
                     style: TextStyle(
                       fontSize: 12,
-                      color: _secondaryColor,
+                      color: secondaryColor,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -334,7 +329,7 @@ class CabSuccessPage extends StatelessWidget {
                     'Scheduled Pickup',
                     style: TextStyle(
                       fontSize: 12,
-                      color: _textSecondary,
+                      color: textSecondary,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -344,19 +339,19 @@ class CabSuccessPage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
-                      color: _textPrimary,
+                      color: textPrimary,
                     ),
                   ),
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      Icon(Icons.access_time, size: 16, color: _textSecondary),
+                      Icon(Icons.access_time, size: 16, color: textSecondary),
                       const SizedBox(width: 6),
                       Text(
                         formattedTime,
                         style: TextStyle(
                           fontSize: 14,
-                          color: _textSecondary,
+                          color: textSecondary,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -419,7 +414,7 @@ class CabSuccessPage extends StatelessWidget {
   Widget _buildCabInfoCard(Cab cab) {
     return Card(
       elevation: 0,
-      color: _cardColor,
+      color: cardColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -429,13 +424,13 @@ class CabSuccessPage extends StatelessWidget {
               width: 60,
               height: 60,
               decoration: BoxDecoration(
-                color: _secondaryColor.withOpacity(0.1),
+                color: secondaryColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 Icons.directions_car,
                 size: 32,
-                color: _secondaryColor,
+                color: secondaryColor,
               ),
             ),
             const SizedBox(width: 16),
@@ -448,7 +443,7 @@ class CabSuccessPage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: _textPrimary,
+                      color: textPrimary,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -456,7 +451,7 @@ class CabSuccessPage extends StatelessWidget {
                     cab.category,
                     style: TextStyle(
                       fontSize: 14,
-                      color: _textSecondary,
+                      color: textSecondary,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -469,19 +464,19 @@ class CabSuccessPage extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: _backgroundColor,
+                          color: backgroundColor,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.people, size: 16, color: _textSecondary),
+                            Icon(Icons.people, size: 16, color: textSecondary),
                             const SizedBox(width: 4),
                             Text(
                               '${cab.seatingCapacity}',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: _textSecondary,
+                                color: textSecondary,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -495,7 +490,7 @@ class CabSuccessPage extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: _backgroundColor,
+                          color: backgroundColor,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
@@ -504,14 +499,14 @@ class CabSuccessPage extends StatelessWidget {
                             Icon(
                               Icons.luggage,
                               size: 16,
-                              color: _textSecondary,
+                              color: textSecondary,
                             ),
                             const SizedBox(width: 4),
                             Text(
                               '${cab.bagCapacity}',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: _textSecondary,
+                                color: textSecondary,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -532,7 +527,7 @@ class CabSuccessPage extends StatelessWidget {
   Widget _buildFareCard(Fare fare) {
     return Card(
       elevation: 0,
-      color: _cardColor,
+      color: cardColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -580,14 +575,14 @@ class CabSuccessPage extends StatelessWidget {
             Divider(
               height: 32,
               thickness: 1,
-              color: _textLight.withOpacity(0.3),
+              color: textLight.withOpacity(0.3),
             ),
 
             // Total amount
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: _secondaryColor.withOpacity(0.1),
+                color: secondaryColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -598,7 +593,7 @@ class CabSuccessPage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: _textPrimary,
+                      color: textPrimary,
                     ),
                   ),
                   Text(
@@ -606,7 +601,7 @@ class CabSuccessPage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
-                      color: _secondaryColor,
+                      color: secondaryColor,
                     ),
                   ),
                 ],
@@ -626,7 +621,7 @@ class CabSuccessPage extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 14,
-            color: _textSecondary,
+            color: textSecondary,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -634,7 +629,7 @@ class CabSuccessPage extends StatelessWidget {
           value,
           style: TextStyle(
             fontSize: 14,
-            color: _textPrimary,
+            color: textPrimary,
             fontWeight: FontWeight.w600,
           ),
         ),

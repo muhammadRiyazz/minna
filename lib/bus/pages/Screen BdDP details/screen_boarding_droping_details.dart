@@ -1,9 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:minna/bus/infrastructure/time.dart';
-import 'package:minna/bus/pages/Screen%20available%20Trip/screen_available_triplist.dart';
 import 'package:minna/bus/pages/screen%20passengers%20input/screen_passengers_input.dart';
-
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/bus/domain/seatlayout/seatlayoutmodal.dart';
 import 'package:minna/bus/domain/trips%20list%20modal/trip_list_modal.dart';
@@ -37,48 +34,114 @@ class _ScreenBdDpDetailsState extends State<ScreenBdDpDetails> {
   String? boardingpointname;
   String? droppingpointname;
 
- 
-  final Color _primaryColor = Colors.black;
-  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
-  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
-  final Color _backgroundColor = Color(0xFFF8F9FA);
-  final Color _cardColor = Colors.white;
-  final Color _textPrimary = Colors.black;
-  final Color _textSecondary = Color(0xFF666666);
-  final Color _textLight = Color(0xFF999999);
-  final Color _errorColor = Color(0xFFE53935);
-
   @override
   Widget build(BuildContext context) {
-    final subtitleStyle = TextStyle(
-      fontSize: 12,
-      color: Color.fromARGB(255, 164, 148, 148),
-      fontWeight: FontWeight.w300,
-    );
-
     return DefaultTabController(
       length: 2,
-      
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: backgroundColor,
         appBar: AppBar(
-          backgroundColor: _primaryColor,
+          backgroundColor: maincolor1,
           iconTheme: const IconThemeData(color: Colors.white),
+          elevation: 0,
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Boarding & Dropping',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                '${widget.selectedSeats.length} ${widget.selectedSeats.length == 1 ? 'Seat' : 'Seats'} • ${widget.travelsname}',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.white.withOpacity(0.8),
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ],
+          ),
         ),
         body: Column(
           children: [
+            // Immersive Header with TabBar
             Container(
-              color: _primaryColor,
-              child: TabBar(
-                labelColor: Colors.white,
-                indicatorColor: Colors.white,
-                labelPadding: EdgeInsets.all(15),
-                tabs: [
-                  _buildTab('Boarding point', boardingpointname),
-                  _buildTab('Dropping point', droppingpointname),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: maincolor1,
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(24),
+                  bottomRight: Radius.circular(24),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  // Tab Selection Area
+                  TabBar(
+                    labelColor: secondaryColor,
+                    unselectedLabelColor: Colors.white.withOpacity(0.6),
+                    indicatorColor: secondaryColor,
+                    indicatorWeight: 3,
+                    indicatorPadding: const EdgeInsets.symmetric(
+                      horizontal: 40,
+                    ),
+                    labelPadding: const EdgeInsets.symmetric(vertical: 12),
+                    labelStyle: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.5,
+                    ),
+                    unselectedLabelStyle: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    tabs: const [
+                      Tab(text: 'BOARDING'),
+                      Tab(text: 'DROPPING'),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  // Current Selection Summaries
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildHeaderSelectionSummary(
+                          'Boarding',
+                          boardingpointname,
+                          Icons.login_rounded,
+                        ),
+                        Container(
+                          width: 1,
+                          height: 30,
+                          color: Colors.white.withOpacity(0.2),
+                        ),
+                        _buildHeaderSelectionSummary(
+                          'Dropping',
+                          droppingpointname,
+                          Icons.logout_rounded,
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
+
+            // Point Selection Lists
             Expanded(
               child: TabBarView(
                 children: [
@@ -87,93 +150,106 @@ class _ScreenBdDpDetailsState extends State<ScreenBdDpDetails> {
                 ],
               ),
             ),
-            _buildContinueButton(),
-            SizedBox(height: 10),
+
+            // Bottom Continue Bar
+            _buildBottomActionBar(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTab(String label, String? value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label.toUpperCase(),
-          style: TextStyle(
-            fontSize: 13,
-            color: Colors.white,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-        value == null
-            ? Text(
-                'Add Location',
+  Widget _buildHeaderSelectionSummary(
+    String label,
+    String? value,
+    IconData icon,
+  ) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 14, color: Colors.white.withOpacity(0.6)),
+              const SizedBox(width: 6),
+              Text(
+                label.toUpperCase(),
                 style: TextStyle(
-                  fontSize: 12,
-                  color: Color.fromARGB(255, 164, 148, 148),
-                ),
-              )
-            : SizedBox(
-                width: 180,
-                child: Text(
-                  value,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Color.fromARGB(255, 164, 148, 148),
-                  ),
+                  fontSize: 10,
+                  color: Colors.white.withOpacity(0.6),
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 1,
                 ),
               ),
-      ],
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value ?? 'Not Selected',
+            style: TextStyle(
+              fontSize: 13,
+              color: value != null
+                  ? secondaryColor
+                  : Colors.white.withOpacity(0.4),
+              fontWeight: value != null ? FontWeight.w600 : FontWeight.w400,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildPointList(List<BoardingPoint> points, bool isBoarding) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        // boxShadow: [
-        //   BoxShadow(
-        //     color: Colors.black.withOpacity(0.1),
-        //     blurRadius: 10,
-        //     spreadRadius: 2,
-        //     offset: Offset(0, 4),
-        //   ),
-        // ],
-      ),
-      child: 
+    if (points.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.location_off_outlined, size: 64, color: textLight),
+            const SizedBox(height: 16),
+            Text(
+              'No points available',
+              style: TextStyle(fontSize: 16, color: textSecondary),
+            ),
+          ],
+        ),
+      );
+    }
 
-       ListView.builder(
-      padding: EdgeInsets.all(12),
+    return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
       itemCount: points.length,
       itemBuilder: (context, index) {
         final point = points[index];
-        final selected =
+        final isSelected =
             (isBoarding ? boardingpoint : droppingpoint) == point.bpId;
+
         return Container(
-          margin: EdgeInsets.only(bottom: 12),
+          margin: const EdgeInsets.only(bottom: 16),
           decoration: BoxDecoration(
-            color: _cardColor,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.08),
-                blurRadius: 12,
-                spreadRadius: 1,
-                offset: Offset(0, 2),
-              ),
-            ],
-            border: Border.all(
-              color: selected ? _secondaryColor : Colors.transparent,
-              width: selected ? 1 : 0,
-            ),
+            color: cardColor,
+            borderRadius: BorderRadius.circular(20),
+            // boxShadow: [
+            //   BoxShadow(
+            //     color: isSelected
+            //         ? secondaryColor.withOpacity(0.2)
+            //         : Colors.black.withOpacity(0.04),
+            //     blurRadius: isSelected ? 12 : 8,
+            //     offset: const Offset(0, 4),
+            //   ),
+            // ],
+            // border: Border.all(
+            //   color: isSelected ? null : Colors.transparent,
+            //   width: 1.5,
+            // ),
           ),
           child: Material(
             color: Colors.transparent,
             child: InkWell(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(20),
               onTap: () {
                 setState(() {
                   if (isBoarding) {
@@ -186,29 +262,53 @@ class _ScreenBdDpDetailsState extends State<ScreenBdDpDetails> {
                 });
               },
               child: Padding(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
+                    // Icon/Time Area
                     Container(
-                      width: 40,
-                      height: 40,
+                      width: 56,
+                      height: 56,
                       decoration: BoxDecoration(
-                        color:  _secondaryColor.withOpacity(.1)
-                           ,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color:  _secondaryColor ,
-                          width: 1.5,
-                        ),
+                        color: isSelected ? secondaryColor : backgroundColor,
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                      child: Icon(
-                        
-                            Icons.place_outlined,
-                        color: _secondaryColor ,
-                        size: 20,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Icon(
+                          //   Icons.access_time_filled_rounded,
+                          //   size: 16,
+                          //   color: isSelected ? Colors.white : textSecondary,
+                          // ),
+                          // const SizedBox(height: 4),
+                          Text(
+                            changetime(
+                              time: point.time,
+                            ).split(' ')[0], // Get time part
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: isSelected ? Colors.white : textPrimary,
+                            ),
+                          ),
+                          Text(
+                            changetime(
+                              time: point.time,
+                            ).split(' ').last, // Get AM/PM part
+                            style: TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w500,
+                              color: isSelected
+                                  ? Colors.white.withOpacity(0.8)
+                                  : textSecondary,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    SizedBox(width: 16),
+                    const SizedBox(width: 16),
+                    // Content Area
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -216,56 +316,71 @@ class _ScreenBdDpDetailsState extends State<ScreenBdDpDetails> {
                           Text(
                             point.bpName,
                             style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: selected ? _primaryColor : _textPrimary,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              color: textPrimary,
                             ),
                           ),
-                          SizedBox(height: 4),
-                          Text(
-                            point.landmark,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: selected ? _textSecondary : _textLight,
-                            ),
-                          ),
-                          SizedBox(height: 6),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.access_time_rounded,
-                                size: 14,
-                                color: selected ? _secondaryColor : _textLight,
-                              ),
-                              SizedBox(width: 4),
-                              Text(
-                                changetime(time: point.time),
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                  color: selected ? _secondaryColor : _textSecondary,
+                          const SizedBox(height: 4),
+                          if (point.landmark.isNotEmpty)
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.location_on_rounded,
+                                  size: 12,
+                                  color: textSecondary,
                                 ),
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    point.landmark,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: textSecondary,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          if (point.address.isNotEmpty) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              point.address,
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: textLight,
+                                fontWeight: FontWeight.w400,
                               ),
-                            ],
-                          ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ],
                       ),
                     ),
-                    Container(
+                    const SizedBox(width: 8),
+                    // Selection Indicator
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
                       width: 24,
                       height: 24,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
+                        color: isSelected ? secondaryColor : Colors.transparent,
                         border: Border.all(
-                          color: selected ? _secondaryColor : _textLight,
+                          color: isSelected
+                              ? secondaryColor
+                              : textLight.withOpacity(0.5),
                           width: 2,
                         ),
-                        color: selected ? _secondaryColor : Colors.transparent,
                       ),
-                      child: selected
-                          ? Icon(
+                      child: isSelected
+                          ? const Icon(
                               Icons.check,
-                              size: 14,
+                              size: 16,
                               color: Colors.white,
                             )
                           : null,
@@ -277,127 +392,199 @@ class _ScreenBdDpDetailsState extends State<ScreenBdDpDetails> {
           ),
         );
       },
-    ),
     );
   }
 
-  Widget _buildContinueButton() {
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.symmetric(horizontal: 10),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: _primaryColor,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          elevation: 2,
-        ),
-        onPressed: () {
-          if (droppingpoint == null && boardingpoint == null) {
-            _showErrorSnackBar(
-              'Please select both boarding and dropping points',
-            );
-          } else if (boardingpoint == null) {
-            _showErrorSnackBar('Please select a boarding point');
-          } else if (droppingpoint == null) {
-            _showErrorSnackBar('Please select a dropping point');
-          } else {
-            // widget.alldata.boardingPointID = boardingpoint!;
-            // widget.alldata.droppingPointID = droppingpoint!;
-            // log(widget.alldata.boardingPointID.toString());
-            // log(widget.alldata.droppingPointID.toString());
+  Widget _buildBottomActionBar() {
+    final bool readyToContinue = boardingpoint != null && droppingpoint != null;
 
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ScreenPassengerInput(
-                  selctseat: widget.selectedSeats,
-                  alldata: widget.alldata,
-                  boardingpoint: boardingpoint!,
-                  droppingPoint: droppingpoint!,
-                  travelsname: widget.travelsname,
-                  trpinfo: widget.trpinfo,
-                ),
-              ),
-            );
-          }
-        },
-        child: const Text(
-          'Continue',
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+    return Container(
+      decoration: BoxDecoration(
+        color: cardColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 16,
+            offset: const Offset(0, -4),
           ),
+        ],
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
         ),
       ),
-    );
-  }
-   void _showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(Icons.error_outline, color: _errorColor, size: 20),
-            ),
-            SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Selection Required',
-                    style: TextStyle(
-                      color: _textPrimary,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                    ),
+      padding: EdgeInsets.fromLTRB(
+        20,
+        16,
+        20,
+        MediaQuery.of(context).padding.bottom + 16,
+      ),
+      child: Row(
+        children: [
+          // Status Info
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  readyToContinue ? 'Selection Complete' : 'Next Step',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: textSecondary,
+                    fontWeight: FontWeight.w500,
                   ),
-                  SizedBox(height: 2),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  readyToContinue
+                      ? 'Ready to proceed'
+                      : (boardingpoint == null
+                            ? 'Select Boarding Point'
+                            : 'Select Dropping Point'),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: readyToContinue ? successColor : textPrimary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 16),
+          // Continue Button
+          SizedBox(
+            height: 56,
+            width: 140,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: maincolor1,
+                foregroundColor: secondaryColor,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              onPressed: () {
+                if (!readyToContinue) {
+                  _showErrorBottomSheet(
+                    boardingpoint == null
+                        ? 'Boarding Point Required'
+                        : 'Dropping Point Required',
+                    boardingpoint == null
+                        ? 'Please select a location to board the bus.'
+                        : 'Please select a location to drop off.',
+                  );
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ScreenPassengerInput(
+                        selctseat: widget.selectedSeats,
+                        alldata: widget.alldata,
+                        boardingpoint: boardingpoint!,
+                        droppingPoint: droppingpoint!,
+                        travelsname: widget.travelsname,
+                        trpinfo: widget.trpinfo,
+                      ),
+                    ),
+                  );
+                }
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
                   Text(
-                    message,
+                    'Continue',
                     style: TextStyle(
-                      color: _textSecondary,
-                      fontSize: 12,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: secondaryColor,
                     ),
                   ),
                 ],
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showErrorBottomSheet(String title, String message) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: cardColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+        ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: textLight.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: errorColor.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.error_outline_rounded,
+                color: errorColor,
+                size: 40,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: textPrimary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 15, color: textSecondary, height: 1.5),
+            ),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: maincolor1,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                onPressed: () => Navigator.pop(context),
+                child: const Text(
+                  'OK, Got it',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
-        backgroundColor: _cardColor,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: _errorColor.withOpacity(0.2), width: 1),
-        ),
-        margin: EdgeInsets.all(16),
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        duration: Duration(seconds: 4),
-        elevation: 8,
-        action: SnackBarAction(
-          label: 'OK',
-          textColor: _primaryColor,
-          onPressed: () {
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          },
-        ),
       ),
-    );}
-
-
-
-
+    );
+  }
 }
-
-
-
-

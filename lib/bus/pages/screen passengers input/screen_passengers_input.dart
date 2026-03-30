@@ -50,18 +50,7 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
   bool _showRetryButton = false;
   int retryCount = 0;
 
-  // Color Theme - Black & Gold Premium
-  final Color _primaryColor = Colors.black;
-  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
-  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
-  final Color _backgroundColor = Color(0xFFF8F9FA);
-  final Color _cardColor = Colors.white;
-  final Color _textPrimary = Colors.black;
-  final Color _textSecondary = Color(0xFF666666);
-  final Color _textLight = Color(0xFF999999);
-  final Color _errorColor = Color(0xFFE53935);
-  final Color _successColor = Color(0xFF388E3C);
-  final Color _warningColor = Color(0xFFF57C00);
+  // Theme standardizing: Use global constants directly from const.dart
 
   @override
   void initState() {
@@ -95,9 +84,9 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _backgroundColor,
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-        backgroundColor: _primaryColor,
+        backgroundColor: maincolor1,
         iconTheme: IconThemeData(color: Colors.white),
         elevation: 0,
        
@@ -137,7 +126,7 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -153,12 +142,12 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
           Container(
             padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: _secondaryColor.withOpacity(0.1),
+              color: secondaryColor.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.directions_bus_rounded,
-              color: _secondaryColor,
+              color: secondaryColor,
               size: 24,
             ),
           ),
@@ -172,7 +161,7 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: _textPrimary,
+                    color: textPrimary,
                   ),
                 ),
                 SizedBox(height: 4),
@@ -180,7 +169,7 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
                   widget.trpinfo,
                   style: TextStyle(
                     fontSize: 12,
-                    color: _textSecondary,
+                    color: textSecondary,
                   ),
                 ),
                 SizedBox(height: 4),
@@ -188,7 +177,7 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
                   '${widget.selctseat.length} ${widget.selctseat.length == 1 ? 'Seat' : 'Seats'} Selected',
                   style: TextStyle(
                     fontSize: 12,
-                    color: _secondaryColor,
+                    color: secondaryColor,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -206,7 +195,7 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -225,12 +214,12 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
               Container(
                 padding: EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: _secondaryColor.withOpacity(0.1),
+                  color: secondaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.contact_mail_rounded,
-                  color: _secondaryColor,
+                  color: secondaryColor,
                   size: 20,
                 ),
               ),
@@ -244,14 +233,14 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: _textPrimary,
+                        color: textPrimary,
                       ),
                     ),
                     Text(
                       'Ticket details will be sent to this contact',
                       style: TextStyle(
                         fontSize: 12,
-                        color: _textSecondary,
+                        color: textSecondary,
                       ),
                     ),
                   ],
@@ -274,14 +263,14 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
               hintText: 'Email Address',
-              prefixIcon: Icon(Icons.email_rounded, color: _textLight),
+              prefixIcon: Icon(Icons.email_rounded, color: textLight),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: _textLight.withOpacity(0.3)),
+                borderSide: BorderSide(color: textLight.withOpacity(0.3)),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: _secondaryColor),
+                borderSide: BorderSide(color: secondaryColor),
               ),
             ),
           ),
@@ -295,11 +284,11 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
                   decoration: InputDecoration(
                     hintText: '+91',
 
-                    hintStyle: TextStyle(color: _textLight),
+                    hintStyle: TextStyle(color: textLight),
                     // prefixIcon: Icon(Icons.flag_rounded, color: _textLight),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: _textLight.withOpacity(0.3)),
+                      borderSide: BorderSide(color: textLight.withOpacity(0.3)),
                     ),
                   ),
                 ),
@@ -319,14 +308,14 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
                   keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
                     hintText: 'Phone Number',
-                    prefixIcon: Icon(Icons.phone_rounded, color: _textLight),
+                    prefixIcon: Icon(Icons.phone_rounded, color: textLight),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: _textLight.withOpacity(0.3)),
+                      borderSide: BorderSide(color: textLight.withOpacity(0.3)),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: _secondaryColor),
+                      borderSide: BorderSide(color: secondaryColor),
                     ),
                   ),
                 ),
@@ -346,7 +335,7 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
     return Container(
       margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -369,12 +358,12 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
                   Container(
                     padding: EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: _secondaryColor.withOpacity(0.1),
+                      color: secondaryColor.withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       seat.ladiesSeat == 'true' ? Icons.woman_rounded : Icons.person_rounded,
-                      color: _secondaryColor,
+                      color: secondaryColor,
                       size: 20,
                     ),
                   ),
@@ -388,14 +377,14 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: _textPrimary,
+                            color: textPrimary,
                           ),
                         ),
                         Text(
                           'Seat ${seat.name} • ₹${seat.baseFare}',
                           style: TextStyle(
                             fontSize: 12,
-                            color: _textSecondary,
+                            color: textSecondary,
                           ),
                         ),
                       ],
@@ -433,14 +422,14 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
                     (value == null || value.trim().isEmpty) ? 'Please enter name' : null,
                 decoration: InputDecoration(
                   hintText: 'Full Name',
-                  prefixIcon: Icon(Icons.person_outline_rounded, color: _textLight),
+                  prefixIcon: Icon(Icons.person_outline_rounded, color: textLight),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: _textLight.withOpacity(0.3)),
+                    borderSide: BorderSide(color: textLight.withOpacity(0.3)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: _secondaryColor),
+                    borderSide: BorderSide(color: secondaryColor),
                   ),
                 ),
               ),
@@ -458,14 +447,14 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
                 },
                 decoration: InputDecoration(
                   hintText: 'Age',
-                  prefixIcon: Icon(Icons.cake_rounded, color: _textLight),
+                  prefixIcon: Icon(Icons.cake_rounded, color: textLight),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: _textLight.withOpacity(0.3)),
+                    borderSide: BorderSide(color: textLight.withOpacity(0.3)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: _secondaryColor),
+                    borderSide: BorderSide(color: secondaryColor),
                   ),
                 ),
               ),
@@ -475,7 +464,7 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: _textPrimary,
+                  color: textPrimary,
                 ),
               ),
               SizedBox(height: 8),
@@ -503,13 +492,13 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
                             padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? _secondaryColor.withOpacity(0.15)
+                                  ? secondaryColor.withOpacity(0.15)
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
                                 color: isSelected
-                                    ? _secondaryColor
-                                    : _textLight.withOpacity(0.3),
+                                    ? secondaryColor
+                                    : textLight.withOpacity(0.3),
                                 width:  1,
                               ),
                             ),
@@ -520,7 +509,7 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
                                   gender == 'Male' 
                                       ? Icons.male_rounded 
                                       : Icons.female_rounded,
-                                  color: isSelected ? _secondaryColor : _textLight,
+                                  color: isSelected ? secondaryColor : textLight,
                                   size: 16,
                                 ),
                                 SizedBox(width: 6),
@@ -529,12 +518,12 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                                    color: isSelected ? _secondaryColor : _textLight,
+                                    color: isSelected ? secondaryColor : textLight,
                                   ),
                                 ),
                                 if (isForced) ...[
                                   SizedBox(width: 4),
-                                  Icon(Icons.lock_rounded, size: 12, color: _secondaryColor),
+                                  Icon(Icons.lock_rounded, size: 12, color: secondaryColor),
                                 ],
                               ],
                             ),
@@ -556,7 +545,7 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -575,8 +564,8 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
           children: [
             if (_isLoading)
               LinearProgressIndicator(
-                backgroundColor: _backgroundColor,
-                color: _secondaryColor,
+                backgroundColor: backgroundColor,
+                color: secondaryColor,
                 minHeight: 3,
               )
             else
@@ -584,7 +573,7 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _primaryColor,
+                    backgroundColor: maincolor1,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -751,7 +740,7 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
   }
 
   void _showCustomSnackbar(String message, {bool isError = false}) {
-    final color = isError ? _errorColor : _successColor;
+    final color = isError ? errorColor : successColor;
     final icon = isError ? Icons.error_outline_rounded : Icons.check_circle_rounded;
 
     final snackBar = SnackBar(

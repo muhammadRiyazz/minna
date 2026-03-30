@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,6 +18,7 @@ import 'package:minna/comman/functions/create_order_id.dart';
 import 'package:minna/comman/functions/refund_payment.dart';
 import 'package:minna/comman/functions/save_payment.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:minna/comman/const/const.dart';
 
 class ScreenConfirmTicket extends StatefulWidget {
   const ScreenConfirmTicket({
@@ -58,18 +59,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
   // Payment
   late Razorpay _razorpay;
 
-  // Color Theme - Black & Gold Premium
-  final Color _primaryColor = Colors.black;
-  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
-  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
-  final Color _backgroundColor = Color(0xFFF8F9FA);
-  final Color _cardColor = Colors.white;
-  final Color _textPrimary = Colors.black;
-  final Color _textSecondary = Color(0xFF666666);
-  final Color _textLight = Color(0xFF999999);
-  final Color _errorColor = Color(0xFFE53935);
-  final Color _successColor = Color(0xFF388E3C);
-  final Color _warningColor = Color(0xFFF57C00);
+  // Theme standardizing: Use global constants directly from const.dart
 
   @override
   void initState() {
@@ -117,7 +107,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
       context: context,
       barrierDismissible: false,
       builder: (_) => Dialog(
-        backgroundColor: _cardColor,
+        backgroundColor: cardColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Container(
           padding: EdgeInsets.all(24),
@@ -127,12 +117,12 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
               Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: _warningColor.withOpacity(0.1),
+                  color: warningColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.warning_amber_rounded,
-                  color: _warningColor,
+                  color: warningColor,
                   size: 40,
                 ),
               ),
@@ -142,20 +132,20 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: _textPrimary,
+                  color: textPrimary,
                 ),
               ),
               SizedBox(height: 12),
               Text(
                 "The operator has updated the fare during block time.",
-                style: TextStyle(color: _textSecondary),
+                style: TextStyle(color: textSecondary),
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 16),
               Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: _backgroundColor,
+                  color: backgroundColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -174,7 +164,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
               Text(
                 "This updated fare will be collected from you.",
                 style: TextStyle(
-                  color: _warningColor,
+                  color: warningColor,
                   fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.center,
@@ -184,7 +174,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _primaryColor,
+                    backgroundColor: maincolor1,
                     padding: EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -194,7 +184,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
                   child: Text(
                     "Continue with Updated Fare",
                     style: TextStyle(
-                      color: _secondaryColor,
+                      color: secondaryColor,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -219,7 +209,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
           label,
           style: TextStyle(
             fontSize: 14,
-            color: isUpdated ? _secondaryColor : _textSecondary,
+            color: isUpdated ? secondaryColor : textSecondary,
             fontWeight: isUpdated ? FontWeight.w600 : FontWeight.normal,
           ),
         ),
@@ -227,7 +217,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
           '₹ ${amount.toStringAsFixed(2)}',
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: isUpdated ? _secondaryColor : _textPrimary,
+            color: isUpdated ? secondaryColor : textPrimary,
             fontSize: isUpdated ? 16 : 14,
           ),
         ),
@@ -277,9 +267,9 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
   }
 
   Color get _timerColor {
-    if (_secondsRemaining < 60) return _errorColor;
-    if (_secondsRemaining < 180) return _warningColor;
-    return _secondaryColor;
+    if (_secondsRemaining < 60) return errorColor;
+    if (_secondsRemaining < 180) return warningColor;
+    return secondaryColor;
   }
 
   Future<bool> _onWillPop() async {
@@ -295,8 +285,8 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
       timer: _timer!,
       busORFlight:
           'This bus seems popular! Hurry, book before all the seats get filled',
-      primaryColor: _primaryColor,
-      secondaryColor: _secondaryColor,
+      primaryColor: maincolor1,
+      secondaryColor: secondaryColor,
     );
   }
 
@@ -663,7 +653,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
     showDialog(
       context: context,
       builder: (context) => Dialog(
-        backgroundColor: _cardColor,
+        backgroundColor: cardColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Container(
           padding: EdgeInsets.all(24),
@@ -673,12 +663,12 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
               Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: _errorColor.withOpacity(0.1),
+                  color: errorColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.error_outline_rounded,
-                  color: _errorColor,
+                  color: errorColor,
                   size: 40,
                 ),
               ),
@@ -688,20 +678,20 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: _textPrimary,
+                  color: textPrimary,
                 ),
               ),
               SizedBox(height: 12),
               Text(
                 message,
-                style: TextStyle(color: _textSecondary),
+                style: TextStyle(color: textSecondary),
                 textAlign: TextAlign.center,
               ),
               if (errorDetails != null) ...[
                 SizedBox(height: 8),
                 Text(
                   "Error details: $errorDetails",
-                  style: TextStyle(fontSize: 12, color: _textLight),
+                  style: TextStyle(fontSize: 12, color: textLight),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -710,7 +700,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _primaryColor,
+                    backgroundColor: maincolor1,
                     padding: EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -720,7 +710,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
                   child: Text(
                     "OK",
                     style: TextStyle(
-                      color: _secondaryColor,
+                      color: secondaryColor,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -746,7 +736,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
               ),
               child: Icon(
                 Icons.error_outline_rounded,
-                color: _errorColor,
+                color: errorColor,
                 size: 20,
               ),
             ),
@@ -774,11 +764,11 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
             ),
           ],
         ),
-        backgroundColor: _errorColor,
+        backgroundColor: errorColor,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: _errorColor.withOpacity(0.2), width: 1),
+          side: BorderSide(color: errorColor.withOpacity(0.2), width: 1),
         ),
         margin: EdgeInsets.all(16),
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -844,9 +834,9 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        backgroundColor: _backgroundColor,
+        backgroundColor: backgroundColor,
         appBar: AppBar(
-          backgroundColor: _primaryColor,
+          backgroundColor: maincolor1,
           elevation: 0,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -888,20 +878,20 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularProgressIndicator(color: _secondaryColor),
+            CircularProgressIndicator(color: secondaryColor),
             SizedBox(height: 20),
             Text(
               "Initializing Booking...",
               style: TextStyle(
                 fontSize: 16,
-                color: _textSecondary,
+                color: textSecondary,
                 fontWeight: FontWeight.w500,
               ),
             ),
             SizedBox(height: 8),
             Text(
               "Please wait while we prepare your booking",
-              style: TextStyle(fontSize: 14, color: _textLight),
+              style: TextStyle(fontSize: 14, color: textLight),
             ),
           ],
         ),
@@ -918,13 +908,13 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
               Container(
                 padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: _errorColor.withOpacity(0.1),
+                  color: errorColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.error_outline_rounded,
                   size: 64,
-                  color: _errorColor,
+                  color: errorColor,
                 ),
               ),
               SizedBox(height: 24),
@@ -933,14 +923,14 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: _textPrimary,
+                  color: textPrimary,
                 ),
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 12),
               Text(
                 "We encountered an issue while setting up your booking. Please try again.",
-                style: TextStyle(fontSize: 14, color: _textSecondary),
+                style: TextStyle(fontSize: 14, color: textSecondary),
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 24),
@@ -948,7 +938,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _primaryColor,
+                    backgroundColor: maincolor1,
                     padding: EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -958,7 +948,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
                   child: Text(
                     "Try Again",
                     style: TextStyle(
-                      color: _secondaryColor,
+                      color: secondaryColor,
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
                     ),
@@ -998,7 +988,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
           ),
           child: Container(
             decoration: BoxDecoration(
-              color: _cardColor,
+              color: cardColor,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
@@ -1017,7 +1007,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
                   // Passenger details section
                   _buildPassengerSection(),
                   SizedBox(height: 20),
-                  Divider(height: 1, color: _textLight.withOpacity(0.3)),
+                  Divider(height: 1, color: textLight.withOpacity(0.3)),
                   SizedBox(height: 20),
 
                   // Fare update warning (if applicable)
@@ -1041,7 +1031,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -1057,12 +1047,12 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
           Container(
             padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: _secondaryColor.withOpacity(0.1),
+              color: secondaryColor.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.directions_bus_rounded,
-              color: _secondaryColor,
+              color: secondaryColor,
               size: 24,
             ),
           ),
@@ -1076,13 +1066,13 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: _textPrimary,
+                    color: textPrimary,
                   ),
                 ),
                 SizedBox(height: 4),
                 Text(
                   "${widget.selectedSeats.length} ${widget.selectedSeats.length == 1 ? 'Seat' : 'Seats'} • ${widget.alldata.inventoryItems?.first.passenger.name ?? 'Passenger'}",
-                  style: TextStyle(fontSize: 14, color: _textSecondary),
+                  style: TextStyle(fontSize: 14, color: textSecondary),
                 ),
               ],
             ),
@@ -1098,14 +1088,14 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
       children: [
         Row(
           children: [
-            Icon(Icons.people_alt_rounded, color: _secondaryColor, size: 20),
+            Icon(Icons.people_alt_rounded, color: secondaryColor, size: 20),
             SizedBox(width: 8),
             Text(
               "Passenger Details",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: _textPrimary,
+                color: textPrimary,
               ),
             ),
           ],
@@ -1116,9 +1106,9 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
                 margin: EdgeInsets.only(bottom: 12),
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: _backgroundColor,
+                  color: backgroundColor,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: _textLight.withOpacity(0.2)),
+                  border: Border.all(color: textLight.withOpacity(0.2)),
                 ),
                 child: Row(
                   children: [
@@ -1126,12 +1116,12 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: _secondaryColor.withOpacity(0.1),
+                        color: secondaryColor.withOpacity(0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         Icons.person_rounded,
-                        color: _secondaryColor,
+                        color: secondaryColor,
                         size: 20,
                       ),
                     ),
@@ -1145,7 +1135,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: _textPrimary,
+                              color: textPrimary,
                             ),
                           ),
                           SizedBox(height: 2),
@@ -1153,7 +1143,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
                             'Seat ${item.seatName} • ${item.passenger.gender} • ${item.passenger.age} years',
                             style: TextStyle(
                               fontSize: 12,
-                              color: _textSecondary,
+                              color: textSecondary,
                             ),
                           ),
                         ],
@@ -1164,7 +1154,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: _secondaryColor,
+                        color: secondaryColor,
                       ),
                     ),
                   ],
@@ -1181,13 +1171,13 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
       width: double.infinity,
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _warningColor.withOpacity(0.1),
+        color: warningColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _warningColor.withOpacity(0.3)),
+        border: Border.all(color: warningColor.withOpacity(0.3)),
       ),
       child: Row(
         children: [
-          Icon(Icons.info_outline_rounded, color: _warningColor, size: 24),
+          Icon(Icons.info_outline_rounded, color: warningColor, size: 24),
           SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -1196,7 +1186,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
                 Text(
                   "Fare Updated",
                   style: TextStyle(
-                    color: _warningColor,
+                    color: warningColor,
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                   ),
@@ -1205,7 +1195,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
                 Text(
                   "The fare has been updated by the operator during block time.",
                   style: TextStyle(
-                    color: _warningColor.withOpacity(0.8),
+                    color: warningColor.withOpacity(0.8),
                     fontSize: 12,
                   ),
                 ),
@@ -1223,14 +1213,14 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
       children: [
         Row(
           children: [
-            Icon(Icons.receipt_long_rounded, color: _secondaryColor, size: 20),
+            Icon(Icons.receipt_long_rounded, color: secondaryColor, size: 20),
             SizedBox(width: 8),
             Text(
               "Fare Breakdown",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: _textPrimary,
+                color: textPrimary,
               ),
             ),
           ],
@@ -1239,7 +1229,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
         Container(
           padding: EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: _backgroundColor,
+            color: backgroundColor,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
@@ -1248,7 +1238,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
               SizedBox(height: 12),
               _buildFareRow('Service Tax / GST', updatedServiceTax),
               SizedBox(height: 12),
-              Divider(height: 1, color: _textLight.withOpacity(0.3)),
+              Divider(height: 1, color: textLight.withOpacity(0.3)),
               SizedBox(height: 12),
               _buildFareRow(
                 'Total Amount',
@@ -1265,7 +1255,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
             "Note: Fare was updated during the booking process",
             style: TextStyle(
               fontSize: 12,
-              color: _textLight,
+              color: textLight,
               fontStyle: FontStyle.italic,
             ),
           ),
@@ -1288,7 +1278,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
           style: TextStyle(
             fontSize: isTotal ? 16 : 14,
             fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-            color: isUpdated && isTotal ? _secondaryColor : _textPrimary,
+            color: isUpdated && isTotal ? secondaryColor : textPrimary,
           ),
         ),
         Text(
@@ -1296,7 +1286,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
           style: TextStyle(
             fontSize: isTotal ? 18 : 14,
             fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-            color: isUpdated && isTotal ? _secondaryColor : _secondaryColor,
+            color: isUpdated && isTotal ? secondaryColor : secondaryColor,
           ),
         ),
       ],
@@ -1310,7 +1300,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -1335,7 +1325,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
                   }
                 : null,
             style: ElevatedButton.styleFrom(
-              backgroundColor: isEnabled ? _primaryColor : _textLight,
+              backgroundColor: isEnabled ? maincolor1 : textLight,
               foregroundColor: Colors.white,
               elevation: 0,
               shape: RoundedRectangleBorder(
@@ -1352,7 +1342,7 @@ class _ScreenConfirmTicketState extends State<ScreenConfirmTicket> {
                         child: CircularProgressIndicator(
                           strokeWidth: 2.5,
                           valueColor: AlwaysStoppedAnimation<Color>(
-                            _secondaryColor,
+                            secondaryColor,
                           ),
                         ),
                       ),

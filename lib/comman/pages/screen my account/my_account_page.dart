@@ -437,7 +437,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  state.userId ?? 'Explorer',
+                  state.isLoggedIn == true ? 'User Profile' : 'Explorer',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
@@ -456,18 +456,18 @@ class _MyAccountPageState extends State<MyAccountPage> {
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Iconsax.arrow_right_3,
-              color: Colors.white,
-              size: 14,
-            ),
-          ),
+          // Container(
+          //   padding: const EdgeInsets.all(10),
+          //   decoration: BoxDecoration(
+          //     color: Colors.white.withOpacity(0.1),
+          //     borderRadius: BorderRadius.circular(12),
+          //   ),
+          //   child: const Icon(
+          //     Iconsax.arrow_right_3,
+          //     color: Colors.white,
+          //     size: 14,
+          //   ),
+          // ),
         ],
       ),
     );

@@ -17,16 +17,7 @@ class ScreenSuccessTicket extends StatefulWidget {
 }
 
 class _ScreenSuccessTicketState extends State<ScreenSuccessTicket> {
-  // Color Theme - Black & Gold Premium
-  final Color _primaryColor = Colors.black;
-  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
-  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
-  final Color _backgroundColor = Color(0xFFF8F9FA);
-  final Color _cardColor = Colors.white;
-  final Color _textPrimary = Colors.black;
-  final Color _textSecondary = Color(0xFF666666);
-  final Color _textLight = Color(0xFF999999);
-  final Color _successColor = Color(0xFF388E3C);
+  // Theme standardizing: Use global constants directly from const.dart
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +31,7 @@ class _ScreenSuccessTicketState extends State<ScreenSuccessTicket> {
         return false;
       },
       child: Scaffold(
-        backgroundColor: _backgroundColor,
+        backgroundColor: backgroundColor,
         body: SafeArea(
           child: SizedBox(
             width: double.infinity,
@@ -55,7 +46,7 @@ class _ScreenSuccessTicketState extends State<ScreenSuccessTicket> {
                     width: 200,
                     height: 200,
                     decoration: BoxDecoration(
-                      color: _secondaryColor.withOpacity(0.05),
+                      color: secondaryColor.withOpacity(0.05),
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -67,7 +58,7 @@ class _ScreenSuccessTicketState extends State<ScreenSuccessTicket> {
                     width: 250,
                     height: 250,
                     decoration: BoxDecoration(
-                      color: _secondaryColor.withOpacity(0.03),
+                      color: secondaryColor.withOpacity(0.03),
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -85,13 +76,13 @@ class _ScreenSuccessTicketState extends State<ScreenSuccessTicket> {
                           Container(
                             padding: const EdgeInsets.all(24),
                             decoration: BoxDecoration(
-                           color: _secondaryColor.withOpacity(0.1),
+                           color: secondaryColor.withOpacity(0.1),
                               shape: BoxShape.circle,
                             
                             ),
                             child:  Icon(
                               Icons.check_rounded,
-                              color: _secondaryColor,
+                              color: secondaryColor,
                               size: 60,
                             ),
                           ),
@@ -103,7 +94,7 @@ class _ScreenSuccessTicketState extends State<ScreenSuccessTicket> {
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 22,
-                              color: _textPrimary,
+                              color: textPrimary,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 0.5,
                             ),
@@ -116,7 +107,7 @@ class _ScreenSuccessTicketState extends State<ScreenSuccessTicket> {
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 13,
-                              color: _textSecondary,
+                              color: textSecondary,
                               height: 1.5,
                             ),
                           ),
@@ -127,7 +118,7 @@ class _ScreenSuccessTicketState extends State<ScreenSuccessTicket> {
                             width: double.infinity,
                             padding: const EdgeInsets.all(24),
                             decoration: BoxDecoration(
-                              color: _cardColor,
+                              color: cardColor,
                               borderRadius: BorderRadius.circular(20),
                             
                              
@@ -140,7 +131,7 @@ class _ScreenSuccessTicketState extends State<ScreenSuccessTicket> {
                                   children: [
                                     Icon(
                                       Icons.confirmation_number_rounded,
-                                      color: _secondaryColor,
+                                      color: secondaryColor,
                                       size: 20,
                                     ),
                                     const SizedBox(width: 8),
@@ -148,7 +139,7 @@ class _ScreenSuccessTicketState extends State<ScreenSuccessTicket> {
                                       'Ticket ID',
                                       style: TextStyle(
                                         fontSize: 14,
-                                        color: _textSecondary,
+                                        color: textSecondary,
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
@@ -159,7 +150,7 @@ class _ScreenSuccessTicketState extends State<ScreenSuccessTicket> {
                                   widget.tinid,
                                   style: TextStyle(
                                     fontSize: 20,
-                                    color: _primaryColor,
+                                    color: maincolor1,
                                     fontWeight: FontWeight.bold,
                                     letterSpacing: 1.5,
                                   ),
@@ -175,17 +166,17 @@ class _ScreenSuccessTicketState extends State<ScreenSuccessTicket> {
                           Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: _successColor.withOpacity(0.05),
+                              color: successColor.withOpacity(0.05),
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
-                                color: _successColor.withOpacity(0.2),
+                                color: successColor.withOpacity(0.2),
                               ),
                             ),
                             child: Row(
                               children: [
                                 Icon(
                                   Icons.info_outline_rounded,
-                                  color: _successColor,
+                                  color: successColor,
                                   size: 20,
                                 ),
                                 const SizedBox(width: 12),
@@ -194,7 +185,7 @@ class _ScreenSuccessTicketState extends State<ScreenSuccessTicket> {
                                     'Your tickets have been sent to your registered email and mobile number',
                                     style: TextStyle(
                                       fontSize: 13,
-                                      color: _successColor,
+                                      color: successColor,
                                       height: 1.4,
                                     ),
                                   ),
@@ -212,7 +203,7 @@ class _ScreenSuccessTicketState extends State<ScreenSuccessTicket> {
                                 width: double.infinity,
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: _primaryColor,
+                                    backgroundColor: maincolor1,
                                     foregroundColor: Colors.white,
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 18,
@@ -262,7 +253,7 @@ class _ScreenSuccessTicketState extends State<ScreenSuccessTicket> {
                               //         borderRadius: BorderRadius.circular(16),
                               //       ),
                               //       side: BorderSide(
-                              //         color: _primaryColor,
+                              //         color: maincolor1,
                               //         width: 1.5,
                               //       ),
                               //     ),
@@ -317,7 +308,7 @@ class _ScreenSuccessTicketState extends State<ScreenSuccessTicket> {
       context: context,
       barrierDismissible: false,
       builder: (context) => Dialog(
-        backgroundColor: _cardColor,
+        backgroundColor: cardColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
         ),
@@ -329,12 +320,12 @@ class _ScreenSuccessTicketState extends State<ScreenSuccessTicket> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: _secondaryColor.withOpacity(0.1),
+                  color: secondaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.confirmation_number_rounded,
-                  color: _secondaryColor,
+                  color: secondaryColor,
                   size: 32,
                 ),
               ),
@@ -344,7 +335,7 @@ class _ScreenSuccessTicketState extends State<ScreenSuccessTicket> {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: _textPrimary,
+                  color: textPrimary,
                 ),
               ),
               const SizedBox(height: 12),
@@ -353,7 +344,7 @@ class _ScreenSuccessTicketState extends State<ScreenSuccessTicket> {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 15,
-                  color: _textSecondary,
+                  color: textSecondary,
                   height: 1.4,
                 ),
               ),
@@ -363,13 +354,13 @@ class _ScreenSuccessTicketState extends State<ScreenSuccessTicket> {
                   Expanded(
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: _textPrimary,
+                        foregroundColor: textPrimary,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                         side: BorderSide(
-                          color: _textLight.withOpacity(0.3),
+                          color: textLight.withOpacity(0.3),
                           width: 1.5,
                         ),
                       ),
@@ -393,8 +384,8 @@ class _ScreenSuccessTicketState extends State<ScreenSuccessTicket> {
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: _primaryColor,
-                        foregroundColor: _secondaryColor,
+                        backgroundColor: maincolor1,
+                        foregroundColor: secondaryColor,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),

@@ -22,15 +22,7 @@ class CabsListPage extends StatefulWidget {
 class _CabsListPageState extends State<CabsListPage> {
   late CommissionProvider commissionProvider;
 
-  final Color _primaryColor = maincolor1;
-  final Color _secondaryColor = secondaryColor;
-  final Color _backgroundColor = backgroundColor;
-  final Color _cardColor = cardColor;
-  final Color _textPrimary = textPrimary;
-  final Color _textSecondary = textSecondary;
-  final Color _textLight = textLight;
-  final Color _errorColor = errorColor;
-  final Color _successColor = successColor;
+  // Theme standardizing: Use global constants directly from const.dart
 
   @override
   void initState() {
@@ -75,7 +67,7 @@ class _CabsListPageState extends State<CabsListPage> {
           FetchCabsBloc()
             ..add(FetchCabsEvent.fetchCabs(requestData: widget.requestData)),
       child: Scaffold(
-        backgroundColor: _backgroundColor,
+        backgroundColor: backgroundColor,
         body: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
@@ -83,7 +75,7 @@ class _CabsListPageState extends State<CabsListPage> {
               expandedHeight: 120.0,
               floating: false,
               pinned: true,
-              backgroundColor: _primaryColor,
+              backgroundColor: maincolor1,
               elevation: 0,
               leading: IconButton(
                 icon: const Icon(
@@ -136,7 +128,7 @@ class _CabsListPageState extends State<CabsListPage> {
                               summary,
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                color: _secondaryColor.withOpacity(0.95),
+                                color: secondaryColor.withOpacity(0.95),
                                 fontSize: 10,
                                 fontWeight: FontWeight.w900,
                                 letterSpacing: 0.8,
@@ -158,9 +150,9 @@ class _CabsListPageState extends State<CabsListPage> {
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: [
-                            _primaryColor,
-                            _primaryColor.withOpacity(0.9),
-                            _primaryColor.withOpacity(0.85),
+                            maincolor1,
+                            maincolor1.withOpacity(0.9),
+                            maincolor1.withOpacity(0.85),
                           ],
                           stops: const [0.0, 0.6, 1.0],
                         ),
@@ -190,7 +182,7 @@ class _CabsListPageState extends State<CabsListPage> {
                         height: 180,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: _secondaryColor.withOpacity(0.03),
+                          color: secondaryColor.withOpacity(0.03),
                         ),
                       ),
                     ),
@@ -227,17 +219,17 @@ class _CabsListPageState extends State<CabsListPage> {
           Container(
             padding: const EdgeInsets.all(28),
             decoration: BoxDecoration(
-              color: _secondaryColor.withOpacity(0.08),
+              color: secondaryColor.withOpacity(0.08),
               shape: BoxShape.circle,
             ),
-            child: Icon(Iconsax.car, size: 56, color: _secondaryColor),
+            child: Icon(Iconsax.car, size: 56, color: secondaryColor),
           ),
           const SizedBox(height: 24),
           Text(
             "Finding Your Ride",
             style: TextStyle(
               fontSize: 20,
-              color: _textPrimary,
+              color: textPrimary,
               fontWeight: FontWeight.w900,
             ),
           ),
@@ -246,7 +238,7 @@ class _CabsListPageState extends State<CabsListPage> {
             "Comparing the best available cabs for you",
             style: TextStyle(
               fontSize: 14,
-              color: _textSecondary,
+              color: textSecondary,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -265,10 +257,10 @@ class _CabsListPageState extends State<CabsListPage> {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: _errorColor.withOpacity(0.08),
+                color: errorColor.withOpacity(0.08),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Iconsax.info_circle, size: 56, color: _errorColor),
+              child: Icon(Iconsax.info_circle, size: 56, color: errorColor),
             ),
             const SizedBox(height: 24),
             Text(
@@ -276,7 +268,7 @@ class _CabsListPageState extends State<CabsListPage> {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w900,
-                color: _textPrimary,
+                color: textPrimary,
               ),
             ),
             const SizedBox(height: 12),
@@ -285,7 +277,7 @@ class _CabsListPageState extends State<CabsListPage> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
-                color: _textSecondary,
+                color: textSecondary,
                 height: 1.5,
                 fontWeight: FontWeight.w500,
               ),
@@ -301,13 +293,13 @@ class _CabsListPageState extends State<CabsListPage> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _primaryColor,
+                  backgroundColor: maincolor1,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                   elevation: 4,
-                  shadowColor: _primaryColor.withOpacity(0.3),
+                  shadowColor: maincolor1.withOpacity(0.3),
                 ),
                 child: const Text(
                   "Try Again",
@@ -338,13 +330,13 @@ class _CabsListPageState extends State<CabsListPage> {
                 Container(
                   padding: const EdgeInsets.all(28),
                   decoration: BoxDecoration(
-                    color: _textLight.withOpacity(0.1),
+                    color: textLight.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Iconsax.search_status,
                     size: 56,
-                    color: _textLight,
+                    color: textLight,
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -353,7 +345,7 @@ class _CabsListPageState extends State<CabsListPage> {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w900,
-                    color: _textPrimary,
+                    color: textPrimary,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -362,7 +354,7 @@ class _CabsListPageState extends State<CabsListPage> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
-                    color: _textSecondary,
+                    color: textSecondary,
                     height: 1.5,
                     fontWeight: FontWeight.w500,
                   ),
@@ -386,11 +378,11 @@ class _CabsListPageState extends State<CabsListPage> {
           return Container(
             margin: const EdgeInsets.only(bottom: 10),
             decoration: BoxDecoration(
-              color: _cardColor,
+              color: cardColor,
               borderRadius: BorderRadius.circular(30),
               boxShadow: [
                 BoxShadow(
-                  color: _primaryColor.withOpacity(0.08),
+                  color: maincolor1.withOpacity(0.08),
                   blurRadius: 30,
                   offset: const Offset(0, 12),
                 ),
@@ -418,7 +410,7 @@ class _CabsListPageState extends State<CabsListPage> {
                             vertical: 5,
                           ),
                           decoration: BoxDecoration(
-                            color: _secondaryColor.withOpacity(0.12),
+                            color: secondaryColor.withOpacity(0.12),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -426,7 +418,7 @@ class _CabsListPageState extends State<CabsListPage> {
                             style: TextStyle(
                               fontSize: 8,
                               fontWeight: FontWeight.w900,
-                              color: _secondaryColor,
+                              color: secondaryColor,
                               letterSpacing: 1.2,
                             ),
                           ),
@@ -437,7 +429,7 @@ class _CabsListPageState extends State<CabsListPage> {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w900,
-                            color: _primaryColor,
+                            color: maincolor1,
                             letterSpacing: -0.5,
                             height: 1.1,
                           ),
@@ -459,10 +451,10 @@ class _CabsListPageState extends State<CabsListPage> {
                           child: Container(
                             height: 100,
                             decoration: BoxDecoration(
-                              color: _backgroundColor,
+                              color: backgroundColor,
                               borderRadius: BorderRadius.circular(22),
                               border: Border.all(
-                                color: _primaryColor.withOpacity(0.03),
+                                color: maincolor1.withOpacity(0.03),
                               ),
                             ),
                             child: Stack(
@@ -478,7 +470,7 @@ class _CabsListPageState extends State<CabsListPage> {
                                           (context, error, stackTrace) => Icon(
                                             Iconsax.car,
                                             size: 40,
-                                            color: _secondaryColor.withOpacity(
+                                            color: secondaryColor.withOpacity(
                                               0.4,
                                             ),
                                           ),
@@ -488,7 +480,7 @@ class _CabsListPageState extends State<CabsListPage> {
                                   Icon(
                                     Iconsax.car,
                                     size: 40,
-                                    color: _secondaryColor.withOpacity(0.4),
+                                    color: secondaryColor.withOpacity(0.4),
                                   ),
                               ],
                             ),
@@ -535,12 +527,12 @@ class _CabsListPageState extends State<CabsListPage> {
                   //         cabData.cancellationPolicy.contains('Free')
                   //             ? 'Free Cancellation'
                   //             : cabData.cancellationPolicy,
-                  //         _successColor,
+                  //         successColor,
                   //         Iconsax.verify,
                   //       ),
                   //       _buildPolicyPill(
                   //         "Instant Booking",
-                  //         _primaryColor,
+                  //         maincolor1,
                   //         Iconsax.flash_1,
                   //       ),
                   //     ],
@@ -553,9 +545,9 @@ class _CabsListPageState extends State<CabsListPage> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: _backgroundColor.withOpacity(0.6),
+                      color: backgroundColor.withOpacity(0.6),
                       border: Border(
-                        top: BorderSide(color: _primaryColor.withOpacity(0.05)),
+                        top: BorderSide(color: maincolor1.withOpacity(0.05)),
                       ),
                     ),
                     child: Row(
@@ -578,7 +570,7 @@ class _CabsListPageState extends State<CabsListPage> {
                                   "Total Fare".toUpperCase(),
                                   style: TextStyle(
                                     fontSize: 9,
-                                    color: _textSecondary,
+                                    color: textSecondary,
                                     fontWeight: FontWeight.w900,
                                     letterSpacing: 0.5,
                                   ),
@@ -589,7 +581,7 @@ class _CabsListPageState extends State<CabsListPage> {
                                   style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.w900,
-                                    color: _primaryColor,
+                                    color: maincolor1,
                                     letterSpacing: -1,
                                   ),
                                 ),
@@ -617,7 +609,7 @@ class _CabsListPageState extends State<CabsListPage> {
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  _primaryColor,
+                                  maincolor1,
                                   const Color(0xFF004D9D),
                                 ],
                                 begin: Alignment.topLeft,
@@ -626,7 +618,7 @@ class _CabsListPageState extends State<CabsListPage> {
                               borderRadius: BorderRadius.circular(18),
                               // boxShadow: [
                               //   BoxShadow(
-                              //     color: _primaryColor.withOpacity(0.25),
+                              //     color: maincolor1.withOpacity(0.25),
                               //     blurRadius: 15,
                               //     offset: const Offset(0, 8),
                               //   ),
@@ -672,10 +664,10 @@ class _CabsListPageState extends State<CabsListPage> {
         Container(
           padding: const EdgeInsets.all(6),
           decoration: BoxDecoration(
-            color: _secondaryColor.withOpacity(0.1),
+            color: secondaryColor.withOpacity(0.1),
             shape: BoxShape.circle,
           ),
-          child: Icon(icon, size: 14, color: _secondaryColor),
+          child: Icon(icon, size: 14, color: secondaryColor),
         ),
         const SizedBox(width: 10),
         Flexible(
@@ -683,7 +675,7 @@ class _CabsListPageState extends State<CabsListPage> {
             label,
             style: TextStyle(
               fontSize: 11,
-              color: _textPrimary.withOpacity(0.8),
+              color: textPrimary.withOpacity(0.8),
               fontWeight: FontWeight.w800,
             ),
             maxLines: 1,

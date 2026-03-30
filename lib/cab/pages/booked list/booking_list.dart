@@ -17,17 +17,7 @@ class CabBookingList extends StatefulWidget {
 }
 
 class _CabBookingListState extends State<CabBookingList> {
-  // Theme Variables
-  final Color _primaryColor = maincolor1;
-  final Color _secondaryColor = secondaryColor;
-  final Color _backgroundColor = backgroundColor;
-  final Color _cardColor = cardColor;
-  final Color _textPrimary = textPrimary;
-  final Color _textSecondary = textSecondary;
-  final Color _textLight = textLight;
-  final Color _errorColor = errorColor;
-  final Color _successColor = const Color(0xFF0D9488);
-  final Color _warningColor = const Color(0xFFD97706);
+  // Theme standardizing: Use global constants directly from const.dart
   final Color _borderColor = Colors.grey.shade200;
 
   @override
@@ -39,7 +29,7 @@ class _CabBookingListState extends State<CabBookingList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _backgroundColor,
+      backgroundColor: backgroundColor,
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
@@ -96,7 +86,7 @@ class _CabBookingListState extends State<CabBookingList> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
-                  color: _textLight,
+                  color: textLight,
                   letterSpacing: 1.2,
                 ),
               ),
@@ -112,7 +102,7 @@ class _CabBookingListState extends State<CabBookingList> {
                     );
                   },
                   style: TextButton.styleFrom(
-                    foregroundColor: _secondaryColor,
+                    foregroundColor: secondaryColor,
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                   ),
                   child: Row(
@@ -148,7 +138,7 @@ class _CabBookingListState extends State<CabBookingList> {
         return Container(
           margin: const EdgeInsets.only(bottom: 16),
           decoration: BoxDecoration(
-            color: _cardColor,
+            color: cardColor,
             borderRadius: BorderRadius.circular(24),
             border: Border.all(color: _borderColor),
           ),
@@ -201,7 +191,7 @@ class _CabBookingListState extends State<CabBookingList> {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
@@ -244,7 +234,7 @@ class _CabBookingListState extends State<CabBookingList> {
                             'BOOKING ID',
                             style: TextStyle(
                               fontSize: 10,
-                              color: _textLight,
+                              color: textLight,
                               fontWeight: FontWeight.w800,
                               letterSpacing: 1.2,
                             ),
@@ -253,7 +243,7 @@ class _CabBookingListState extends State<CabBookingList> {
                           Text(
                             booking.bookingId,
                             style: TextStyle(
-                              color: _textPrimary,
+                              color: textPrimary,
                               fontSize: 16,
                               fontWeight: FontWeight.w800,
                             ),
@@ -304,7 +294,7 @@ class _CabBookingListState extends State<CabBookingList> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: _backgroundColor,
+                    color: backgroundColor,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: Colors.grey.shade100),
                   ),
@@ -318,7 +308,7 @@ class _CabBookingListState extends State<CabBookingList> {
                               'PASSENGER',
                               style: TextStyle(
                                 fontSize: 10,
-                                color: _textSecondary,
+                                color: textSecondary,
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: 1.0,
                               ),
@@ -329,7 +319,7 @@ class _CabBookingListState extends State<CabBookingList> {
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w800,
-                                color: _textPrimary,
+                                color: textPrimary,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -340,14 +330,14 @@ class _CabBookingListState extends State<CabBookingList> {
                                 Icon(
                                   Iconsax.call,
                                   size: 12,
-                                  color: _secondaryColor,
+                                  color: secondaryColor,
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
                                   booking.priContact,
                                   style: TextStyle(
                                     fontSize: 11,
-                                    color: _textSecondary,
+                                    color: textSecondary,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -370,7 +360,7 @@ class _CabBookingListState extends State<CabBookingList> {
                               'TRIP TYPE',
                               style: TextStyle(
                                 fontSize: 10,
-                                color: _textSecondary,
+                                color: textSecondary,
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: 1.0,
                               ),
@@ -381,7 +371,7 @@ class _CabBookingListState extends State<CabBookingList> {
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w800,
-                                color: _textPrimary,
+                                color: textPrimary,
                               ),
                               textAlign: TextAlign.end,
                             ),
@@ -392,14 +382,14 @@ class _CabBookingListState extends State<CabBookingList> {
                                 Icon(
                                   Iconsax.calendar_1,
                                   size: 12,
-                                  color: _secondaryColor,
+                                  color: secondaryColor,
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
                                   _formatDate(booking.date),
                                   style: TextStyle(
                                     fontSize: 11,
-                                    color: _textSecondary,
+                                    color: textSecondary,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -422,12 +412,12 @@ class _CabBookingListState extends State<CabBookingList> {
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: _secondaryColor.withOpacity(0.1),
+                            color: secondaryColor.withOpacity(0.1),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             Iconsax.car,
-                            color: _secondaryColor,
+                            color: secondaryColor,
                             size: 14,
                           ),
                         ),
@@ -439,7 +429,7 @@ class _CabBookingListState extends State<CabBookingList> {
                               booking.cabType,
                               style: TextStyle(
                                 fontSize: 12,
-                                color: _textPrimary,
+                                color: textPrimary,
                                 fontWeight: FontWeight.w800,
                               ),
                             ),
@@ -447,7 +437,7 @@ class _CabBookingListState extends State<CabBookingList> {
                               bloc.formatTimeTo12Hour(booking.time),
                               style: TextStyle(
                                 fontSize: 10,
-                                color: _textSecondary,
+                                color: textSecondary,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -462,7 +452,7 @@ class _CabBookingListState extends State<CabBookingList> {
                           'TOTAL FARE',
                           style: TextStyle(
                             fontSize: 9,
-                            color: _textLight,
+                            color: textLight,
                             fontWeight: FontWeight.w800,
                             letterSpacing: 0.5,
                           ),
@@ -470,7 +460,7 @@ class _CabBookingListState extends State<CabBookingList> {
                         Text(
                           '₹${booking.total}',
                           style: TextStyle(
-                            color: _secondaryColor,
+                            color: secondaryColor,
                             fontSize: 18,
                             fontWeight: FontWeight.w900,
                           ),
@@ -495,16 +485,16 @@ class _CabBookingListState extends State<CabBookingList> {
           Container(
             padding: const EdgeInsets.all(30),
             decoration: BoxDecoration(
-              color: _secondaryColor.withOpacity(0.1),
+              color: secondaryColor.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(Iconsax.car, color: _secondaryColor, size: 48),
+            child: Icon(Iconsax.car, color: secondaryColor, size: 48),
           ),
           const SizedBox(height: 24),
           Text(
             'No Bookings Found',
             style: TextStyle(
-              color: _textPrimary,
+              color: textPrimary,
               fontSize: 18,
               fontWeight: FontWeight.w800,
             ),
@@ -513,7 +503,7 @@ class _CabBookingListState extends State<CabBookingList> {
           Text(
             'You haven\'t made any cab bookings yet.',
             style: TextStyle(
-              color: _textSecondary,
+              color: textSecondary,
               fontSize: 14,
               fontWeight: FontWeight.w500,
             ),
@@ -531,16 +521,16 @@ class _CabBookingListState extends State<CabBookingList> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: _errorColor.withOpacity(0.1),
+              color: errorColor.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(Iconsax.danger, color: _errorColor, size: 48),
+            child: Icon(Iconsax.danger, color: errorColor, size: 48),
           ),
           const SizedBox(height: 24),
           Text(
             'Failed to Load Data',
             style: TextStyle(
-              color: _textPrimary,
+              color: textPrimary,
               fontSize: 18,
               fontWeight: FontWeight.w800,
             ),
@@ -550,7 +540,7 @@ class _CabBookingListState extends State<CabBookingList> {
             onPressed: () =>
                 context.read<BookedInfoBloc>().add(BookedInfoEvent.fetchList()),
             style: ElevatedButton.styleFrom(
-              backgroundColor: _primaryColor,
+              backgroundColor: maincolor1,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               shape: RoundedRectangleBorder(
@@ -574,13 +564,13 @@ class _CabBookingListState extends State<CabBookingList> {
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
       case "confirmed":
-        return _successColor;
+        return successColor;
       case "hold":
-        return _warningColor;
+        return warningColor;
       case "cancelled":
-        return _errorColor;
+        return errorColor;
       default:
-        return _textLight;
+        return textLight;
     }
   }
 

@@ -2101,24 +2101,24 @@ class _HomeContentPageState extends State<HomeContentPage> {
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: secondaryColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Text(
-                  'Explore Collections',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
+              // Container(
+              //   padding: const EdgeInsets.symmetric(
+              //     horizontal: 16,
+              //     vertical: 8,
+              //   ),
+              //   decoration: BoxDecoration(
+              //     color: secondaryColor,
+              //     borderRadius: BorderRadius.circular(12),
+              //   ),
+              //   child: const Text(
+              //     'Explore Collections',
+              //     style: TextStyle(
+              //       color: Colors.white,
+              //       fontWeight: FontWeight.bold,
+              //       fontSize: 12,
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ],

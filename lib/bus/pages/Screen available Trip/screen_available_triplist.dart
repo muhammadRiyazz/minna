@@ -5,6 +5,7 @@ import 'package:minna/bus/infrastructure/time.dart';
 import 'package:minna/bus/pages/Screen%20available%20Trip/widgets/trip_container.dart';
 import 'package:minna/bus/domain/trips%20list%20modal/trip_list_modal.dart';
 import 'package:flutter/material.dart';
+import 'package:minna/comman/const/const.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -17,15 +18,7 @@ class ScreenAvailableTrips extends StatefulWidget {
 
 class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
   // Color Theme - Consistent with flight booking
-  final Color _primaryColor = Colors.black;
-  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
-  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
-  final Color _backgroundColor = Color(0xFFF8F9FA);
-  final Color _cardColor = Colors.white;
-  final Color _textPrimary = Colors.black;
-  final Color _textSecondary = Color(0xFF666666);
-  final Color _textLight = Color(0xFF999999);
-  final Color _errorColor = Color(0xFFE53935);
+  // Theme standardizing: Use global constants directly from const.dart
 
   // Filter state
   late FilterState _currentFilterState;
@@ -41,9 +34,9 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
     final selectedData = context.read<LocationBloc>().state;
 
     return Scaffold(
-      backgroundColor: _backgroundColor,
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-        backgroundColor: _primaryColor,
+        backgroundColor: maincolor1,
         iconTheme: IconThemeData(color: Colors.white),
         elevation: 0,
         // title: Text(
@@ -64,7 +57,7 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
                   IconButton(
                     icon: Icon(
                       Icons.filter_alt_rounded,
-                      color: hasActiveFilters ? _secondaryColor : Colors.white,
+                      color: hasActiveFilters ? secondaryColor : Colors.white,
                     ),
                     onPressed: () {
                       _showFilterBottomSheet(context, state);
@@ -79,7 +72,7 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
                         width: 8,
                         height: 8,
                         decoration: BoxDecoration(
-                          color: _secondaryColor,
+                          color: secondaryColor,
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -134,12 +127,12 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
               _currentFilterState = newFilterState;
             });
           },
-          primaryColor: _primaryColor,
-          secondaryColor: _secondaryColor,
-          backgroundColor: _backgroundColor,
-          cardColor: _cardColor,
-          textPrimary: _textPrimary,
-          textSecondary: _textSecondary,
+          primaryColor: maincolor1,
+          secondaryColor: secondaryColor,
+          backgroundColor: backgroundColor,
+          cardColor: cardColor,
+          textPrimary: textPrimary,
+          textSecondary: textSecondary,
         );
       },
     );
@@ -166,7 +159,7 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
             Container(
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: _cardColor,
+                color: cardColor,
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
@@ -178,7 +171,7 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
               ),
               child: Icon(
                 Icons.error_outline_rounded,
-                color: _errorColor,
+                color: errorColor,
                 size: 48,
               ),
             ),
@@ -188,14 +181,14 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: _textPrimary,
+                color: textPrimary,
               ),
             ),
             SizedBox(height: 8),
             Text(
               'We couldn\'t load the bus list. Please try again.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: _textSecondary),
+              style: TextStyle(fontSize: 14, color: textSecondary),
             ),
             SizedBox(height: 24),
             ElevatedButton(
@@ -209,7 +202,7 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: _primaryColor,
+                backgroundColor: maincolor1,
                 foregroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                 shape: RoundedRectangleBorder(
@@ -237,7 +230,7 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
             Container(
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: _cardColor,
+                color: cardColor,
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
@@ -249,7 +242,7 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
               ),
               child: Icon(
                 Icons.directions_bus_rounded,
-                color: _textLight,
+                color: textLight,
                 size: 48,
               ),
             ),
@@ -259,7 +252,7 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: _textPrimary,
+                color: textPrimary,
               ),
             ),
             SizedBox(height: 12),
@@ -267,11 +260,7 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
               'We couldn\'t find any buses for your selected route and date. '
               'Try changing your search criteria or select a different date.',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: _textSecondary,
-                height: 1.5,
-              ),
+              style: TextStyle(fontSize: 14, color: textSecondary, height: 1.5),
             ),
           ],
         ),
@@ -290,7 +279,7 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: _primaryColor,
+            color: maincolor1,
             borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(20),
               bottomRight: Radius.circular(20),
@@ -340,7 +329,7 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
                     Container(
                       padding: EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: _secondaryColor,
+                        color: secondaryColor,
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -399,7 +388,7 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
             children: [
               Icon(
                 Icons.directions_bus_rounded,
-                color: _secondaryColor,
+                color: secondaryColor,
                 size: 16,
               ),
               SizedBox(width: 8),
@@ -407,7 +396,7 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
                 '${state.availableTrips!.length} buses available',
                 style: TextStyle(
                   fontSize: 12,
-                  color: _textSecondary,
+                  color: textSecondary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -421,10 +410,10 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: _secondaryColor.withOpacity(0.1),
+                      color: secondaryColor.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: _secondaryColor.withOpacity(0.3),
+                        color: secondaryColor.withOpacity(0.3),
                       ),
                     ),
                     child: Row(
@@ -432,14 +421,14 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
                         Icon(
                           Icons.filter_alt_rounded,
                           size: 12,
-                          color: _secondaryColor,
+                          color: secondaryColor,
                         ),
                         SizedBox(width: 4),
                         Text(
                           'Filters Active',
                           style: TextStyle(
                             fontSize: 10,
-                            color: _secondaryColor,
+                            color: secondaryColor,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -820,10 +809,6 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 // Rest of the code remains the same (BusListloadingPage, etc.)
 class BusListloadingPage extends StatelessWidget {
   BusListloadingPage({super.key});
-
-  final Color _primaryColor = Colors.black;
-  final Color _secondaryColor = Color(0xFFD4AF37);
-  final Color _backgroundColor = Color(0xFFF8F9FA);
 
   @override
   Widget build(BuildContext context) {

@@ -1,9 +1,8 @@
-// const String baseUrl = 'https://mttrip.in/';
+const String baseUrl = 'https://mttrip.in/';
 const int liveOrStage = 1;
-const String baseUrl = "https://tictechnologies.in/stage/minna/";
-const String razorpaykey =
-    "rzp_live_SH72WTS67zVJ6V";
-    // 'rzp_test_RuXtwbAuZzTr1i';
+// const String baseUrl = "https://tictechnologies.in/stage/minna/";
+const String razorpaykey = "rzp_live_SH72WTS67zVJ6V";
+// 'rzp_test_RuXtwbAuZzTr1i';
 
 // const String baseUrl = "https://tictechnologies.in/stage/minna/";
 // https://maaxusdigitalhub.com/minna/

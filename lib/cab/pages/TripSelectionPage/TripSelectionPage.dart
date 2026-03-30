@@ -68,16 +68,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
   // For airport transfer
   bool _isAirportPickup = true;
 
-  // Premium Theme (Consistent with global const.dart)
-  final Color _primaryColor = maincolor1; // Deep Ocean Blue
-  final Color _secondaryColor = secondaryColor; // Premium Gold
-  final Color _accentColor = accentColor;
-  final Color _backgroundColor = backgroundColor;
-  final Color _cardColor = cardColor;
-  final Color _textPrimary = textPrimary;
-  final Color _textSecondary = textSecondary;
-  final Color _textLight = textLight;
-  final Color _errorColor = errorColor;
+  // Theme standardizing: Use global constants directly from const.dart
 
   final Map<int, String> tripTypes = {
     1: 'ONE WAY',
@@ -127,13 +118,13 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
             return Container(
               height: MediaQuery.of(context).size.height * 0.9,
               decoration: BoxDecoration(
-                color: _cardColor,
+                color: cardColor,
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(32),
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: _primaryColor.withOpacity(0.15),
+                    color: maincolor1.withOpacity(0.15),
                     blurRadius: 30,
                     offset: const Offset(0, -5),
                   ),
@@ -167,7 +158,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w900,
-                                color: _primaryColor,
+                                color: maincolor1,
                                 letterSpacing: -0.5,
                               ),
                             ),
@@ -175,7 +166,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                               'Choose one or more car types',
                               style: TextStyle(
                                 fontSize: 13,
-                                color: _textSecondary,
+                                color: textSecondary,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -183,13 +174,13 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                         ),
                         Container(
                           decoration: BoxDecoration(
-                            color: _backgroundColor,
+                            color: backgroundColor,
                             shape: BoxShape.circle,
                           ),
                           child: IconButton(
                             icon: Icon(
                               Iconsax.close_circle,
-                              color: _textLight,
+                              color: textLight,
                               size: 24,
                             ),
                             onPressed: () => Navigator.pop(context),
@@ -229,13 +220,13 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                         borderRadius: BorderRadius.circular(16),
                         gradient: LinearGradient(
                           colors: [
-                            _primaryColor,
-                            _primaryColor.withOpacity(0.9),
+                            maincolor1,
+                            maincolor1.withOpacity(0.9),
                           ],
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: _primaryColor.withOpacity(0.3),
+                            color: maincolor1.withOpacity(0.3),
                             blurRadius: 12,
                             offset: const Offset(0, 6),
                           ),
@@ -296,7 +287,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: isSelected
-                ? _secondaryColor.withOpacity(0.05)
+                ? secondaryColor.withOpacity(0.05)
                 : Colors.white,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
@@ -308,7 +299,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
             // boxShadow: isSelected
             //     ? [
             //         BoxShadow(
-            //           color: _secondaryColor.withOpacity(0.1),
+            //           color: secondaryColor.withOpacity(0.1),
             //           blurRadius: 10,
             //           offset: const Offset(0, 4),
             //         ),
@@ -322,13 +313,13 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                 height: 44,
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? _secondaryColor.withOpacity(0.15)
-                      : _backgroundColor,
+                      ? secondaryColor.withOpacity(0.15)
+                      : backgroundColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   Iconsax.car,
-                  color: isSelected ? _secondaryColor : _textSecondary,
+                  color: isSelected ? secondaryColor : textSecondary,
                   size: 22,
                 ),
               ),
@@ -342,7 +333,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
-                        color: isSelected ? _primaryColor : _textPrimary,
+                        color: isSelected ? maincolor1 : textPrimary,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -350,7 +341,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                       _getVehicleSubtitle(cabName),
                       style: TextStyle(
                         fontSize: 10,
-                        color: _textSecondary,
+                        color: textSecondary,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -361,7 +352,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                 Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: _secondaryColor,
+                    color: secondaryColor,
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -421,7 +412,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
             return Container(
               height: MediaQuery.of(context).size.height * 0.95,
               decoration: BoxDecoration(
-                color: _backgroundColor,
+                color: backgroundColor,
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(32),
                 ),
@@ -457,7 +448,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                         IconButton(
                           icon: Icon(
                             Iconsax.arrow_left_2,
-                            color: _primaryColor,
+                            color: maincolor1,
                             size: 22,
                           ),
                           onPressed: () => Navigator.pop(context),
@@ -468,7 +459,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w900,
-                              color: _primaryColor,
+                              color: maincolor1,
                               letterSpacing: -0.5,
                             ),
                           ),
@@ -496,15 +487,15 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
-                                    _secondaryColor.withOpacity(0.08),
-                                    _secondaryColor.withOpacity(0.02),
+                                    secondaryColor.withOpacity(0.08),
+                                    secondaryColor.withOpacity(0.02),
                                   ],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 ),
                                 borderRadius: BorderRadius.circular(20),
                                 // border: Border.all(
-                                //   color: _secondaryColor.withOpacity(0.2),
+                                //   color: secondaryColor.withOpacity(0.2),
                                 //   width: 1.5,
                                 // ),
                               ),
@@ -513,12 +504,12 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                   Container(
                                     padding: const EdgeInsets.all(10),
                                     decoration: BoxDecoration(
-                                      color: _secondaryColor.withOpacity(0.15),
+                                      color: secondaryColor.withOpacity(0.15),
                                       shape: BoxShape.circle,
                                     ),
                                     child: Icon(
                                       Iconsax.gps,
-                                      color: _secondaryColor,
+                                      color: secondaryColor,
                                       size: 20,
                                     ),
                                   ),
@@ -533,7 +524,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                           style: TextStyle(
                                             fontSize: 8,
                                             fontWeight: FontWeight.w900,
-                                            color: _secondaryColor,
+                                            color: secondaryColor,
                                             letterSpacing: 1,
                                           ),
                                         ),
@@ -542,7 +533,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                           'Quickly pick your precise location',
                                           style: TextStyle(
                                             fontSize: 10,
-                                            color: _textPrimary.withOpacity(
+                                            color: textPrimary.withOpacity(
                                               0.6,
                                             ),
                                             fontWeight: FontWeight.w600,
@@ -557,13 +548,13 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                       height: 22,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2.5,
-                                        color: _secondaryColor,
+                                        color: secondaryColor,
                                       ),
                                     )
                                   else
                                     Icon(
                                       Iconsax.arrow_right_3,
-                                      color: _secondaryColor.withOpacity(0.5),
+                                      color: secondaryColor.withOpacity(0.5),
                                       size: 18,
                                     ),
                                 ],
@@ -592,7 +583,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                 child: Text(
                                   'OR SEARCH PLACE',
                                   style: TextStyle(
-                                    color: _textLight,
+                                    color: textLight,
                                     fontWeight: FontWeight.w800,
                                     fontSize: 10,
                                     letterSpacing: 1.5,
@@ -627,19 +618,19 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                             child: TextField(
                               controller: _searchController,
                               style: TextStyle(
-                                color: _textPrimary,
+                                color: textPrimary,
                                 fontWeight: FontWeight.w700,
                                 fontSize: 16,
                               ),
                               decoration: InputDecoration(
                                 hintText: 'Where to go?',
                                 hintStyle: TextStyle(
-                                  color: _textLight.withOpacity(0.6),
+                                  color: textLight.withOpacity(0.6),
                                   fontWeight: FontWeight.w500,
                                 ),
                                 prefixIcon: Icon(
                                   Iconsax.search_normal_1,
-                                  color: _secondaryColor,
+                                  color: secondaryColor,
                                   size: 20,
                                 ),
                                 border: OutlineInputBorder(
@@ -656,7 +647,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(20),
                                   borderSide: BorderSide(
-                                    color: _secondaryColor.withOpacity(0.5),
+                                    color: secondaryColor.withOpacity(0.5),
                                     width: 1.5,
                                   ),
                                 ),
@@ -688,7 +679,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                 padding: const EdgeInsets.only(top: 40),
                                 child: Center(
                                   child: CircularProgressIndicator(
-                                    color: _secondaryColor,
+                                    color: secondaryColor,
                                     strokeWidth: 3,
                                   ),
                                 ),
@@ -702,7 +693,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                     Container(
                                       padding: const EdgeInsets.all(24),
                                       decoration: BoxDecoration(
-                                        color: _secondaryColor.withOpacity(
+                                        color: secondaryColor.withOpacity(
                                           0.05,
                                         ),
                                         shape: BoxShape.circle,
@@ -710,7 +701,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                       child: Icon(
                                         Iconsax.location_add,
                                         size: 48,
-                                        color: _secondaryColor.withOpacity(0.3),
+                                        color: secondaryColor.withOpacity(0.3),
                                       ),
                                     ),
                                     const SizedBox(height: 16),
@@ -719,7 +710,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                           ? 'Enter a destination to search'
                                           : 'No matches found',
                                       style: TextStyle(
-                                        color: _textLight,
+                                        color: textLight,
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600,
                                       ),
@@ -762,7 +753,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                         width: 48,
                                         height: 48,
                                         decoration: BoxDecoration(
-                                          color: _primaryColor.withOpacity(
+                                          color: maincolor1.withOpacity(
                                             0.05,
                                           ),
                                           borderRadius: BorderRadius.circular(
@@ -771,7 +762,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                         ),
                                         child: Icon(
                                           Iconsax.location,
-                                          color: _primaryColor,
+                                          color: maincolor1,
                                           size: 22,
                                         ),
                                       ),
@@ -779,7 +770,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                         place['description'] ?? '',
                                         style: TextStyle(
                                           fontWeight: FontWeight.w800,
-                                          color: _primaryColor,
+                                          color: maincolor1,
                                           fontSize: 12,
                                         ),
                                         maxLines: 1,
@@ -795,7 +786,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                                 place['structured_formatting']['secondary_text'] ??
                                                     '',
                                                 style: TextStyle(
-                                                  color: _textSecondary
+                                                  color: textSecondary
                                                       .withOpacity(0.7),
                                                   fontSize: 10,
                                                   fontWeight: FontWeight.w600,
@@ -1095,12 +1086,12 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: _secondaryColor,
+              primary: secondaryColor,
               onPrimary: Colors.white,
-              surface: _cardColor,
-              onSurface: _textPrimary,
+              surface: cardColor,
+              onSurface: textPrimary,
             ),
-            dialogTheme: DialogThemeData(backgroundColor: _backgroundColor),
+            dialogTheme: DialogThemeData(backgroundColor: backgroundColor),
           ),
           child: child!,
         );
@@ -1136,10 +1127,10 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: _secondaryColor,
+              primary: secondaryColor,
               onPrimary: Colors.white,
-              surface: _cardColor,
-              onSurface: _textPrimary,
+              surface: cardColor,
+              onSurface: textPrimary,
             ),
             dialogTheme: const DialogThemeData(backgroundColor: Colors.white),
           ),
@@ -1389,7 +1380,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: const EdgeInsets.all(16),
-        backgroundColor: _errorColor,
+        backgroundColor: errorColor,
         content: Row(
           children: [
             const Icon(Iconsax.info_circle, color: Colors.white, size: 20),
@@ -1421,7 +1412,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _backgroundColor,
+      backgroundColor: backgroundColor,
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
@@ -1430,7 +1421,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
             expandedHeight: 220.0,
             floating: false,
             pinned: true,
-            backgroundColor: _primaryColor,
+            backgroundColor: maincolor1,
             elevation: 0,
             leading: IconButton(
               icon: const Icon(
@@ -1457,9 +1448,9 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          _primaryColor.withOpacity(0.3),
-                          _primaryColor.withOpacity(0.5),
-                          _primaryColor,
+                          maincolor1.withOpacity(0.3),
+                          maincolor1.withOpacity(0.5),
+                          maincolor1,
                         ],
                         stops: const [0.0, 0.6, 1.0],
                       ),
@@ -1476,7 +1467,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                           Text(
                             "PREMIUM RIDES",
                             style: TextStyle(
-                              color: _secondaryColor,
+                              color: secondaryColor,
                               fontSize: 12,
                               fontWeight: FontWeight.w900,
                               letterSpacing: 2,
@@ -1516,11 +1507,11 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                 margin: const EdgeInsets.symmetric(horizontal: 10),
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: _cardColor,
+                  color: cardColor,
                   borderRadius: BorderRadius.circular(32),
                   boxShadow: [
                     BoxShadow(
-                      color: _primaryColor.withOpacity(0.08),
+                      color: maincolor1.withOpacity(0.08),
                       blurRadius: 40,
                       offset: const Offset(0, 15),
                     ),
@@ -1581,7 +1572,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: _textLight,
+            color: textLight,
             letterSpacing: 1,
           ),
         ),
@@ -1617,12 +1608,12 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeOutCubic,
                     decoration: BoxDecoration(
-                      color: isSelected ? _secondaryColor : _backgroundColor,
+                      color: isSelected ? secondaryColor : backgroundColor,
                       borderRadius: BorderRadius.circular(16),
                       // boxShadow: isSelected
                       //     ? [
                       //         BoxShadow(
-                      //           color: _secondaryColor.withOpacity(0.3),
+                      //           color: secondaryColor.withOpacity(0.3),
                       //           blurRadius: 10,
                       //           offset: const Offset(0, 4),
                       //         ),
@@ -1630,7 +1621,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                       //     : [],
                       // border: Border.all(
                       //   color: isSelected
-                      //       ? _secondaryColor
+                      //       ? secondaryColor
                       //       : Colors.grey.withOpacity(0.1),
                       //   width: 1.5,
                       // ),
@@ -1642,7 +1633,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                         Icon(
                           _getTripTypeIcon(entry.key),
                           size: 18,
-                          color: isSelected ? Colors.white : _secondaryColor,
+                          color: isSelected ? Colors.white : secondaryColor,
                         ),
                         const SizedBox(width: 10),
                         Text(
@@ -1652,7 +1643,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                             fontSize: 10,
                             fontWeight: FontWeight.w800,
                             letterSpacing: -0.2,
-                            color: isSelected ? Colors.white : _textPrimary,
+                            color: isSelected ? Colors.white : textPrimary,
                           ),
                         ),
                       ],
@@ -1676,7 +1667,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: _textLight,
+            color: textLight,
             letterSpacing: 1,
           ),
         ),
@@ -1694,8 +1685,8 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   decoration: BoxDecoration(
                     color: _isAirportPickup
-                        ? _secondaryColor
-                        : _backgroundColor,
+                        ? secondaryColor
+                        : backgroundColor,
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Row(
@@ -1706,13 +1697,13 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                         size: 16,
                         color: _isAirportPickup
                             ? Colors.white
-                            : _secondaryColor,
+                            : secondaryColor,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         'Airport Pickup',
                         style: TextStyle(
-                          color: _isAirportPickup ? Colors.white : _textPrimary,
+                          color: _isAirportPickup ? Colors.white : textPrimary,
                           fontWeight: FontWeight.w700,
                           fontSize: 12,
                         ),
@@ -1734,8 +1725,8 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   decoration: BoxDecoration(
                     color: !_isAirportPickup
-                        ? _secondaryColor
-                        : _backgroundColor,
+                        ? secondaryColor
+                        : backgroundColor,
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Row(
@@ -1746,7 +1737,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                         size: 16,
                         color: !_isAirportPickup
                             ? Colors.white
-                            : _secondaryColor,
+                            : secondaryColor,
                       ),
                       const SizedBox(width: 8),
                       Text(
@@ -1754,7 +1745,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                         style: TextStyle(
                           color: !_isAirportPickup
                               ? Colors.white
-                              : _textPrimary,
+                              : textPrimary,
                           fontWeight: FontWeight.w700,
                           fontSize: 12,
                         ),
@@ -1774,7 +1765,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _backgroundColor.withOpacity(0.5),
+        color: backgroundColor.withOpacity(0.5),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: Colors.grey.shade100),
       ),
@@ -1813,10 +1804,10 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
             margin: const EdgeInsets.only(bottom: 20),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: _backgroundColor,
+              color: backgroundColor,
               borderRadius: BorderRadius.circular(24),
               // border: Border.all(
-              //   color: _secondaryColor.withOpacity(0.1),
+              //   color: secondaryColor.withOpacity(0.1),
               //   width: 1,
               // ),
             ),
@@ -1830,14 +1821,14 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: _secondaryColor.withOpacity(0.2),
+                        color: secondaryColor.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         'ROUTE ${i + 1}',
                         style: TextStyle(
                           fontWeight: FontWeight.w800,
-                          color: _secondaryColor,
+                          color: secondaryColor,
                           fontSize: 10,
                           letterSpacing: 1,
                         ),
@@ -1850,7 +1841,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                         padding: EdgeInsets.zero,
                         icon: Icon(
                           Iconsax.minus_cirlce,
-                          color: _errorColor,
+                          color: errorColor,
                           size: 20,
                         ),
                         onPressed: () => _removeMultiCityRoute(i),
@@ -1914,8 +1905,8 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
               style: TextStyle(fontWeight: FontWeight.w700),
             ),
             style: OutlinedButton.styleFrom(
-              foregroundColor: _secondaryColor,
-              side: BorderSide(color: _secondaryColor),
+              foregroundColor: secondaryColor,
+              side: BorderSide(color: secondaryColor),
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -1931,7 +1922,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
     return Container(
       padding: const EdgeInsets.all(13),
       decoration: BoxDecoration(
-        color: _backgroundColor.withOpacity(0.5),
+        color: backgroundColor.withOpacity(0.5),
         borderRadius: BorderRadius.circular(24),
         // border: Border.all(color: Colors.grey.shade100),
       ),
@@ -2000,7 +1991,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: _textLight,
+            color: textLight,
             letterSpacing: 1,
           ),
         ),
@@ -2013,7 +2004,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
               color: Colors.black.withOpacity(0.02),
               borderRadius: BorderRadius.circular(16),
               // border: Border.all(
-              //   color: _secondaryColor.withOpacity(0.15),
+              //   color: secondaryColor.withOpacity(0.15),
               //   width: 1,
               // ),
               boxShadow: [
@@ -2029,7 +2020,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: _secondaryColor.withOpacity(0.1),
+                    color: secondaryColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(Iconsax.car, color: maincolor1, size: 24),
@@ -2043,7 +2034,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                         'Vehicle Type',
                         style: TextStyle(
                           fontSize: 8,
-                          color: _textLight,
+                          color: textLight,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -2063,7 +2054,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                     ],
                   ),
                 ),
-                Icon(Iconsax.more, color: _textLight, size: 20),
+                Icon(Iconsax.more, color: textLight, size: 20),
               ],
             ),
           ),
@@ -2080,13 +2071,13 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         gradient: LinearGradient(
-          colors: [_primaryColor, _primaryColor.withOpacity(0.9)],
+          colors: [maincolor1, maincolor1.withOpacity(0.9)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         boxShadow: [
           BoxShadow(
-            color: _primaryColor.withOpacity(0.3),
+            color: maincolor1.withOpacity(0.3),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -2132,7 +2123,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           // border: Border.all(
-          //   color: _secondaryColor.withOpacity(0.15),
+          //   color: secondaryColor.withOpacity(0.15),
           //   width: 1,
           // ),
           boxShadow: [
@@ -2148,10 +2139,10 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: _secondaryColor.withOpacity(0.1),
+                color: secondaryColor.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: _secondaryColor, size: 18),
+              child: Icon(icon, color: secondaryColor, size: 18),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -2162,7 +2153,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                     label,
                     style: TextStyle(
                       fontSize: 8,
-                      color: _textSecondary,
+                      color: textSecondary,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.5,
                     ),
@@ -2175,7 +2166,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
-                      color: _primaryColor,
+                      color: maincolor1,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -2185,7 +2176,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
             ),
             Icon(
               Iconsax.arrow_right_3,
-              color: _secondaryColor.withOpacity(0.5),
+              color: secondaryColor.withOpacity(0.5),
               size: 16,
             ),
           ],
@@ -2208,7 +2199,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           // border: Border.all(
-          //   color: _secondaryColor.withOpacity(0.15),
+          //   color: secondaryColor.withOpacity(0.15),
           //   width: 1,
           // ),
           boxShadow: [
@@ -2224,14 +2215,14 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
           children: [
             Row(
               children: [
-                Icon(icon, color: _secondaryColor, size: 14),
+                Icon(icon, color: secondaryColor, size: 14),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
                     label,
                     style: TextStyle(
                       fontSize: 10,
-                      color: _textSecondary,
+                      color: textSecondary,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.5,
                     ),
@@ -2250,7 +2241,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w900,
-                  color: _primaryColor,
+                  color: maincolor1,
                 ),
               ),
             ),

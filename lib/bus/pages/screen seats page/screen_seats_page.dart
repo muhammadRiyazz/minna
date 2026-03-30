@@ -8,6 +8,7 @@ import 'package:minna/bus/presendation/widgets/error_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:minna/comman/const/const.dart';
 import '../../domain/BlockTicket/block_ticket_request_modal.dart';
 import '../../domain/seatlayout/seatlayoutmodal.dart';
 import '../../infrastructure/fetch seatlayout/seatlayout.dart';
@@ -46,17 +47,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
   double totalAmount = 0.0;
 
   // Color Theme - Black & Gold Premium
-  final Color _primaryColor = Colors.black;
-  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
-  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
-  final Color _backgroundColor = Color(0xFFF8F9FA);
-  final Color _cardColor = Colors.white;
-  final Color _textPrimary = Colors.black;
-  final Color _textSecondary = Color(0xFF666666);
-  final Color _textLight = Color(0xFF999999);
-  final Color _errorColor = Color(0xFFE53935);
-  final Color _successColor = Color(0xFF388E3C);
-  final Color _warningColor = Color(0xFFF57C00);
+  // Theme standardizing: Use global constants directly from const.dart
 
   @override
   void initState() {
@@ -100,7 +91,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
           right: 16,
         ),
         duration: const Duration(seconds: 3),
-        backgroundColor: _cardColor,
+        backgroundColor: cardColor,
         content: Container(
           padding: const EdgeInsets.symmetric(vertical: 4),
           child: Row(
@@ -108,7 +99,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: _secondaryColor,
+                  color: secondaryColor,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -126,7 +117,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                     Text(
                       'Seat Selected',
                       style: theme.textTheme.labelLarge?.copyWith(
-                        color: _textSecondary,
+                        color: textSecondary,
                         letterSpacing: 0.5,
                         fontWeight: FontWeight.w600,
                       ),
@@ -138,7 +129,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                           TextSpan(
                             text: seat.name,
                             style: theme.textTheme.titleLarge?.copyWith(
-                              color: _primaryColor,
+                              color: maincolor1,
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
                             ),
@@ -146,7 +137,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                           TextSpan(
                             text: ' • ₹${seat.baseFare}',
                             style: theme.textTheme.titleMedium?.copyWith(
-                              color: _successColor,
+                              color: successColor,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -161,9 +152,9 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: _backgroundColor,
+                    color: backgroundColor,
                   ),
-                  child: Icon(Icons.close, color: _textSecondary, size: 18),
+                  child: Icon(Icons.close, color: textSecondary, size: 18),
                 ),
                 onPressed: () {
                   ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -183,7 +174,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
       isScrollControlled: true,
       builder: (context) => Container(
         decoration: BoxDecoration(
-          color: _cardColor,
+          color: cardColor,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
           boxShadow: [
             BoxShadow(
@@ -200,10 +191,10 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: _errorColor.withOpacity(0.1),
+                color: errorColor.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.event_seat, size: 48, color: _errorColor),
+              child: Icon(Icons.event_seat, size: 48, color: errorColor),
             ),
             const SizedBox(height: 24),
             Text(
@@ -211,7 +202,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
-                color: _textPrimary,
+                color: textPrimary,
                 height: 1.3,
               ),
               textAlign: TextAlign.center,
@@ -221,7 +212,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
               'You can select up to 6 seats per booking',
               style: TextStyle(
                 fontSize: 15,
-                color: _textSecondary,
+                color: textSecondary,
                 height: 1.5,
               ),
               textAlign: TextAlign.center,
@@ -231,7 +222,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _primaryColor,
+                  backgroundColor: maincolor1,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -258,10 +249,10 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _backgroundColor,
+      backgroundColor: backgroundColor,
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
-        backgroundColor: _primaryColor,
+        backgroundColor: maincolor1,
         elevation: 0,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -270,7 +261,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
               'Select Seats',
               style: TextStyle(
                 fontSize: 16,
-                color: _cardColor,
+                color: cardColor,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -278,7 +269,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
             //   widget.trpinfo,
             //   style: TextStyle(
             //     fontSize: 12,
-            //     color: _secondaryColor.withOpacity(0.8),
+            //     color: secondaryColor.withOpacity(0.8),
             //     fontWeight: FontWeight.w400,
             //   ),
             // ),
@@ -317,7 +308,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                          color: _cardColor,
+                          color: cardColor,
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.05),
@@ -327,9 +318,9 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                           ],
                         ),
                         child: TabBar(
-                          labelColor: _primaryColor,
-                          unselectedLabelColor: _textSecondary,
-                          indicatorColor: _secondaryColor,
+                          labelColor: maincolor1,
+                          unselectedLabelColor: textSecondary,
+                          indicatorColor: secondaryColor,
                           indicatorWeight: 3,
                           indicatorPadding: const EdgeInsets.symmetric(
                             horizontal: 20,
@@ -337,11 +328,11 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                           labelStyle: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
-                            color: _primaryColor,
+                            color: maincolor1,
                           ),
                           unselectedLabelStyle: TextStyle(
                             fontWeight: FontWeight.w500,
-                            color: _textSecondary,
+                            color: textSecondary,
                           ),
                           tabs: const [
                             Tab(text: 'Lower Berth'),
@@ -357,14 +348,14 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                                 seatlist: lowerBerth!,
                                 selectedseats: newselectedseats,
                                 onSeatSelected: updateSelectedSeat,
-                                primaryColor: _primaryColor,
-                                secondaryColor: _secondaryColor,
-                                accentColor: _accentColor,
-                                backgroundColor: _backgroundColor,
-                                cardColor: _cardColor,
-                                textPrimary: _textPrimary,
-                                textSecondary: _textSecondary,
-                                textLight: _textLight,
+                                primaryColor: maincolor1,
+                                secondaryColor: secondaryColor,
+                                accentColor: accentColor,
+                                backgroundColor: backgroundColor,
+                                cardColor: cardColor,
+                                textPrimary: textPrimary,
+                                textSecondary: textSecondary,
+                                textLight: textLight,
                               )
                             else
                               _buildEmptyState('Lower Berth'),
@@ -373,14 +364,14 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                                 seatlist: upperBerth!,
                                 selectedseats: newselectedseats,
                                 onSeatSelected: updateSelectedSeat,
-                                primaryColor: _primaryColor,
-                                secondaryColor: _secondaryColor,
-                                accentColor: _accentColor,
-                                backgroundColor: _backgroundColor,
-                                cardColor: _cardColor,
-                                textPrimary: _textPrimary,
-                                textSecondary: _textSecondary,
-                                textLight: _textLight,
+                                primaryColor: maincolor1,
+                                secondaryColor: secondaryColor,
+                                accentColor: accentColor,
+                                backgroundColor: backgroundColor,
+                                cardColor: cardColor,
+                                textPrimary: textPrimary,
+                                textSecondary: textSecondary,
+                                textLight: textLight,
                               )
                             else
                               _buildEmptyState('Upper Berth'),
@@ -403,20 +394,20 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.event_seat_outlined, size: 64, color: _textLight),
+          Icon(Icons.event_seat_outlined, size: 64, color: textLight),
           const SizedBox(height: 16),
           Text(
             'No $berthType seats available',
             style: TextStyle(
               fontSize: 16,
-              color: _textSecondary,
+              color: textSecondary,
               fontWeight: FontWeight.w500,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             'Please check other berth options',
-            style: TextStyle(fontSize: 14, color: _textLight),
+            style: TextStyle(fontSize: 14, color: textLight),
           ),
         ],
       ),
@@ -426,7 +417,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
   Widget _buildBottomSummaryPanel() {
     return Container(
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -456,7 +447,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: _textPrimary,
+                          color: textPrimary,
                         ),
                       ),
                       const SizedBox(height: 6),
@@ -472,10 +463,10 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: _secondaryColor.withOpacity(0.1),
+                                color: secondaryColor.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
-                                  color: _secondaryColor.withOpacity(0.3),
+                                  color: secondaryColor.withOpacity(0.3),
                                 ),
                               ),
                               child: Text(
@@ -483,7 +474,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
-                                  color: _primaryColor,
+                                  color: maincolor1,
                                 ),
                               ),
                             );
@@ -498,7 +489,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                     children: [
                       Text(
                         'Total Amount',
-                        style: TextStyle(fontSize: 12, color: _textPrimary),
+                        style: TextStyle(fontSize: 12, color: textPrimary),
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -506,7 +497,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: _secondaryColor,
+                          color: secondaryColor,
                         ),
                       ),
                     ],
@@ -523,11 +514,11 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: newselectedseats.isEmpty
-                    ? _textLight.withOpacity(0.6)
-                    : _primaryColor,
+                    ? textLight.withOpacity(0.6)
+                    : maincolor1,
                 foregroundColor: newselectedseats.isEmpty
-                    ? _textSecondary
-                    : _secondaryColor,
+                    ? textSecondary
+                    : secondaryColor,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -565,7 +556,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                     style: TextStyle(
                       color: newselectedseats.isEmpty
                           ? Colors.white
-                          : _cardColor,
+                          : cardColor,
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                     ),
@@ -575,7 +566,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                     Icon(
                       Icons.arrow_forward_rounded,
                       size: 20,
-                      color: _cardColor,
+                      color: cardColor,
                     ),
                   ],
                 ],
@@ -594,7 +585,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
       isScrollControlled: true,
       builder: (context) => Container(
         decoration: BoxDecoration(
-          color: _cardColor,
+          color: cardColor,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
           boxShadow: [
             BoxShadow(
@@ -611,13 +602,13 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: _warningColor.withOpacity(0.1),
+                color: warningColor.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.event_seat_outlined,
                 size: 48,
-                color: _warningColor,
+                color: warningColor,
               ),
             ),
             const SizedBox(height: 24),
@@ -626,7 +617,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
-                color: _textPrimary,
+                color: textPrimary,
                 height: 1.3,
               ),
               textAlign: TextAlign.center,
@@ -636,7 +627,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
               'Please select at least one seat to proceed with your booking',
               style: TextStyle(
                 fontSize: 15,
-                color: _textSecondary,
+                color: textSecondary,
                 height: 1.5,
               ),
               textAlign: TextAlign.center,
@@ -646,7 +637,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _primaryColor,
+                  backgroundColor: maincolor1,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -658,7 +649,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                   'Select Seats',
                   style: TextStyle(
                     fontSize: 16,
-                    color: _secondaryColor,
+                    color: secondaryColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -677,7 +668,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
       isScrollControlled: true,
       builder: (context) => Container(
         decoration: BoxDecoration(
-          color: _cardColor,
+          color: cardColor,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
         ),
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
@@ -689,32 +680,32 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
               height: 4,
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
-                color: _textLight.withOpacity(0.3),
+                color: textLight.withOpacity(0.3),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
             Row(
               children: [
-                Icon(Icons.info_outline_rounded, color: _primaryColor),
+                Icon(Icons.info_outline_rounded, color: maincolor1),
                 const SizedBox(width: 8),
                 Text(
                   'Seat Information',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
-                    color: _textPrimary,
+                    color: textPrimary,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 24),
             _buildLegendItem(
-              _primaryColor,
+              maincolor1,
               'Available Seat',
               'Regular seats available for booking',
             ),
             _buildLegendItem(
-              _secondaryColor,
+              secondaryColor,
               'Selected Seat',
               'Seats you have selected',
             ),
@@ -737,17 +728,17 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: _backgroundColor,
+                color: backgroundColor,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.hotel, color: _primaryColor, size: 16),
+                  Icon(Icons.hotel, color: maincolor1, size: 16),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'Sleeper seats are horizontal, Seater seats are vertical',
-                      style: TextStyle(fontSize: 12, color: _textSecondary),
+                      style: TextStyle(fontSize: 12, color: textSecondary),
                     ),
                   ),
                 ],
@@ -786,13 +777,13 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: _textPrimary,
+                    color: textPrimary,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   description,
-                  style: TextStyle(fontSize: 12, color: _textSecondary),
+                  style: TextStyle(fontSize: 12, color: textSecondary),
                 ),
               ],
             ),
@@ -808,7 +799,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
       child: Column(
         children: [
           Container(
-            color: _cardColor,
+            color: cardColor,
             child: const TabBar(
               tabs: [
                 Tab(text: 'Lower Berth'),
@@ -831,8 +822,8 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
     const cols = 4;
 
     return Shimmer.fromColors(
-      baseColor: _textLight.withOpacity(0.1),
-      highlightColor: _textLight.withOpacity(0.05),
+      baseColor: textLight.withOpacity(0.1),
+      highlightColor: textLight.withOpacity(0.05),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: GridView.builder(
@@ -849,9 +840,9 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
 
             return Container(
               decoration: BoxDecoration(
-                color: _cardColor,
+                color: cardColor,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: _textLight.withOpacity(0.1)),
+                border: Border.all(color: textLight.withOpacity(0.1)),
               ),
             );
           },
@@ -913,7 +904,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
       Fluttertoast.showToast(
         msg: 'Failed to load seat layout. Please try again.',
         toastLength: Toast.LENGTH_LONG,
-        backgroundColor: _errorColor,
+        backgroundColor: errorColor,
         textColor: Colors.white,
       );
     }

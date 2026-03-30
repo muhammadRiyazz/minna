@@ -34,17 +34,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
   late CommissionProvider commissionProvider;
   BuildContext? _parentContext;
 
-  // Color scheme
-  final Color _primaryColor = maincolor1;
-  final Color _secondaryColor = secondaryColor; 
-  final Color _backgroundColor = backgroundColor;
-  final Color _cardColor = cardColor;
-  final Color _textPrimary = textPrimary;
-  final Color _textSecondary = textSecondary;
-  final Color _textLight = textLight;
-  final Color _errorColor = errorColor;
-  final Color _successColor = const Color(0xFF0D9488);
-  final Color _warningColor = const Color(0xFFD97706);
+  // Theme standardizing: Use global constants directly from const.dart
 
   @override
   void initState() {
@@ -79,7 +69,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
           return true;
         },
         child: Scaffold(
-          backgroundColor: _backgroundColor,
+          backgroundColor: backgroundColor,
           body: BlocBuilder<BookedDetailsBloc, BookedDetailsState>(
             builder: (context, state) {
               return state.maybeWhen(
@@ -118,7 +108,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     return CustomScrollView(
       slivers: [
         SliverAppBar(
-          backgroundColor: _primaryColor,
+          backgroundColor: maincolor1,
           expandedHeight: 200.0,
           pinned: true,
           floating: true,
@@ -127,7 +117,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
             background: Shimmer.fromColors(
               baseColor: Colors.grey[300]!,
               highlightColor: Colors.grey[100]!,
-              child: Container(color: _primaryColor),
+              child: Container(color: maincolor1),
             ),
           ),
         ),
@@ -197,7 +187,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
       highlightColor: Colors.grey[100]!,
       child: Container(
         decoration: BoxDecoration(
-          color: _cardColor,
+          color: cardColor,
           borderRadius: BorderRadius.circular(20),
         ),
         padding: const EdgeInsets.all(24),
@@ -215,7 +205,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         borderRadius: isCircle
             ? BorderRadius.circular(height / 2)
             : BorderRadius.circular(4),
@@ -244,11 +234,15 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
               expandedHeight: 140.0,
               floating: false,
               pinned: true,
-              backgroundColor: _primaryColor,
+              backgroundColor: maincolor1,
               elevation: 4,
               shadowColor: Colors.black.withOpacity(0.2),
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+                icon: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
                 onPressed: () => Navigator.pop(context),
               ),
               flexibleSpace: FlexibleSpaceBar(
@@ -270,7 +264,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                         gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [_primaryColor, _primaryColor.withOpacity(0.8)],
+                          colors: [maincolor1, maincolor1.withOpacity(0.8)],
                         ),
                       ),
                     ),
@@ -282,7 +276,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                         height: 150,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: _secondaryColor.withOpacity(0.08),
+                          color: secondaryColor.withOpacity(0.08),
                         ),
                       ),
                     ),
@@ -290,18 +284,26 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                       bottom: 20,
                       right: 20,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
-                          color: isCancelled ? _errorColor.withOpacity(0.2) : _successColor.withOpacity(0.2),
+                          color: isCancelled
+                              ? errorColor.withOpacity(0.2)
+                              : successColor.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: isCancelled ? _errorColor : _successColor, width: 1),
+                          border: Border.all(
+                            color: isCancelled ? errorColor : successColor,
+                            width: 1,
+                          ),
                         ),
                         child: Text(
                           details.statusDesc.toUpperCase(),
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w900,
-                            color: isCancelled ? _errorColor : _successColor,
+                            color: isCancelled ? errorColor : successColor,
                             letterSpacing: 1,
                           ),
                         ),
@@ -375,7 +377,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
 
     return Container(
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
@@ -400,7 +402,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                       'FROM',
                       style: TextStyle(
                         fontSize: 10,
-                        color: _textSecondary,
+                        color: textSecondary,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 1.0,
                       ),
@@ -421,7 +423,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                         Icon(
                           Icons.access_time,
                           size: 12,
-                          color: _secondaryColor,
+                          color: secondaryColor,
                         ),
                         const SizedBox(width: 6),
                         Flexible(
@@ -429,7 +431,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                             '${_formatDate(firstRoute.startDate)} • ${_formatTimeTo12Hour(firstRoute.startTime)}',
                             style: TextStyle(
                               fontSize: 12,
-                              color: _textSecondary,
+                              color: textSecondary,
                               fontWeight: FontWeight.w500,
                             ),
                             maxLines: 1,
@@ -448,12 +450,12 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: _secondaryColor.withOpacity(0.1),
+                        color: secondaryColor.withOpacity(0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         Icons.local_taxi_rounded,
-                        color: _secondaryColor,
+                        color: secondaryColor,
                         size: 20,
                       ),
                     ),
@@ -465,7 +467,10 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
-                          colors: [_secondaryColor.withOpacity(0.5), Colors.transparent],
+                          colors: [
+                            secondaryColor.withOpacity(0.5),
+                            Colors.transparent,
+                          ],
                         ),
                       ),
                     ),
@@ -480,7 +485,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                       'TO',
                       style: TextStyle(
                         fontSize: 10,
-                        color: _textSecondary,
+                        color: textSecondary,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 1.0,
                       ),
@@ -503,7 +508,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                         Icon(
                           Icons.access_time,
                           size: 12,
-                          color: _secondaryColor,
+                          color: secondaryColor,
                         ),
                         const SizedBox(width: 6),
                         Flexible(
@@ -511,7 +516,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                             '${_formatDate(lastRoute.startDate)} • ${_formatTimeTo12Hour(lastRoute.startTime)}',
                             style: TextStyle(
                               fontSize: 12,
-                              color: _textSecondary,
+                              color: textSecondary,
                               fontWeight: FontWeight.w500,
                             ),
                             maxLines: 1,
@@ -532,7 +537,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: _backgroundColor,
+              color: backgroundColor,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
@@ -550,7 +555,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                     Container(
                       width: 1,
                       height: 40,
-                      color: _textLight.withOpacity(0.3),
+                      color: textLight.withOpacity(0.3),
                     ),
                     Expanded(
                       child: _buildCompactTripInfoItem(
@@ -564,7 +569,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                 Container(
                   width: double.infinity,
                   height: 1,
-                  color: _textLight.withOpacity(0.3),
+                  color: textLight.withOpacity(0.3),
                 ),
                 const SizedBox(height: 12),
                 // Second row - centered single item
@@ -589,7 +594,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
           title,
           style: TextStyle(
             fontSize: 10,
-            color: _textSecondary,
+            color: textSecondary,
             fontWeight: FontWeight.w600,
           ),
           textAlign: TextAlign.center,
@@ -609,7 +614,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
   Widget _buildTripInfoCard(BookingDetails details) {
     return Container(
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -626,16 +631,16 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: _secondaryColor.withOpacity(0.1),
+              color: secondaryColor.withOpacity(0.1),
               shape: BoxShape.circle,
               border: Border.all(
-                color: _secondaryColor.withOpacity(0.3),
+                color: secondaryColor.withOpacity(0.3),
                 width: 2,
               ),
             ),
             child: Icon(
               Icons.calendar_today_rounded,
-              color: _secondaryColor,
+              color: secondaryColor,
               size: 20,
             ),
           ),
@@ -656,7 +661,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                   '${_formatDate(details.pickupDate)} • ${_formatTimeTo12Hour(details.pickupTime)}',
                   style: TextStyle(
                     fontSize: 12,
-                    color: _textSecondary,
+                    color: textSecondary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -667,14 +672,14 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: _secondaryColor.withOpacity(0.1),
+                    color: secondaryColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     'Confirmed Schedule',
                     style: TextStyle(
                       fontSize: 12,
-                      color: _secondaryColor,
+                      color: secondaryColor,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -690,7 +695,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
   Widget _buildRoutesCard(BookingDetails details) {
     return Container(
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -709,12 +714,12 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: _secondaryColor.withOpacity(0.1),
+                  color: secondaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.route_rounded,
-                  color: _secondaryColor,
+                  color: secondaryColor,
                   size: 12,
                 ),
               ),
@@ -723,7 +728,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                 details.isMultiCity ? 'ROUTES' : 'ROUTE',
                 style: TextStyle(
                   fontSize: 13,
-                  color: _textSecondary,
+                  color: textSecondary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -734,14 +739,14 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: _backgroundColor,
+                  color: backgroundColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   '${details.routes.length}',
                   style: TextStyle(
                     fontSize: 14,
-                    color: _secondaryColor,
+                    color: secondaryColor,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -757,7 +762,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
               child: Container(
                 padding: const EdgeInsets.all(15),
                 decoration: BoxDecoration(
-                  color: _backgroundColor,
+                  color: backgroundColor,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: Colors.grey.shade200),
                 ),
@@ -768,14 +773,14 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                       children: [
                         Icon(
                           Icons.location_on,
-                          color: _secondaryColor,
+                          color: secondaryColor,
                           size: 16,
                         ),
                         if (index < details.routes.length - 1)
                           Container(
                             width: 2,
                             height: 40,
-                            color: _secondaryColor.withOpacity(0.3),
+                            color: secondaryColor.withOpacity(0.3),
                           ),
                         if (index == details.routes.length - 1)
                           Icon(Icons.flag, color: Colors.green, size: 16),
@@ -806,7 +811,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                             '${_formatDate(route.startDate)} • ${_formatTimeTo12Hour(route.startTime)}',
                             style: TextStyle(
                               fontSize: 12,
-                              color: _textSecondary,
+                              color: textSecondary,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -826,7 +831,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
   Widget _buildTravellerCard(BookedTraveller traveller) {
     return Container(
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -845,12 +850,12 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: _secondaryColor.withOpacity(0.1),
+                  color: secondaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.person_rounded,
-                  color: _secondaryColor,
+                  color: secondaryColor,
                   size: 12,
                 ),
               ),
@@ -859,7 +864,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                 'TRAVELLER INFORMATION',
                 style: TextStyle(
                   fontSize: 13,
-                  color: _textSecondary,
+                  color: textSecondary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -894,7 +899,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
               label,
               style: TextStyle(
                 fontWeight: FontWeight.w600,
-                color: _textSecondary,
+                color: textSecondary,
                 fontSize: 13,
               ),
             ),
@@ -914,7 +919,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
   Widget _buildCabFareCard(BookedCabRate cabRate, bool isCancelled) {
     return Container(
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -933,12 +938,12 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: _secondaryColor.withOpacity(0.1),
+                  color: secondaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.directions_car_rounded,
-                  color: _secondaryColor,
+                  color: secondaryColor,
                   size: 12,
                 ),
               ),
@@ -947,7 +952,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                 'CAB & FARE DETAILS',
                 style: TextStyle(
                   fontSize: 13,
-                  color: _textSecondary,
+                  color: textSecondary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -961,12 +966,12 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: _secondaryColor.withOpacity(0.1),
+                  color: secondaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   Icons.directions_car_filled,
-                  color: _secondaryColor,
+                  color: secondaryColor,
                   size: 24,
                 ),
               ),
@@ -1012,7 +1017,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: _textSecondary,
+              color: textSecondary,
             ),
           ),
           const SizedBox(height: 12),
@@ -1079,9 +1084,9 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
   Widget _buildCabSpecItem(IconData icon, String text) {
     return Row(
       children: [
-        Icon(icon, size: 14, color: _textSecondary),
+        Icon(icon, size: 14, color: textSecondary),
         const SizedBox(width: 4),
-        Text(text, style: TextStyle(fontSize: 12, color: _textSecondary)),
+        Text(text, style: TextStyle(fontSize: 12, color: textSecondary)),
       ],
     );
   }
@@ -1096,7 +1101,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
             label,
             style: TextStyle(
               fontSize: 14,
-              color: isTotal ? _textPrimary : _textSecondary,
+              color: isTotal ? textPrimary : textSecondary,
               fontWeight: isTotal ? FontWeight.w600 : FontWeight.normal,
             ),
           ),
@@ -1104,7 +1109,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
             '₹$amount',
             style: TextStyle(
               fontSize: 14,
-              color: isTotal ? _secondaryColor : _textPrimary,
+              color: isTotal ? secondaryColor : textPrimary,
               fontWeight: isTotal ? FontWeight.w700 : FontWeight.normal,
             ),
           ),
@@ -1121,7 +1126,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
-        color: _cardColor,
+        color: cardColor,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -1135,14 +1140,14 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
           width: double.infinity,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: _isCancelling ? _warningColor : _primaryColor,
+              backgroundColor: _isCancelling ? warningColor : maincolor1,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 18),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
               elevation: 4,
-              shadowColor: _primaryColor.withOpacity(0.3),
+              shadowColor: maincolor1.withOpacity(0.3),
             ),
             onPressed: _isCancelling
                 ? null
@@ -1244,7 +1249,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: _cardColor,
+      backgroundColor: cardColor,
       isDismissible: false,
       enableDrag: false,
       shape: const RoundedRectangleBorder(
@@ -1289,7 +1294,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                           onPressed: isModalLoading
                               ? null
                               : () => Navigator.of(context).pop(),
-                          icon: Icon(Icons.close, color: _textSecondary),
+                          icon: Icon(Icons.close, color: textSecondary),
                         ),
                       ],
                     ),
@@ -1389,7 +1394,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                                           );
                                         },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: _errorColor,
+                                    backgroundColor: errorColor,
                                     foregroundColor: Colors.white,
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 16,
@@ -1466,10 +1471,13 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
           final cancelledBookingId = data['bookingId'] ?? bookingId;
 
           // Calculate rounded commission-inclusive refund amount
-          final double baseRefundedAmount = double.parse(refundedAmount.toString());
-          final double totalRefundedAmount = (await commissionProvider
-                  .calculateAmountWithCommission(baseRefundedAmount))
-              .roundToDouble();
+          final double baseRefundedAmount = double.parse(
+            refundedAmount.toString(),
+          );
+          final double totalRefundedAmount =
+              (await commissionProvider.calculateAmountWithCommission(
+                baseRefundedAmount,
+              )).roundToDouble();
 
           await _callCabStatusApi(
             bookingId: widget.tableID,
@@ -1483,7 +1491,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
           await showModalBottomSheet(
             context: context,
             isScrollControlled: true,
-            backgroundColor: _cardColor,
+            backgroundColor: cardColor,
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
             ),
@@ -1506,14 +1514,14 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      Icon(Icons.check_circle, color: _successColor, size: 60),
+                      Icon(Icons.check_circle, color: successColor, size: 60),
                       const SizedBox(height: 12),
                       Text(
                         'Cancellation Successful',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: _primaryColor,
+                          color: maincolor1,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -1545,15 +1553,15 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: _warningColor.withOpacity(0.1),
+                          color: warningColor.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: _warningColor.withOpacity(0.3),
+                            color: warningColor.withOpacity(0.3),
                           ),
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.info_outline, color: _warningColor),
+                            Icon(Icons.info_outline, color: warningColor),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
@@ -1582,7 +1590,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: _primaryColor,
+                          backgroundColor: maincolor1,
                           foregroundColor: Colors.white,
                           minimumSize: const Size.fromHeight(48),
                           shape: RoundedRectangleBorder(
@@ -1709,7 +1717,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
 
   Widget _buildCancellationInfoItem(String title, String value, IconData icon) {
     return ListTile(
-      leading: Icon(icon, color: _textSecondary),
+      leading: Icon(icon, color: textSecondary),
       title: Text(title),
       subtitle: Text(value),
     );
@@ -1762,7 +1770,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        backgroundColor: _errorColor,
+        backgroundColor: errorColor,
         content: Row(
           children: [
             Icon(Icons.error, color: Colors.white),
@@ -1789,7 +1797,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.error_outline, size: 64, color: _errorColor),
+          Icon(Icons.error_outline, size: 64, color: errorColor),
           const SizedBox(height: 16),
           Text(
             message,
@@ -1804,7 +1812,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: _primaryColor,
+              backgroundColor: maincolor1,
               foregroundColor: Colors.white,
             ),
             child: const Text('Retry'),

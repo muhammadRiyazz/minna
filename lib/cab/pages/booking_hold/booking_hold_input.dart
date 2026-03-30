@@ -47,17 +47,7 @@ class _BookingPageState extends State<BookingPage> {
 
   // Color Theme
   // Color Theme
-  final Color _primaryColor = maincolor1;
-  final Color _secondaryColor = secondaryColor;
-  final Color _accentColor = accentColor;
-  final Color _backgroundColor = backgroundColor;
-  final Color _cardColor = cardColor;
-  final Color _textPrimary = textPrimary;
-  final Color _textSecondary = textSecondary;
-  final Color _textLight = textLight;
-  final Color _borderColor = borderSoft;
-  final Color _errorColor = errorColor;
-  final Color _successColor = const Color(0xFF0D9488);
+  // Theme standardizing: Use global constants directly from const.dart
 
   @override
   void initState() {
@@ -200,7 +190,7 @@ class _BookingPageState extends State<BookingPage> {
   }
 
   void _showCustomSnackbar(String message, {bool isError = false}) {
-    final color = isError ? _errorColor : _successColor;
+    final color = isError ? errorColor : successColor;
     final icon = isError
         ? Icons.error_outline_rounded
         : Icons.check_circle_rounded;
@@ -237,7 +227,7 @@ class _BookingPageState extends State<BookingPage> {
     final cab = widget.selectedCab;
 
     return Scaffold(
-      backgroundColor: _backgroundColor,
+      backgroundColor: backgroundColor,
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
@@ -246,7 +236,7 @@ class _BookingPageState extends State<BookingPage> {
             expandedHeight: 120.0,
             floating: false,
             pinned: true,
-            backgroundColor: _primaryColor,
+            backgroundColor: maincolor1,
             elevation: 0,
             leading: IconButton(
               icon: const Icon(
@@ -272,7 +262,7 @@ class _BookingPageState extends State<BookingPage> {
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [_primaryColor, _primaryColor.withOpacity(0.8)],
+                    colors: [maincolor1, maincolor1.withOpacity(0.8)],
                   ),
                 ),
               ),
@@ -316,11 +306,11 @@ class _BookingPageState extends State<BookingPage> {
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: _primaryColor.withOpacity(0.08),
+            color: maincolor1.withOpacity(0.08),
             blurRadius: 30,
             offset: const Offset(0, 12),
           ),
@@ -330,7 +320,7 @@ class _BookingPageState extends State<BookingPage> {
             offset: const Offset(0, 2),
           ),
         ],
-        border: Border.all(color: _primaryColor.withOpacity(0.05)),
+        border: Border.all(color: maincolor1.withOpacity(0.05)),
       ),
       child: Row(
         children: [
@@ -338,9 +328,9 @@ class _BookingPageState extends State<BookingPage> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: _backgroundColor,
+              color: backgroundColor,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: _primaryColor.withOpacity(0.03)),
+              border: Border.all(color: maincolor1.withOpacity(0.03)),
             ),
             height: 85,
             width: 100,
@@ -353,14 +343,14 @@ class _BookingPageState extends State<BookingPage> {
                       errorBuilder: (context, error, stackTrace) => Icon(
                         Icons.directions_car_rounded,
                         size: 36,
-                        color: _secondaryColor.withOpacity(0.5),
+                        color: secondaryColor.withOpacity(0.5),
                       ),
                     ),
                   )
                 : Icon(
                     Icons.directions_car_rounded,
                     size: 36,
-                    color: _secondaryColor.withOpacity(0.5),
+                    color: secondaryColor.withOpacity(0.5),
                   ),
           ),
           const SizedBox(width: 20),
@@ -376,7 +366,7 @@ class _BookingPageState extends State<BookingPage> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: _secondaryColor.withOpacity(0.12),
+                    color: secondaryColor.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
@@ -384,7 +374,7 @@ class _BookingPageState extends State<BookingPage> {
                     style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.w900,
-                      color: _secondaryColor,
+                      color: secondaryColor,
                       letterSpacing: 1,
                     ),
                   ),
@@ -395,7 +385,7 @@ class _BookingPageState extends State<BookingPage> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
-                    color: _primaryColor,
+                    color: maincolor1,
                     letterSpacing: -0.5,
                   ),
                 ),
@@ -422,13 +412,13 @@ class _BookingPageState extends State<BookingPage> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 14, color: _textSecondary),
+        Icon(icon, size: 14, color: textSecondary),
         const SizedBox(width: 4),
         Text(
           label,
           style: TextStyle(
             fontSize: 11,
-            color: _textSecondary,
+            color: textSecondary,
             fontWeight: FontWeight.w800,
           ),
         ),
@@ -444,7 +434,7 @@ class _BookingPageState extends State<BookingPage> {
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w800,
-            color: _textLight,
+            color: textLight,
             letterSpacing: 1,
           ),
         ),
@@ -454,7 +444,7 @@ class _BookingPageState extends State<BookingPage> {
             "(OPTIONAL)",
             style: TextStyle(
               fontSize: 10,
-              color: _textLight.withOpacity(0.6),
+              color: textLight.withOpacity(0.6),
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -467,7 +457,7 @@ class _BookingPageState extends State<BookingPage> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
@@ -476,7 +466,7 @@ class _BookingPageState extends State<BookingPage> {
             offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(color: _primaryColor.withOpacity(0.04)),
+        border: Border.all(color: maincolor1.withOpacity(0.04)),
       ),
       child: Form(
         key: _formKey,
@@ -487,7 +477,7 @@ class _BookingPageState extends State<BookingPage> {
             Text(
               'Full Name',
               style: TextStyle(
-                color: _textSecondary,
+                color: textSecondary,
                 fontWeight: FontWeight.w500,
                 fontSize: 10,
               ),
@@ -520,7 +510,7 @@ class _BookingPageState extends State<BookingPage> {
             Text(
               'Contact Information',
               style: TextStyle(
-                color: _textSecondary,
+                color: textSecondary,
                 fontWeight: FontWeight.w500,
                 fontSize: 10,
               ),
@@ -583,7 +573,7 @@ class _BookingPageState extends State<BookingPage> {
   Widget _buildCountryCodeField(String code) {
     return Container(
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: borderSoft, width: 1.5),
       ),
@@ -595,7 +585,7 @@ class _BookingPageState extends State<BookingPage> {
           labelText: "CODE",
           labelStyle: TextStyle(
             fontSize: 9,
-            color: _textSecondary,
+            color: textSecondary,
             fontWeight: FontWeight.w500,
           ),
           border: InputBorder.none,
@@ -604,7 +594,7 @@ class _BookingPageState extends State<BookingPage> {
         ),
         style: TextStyle(
           fontSize: 14,
-          color: _textPrimary,
+          color: textPrimary,
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -615,7 +605,7 @@ class _BookingPageState extends State<BookingPage> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
@@ -624,7 +614,7 @@ class _BookingPageState extends State<BookingPage> {
             offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(color: _primaryColor.withOpacity(0.03)),
+        border: Border.all(color: maincolor1.withOpacity(0.03)),
       ),
       child: Column(
         children: [
@@ -640,7 +630,7 @@ class _BookingPageState extends State<BookingPage> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: _backgroundColor,
+              color: backgroundColor,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Column(
@@ -711,7 +701,7 @@ class _BookingPageState extends State<BookingPage> {
   }) {
     return Row(
       children: [
-        Icon(icon, size: 20, color: _secondaryColor),
+        Icon(icon, size: 20, color: secondaryColor),
         const SizedBox(width: 12),
         Expanded(
           child: Text(
@@ -719,7 +709,7 @@ class _BookingPageState extends State<BookingPage> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: _textPrimary,
+              color: textPrimary,
             ),
           ),
         ),
@@ -737,7 +727,7 @@ class _BookingPageState extends State<BookingPage> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w900,
-                  color: _primaryColor,
+                  color: maincolor1,
                 ),
               ),
             ),
@@ -754,10 +744,10 @@ class _BookingPageState extends State<BookingPage> {
       child: Container(
         padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
-          color: _primaryColor.withOpacity(0.08),
+          color: maincolor1.withOpacity(0.08),
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(icon, size: 20, color: _primaryColor),
+        child: Icon(icon, size: 20, color: maincolor1),
       ),
     );
   }
@@ -772,15 +762,15 @@ class _BookingPageState extends State<BookingPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: value ? _primaryColor : _backgroundColor,
+          color: value ? maincolor1 : backgroundColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: value ? _primaryColor : _primaryColor.withOpacity(0.1),
+            color: value ? maincolor1 : maincolor1.withOpacity(0.1),
           ),
           boxShadow: value
               ? [
                   BoxShadow(
-                    color: _primaryColor.withOpacity(0.2),
+                    color: maincolor1.withOpacity(0.2),
                     blurRadius: 8,
                   ),
                 ]
@@ -791,7 +781,7 @@ class _BookingPageState extends State<BookingPage> {
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w800,
-            color: value ? Colors.white : _textPrimary,
+            color: value ? Colors.white : textPrimary,
           ),
         ),
       ),
@@ -847,7 +837,7 @@ class _BookingPageState extends State<BookingPage> {
                 gradient: LinearGradient(
                   colors: isLoading
                       ? [Colors.grey.shade400, Colors.grey.shade600]
-                      : [_primaryColor, const Color(0xFF004D9D)],
+                      : [maincolor1, const Color(0xFF004D9D)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -856,7 +846,7 @@ class _BookingPageState extends State<BookingPage> {
                     ? null
                     : [
                         BoxShadow(
-                          color: _primaryColor.withOpacity(0.35),
+                          color: maincolor1.withOpacity(0.35),
                           blurRadius: 15,
                           offset: const Offset(0, 8),
                         ),
@@ -916,52 +906,52 @@ class _BookingPageState extends State<BookingPage> {
         labelText: label,
         labelStyle: TextStyle(
           fontSize: 10,
-          color: _textSecondary,
+          color: textSecondary,
           fontWeight: FontWeight.w500,
         ),
         floatingLabelStyle: TextStyle(
-          color: _secondaryColor,
+          color: secondaryColor,
           fontWeight: FontWeight.bold,
         ),
         filled: true,
-        fillColor: _cardColor,
+        fillColor: cardColor,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 15,
           vertical: 15,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: _borderColor, width: 1.5),
+          borderSide: BorderSide(color: borderSoft, width: 1.5),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: _borderColor, width: 1.5),
+          borderSide: BorderSide(color: borderSoft, width: 1.5),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: _secondaryColor, width: 1),
+          borderSide: BorderSide(color: secondaryColor, width: 1),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(
-            color: _errorColor.withOpacity(0.5),
+            color: errorColor.withOpacity(0.5),
             width: 1.5,
           ),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: _errorColor, width: 2),
+          borderSide: BorderSide(color: errorColor, width: 2),
         ),
         prefixIcon: Container(
           padding: const EdgeInsets.all(10),
           margin: const EdgeInsets.only(right: 5),
-          child: Icon(prefixIcon, color: _primaryColor, size: 16),
+          child: Icon(prefixIcon, color: maincolor1, size: 16),
         ),
         isDense: true,
       ),
       style: TextStyle(
         fontSize: 12,
-        color: _textPrimary,
+        color: textPrimary,
         fontWeight: FontWeight.bold,
       ),
       keyboardType: keyboardType,
@@ -979,13 +969,13 @@ class _BookingPageState extends State<BookingPage> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 16, color: _textLight),
+        Icon(icon, size: 16, color: textLight),
         const SizedBox(width: 6),
         Text(
           text,
           style: TextStyle(
             fontSize: 13,
-            color: textColor ?? _textSecondary,
+            color: textColor ?? textSecondary,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -1004,24 +994,24 @@ class _BookingPageState extends State<BookingPage> {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: _secondaryColor.withOpacity(0.1),
+          color: secondaryColor.withOpacity(0.1),
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(icon, color: _secondaryColor, size: 20),
+        child: Icon(icon, color: secondaryColor, size: 20),
       ),
       title: Text(
         title,
         style: TextStyle(
           fontSize: 15,
-          color: _textPrimary,
+          color: textPrimary,
           fontWeight: FontWeight.w500,
         ),
       ),
       trailing: Switch(
         value: value,
         onChanged: onChanged,
-        activeThumbColor: _secondaryColor,
-        activeTrackColor: _secondaryColor.withOpacity(0.5),
+        activeThumbColor: secondaryColor,
+        activeTrackColor: secondaryColor.withOpacity(0.5),
       ),
     );
   }

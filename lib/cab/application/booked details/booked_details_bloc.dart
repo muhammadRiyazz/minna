@@ -29,15 +29,12 @@ class BookedDetailsBloc extends Bloc<BookedDetailsEvent, BookedDetailsState> {
     final headers = {'Content-Type': 'text/plain', 'Authorization': cabauth};
     final body = json.encode({'bookingId': event.bookingId});
 
-
-
-
     try {
       // 🔹 Log request details
-      log(  '➡️ API REQUEST');
-      log(  'URL: $url');
-      log(  'Headers: ${jsonEncode(headers)}');
-      log(  'Body: $body');
+      log('➡️ API REQUEST');
+      log('URL: $url');
+      log('Headers: ${jsonEncode(headers)}');
+      log('Body: $body');
 
       final response = await http.post(url, headers: headers, body: body);
 

@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:minna/cab/application/fetch%20cab/fetch_cabs_state.dart';
 import 'package:minna/cab/domain/cab%20list%20model/cab_list_data.dart';
 import 'package:minna/comman/core/api.dart';
-      part 'fetch_cabs_bloc.freezed.dart';                                                                     
+part 'fetch_cabs_bloc.freezed.dart';
 part 'fetch_cabs_event.dart';
 
 class FetchCabsBloc extends Bloc<FetchCabsEvent, FetchCabsState> {
@@ -18,7 +18,9 @@ class FetchCabsBloc extends Bloc<FetchCabsEvent, FetchCabsState> {
 
       try {
         final response = await http.post(
-          Uri.parse('http://gozotech2.ddns.net:5192/api/cpapi/booking/getQuote'),
+          Uri.parse(
+            'http://gozotech2.ddns.net:5192/api/cpapi/booking/getQuote',
+          ),
           headers: {
             'Authorization': cabauth,
             'Content-Type': 'application/json',
@@ -32,12 +34,15 @@ class FetchCabsBloc extends Bloc<FetchCabsEvent, FetchCabsState> {
 
         if (jsonData['success'] == true) {
           final cabResponse = CabResponse.fromJson(jsonData);
-          emit(FetchCabsSuccess(
-            data: cabResponse,
-            requestData: event.requestData, // store requestData
-          ));
+          emit(
+            FetchCabsSuccess(
+              data: cabResponse,
+              requestData: event.requestData, // store requestData
+            ),
+          );
         } else {
-          final errors = (jsonData['errors'] as List<dynamic>?)
+          final errors =
+              (jsonData['errors'] as List<dynamic>?)
                   ?.map((e) => e.toString())
                   .join(', ') ??
               'Unknown error';
@@ -52,18 +57,12 @@ class FetchCabsBloc extends Bloc<FetchCabsEvent, FetchCabsState> {
     // Cab Selected Event
     on<_CabSelected>((event, emit) {
       if (state is FetchCabsSuccess) {
-
-
         log('FetchCabsSuccess --');
         final currentState = state as FetchCabsSuccess;
-        emit(
-          currentState.copyWith(selectedCab: event.selectedCabData),
-        );
-      }else{
-                      log(' not.  ---FetchCabsSuccess --');
-
+        emit(currentState.copyWith(selectedCab: event.selectedCabData));
+      } else {
+        log(' not.  ---FetchCabsSuccess --');
       }
-
     });
   }
 }

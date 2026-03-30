@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:minna/bus/domain/BlockTicket/block_ticket_request_modal.dart';
-import 'package:minna/bus/domain/trips list modal/trip_list_modal.dart';
-import 'package:minna/bus/pages/screen seats page/screen_seats_page.dart';
+import 'package:minna/bus/domain/trips%20list%20modal/trip_list_modal.dart';
+import 'package:minna/bus/pages/screen%20seats%20page/screen_seats_page.dart';
+import 'package:minna/comman/const/const.dart';
 
 class TripCountainer extends StatelessWidget {
    TripCountainer({
@@ -19,15 +20,7 @@ class TripCountainer extends StatelessWidget {
   final String arrivalTime;
   final int index;
 
-  // Color Theme
-  final Color _primaryColor = Colors.black;
-  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
-  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
-  final Color _backgroundColor = Color(0xFFF8F9FA);
-  final Color _cardColor = Colors.white;
-  final Color _textPrimary = Colors.black;
-  final Color _textSecondary = Color(0xFF666666);
-  final Color _textLight = Color(0xFF999999);
+  // Theme standardizing: Use global constants directly from const.dart
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +34,7 @@ class TripCountainer extends StatelessWidget {
     return Container(
       margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -64,12 +57,12 @@ class TripCountainer extends StatelessWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: _secondaryColor.withOpacity(0.1),
+                    color: secondaryColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     Icons.directions_bus_rounded,
-                    color: _secondaryColor,
+                    color: secondaryColor,
                     size: 24,
                   ),
                 ),
@@ -83,7 +76,7 @@ class TripCountainer extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
-                          color: _textPrimary,
+                          color: textPrimary,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -92,7 +85,7 @@ class TripCountainer extends StatelessWidget {
                         trip.busType.isNotEmpty ? trip.busType : 'A/C Sleeper',
                         style: TextStyle(
                           fontSize: 12,
-                          color: _textSecondary,
+                          color: textSecondary,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -102,7 +95,7 @@ class TripCountainer extends StatelessWidget {
                       //     children: [
                       //       Icon(
                       //         Icons.star_rounded,
-                      //         color: _secondaryColor,
+                      //         color: secondaryColor,
                       //         size: 14,
                       //       ),
                       //       SizedBox(width: 4),
@@ -110,7 +103,7 @@ class TripCountainer extends StatelessWidget {
                       //         trip.rating,
                       //         style: TextStyle(
                       //           fontSize: 12,
-                      //           color: _textSecondary,
+                      //           color: textSecondary,
                       //           fontWeight: FontWeight.w500,
                       //         ),
                       //       ),
@@ -126,7 +119,7 @@ class TripCountainer extends StatelessWidget {
                       'Starts from',
                       style: TextStyle(
                         fontSize: 10,
-                        color: _textLight,
+                        color: textLight,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -136,7 +129,7 @@ class TripCountainer extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: _secondaryColor,
+                        color: secondaryColor,
                       ),
                     ),
                   ],
@@ -149,7 +142,7 @@ class TripCountainer extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: _backgroundColor,
+                color: backgroundColor,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -166,7 +159,7 @@ class TripCountainer extends StatelessWidget {
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: _secondaryColor.withOpacity(0.1),
+                            color: secondaryColor.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -175,7 +168,7 @@ class TripCountainer extends StatelessWidget {
                                 : '0h 0m',
                             style: TextStyle(
                               fontSize: 11,
-                              color: _secondaryColor,
+                              color: secondaryColor,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -186,22 +179,22 @@ class TripCountainer extends StatelessWidget {
                           children: [
                             Container(
                               height: 1,
-                              color: _textLight.withOpacity(0.3),
+                              color: textLight.withOpacity(0.3),
                               width: double.infinity,
                             ),
                             Container(
                               padding: EdgeInsets.all(4),
                               decoration: BoxDecoration(
-                                color: _cardColor,
+                                color: cardColor,
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: _textLight.withOpacity(0.3),
+                                  color: textLight.withOpacity(0.3),
                                 ),
                               ),
                               child: Icon(
                                 Icons.arrow_forward_rounded,
                                 size: 12,
-                                color: _textLight,
+                                color: textLight,
                               ),
                             ),
                           ],
@@ -283,7 +276,7 @@ class TripCountainer extends StatelessWidget {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _primaryColor,
+                    backgroundColor: maincolor1,
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     shape: RoundedRectangleBorder(
@@ -326,7 +319,7 @@ class TripCountainer extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 10,
-            color: _textLight,
+            color: textLight,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -336,7 +329,7 @@ class TripCountainer extends StatelessWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
-            color: _textPrimary,
+            color: textPrimary,
           ),
         ),
       ],
