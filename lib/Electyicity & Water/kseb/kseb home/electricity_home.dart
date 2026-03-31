@@ -44,7 +44,7 @@ class _ElectricityBillInputPageState extends State<ElectricityBillInputPage> {
         children: [
           // 1. Immersive Header Background
           Container(
-            height: 230,
+            height: 250,
             width: double.infinity,
             color: maincolor1,
             child: Stack(
@@ -85,7 +85,7 @@ class _ElectricityBillInputPageState extends State<ElectricityBillInputPage> {
                           'Pay Your\nPower Bills',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 32,
+                            fontSize: 26,
                             fontWeight: FontWeight.w900,
                             height: 1.1,
                             letterSpacing: -1,
@@ -105,7 +105,7 @@ class _ElectricityBillInputPageState extends State<ElectricityBillInputPage> {
               builder: (context, state) {
                 return Column(
                   children: [
-                    const SizedBox(height: 195),
+                    const SizedBox(height: 215),
                     Container(
                       width: double.infinity,
                       decoration: BoxDecoration(

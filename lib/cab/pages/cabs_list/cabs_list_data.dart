@@ -264,7 +264,9 @@ class _CabsListPageState extends State<CabsListPage> {
             ),
             const SizedBox(height: 24),
             Text(
-              "Search Interrupted",
+              message.toLowerCase().contains('no cabs')
+                  ? "No Cabs Found"
+                  : "Search Interrupted",
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w900,
@@ -608,10 +610,7 @@ class _CabsListPageState extends State<CabsListPage> {
                             ),
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
-                                colors: [
-                                  maincolor1,
-                                  const Color(0xFF004D9D),
-                                ],
+                                colors: [maincolor1, const Color(0xFF004D9D)],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),

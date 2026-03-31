@@ -42,7 +42,7 @@ class _WaterBillInputPageState extends State<WaterBillInputPage> {
         children: [
           // 1. Immersive Header Background
           Container(
-            height: 230,
+            height: 250,
             width: double.infinity,
             color: maincolor1,
             child: Stack(
@@ -80,7 +80,7 @@ class _WaterBillInputPageState extends State<WaterBillInputPage> {
                           'Pay Your\nWater Bills',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 32,
+                            fontSize: 26,
                             fontWeight: FontWeight.w900,
                             height: 1.1,
                             letterSpacing: -1,
@@ -100,7 +100,7 @@ class _WaterBillInputPageState extends State<WaterBillInputPage> {
               builder: (context, state) {
                 return Column(
                   children: [
-                    const SizedBox(height: 195),
+                    const SizedBox(height: 215),
                     Container(
                       width: double.infinity,
                       decoration: BoxDecoration(

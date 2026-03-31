@@ -22,20 +22,21 @@ class HoldCabBloc extends Bloc<HoldCabEvent, HoldCabState> {
         SharedPreferences preferences = await SharedPreferences.getInstance();
         final userId = preferences.getString('userId') ?? '';
 
-        /// Step 1: Call HOLD API
+        /// Step 1: Call HOLD API via Proxy
         final response = await http.post(
-          Uri.parse('http://gozotech2.ddns.net:5192/api/cpapi/booking/hold'),
-          headers: {
-            'Authorization': cabauth,
-            'Content-Type': 'application/json',
+          Uri.parse('${baseUrl}Cabapi'),
+          body: {
+            "link": "http://gozotech2.ddns.net:5192/api/cpapi/booking/hold",
+            "data": jsonEncode(event.requestData)
           },
-          body: jsonEncode(event.requestData),
         );
 
         log("Hold API Response: ${response.body}");
 
         final Map<String, dynamic> jsonData = jsonDecode(response.body);
-        final holdResponse = BookingResponse.fromJson(jsonData);
+        final Map<String, dynamic> actualData = jsonData['message'] ?? jsonData;
+
+        final holdResponse = BookingResponse.fromJson(actualData);
 
         if (holdResponse.success) {
           /// Step 2: Save Hold Data to backend

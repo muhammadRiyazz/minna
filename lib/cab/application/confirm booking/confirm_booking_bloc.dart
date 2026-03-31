@@ -82,22 +82,23 @@ class ConfirmBookingBloc
           return;
         }
 
-        log('🔹 Calling confirm booking API...');
+        log('🔹 Calling confirm booking API via Proxy...');
         final response = await http.post(
-          Uri.parse('http://gozotech2.ddns.net:5192/api/cpapi/booking/confirm'),
-          headers: {
-            'Authorization': cabauth,
-            'Content-Type': 'application/json',
+          Uri.parse('${baseUrl}Cabapi'),
+          body: {
+            "link": "http://gozotech2.ddns.net:5192/api/cpapi/booking/confirm",
+            "data": jsonEncode({"bookingId": event.bookingid}),
           },
-          body: jsonEncode({"bookingId": event.bookingid}),
         );
 
         log("📩 confirm API Response code: ${response.statusCode}");
         log("📩 confirm API Response body: ${response.body}");
 
         final Map<String, dynamic> jsonData = jsonDecode(response.body);
+        final Map<String, dynamic> actualData = jsonData['message'] ?? jsonData;
+
         final confirmBookingResponse = BookingConfirmResponse.fromJson(
-          jsonData,
+          actualData,
         );
         log(
           "✅ confirmBookingResponse.success = ${confirmBookingResponse.success}",

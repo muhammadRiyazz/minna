@@ -55,7 +55,7 @@ class _ScreenBookingState extends State<ScreenBooking> {
                 top: 0,
                 left: 0,
                 right: 0,
-                height: 230,
+                height: 250,
                 child: Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(

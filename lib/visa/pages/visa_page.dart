@@ -6,6 +6,8 @@ import 'package:minna/comman/application/home_data/home_data_state.dart';
 import 'package:minna/comman/application/home_data/visa_model.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:minna/comman/const/const.dart';
+import 'package:iconsax/iconsax.dart';
 
 class VisaPage extends StatefulWidget {
   const VisaPage({super.key});
@@ -15,15 +17,6 @@ class VisaPage extends StatefulWidget {
 }
 
 class _VisaPageState extends State<VisaPage> {
-  // Theme Colors - Matching home.dart (106-115)
-  final Color _primaryColor = Colors.black;
-  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
-  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
-  final Color _backgroundColor = Color(0xFFF8F9FA);
-  final Color _cardColor = Colors.white;
-  final Color _textPrimary = Colors.black;
-  final Color _textSecondary = Color(0xFF666666);
-
   final TextEditingController _searchController = TextEditingController();
   final String _supportPhoneNumber =
       '+919876543210'; // Replace with actual support number
@@ -35,7 +28,6 @@ class _VisaPageState extends State<VisaPage> {
   void initState() {
     super.initState();
     _searchController.addListener(_onSearchChanged);
-    // Explicitly fetch if not already loaded, though it's likely loaded by main home
     context.read<HomeDataBloc>().add(const FetchVisaCountries());
   }
 
@@ -66,9 +58,9 @@ class _VisaPageState extends State<VisaPage> {
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
               content: Text('Could not make phone call'),
-              backgroundColor: Colors.red,
+              backgroundColor: errorColor,
             ),
           );
         }
@@ -76,7 +68,7 @@ class _VisaPageState extends State<VisaPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Error: $e'), backgroundColor: errorColor),
         );
       }
     }
@@ -85,249 +77,347 @@ class _VisaPageState extends State<VisaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _backgroundColor,
-      appBar: AppBar(
-        backgroundColor: _primaryColor,
-        elevation: 0,
-        iconTheme: IconThemeData(color: Colors.white),
-        title: Text(
-          'Apply for Visa Online',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: false,
-      ),
-      body: Column(
-        children: [
-          // Search Bar
-          Padding(
-            padding: EdgeInsets.all(16),
-            child: Container(
-              decoration: BoxDecoration(
-                color: _cardColor,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: Offset(0, 2),
+      backgroundColor: backgroundColor,
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          // Premium Sliver App Bar
+          SliverAppBar(
+            expandedHeight: 150.0,
+            floating: false,
+            pinned: true,
+            backgroundColor: maincolor1,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(
+                Iconsax.arrow_left_2,
+                color: Colors.white,
+                size: 22,
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: true,
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.network(
+                    'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&q=80&w=1000',
+                    fit: BoxFit.cover,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          maincolor1.withOpacity(0.2),
+                          maincolor1.withOpacity(0.4),
+                          maincolor1,
+                        ],
+                        stops: const [0.0, 0.5, 1.0],
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 70,
+                    left: 20,
+                    right: 20,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          "GLOBAL ACCESS",
+                          style: TextStyle(
+                            color: secondaryColor,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 2,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Apply for Visa Online",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.w900,
+                            shadows: [
+                              Shadow(
+                                color: Colors.black.withOpacity(0.3),
+                                offset: const Offset(0, 2),
+                                blurRadius: 4,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
-              child: TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: 'Where are you going?',
-                  hintStyle: TextStyle(color: _textSecondary),
-                  prefixIcon: Icon(Icons.search, color: _textSecondary),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 10,
+            ),
+          ),
+
+          // // Floating Search Bar Section
+          // SliverToBoxAdapter(
+          //   child: Transform.translate(
+          //     offset: const Offset(0, -0),
+          //     child: Padding(
+          //       padding: const EdgeInsets.symmetric(horizontal: 20),
+          //       child: Container(
+          //         decoration: BoxDecoration(
+          //           color: cardColor,
+          //           borderRadius: BorderRadius.circular(24),
+          //           boxShadow: [
+          //             BoxShadow(
+          //               color: maincolor1.withOpacity(0.12),
+          //               blurRadius: 30,
+          //               offset: const Offset(0, 15),
+          //             ),
+          //           ],
+          //           border: Border.all(
+          //             color: Colors.grey.withOpacity(0.05),
+          //             width: 1.5,
+          //           ),
+          //         ),
+          //         child: TextField(
+          //           controller: _searchController,
+          //           style: const TextStyle(
+          //             color: textPrimary,
+          //             fontWeight: FontWeight.w700,
+          //             fontSize: 16,
+          //           ),
+          //           decoration: InputDecoration(
+          //             hintText: 'Where are you going?',
+          //             hintStyle: TextStyle(
+          //               color: textLight.withOpacity(0.6),
+          //               fontWeight: FontWeight.w500,
+          //             ),
+          //             prefixIcon: const Icon(
+          //               Iconsax.search_normal_1,
+          //               color: secondaryColor,
+          //               size: 20,
+          //             ),
+          //             border: InputBorder.none,
+          //             contentPadding: const EdgeInsets.symmetric(
+          //               horizontal: 16,
+          //               vertical: 18,
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
+          // Trust Highlights Section
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                children: [
+                  SizedBox(height: 20),
+                  SizedBox(height: 20),
+
+                  Row(
+                    children: [
+                      _buildFeatureChip(Iconsax.verify, "99.3% Approval Rate"),
+                      const SizedBox(width: 12),
+                      _buildFeatureChip(Iconsax.headphone, "24x7 Assistance"),
+                    ],
                   ),
-                ),
+                ],
               ),
             ),
           ),
 
-          // Service Highlights
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 6, horizontal: 6),
-                    decoration: BoxDecoration(
-                      color: _secondaryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.check_circle,
-                          color: _secondaryColor,
-                          size: 18,
+          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+
+          // Visas Available Header
+          SliverToBoxAdapter(
+            child: BlocBuilder<HomeDataBloc, HomeDataState>(
+              builder: (context, state) {
+                if (state.visaCountries != null &&
+                    _searchController.text.isEmpty) {
+                  _allVisas = state.visaCountries!;
+                  _filteredVisas = List.from(_allVisas);
+                }
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'AVAILABLE VISAS',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          color: textLight,
+                          letterSpacing: 1,
                         ),
-                        SizedBox(width: 8),
-                        Flexible(
-                          child: Text(
-                            '99.3% Approval Rate',
-                            style: TextStyle(
-                              color: _textPrimary,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                      ),
+                      Text(
+                        '${_filteredVisas.length} countries',
+                        style: const TextStyle(
+                          color: secondaryColor,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ),
-                SizedBox(width: 10),
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 6, horizontal: 6),
-                    decoration: BoxDecoration(
-                      color: _secondaryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.check_circle,
-                          color: _secondaryColor,
-                          size: 18,
-                        ),
-                        SizedBox(width: 8),
-                        Flexible(
-                          child: Text(
-                            '24x7 Customer Service',
-                            style: TextStyle(
-                              color: _textPrimary,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+                );
+              },
             ),
           ),
 
-          SizedBox(height: 10),
+          const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
-          // Most-visited Countries Title
+          // Countries List
           BlocBuilder<HomeDataBloc, HomeDataState>(
             builder: (context, state) {
               if (state.isVisaLoading) {
-                return _buildShimmerTitle();
+                return SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) => _buildShimmerCard(),
+                      childCount: 3,
+                    ),
+                  ),
+                );
               }
 
-              // Only update source if we have new data and aren't searching
-              if (state.visaCountries != null &&
-                  _searchController.text.isEmpty) {
-                _allVisas = state.visaCountries!;
-                _filteredVisas = List.from(_allVisas);
+              if (_filteredVisas.isEmpty) {
+                return SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: secondaryColor.withOpacity(0.08),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Iconsax.search_status,
+                            size: 56,
+                            color: secondaryColor,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        const Text(
+                          'No visas found',
+                          style: TextStyle(
+                            color: textSecondary,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
               }
 
-              return Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Visas Available',
-                      style: TextStyle(
-                        color: _textPrimary,
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      '${_filteredVisas.length} countries',
-                      style: TextStyle(color: _textSecondary, fontSize: 14),
-                    ),
-                  ],
+              return SliverPadding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) =>
+                        _buildCountryCard(_filteredVisas[index]),
+                    childCount: _filteredVisas.length,
+                  ),
                 ),
               );
             },
           ),
 
-          SizedBox(height: 10),
-
-          // Countries List
-          Expanded(
-            child: BlocBuilder<HomeDataBloc, HomeDataState>(
-              builder: (context, state) {
-                if (state.isVisaLoading) {
-                  return ListView.builder(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: 5,
-                    itemBuilder: (context, index) {
-                      return _buildShimmerCard();
-                    },
-                  );
-                }
-
-                if (_filteredVisas.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.search_off, size: 60, color: _textSecondary),
-                        SizedBox(height: 16),
-                        Text(
-                          'No visas found',
-                          style: TextStyle(color: _textSecondary, fontSize: 16),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                return ListView.builder(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: _filteredVisas.length,
-                  itemBuilder: (context, index) {
-                    return _buildCountryCard(_filteredVisas[index]);
-                  },
-                );
-              },
-            ),
-          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 40)),
         ],
       ),
     );
   }
 
-  Widget _buildShimmerTitle() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Shimmer.fromColors(
-            baseColor: Colors.grey.shade300,
-            highlightColor: Colors.grey.shade100,
-            child: Container(height: 16, width: 120, color: Colors.white),
-          ),
-          Shimmer.fromColors(
-            baseColor: Colors.grey.shade300,
-            highlightColor: Colors.grey.shade100,
-            child: Container(height: 16, width: 80, color: Colors.white),
-          ),
-        ],
+  Widget _buildFeatureChip(IconData icon, String label) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+        decoration: BoxDecoration(
+          color: secondaryColor.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: secondaryColor.withOpacity(0.15)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: secondaryColor, size: 16),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                label,
+                style: const TextStyle(
+                  color: maincolor1,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0.2,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildShimmerCard() {
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
-      height: 150,
+      margin: const EdgeInsets.only(bottom: 20),
+      height: 180,
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.04), // subtle gray
-        borderRadius: BorderRadius.circular(16),
+        color: cardColor,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: borderSoft),
       ),
       child: Shimmer.fromColors(
-        baseColor: Colors.grey.shade300,
-        highlightColor: Colors.grey.shade100,
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-          ),
+        baseColor: Colors.grey[200]!,
+        highlightColor: Colors.grey[100]!,
+        child: Column(
+          children: [
+            Container(
+              height: 80,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  CircleAvatar(radius: 20, backgroundColor: Colors.white),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Container(height: 12, color: Colors.white),
+                        SizedBox(height: 6),
+                        Container(height: 10, color: Colors.white),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -335,59 +425,79 @@ class _VisaPageState extends State<VisaPage> {
 
   Widget _buildCountryCard(VisaModel visa) {
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: _cardColor,
-        borderRadius: BorderRadius.circular(16),
+        color: cardColor,
+        borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 12,
-            offset: Offset(0, 3),
+            color: maincolor1.withOpacity(0.06),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.01),
+            blurRadius: 1,
+            offset: const Offset(0, 1),
           ),
         ],
+        border: Border.all(color: Colors.grey.withOpacity(0.05)),
       ),
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Country Header
-            Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Country Header Row
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
               children: [
-                // Flag
-                if (visa.flag.isNotEmpty)
-                  Container(
-                    padding: EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: _backgroundColor,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(visa.flag, style: TextStyle(fontSize: 24)),
+                // Flag Container
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: secondaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                if (visa.flag.isNotEmpty) SizedBox(width: 10),
-                // Country Name
+                  child: Text(
+                    visa.flag.isNotEmpty ? visa.flag : '🌐',
+                    style: const TextStyle(fontSize: 24),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                // Titles
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        visa.name,
-                        style: TextStyle(
-                          color: _textPrimary,
+                        visa.name.toUpperCase(),
+                        style: const TextStyle(
+                          color: maincolor1,
                           fontSize: 14,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.5,
                         ),
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Get your visa by ${visa.deliveryDate}',
-                        style: TextStyle(
-                          color: _secondaryColor,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(
+                            Iconsax.calendar_tick,
+                            size: 12,
+                            color: secondaryColor,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Delivery by ${visa.deliveryDate}',
+                            style: const TextStyle(
+                              color: textSecondary,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -395,154 +505,173 @@ class _VisaPageState extends State<VisaPage> {
                 // Visa Type Badge
                 if (visa.visaType.isNotEmpty)
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
-                      color: _secondaryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: _secondaryColor.withOpacity(0.3),
-                        width: 1,
-                      ),
+                      color: maincolor1,
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      visa.visaType,
-                      style: TextStyle(
-                        color: _secondaryColor,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
+                      visa.visaType.toUpperCase(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 8,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.5,
                       ),
                     ),
                   ),
               ],
             ),
+          ),
 
-            SizedBox(height: 8),
-
-            // Highlights
-            Wrap(
+          // Info Badges
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Wrap(
               spacing: 8,
-              runSpacing: 6,
+              runSpacing: 8,
               children: [
                 if (visa.highlight.isNotEmpty)
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: _backgroundColor,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.shield, size: 12, color: _secondaryColor),
-                        SizedBox(width: 4),
-                        Text(
-                          visa.highlight,
-                          style: TextStyle(
-                            color: _textPrimary,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  _buildBadge(Iconsax.shield_tick, visa.highlight),
                 if (visa.stats.isNotEmpty)
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: _backgroundColor,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.people, size: 12, color: _secondaryColor),
-                        SizedBox(width: 4),
-                        Text(
-                          visa.stats,
-                          style: TextStyle(
-                            color: _textPrimary,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  _buildBadge(Iconsax.people, visa.stats),
               ],
             ),
+          ),
 
-            SizedBox(height: 12),
+          const SizedBox(height: 20),
 
-            // Pricing and Button Row
-            Row(
+          // Pricing & Action Bar
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: backgroundColor.withOpacity(0.6),
+              borderRadius: const BorderRadius.vertical(
+                bottom: Radius.circular(28),
+              ),
+              border: Border(
+                top: BorderSide(color: maincolor1.withOpacity(0.05)),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Pricing Info
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Total Price',
-                        style: TextStyle(color: _textSecondary, fontSize: 12),
-                      ),
-                      SizedBox(height: 2),
-                      Builder(
-                        builder: (context) {
-                          double basePrice = double.tryParse(visa.price) ?? 0;
-                          double serviceFee =
-                              double.tryParse(visa.serviceFee) ?? 0;
-                          double total = basePrice + serviceFee;
-                          return Text(
-                            '₹ $total',
-                            style: TextStyle(
-                              color: _textPrimary,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          );
-                        },
-                      ),
-                      SizedBox(height: 2),
-                      Text(
-                        'Visa: ₹${visa.price} + Fees: ₹${visa.serviceFee}',
-                        style: TextStyle(color: _textSecondary, fontSize: 10),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Connect Button - Smaller size
-                SizedBox(
-                  width: 140,
-                  child: ElevatedButton.icon(
-                    onPressed: _makePhoneCall,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _primaryColor,
-                      foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 12,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      elevation: 2,
-                    ),
-                    icon: Icon(Icons.phone_rounded, size: 16),
-                    label: Text(
-                      'Connect',
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "TOTAL PRICE",
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 8,
+                        color: textSecondary,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Builder(
+                      builder: (context) {
+                        double total =
+                            (double.tryParse(visa.price) ?? 0) +
+                            (double.tryParse(visa.serviceFee) ?? 0);
+                        return Text(
+                          "₹${total.toStringAsFixed(0)}",
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w900,
+                            color: maincolor1,
+                            letterSpacing: -0.5,
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      "Visa: ₹${visa.price} • Fee: ₹${visa.serviceFee}",
+                      style: const TextStyle(
+                        color: textLight,
+                        fontSize: 9,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
+                  ],
+                ),
+                GestureDetector(
+                  onTap: _makePhoneCall,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 16,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [maincolor1, Color(0xFF004D9D)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(18),
+                      boxShadow: [
+                        BoxShadow(
+                          color: maincolor1.withOpacity(0.3),
+                          blurRadius: 15,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: const [
+                        // Text(
+                        //   "CONNECT",
+                        //   style: TextStyle(
+                        //     color: Colors.white,
+                        //     fontSize: 12,
+                        //     fontWeight: FontWeight.w900,
+                        //     letterSpacing: 1,
+                        //   ),
+                        // ),
+                        // const SizedBox(width: 8),
+                        const Icon(
+                          Iconsax.call_calling,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBadge(IconData icon, String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: secondaryColor.withOpacity(0.06),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: secondaryColor.withOpacity(0.12)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: secondaryColor),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: const TextStyle(
+              color: maincolor1,
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
       ),
     );
   }

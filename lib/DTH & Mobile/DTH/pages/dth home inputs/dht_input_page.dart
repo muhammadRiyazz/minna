@@ -20,8 +20,7 @@ class _DTHInputPageState extends State<DTHInputPage> {
   String? selectedOperator;
 
   // Standardized theme colors
-    // Standardized theme colors
-
+  // Standardized theme colors
 
   @override
   void initState() {
@@ -37,7 +36,7 @@ class _DTHInputPageState extends State<DTHInputPage> {
         children: [
           // 1. Immersive Header Background
           Container(
-            height: 230,
+            height: 250,
             width: double.infinity,
             decoration: BoxDecoration(color: maincolor1),
             child: Stack(
@@ -81,7 +80,7 @@ class _DTHInputPageState extends State<DTHInputPage> {
                           'Entertainment\nRefilled',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 32,
+                            fontSize: 26,
                             fontWeight: FontWeight.w900,
                             height: 1.1,
                             letterSpacing: -1,
@@ -99,7 +98,7 @@ class _DTHInputPageState extends State<DTHInputPage> {
           SingleChildScrollView(
             child: Column(
               children: [
-                const SizedBox(height: 195),
+                const SizedBox(height: 215),
                 Container(
                   width: double.infinity,
                   decoration: BoxDecoration(

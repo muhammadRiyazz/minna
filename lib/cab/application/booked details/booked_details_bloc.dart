@@ -23,29 +23,29 @@ class BookedDetailsBloc extends Bloc<BookedDetailsEvent, BookedDetailsState> {
   ) async {
     emit(const BookedDetailsState.loading());
 
-    final url = Uri.parse(
-      'http://gozotech2.ddns.net:5192/api/cpapi/booking/getDetails',
-    );
-    final headers = {'Content-Type': 'text/plain', 'Authorization': cabauth};
-    final body = json.encode({'bookingId': event.bookingId});
-
     try {
       // 🔹 Log request details
-      log('➡️ API REQUEST');
-      log('URL: $url');
-      log('Headers: ${jsonEncode(headers)}');
-      log('Body: $body');
+      log('➡️ PROXY API REQUEST');
+      log('URL: ${baseUrl}Cabapi');
 
-      final response = await http.post(url, headers: headers, body: body);
+      final response = await http.post(
+        Uri.parse('${baseUrl}Cabapi'),
+        body: {
+          "link": "http://gozotech2.ddns.net:5192/api/cpapi/booking/getDetails",
+          "data": jsonEncode({"bookingId": event.bookingId}),
+        },
+      );
 
       // 🔹 Log response details
-      log('⬅️ API RESPONSE');
+      log('⬅️ PROXY API RESPONSE');
       log('Status Code: ${response.statusCode}');
       log('Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
-        final detailsResponse = BookingDetailsResponse.fromJson(jsonResponse);
+        final actualData = jsonResponse['message'] ?? jsonResponse;
+
+        final detailsResponse = BookingDetailsResponse.fromJson(actualData);
 
         if (detailsResponse.success && detailsResponse.data != null) {
           emit(BookedDetailsState.success(detailsResponse.data!));

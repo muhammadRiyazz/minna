@@ -29,8 +29,6 @@ class BookingDetailsPage extends StatefulWidget {
 
 class _BookingDetailsPageState extends State<BookingDetailsPage> {
   bool _isCancelling = false;
-  final String _baseUrl = 'http://gozotech2.ddns.net:5192/api/cpapi/booking';
-  final String _authorization = cabauth;
   late CommissionProvider commissionProvider;
   BuildContext? _parentContext;
 
@@ -1192,13 +1190,22 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     });
 
     try {
-      final uri = Uri.parse('$_baseUrl/getCancellationList');
+      final mainUri = Uri.parse('${baseUrl}Cabapi');
       final response = await http
-          .post(uri, headers: {'Authorization': _authorization}, body: '')
+          .post(
+            mainUri,
+            body: {
+              "link":
+                  "http://gozotech2.ddns.net:5192/api/cpapi/booking/getCancellationList",
+              "data": "",
+            },
+          )
           .timeout(const Duration(seconds: 20));
 
       if (response.statusCode == 200) {
-        final decoded = jsonDecode(response.body);
+        final fullDecoded = jsonDecode(response.body);
+        final decoded = fullDecoded['message'] ?? fullDecoded;
+
         if (decoded['success'] == true && decoded['data'] != null) {
           final List<dynamic> cancellationList =
               decoded['data']['cancellationList'] ?? [];
@@ -1443,7 +1450,8 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     }
 
     try {
-      final uri = Uri.parse('$_baseUrl/cancelBooking');
+      log('Confirming cancellation via Proxy...');
+      final mainUri = Uri.parse('${baseUrl}Cabapi');
       final bodyMap = {
         "bookingId": bookingId,
         "reason": reasonText,
@@ -1452,17 +1460,19 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
 
       final response = await http
           .post(
-            uri,
-            headers: {
-              'Authorization': _authorization,
-              'Content-Type': 'application/json',
+            mainUri,
+            body: {
+              "link":
+                  "http://gozotech2.ddns.net:5192/api/cpapi/booking/cancelBooking",
+              "data": jsonEncode(bodyMap),
             },
-            body: jsonEncode(bodyMap),
           )
           .timeout(const Duration(seconds: 20));
 
       if (response.statusCode == 200) {
-        final decoded = jsonDecode(response.body);
+        final fullDecoded = jsonDecode(response.body);
+        final decoded = fullDecoded['message'] ?? fullDecoded;
+
         if (decoded['success'] == true && decoded['data'] != null) {
           final data = decoded['data'];
           final refundedAmount = data['refundAmount'] ?? 0;

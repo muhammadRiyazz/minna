@@ -22,7 +22,6 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
   // Use standardized theme colors from const.dart
   // Use standardized theme colors from const.dart
 
-
   Color _getOperatorColor(String operatorName) {
     switch (operatorName.toUpperCase()) {
       case 'AIRTEL':
@@ -87,7 +86,7 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
         children: [
           // 1. Immersive Header Background
           Container(
-            height: 230,
+            height: 250,
             width: double.infinity,
             decoration: BoxDecoration(
               color: maincolor1,
@@ -120,20 +119,25 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                     color: Colors.white.withOpacity(0.04),
                   ),
                 ),
-                
+
                 // Header Content
                 SafeArea(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 10,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 60), // Space for fixed back button
+                        const SizedBox(
+                          height: 60,
+                        ), // Space for fixed back button
                         Text(
                           'Instant\nRecharge',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 32,
+                            fontSize: 26,
                             fontWeight: FontWeight.w900,
                             height: 1.1,
                             letterSpacing: -1,
@@ -151,7 +155,7 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
           SingleChildScrollView(
             child: Column(
               children: [
-                const SizedBox(height: 190),
+                const SizedBox(height: 210),
                 Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
@@ -171,7 +175,11 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                           // Input Section Title
                           Row(
                             children: [
-                              Icon(Iconsax.device_message, color: maincolor1, size: 22),
+                              Icon(
+                                Iconsax.device_message,
+                                color: maincolor1,
+                                size: 22,
+                              ),
                               const SizedBox(width: 12),
                               Text(
                                 'Recharge Details',
@@ -200,7 +208,11 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                             controller: phoneController,
                             keyboardType: TextInputType.phone,
                             maxLength: 10,
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: textPrimary),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: textPrimary,
+                            ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Required';
@@ -211,11 +223,17 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                             },
                             decoration: InputDecoration(
                               prefixIcon: Container(
-                                padding: const EdgeInsets.only(left: 16, right: 12),
+                                padding: const EdgeInsets.only(
+                                  left: 16,
+                                  right: 12,
+                                ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(Iconsax.mobile_programming, size: 20),
+                                    const Icon(
+                                      Iconsax.mobile_programming,
+                                      size: 20,
+                                    ),
                                     const SizedBox(width: 8),
                                     Text(
                                       '+91',
@@ -226,13 +244,20 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                                       ),
                                     ),
                                     const SizedBox(width: 8),
-                                    Container(width: 1, height: 20, color: borderSoft),
+                                    Container(
+                                      width: 1,
+                                      height: 20,
+                                      color: borderSoft,
+                                    ),
                                   ],
                                 ),
                               ),
                               counterText: '',
                               hintText: '0000 000 000',
-                              hintStyle: TextStyle(color: textLight, fontWeight: FontWeight.w400),
+                              hintStyle: TextStyle(
+                                color: textLight,
+                                fontWeight: FontWeight.w400,
+                              ),
                               filled: true,
                               fillColor: Colors.white,
                               contentPadding: const EdgeInsets.all(20),
@@ -246,11 +271,14 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20),
-                                borderSide: BorderSide(color: secondaryColor, width: 2),
+                                borderSide: BorderSide(
+                                  color: secondaryColor,
+                                  width: 2,
+                                ),
                               ),
                             ),
                           ),
-                          
+
                           const SizedBox(height: 32),
 
                           // Operator Selection Title
@@ -268,7 +296,10 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                               ),
                               if (selectedOperator != null)
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 4,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: secondaryColor.withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(8),
@@ -290,7 +321,8 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                             builder: (context, state) {
                               if (state.isLoading) {
                                 return buildShimmerLoading();
-                              } else if (state.opList == null || state.opList!.isEmpty) {
+                              } else if (state.opList == null ||
+                                  state.opList!.isEmpty) {
                                 return Container(
                                   width: double.infinity,
                                   padding: const EdgeInsets.all(30),
@@ -301,11 +333,19 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                                   ),
                                   child: Column(
                                     children: [
-                                      Icon(Iconsax.info_circle, color: textLight, size: 40),
+                                      Icon(
+                                        Iconsax.info_circle,
+                                        color: textLight,
+                                        size: 40,
+                                      ),
                                       const SizedBox(height: 12),
                                       Text(
                                         "Service temporarily unavailable",
-                                        style: TextStyle(color: textSecondary, fontSize: 14, fontWeight: FontWeight.w600),
+                                        style: TextStyle(
+                                          color: textSecondary,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -314,32 +354,53 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                                 return GridView.builder(
                                   shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
-                                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    childAspectRatio: 2.2,
-                                    crossAxisSpacing: 12,
-                                    mainAxisSpacing: 12,
-                                  ),
+                                  gridDelegate:
+                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                        childAspectRatio: 2.2,
+                                        crossAxisSpacing: 12,
+                                        mainAxisSpacing: 12,
+                                      ),
                                   itemCount: state.opList!.length,
                                   itemBuilder: (context, index) {
                                     final opName = state.opList![index];
-                                    final isSelected = selectedOperator == opName;
+                                    final isSelected =
+                                        selectedOperator == opName;
                                     return GestureDetector(
-                                      onTap: () => setState(() => selectedOperator = opName),
+                                      onTap: () => setState(
+                                        () => selectedOperator = opName,
+                                      ),
                                       child: AnimatedContainer(
-                                        duration: const Duration(milliseconds: 200),
+                                        duration: const Duration(
+                                          milliseconds: 200,
+                                        ),
                                         decoration: BoxDecoration(
-                                          color: isSelected ? Colors.white : Colors.white.withOpacity(0.7),
-                                          borderRadius: BorderRadius.circular(16),
+                                          color: isSelected
+                                              ? Colors.white
+                                              : Colors.white.withOpacity(0.7),
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
                                           border: Border.all(
-                                            color: isSelected ? secondaryColor : borderSoft,
+                                            color: isSelected
+                                                ? secondaryColor
+                                                : borderSoft,
                                             width: isSelected ? 2 : 1,
                                           ),
-                                          boxShadow: isSelected 
-                                            ? [BoxShadow(color: secondaryColor.withOpacity(0.15), blurRadius: 10, offset: const Offset(0, 4))]
-                                            : [],
+                                          boxShadow: isSelected
+                                              ? [
+                                                  BoxShadow(
+                                                    color: secondaryColor
+                                                        .withOpacity(0.15),
+                                                    blurRadius: 10,
+                                                    offset: const Offset(0, 4),
+                                                  ),
+                                                ]
+                                              : [],
                                         ),
-                                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                        ),
                                         child: Row(
                                           children: [
                                             Container(
@@ -347,28 +408,50 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                                               height: 36,
                                               decoration: BoxDecoration(
                                                 color: Colors.white,
-                                                borderRadius: BorderRadius.circular(10),
-                                                border: Border.all(color: borderSoft.withOpacity(0.5)),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                border: Border.all(
+                                                  color: borderSoft.withOpacity(
+                                                    0.5,
+                                                  ),
+                                                ),
                                               ),
                                               child: ClipRRect(
-                                                borderRadius: BorderRadius.circular(8),
-                                                child: _getOperatorImageURL(opName).isNotEmpty
-                                                  ? Image.network(
-                                                      _getOperatorImageURL(opName),
-                                                      fit: BoxFit.contain,
-                                                      errorBuilder: (c, e, s) => _buildTextFallback(opName),
-                                                    )
-                                                  : _buildTextFallback(opName),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                child:
+                                                    _getOperatorImageURL(
+                                                      opName,
+                                                    ).isNotEmpty
+                                                    ? Image.network(
+                                                        _getOperatorImageURL(
+                                                          opName,
+                                                        ),
+                                                        fit: BoxFit.contain,
+                                                        errorBuilder: (c, e, s) =>
+                                                            _buildTextFallback(
+                                                              opName,
+                                                            ),
+                                                      )
+                                                    : _buildTextFallback(
+                                                        opName,
+                                                      ),
                                               ),
                                             ),
                                             const SizedBox(width: 10),
                                             Expanded(
                                               child: Text(
-                                                opName == 'Vodafone' ? 'VI' : opName,
+                                                opName == 'Vodafone'
+                                                    ? 'VI'
+                                                    : opName,
                                                 style: TextStyle(
                                                   fontSize: 13,
-                                                  fontWeight: isSelected ? FontWeight.w900 : FontWeight.w700,
-                                                  color: isSelected ? maincolor1 : textSecondary,
+                                                  fontWeight: isSelected
+                                                      ? FontWeight.w900
+                                                      : FontWeight.w700,
+                                                  color: isSelected
+                                                      ? maincolor1
+                                                      : textSecondary,
                                                 ),
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
@@ -411,7 +494,9 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: secondaryColor,
                                 foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
                                 elevation: 8,
                                 shadowColor: secondaryColor.withOpacity(0.4),
                               ),
@@ -496,7 +581,10 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
             const Expanded(
               child: Text(
                 'Please select a network provider',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ],
