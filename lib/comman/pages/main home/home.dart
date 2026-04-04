@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:minna/Electyicity%20&%20Water/water%20bill/water%20bill%20home/water_input.dart';
+import 'package:minna/hotel%20booking/pages/holel%20home%20page/home_page_hotel.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -7,12 +9,12 @@ import 'package:minna/DTH%20&%20Mobile/DTH/pages/dth%20home%20inputs/dht_input_p
 import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/application/oparator/operators_bloc.dart';
 import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/pages/home%20page/recharge_home.dart';
 import 'package:minna/Electyicity%20&%20Water/kseb/kseb%20home/electricity_home.dart';
-import 'package:minna/Electyicity%20&%20Water/water%20bill/water%20bill%20home/water_input.dart'
-    hide ElectricityBillInputPage;
+
 import 'package:minna/bus/application/location%20fetch/bus_location_fetch_bloc.dart';
 import 'package:minna/bus/pages/screen%20bus%20home%20/bus_home.dart';
 import 'package:minna/cab/pages/TripSelectionPage/TripSelectionPage.dart';
 import 'package:minna/comman/application/login/login_bloc.dart';
+import 'package:minna/comman/application/home_data/destination_model.dart';
 import 'package:minna/comman/application/home_data/home_data_bloc.dart';
 import 'package:minna/comman/application/home_data/home_data_event.dart';
 import 'package:minna/comman/application/home_data/home_data_state.dart';
@@ -22,8 +24,7 @@ import 'package:minna/comman/pages/log%20in/login_page.dart';
 import 'package:minna/comman/pages/screen%20bookings/screen_booking.dart';
 import 'package:minna/comman/pages/screen%20my%20account/my_account_page.dart';
 import 'package:minna/flight/presendation/screen%20flight/home_flight.dart';
-import 'package:minna/hotel%20booking/pages/holel%20home%20page/home_page_hotel.dart'
-    hide FlightBookingTab;
+
 import 'package:minna/visa/pages/visa_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -1229,17 +1230,17 @@ class _HomeContentPageState extends State<HomeContentPage> {
   }
 
   Widget _buildPremiumDestinationCard(
-    dynamic destination,
+    DestinationModel destination,
     bool isSmallScreen,
     bool isTablet,
   ) {
     return GestureDetector(
       onTap: () => _showDestinationDetailsBottomSheet(context, destination),
       child: Container(
-        width: isSmallScreen ? 160 : 200,
+        width: isSmallScreen ? 180 : 220,
         margin: const EdgeInsets.only(right: 17),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
               color: maincolor1.withOpacity(0.12),
@@ -1249,17 +1250,18 @@ class _HomeContentPageState extends State<HomeContentPage> {
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
           child: Stack(
             fit: StackFit.expand,
             children: [
               Image.network(
                 destination.image,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    Container(color: Colors.grey[200]),
+                errorBuilder: (context, error, stackTrace) => Container(
+                  color: Colors.grey[200],
+                  child: Icon(Iconsax.image, color: Colors.grey[400]),
+                ),
               ),
-              // Gradient Overlay
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -1267,10 +1269,10 @@ class _HomeContentPageState extends State<HomeContentPage> {
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent,
-                      Colors.black.withOpacity(0.1),
-                      Colors.black.withOpacity(0.8),
+                      Colors.black.withOpacity(0.0),
+                      Colors.black.withOpacity(0.85),
                     ],
-                    stops: const [0.4, 0.6, 1.0],
+                    stops: const [0.3, 0.5, 1.0],
                   ),
                 ),
               ),
@@ -1280,57 +1282,44 @@ class _HomeContentPageState extends State<HomeContentPage> {
                 bottom: 16,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Row(
-                      children: [
-                        const Icon(
-                          Iconsax.location,
-                          color: Colors.white,
-                          size: 12,
-                        ),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            destination.country.toUpperCase(),
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.8),
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 1.0,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
                     Text(
-                      destination.name,
+                      destination.location.isNotEmpty
+                          ? destination.location
+                          : destination.title,
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w900,
+                        height: 1.2,
                       ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: secondaryColor,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'From ${destination.price}',
-                        style: TextStyle(
-                          color: maincolor1,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w900,
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Text(
+                          "INR ${destination.priceToShow}",
+                          style: TextStyle(
+                            color: secondaryColor,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w900,
+                          ),
                         ),
-                      ),
+                        const SizedBox(width: 4),
+                        // Expanded(
+                        //   child: Text(
+                        //     'onwards',
+                        //     style: TextStyle(
+                        //        color: Colors.white.withOpacity(0.7),
+                        //        fontSize: 10,
+                        //        fontWeight: FontWeight.w500,
+                        //     ),
+                        //   ),
+                        // ),
+                      ],
                     ),
                   ],
                 ),
@@ -1344,7 +1333,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
 
   void _showDestinationDetailsBottomSheet(
     BuildContext context,
-    dynamic destination,
+    DestinationModel destination,
   ) {
     showModalBottomSheet(
       context: context,
@@ -1356,220 +1345,724 @@ class _HomeContentPageState extends State<HomeContentPage> {
 
   Widget _buildDestinationDetailsSheet(
     BuildContext context,
-    dynamic destination,
+    DestinationModel destination,
   ) {
-    const String supportNumber = "+919656666556";
+    // Parse duration from title if possible
+    String duration = "Flexible";
+    if (destination.title.contains('Nights') ||
+        destination.title.contains('Days')) {
+      final parts = destination.title.split('\u2013')[0].trim();
+      duration = parts.replaceAll(' Nights', 'N').replaceAll(' Days', 'D');
+    }
 
     return Container(
-      height: MediaQuery.of(context).size.height * 0.85,
+      height: MediaQuery.of(context).size.height * 0.9,
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(36)),
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: textLight.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          Expanded(
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Immersive Hero
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(28),
+                          child: Stack(
+                            children: [
+                              Image.network(
+                                destination.image,
+                                height: 280,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Container(
+                                      height: 280,
+                                      color: Colors.grey[200],
+                                      child: Icon(
+                                        Iconsax.image,
+                                        color: Colors.grey[400],
+                                        size: 48,
+                                      ),
+                                    ),
+                              ),
+                              // Category Badge
+                              Positioned(
+                                top: 16,
+                                left: 16,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: maincolor1,
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.2),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Text(
+                                    'HOLIDAY PACKAGE',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: 1,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              // Action Buttons
+                              Positioned(
+                                top: 16,
+                                right: 16,
+                                child: Row(
+                                  children: [
+                                    // _buildHeroFloatingButton(
+                                    //   Iconsax.export,
+                                    //   () {},
+                                    // ),
+                                    const SizedBox(width: 8),
+                                    _buildHeroFloatingButton(
+                                      Icons.close,
+                                      () => Navigator.pop(context),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    destination.title,
+                                    style: TextStyle(
+                                      color: maincolor1,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: -0.5,
+                                      height: 1.2,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Iconsax.star1,
+                                        color: secondaryColor,
+                                        size: 14,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      const Text(
+                                        '4.8 (120+ Reviews)',
+                                        style: TextStyle(
+                                          color: textSecondary,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Quick Info Summary Grid
+                        _buildQuickSummaryRow(duration),
+
+                        const SizedBox(height: 24),
+                        // Price Banner
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 16,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                maincolor1.withOpacity(0.05),
+                                maincolor1.withOpacity(0.02),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(15),
+                            // border: Border.all(
+                            //   color: maincolor1.withOpacity(0.08),
+                            // ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Price',
+                                      style: TextStyle(
+                                        color: textSecondary,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Text(
+                                      "₹ ${destination.price}",
+                                      style: TextStyle(
+                                        color: maincolor1,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                      maxLines: 2,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate([
+                      // Hotel Section
+                      if (destination.hotelDetails.isNotEmpty) ...[
+                        _buildSectionCard(
+                          Iconsax.building_3,
+                          'Preferred Hotel',
+                          Text(
+                            destination.hotelDetails,
+                            style: TextStyle(
+                              color: textPrimary,
+                              fontSize: 14,
+                              height: 1.6,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
+
+                      // Itinerary Section
+                      if (destination.days.isNotEmpty) ...[
+                        _buildSectionHeader(Iconsax.calendar_tick, 'Itinerary'),
+                        const SizedBox(height: 12),
+                        ...List.generate(destination.days.length, (index) {
+                          return _buildTimelineDayTile(
+                            destination.days[index],
+                            isLast: index == destination.days.length - 1,
+                          );
+                        }),
+                        const SizedBox(height: 24),
+                      ],
+                      // Inclusions Section
+                      if (destination.inclusions.isNotEmpty) ...[
+                        _buildSectionCard(
+                          Iconsax.tick_circle,
+                          'What\'s Included',
+                          _buildRichTextSection(destination.inclusions),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
+                      // Exclusions Section
+                      if (destination.exclusions.isNotEmpty) ...[
+                        _buildSectionCard(
+                          Iconsax.close_circle,
+                          'What\'s Excluded',
+                          _buildRichTextSection(
+                            destination.exclusions,
+                            isExclusion: true,
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                      ],
+
+                      // Final CTA
+                      Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.only(bottom: 40),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            const String supportNumber = "+919656666556";
+                            final Uri callUri = Uri.parse("tel:$supportNumber");
+                            launchUrl(callUri);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: maincolor1,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 20),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            elevation: 8,
+                            shadowColor: maincolor1.withOpacity(0.4),
+                          ),
+                          child: Column(
+                            children: [
+                              const Text(
+                                'Book Holiday Now',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Talk to our Travel Experts',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.white.withOpacity(0.8),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ]),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeroFloatingButton(IconData icon, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.4),
+          // blurStyle: BlurStyle.outer,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: Colors.white, size: 20),
+      ),
+    );
+  }
+
+  Widget _buildQuickSummaryRow(String duration) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _buildInfoItem(Iconsax.clock, duration, 'Duration'),
+        _buildInfoItem(Iconsax.coffee, 'Included', 'Meals'),
+        _buildInfoItem(Iconsax.building_3, '3-4 Star', 'Hotel'),
+        _buildInfoItem(Iconsax.truck_fast, 'Included', 'Transfers'),
+      ],
+    );
+  }
+
+  Widget _buildInfoItem(IconData icon, String value, String label) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: maincolor1.withOpacity(0.04),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: secondaryColor, size: 20),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: TextStyle(
+            color: maincolor1,
+            fontSize: 12,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        Text(
+          label,
+          style: const TextStyle(
+            color: textLight,
+            fontSize: 10,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSectionCard(IconData icon, String title, Widget content) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: borderSoft),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 20,
-            offset: const Offset(0, -5),
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header with Image
-          Stack(
+          Row(
             children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(32),
-                ),
-                child: Image.network(
-                  destination.image,
-                  height: 290,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    height: 300,
-                    width: double.infinity,
-                    color: Colors.grey[200],
-                    child: Icon(
-                      Iconsax.image,
-                      color: Colors.grey[400],
-                      size: 50,
-                    ),
-                  ),
+              Icon(icon, color: secondaryColor, size: 20),
+              const SizedBox(width: 12),
+              Text(
+                title.toUpperCase(),
+                style: TextStyle(
+                  color: maincolor1,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.2,
                 ),
               ),
-              Positioned(
-                top: 20,
-                right: 20,
-                child: GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.5),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.close,
-                      color: Colors.white,
-                      size: 20,
-                    ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          content,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimelineDayTile(DayPlan day, {required bool isLast}) {
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Timeline indicator
+          // SizedBox(
+          //   width: 40,
+          //   child: Column(
+          //     children: [
+          //       Container(
+          //         width: 12,
+          //         height: 12,
+          //         decoration: BoxDecoration(
+          //           color: secondaryColor,
+          //           shape: BoxShape.circle,
+          //           border: Border.all(
+          //             color: secondaryColor.withOpacity(0.3),
+          //             width: 3,
+          //           ),
+          //         ),
+          //       ),
+          //       if (!isLast)
+          //         Expanded(child: Container(width: 2, color: borderSoft)),
+          //     ],
+          //   ),
+          // ),
+          // const SizedBox(width: 8),
+          // Content
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: borderSoft),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.01),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
                   ),
-                ),
+                ],
               ),
-              Positioned(
-                bottom: 20,
-                left: 24,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: secondaryColor,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        destination.country,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
+              child: Theme(
+                data: Theme.of(
+                  context,
+                ).copyWith(dividerColor: Colors.transparent),
+                child: ExpansionTile(
+                  tilePadding: const EdgeInsets.symmetric(horizontal: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  collapsedShape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  title: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: maincolor1,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          'DAY ${day.dayNumber}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 8,
+                            fontWeight: FontWeight.w900,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      destination.name,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        shadows: [
-                          Shadow(
-                            blurRadius: 10,
-                            color: Colors.black,
-                            offset: Offset(0, 2),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          day.title,
+                          style: TextStyle(
+                            color: maincolor1,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
                           ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Divider(height: 1, thickness: 0.5),
+                          const SizedBox(height: 12),
+                          Text(
+                            day.description,
+                            style: TextStyle(
+                              color: textSecondary,
+                              fontSize: 13,
+                              height: 1.6,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          if (day.meals.isNotEmpty) ...[
+                            const SizedBox(height: 12),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: secondaryColor.withOpacity(0.08),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Iconsax.coffee,
+                                    color: secondaryColor,
+                                    size: 14,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Flexible(
+                                    child: Text(
+                                      'Meals: ${day.meals}',
+                                      style: TextStyle(
+                                        color: maincolor1,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
-
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Starting from',
-                            style: TextStyle(color: textLight, fontSize: 14),
-                          ),
-                          Text(
-                            '₹${destination.price}',
-                            style: TextStyle(
-                              color: maincolor1,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: secondaryColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Icon(
-                          Iconsax.star5,
-                          color: secondaryColor,
-                          size: 24,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Plan Your Perfect Trip',
-                    style: TextStyle(
-                      color: maincolor1,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Experience the beauty of ${destination.name}. Book your dream vacation with MT TRIP and get exclusive offers and world-class service.',
-                    style: TextStyle(
-                      color: textSecondary,
-                      fontSize: 15,
-                      height: 1.6,
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                  // Premium Call Button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 60,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        final Uri telUri = Uri.parse('tel:$supportNumber');
-                        if (await canLaunchUrl(telUri)) {
-                          await launchUrl(telUri);
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: maincolor1,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        elevation: 4,
-                        shadowColor: maincolor1.withOpacity(0.4),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.phone_in_talk_rounded,
-                            size: 22,
-                            color: secondaryColor,
-                          ),
-                          const SizedBox(width: 12),
-                          const Text(
-                            'Call for Booking',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                ],
-              ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(IconData icon, String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        children: [
+          Icon(icon, color: secondaryColor, size: 18),
+          const SizedBox(width: 10),
+          Text(
+            title.toUpperCase(),
+            style: TextStyle(
+              color: maincolor1,
+              fontSize: 13,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1.2,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRichTextSection(String text, {bool isExclusion = false}) {
+    final lines = text.split('\n').where((l) => l.trim().isNotEmpty).toList();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: lines.map((line) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Container(
+                  width: 6,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: isExclusion ? errorColor : secondaryColor,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  line.trim(),
+                  style: TextStyle(
+                    color: textPrimary.withOpacity(0.9),
+                    fontSize: 14,
+                    height: 1.5,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildDayTile(DayPlan day) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: borderSoft),
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          collapsedShape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          leading: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: secondaryColor.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              'Day ${day.dayNumber}',
+              style: TextStyle(
+                color: secondaryColor,
+                fontSize: 12,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+          title: Text(
+            day.title,
+            style: TextStyle(
+              color: maincolor1,
+              fontSize: 14,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Divider(height: 1, thickness: 0.5),
+                  const SizedBox(height: 16),
+                  Text(
+                    day.description,
+                    style: TextStyle(
+                      color: textSecondary,
+                      fontSize: 13,
+                      height: 1.6,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  if (day.meals.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Icon(Iconsax.coffee, color: secondaryColor, size: 16),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Meals: ${day.meals}',
+                          style: TextStyle(
+                            color: maincolor1,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1634,59 +2127,6 @@ class _HomeContentPageState extends State<HomeContentPage> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildOffersBanner(
-    bool isSmallScreen,
-    bool isTablet,
-    double bodyFontSize,
-  ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: isSmallScreen ? 16 : 24),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'EXCLUSIVE OFFERS',
-                style: TextStyle(
-                  color: secondaryColor,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 1.5,
-                ),
-              ),
-              TextButton(
-                onPressed: () {},
-                child: Text(
-                  'View all',
-                  style: TextStyle(
-                    color: accentColor,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 8),
-        SizedBox(
-          height: isSmallScreen ? 180 : 220,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.symmetric(horizontal: isSmallScreen ? 16 : 24),
-            itemCount: _travelOffers.length,
-            clipBehavior: Clip.none,
-            itemBuilder: (context, index) {
-              final offer = _travelOffers[index];
-              return _buildPremiumOfferCard(offer, isSmallScreen);
-            },
-          ),
-        ),
-      ],
     );
   }
 

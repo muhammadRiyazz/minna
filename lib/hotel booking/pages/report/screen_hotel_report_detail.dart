@@ -36,7 +36,7 @@ class ScreenHotelReportDetail extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
+        // physics: const BouncingScrollPhysics(),
         child: Column(
           children: [
             _buildHeader(booking, isConfirmed),
@@ -44,13 +44,13 @@ class ScreenHotelReportDetail extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                   _buildItineraryCard(booking),
-                   const SizedBox(height: 16),
-                   if (tboData != null) _buildTboDetails(tboData),
-                   if (tboData == null) _buildBasicDetails(booking),
-                   const SizedBox(height: 16),
-                   _buildPaymentCard(record),
-                   const SizedBox(height: 32),
+                  _buildItineraryCard(booking),
+                  const SizedBox(height: 16),
+                  if (tboData != null) _buildTboDetails(tboData),
+                  if (tboData == null) _buildBasicDetails(booking),
+                  const SizedBox(height: 16),
+                  _buildPaymentCard(record),
+                  const SizedBox(height: 32),
                 ],
               ),
             ),
@@ -93,9 +93,15 @@ class ScreenHotelReportDetail extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: isConfirmed ? Colors.green.withOpacity(0.2) : Colors.orange.withOpacity(0.2),
+              color: isConfirmed
+                  ? Colors.green.withOpacity(0.2)
+                  : Colors.orange.withOpacity(0.2),
               borderRadius: BorderRadius.circular(100),
-              border: Border.all(color: isConfirmed ? Colors.green.withOpacity(0.3) : Colors.orange.withOpacity(0.3)),
+              border: Border.all(
+                color: isConfirmed
+                    ? Colors.green.withOpacity(0.3)
+                    : Colors.orange.withOpacity(0.3),
+              ),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -109,7 +115,9 @@ class ScreenHotelReportDetail extends StatelessWidget {
                 Text(
                   booking.bookingStatus.toUpperCase(),
                   style: TextStyle(
-                    color: isConfirmed ? Colors.greenAccent : Colors.orangeAccent,
+                    color: isConfirmed
+                        ? Colors.greenAccent
+                        : Colors.orangeAccent,
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 1,
@@ -139,31 +147,47 @@ class ScreenHotelReportDetail extends StatelessWidget {
               const Spacer(),
               Column(
                 children: [
-                  const Icon(Iconsax.arrow_right_1, color: secondaryColor, size: 20),
+                  const Icon(
+                    Iconsax.arrow_right_1,
+                    color: secondaryColor,
+                    size: 20,
+                  ),
                   Text(
-                    "1 Night", 
-                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: textSecondary),
+                    "1 Night",
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: textSecondary,
+                    ),
                   ),
                 ],
               ),
               const Spacer(),
-              _buildDateItem("Check-Out", booking.checkOut, crossAlignment: CrossAxisAlignment.end),
+              _buildDateItem(
+                "Check-Out",
+                booking.checkOut,
+                crossAlignment: CrossAxisAlignment.end,
+              ),
             ],
           ),
           const SizedBox(height: 24),
           Row(
-             children: [
-               _buildIconDetail(Iconsax.user, "${booking.guests} Guests"),
-               const Spacer(),
-               _buildIconDetail(Iconsax.status, booking.paymentStatus),
-             ],
+            children: [
+              _buildIconDetail(Iconsax.user, "${booking.guests} Guests"),
+              const Spacer(),
+              _buildIconDetail(Iconsax.status, booking.paymentStatus),
+            ],
           ),
         ],
       ),
     );
   }
 
-  Widget _buildDateItem(String label, String dateStr, {CrossAxisAlignment crossAlignment = CrossAxisAlignment.start}) {
+  Widget _buildDateItem(
+    String label,
+    String dateStr, {
+    CrossAxisAlignment crossAlignment = CrossAxisAlignment.start,
+  }) {
     final date = DateTime.tryParse(dateStr);
     final day = date != null ? DateFormat('dd').format(date) : "--";
     final month = date != null ? DateFormat('MMM').format(date) : "--";
@@ -172,16 +196,37 @@ class ScreenHotelReportDetail extends StatelessWidget {
     return Column(
       crossAxisAlignment: crossAlignment,
       children: [
-        Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: textSecondary)),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: textSecondary,
+          ),
+        ),
         const SizedBox(height: 4),
         Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text(day, style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: maincolor1)),
+            Text(
+              day,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w900,
+                color: maincolor1,
+              ),
+            ),
             const SizedBox(width: 4),
             Padding(
               padding: const EdgeInsets.only(bottom: 4),
-              child: Text("$month $year", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: maincolor1)),
+              child: Text(
+                "$month $year",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: maincolor1,
+                ),
+              ),
             ),
           ],
         ),
@@ -194,7 +239,14 @@ class ScreenHotelReportDetail extends StatelessWidget {
       children: [
         Icon(icon, size: 16, color: secondaryColor),
         const SizedBox(width: 8),
-        Text(value, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: textPrimary)),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: textPrimary,
+          ),
+        ),
       ],
     );
   }
@@ -214,47 +266,76 @@ class ScreenHotelReportDetail extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildDetailRow("Confirmation No", tbo.confirmationNo ?? "Pending"),
+              _buildDetailRow(
+                "Confirmation No",
+                tbo.confirmationNo ?? "Pending",
+              ),
               _buildDetailRow("TBO Reference", tbo.tboReferenceNo ?? "N/A"),
               _buildDetailRow("City", tbo.city ?? "N/A"),
               _buildDetailRow("Address", tbo.addressLine1 ?? "N/A"),
               const SizedBox(height: 16),
               const Divider(),
               const SizedBox(height: 16),
-              ...tbo.rooms.map((room) => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    room.roomTypeName ?? "Room Details",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: maincolor1),
-                  ),
-                  const SizedBox(height: 8),
-                  ...room.passengers.map((pax) => Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: Row(
-                      children: [
-                        const Icon(Iconsax.user, size: 14, color: textSecondary),
-                        const SizedBox(width: 8),
-                        Text(
-                          "${pax.title} ${pax.firstName} ${pax.lastName}",
-                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: textPrimary),
-                        ),
-                        if (pax.leadPassenger == true)
-                          Container(
-                            margin: const EdgeInsets.only(left: 8),
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: secondaryColor.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: const Text("LEAD", style: TextStyle(fontSize: 8, fontWeight: FontWeight.w900, color: secondaryColor)),
-                          ),
-                      ],
+              ...tbo.rooms.map(
+                (room) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      room.roomTypeName ?? "Room Details",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w900,
+                        color: maincolor1,
+                      ),
                     ),
-                  )),
-                  const SizedBox(height: 12),
-                ],
-              )),
+                    const SizedBox(height: 8),
+                    ...room.passengers.map(
+                      (pax) => Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Iconsax.user,
+                              size: 14,
+                              color: textSecondary,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              "${pax.title} ${pax.firstName} ${pax.lastName}",
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: textPrimary,
+                              ),
+                            ),
+                            if (pax.leadPassenger == true)
+                              Container(
+                                margin: const EdgeInsets.only(left: 8),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: secondaryColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: const Text(
+                                  "LEAD",
+                                  style: TextStyle(
+                                    fontSize: 8,
+                                    fontWeight: FontWeight.w900,
+                                    color: secondaryColor,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -263,7 +344,7 @@ class ScreenHotelReportDetail extends StatelessWidget {
   }
 
   Widget _buildBasicDetails(BookingInfo booking) {
-     return Column(
+    return Column(
       children: [
         _buildSectionHeader("Booking Information", Iconsax.info_circle),
         Container(
@@ -278,7 +359,10 @@ class ScreenHotelReportDetail extends StatelessWidget {
             children: [
               _buildDetailRow("Order ID", booking.id),
               _buildDetailRow("Booking ID", booking.bookingId ?? "N/A"),
-              _buildDetailRow("Confirmation", booking.confirmationNo ?? "Pending"),
+              _buildDetailRow(
+                "Confirmation",
+                booking.confirmationNo ?? "Pending",
+              ),
               _buildDetailRow("Guests", booking.guests),
             ],
           ),
@@ -304,8 +388,14 @@ class ScreenHotelReportDetail extends StatelessWidget {
           ),
           child: Column(
             children: [
-              _buildDetailRow("Base Amount", "${booking.currency} ${booking.netAmount}"),
-              _buildDetailRow("Payment Status", payment?.status.toUpperCase() ?? "PENDING"),
+              _buildDetailRow(
+                "Base Amount",
+                "${booking.currency} ${booking.netAmount}",
+              ),
+              _buildDetailRow(
+                "Payment Status",
+                payment?.status.toUpperCase() ?? "PENDING",
+              ),
               if (payment?.razorpayPaymentId != null)
                 _buildDetailRow("Transaction ID", payment!.razorpayPaymentId!),
               const SizedBox(height: 16),
@@ -314,10 +404,17 @@ class ScreenHotelReportDetail extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text("Total Paid", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
+                  const Text(
+                    "Total Paid",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+                  ),
                   Text(
                     "${booking.currency} ${payment?.amount ?? booking.netAmount}",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: maincolor1),
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
+                      color: maincolor1,
+                    ),
                   ),
                 ],
               ),
@@ -356,13 +453,24 @@ class ScreenHotelReportDetail extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: textSecondary)),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: textSecondary,
+            ),
+          ),
           const SizedBox(width: 16),
           Flexible(
             child: Text(
               value,
               textAlign: TextAlign.right,
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: textPrimary),
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                color: textPrimary,
+              ),
             ),
           ),
         ],

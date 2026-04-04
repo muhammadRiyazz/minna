@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:minna/comman/application/home_data/destination_model.dart';
@@ -23,7 +24,7 @@ class HomeDataBloc extends Bloc<HomeDataEvent, HomeDataState> {
         Uri.parse("${baseUrl}destinations-callback"),
       );
       final body = json.decode(response.body);
-
+      log(response.body.toString());
       if (body['status'] == 'SUCCESS' && body['data'] != null) {
         final List<DestinationModel> destinations = (body['data'] as List)
             .map((e) => DestinationModel.fromJson(e as Map<String, dynamic>))

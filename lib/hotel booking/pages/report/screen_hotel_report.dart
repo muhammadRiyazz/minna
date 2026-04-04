@@ -46,35 +46,89 @@ class _ScreenHotelReportState extends State<ScreenHotelReport> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       itemCount: 5,
       itemBuilder: (context, index) {
-        return Shimmer.fromColors(
-          baseColor: Colors.grey[200]!,
-          highlightColor: Colors.white,
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            decoration: BoxDecoration(
-              color: cardColor,
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: borderSoft),
-            ),
-            padding: const EdgeInsets.all(20),
+        return Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: borderSoft),
+          ),
+          child: Shimmer.fromColors(
+            baseColor: Colors.grey[200]!,
+            highlightColor: Colors.white,
             child: Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildShimmerBox(width: 120, height: 16),
-                    _buildShimmerBox(width: 80, height: 32, radius: 20),
-                  ],
+                // Header Shimmer
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border(bottom: BorderSide(color: borderSoft)),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildShimmerBox(width: 150, height: 16),
+                            const SizedBox(height: 6),
+                            _buildShimmerBox(width: 100, height: 10),
+                          ],
+                        ),
+                      ),
+                      _buildShimmerBox(width: 60, height: 24, radius: 100),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 20),
-                _buildShimmerBox(width: double.infinity, height: 100, radius: 16),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildShimmerBox(width: 100, height: 12),
-                    _buildShimmerBox(width: 60, height: 24, radius: 8),
-                  ],
+                // Content Shimmer
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildShimmerBox(width: 80, height: 10),
+                              const SizedBox(height: 6),
+                              _buildShimmerBox(width: 100, height: 14),
+                            ],
+                          ),
+                          Container(height: 30, width: 1, color: borderSoft),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              _buildShimmerBox(width: 80, height: 10),
+                              const SizedBox(height: 6),
+                              _buildShimmerBox(width: 100, height: 14),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Container(height: 1, width: double.infinity, color: borderSoft),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildShimmerBox(width: 100, height: 14),
+                          _buildShimmerBox(width: 80, height: 20),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
