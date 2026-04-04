@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:minna/comman/core/api.dart';
 import 'package:minna/hotel%20booking/core/core.dart';
 import 'package:minna/hotel%20booking/domain/Nation%20and%20city/city.dart';
-import 'package:minna/hotel%20booking/domain/Nation%20and%20city/nation';
+import 'package:minna/hotel%20booking/domain/Nation%20and%20city/nation.dart';
 import 'package:minna/hotel%20booking/domain/hotel%20list/hotel_list.dart';
 
 class ApiException implements Exception {
@@ -153,6 +153,38 @@ class HotelApiService {
     } catch (e) {
       log('Error in getCountries: ${e.toString()}');
       throw Exception('Failed to load countries: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> cancelHotelBooking({
+    required String bookingId,
+    required String remarks,
+  }) async {
+    try {
+      log('📡 Cancelling Hotel Booking: $bookingId');
+      final cancelUrl = Uri.parse('https://tictechnologies.in/stage/minna/hotel-api-booking-cancel');
+      
+      final response = await _client.post(
+        cancelUrl,
+        body: {
+          'booking_id': bookingId,
+          'remarks': remarks,
+        },
+      );
+
+      log('📡 Cancellation Response: ${response.body}');
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw ApiException(
+          'Failed to cancel booking: Status ${response.statusCode}',
+          statusCode: response.statusCode,
+        );
+      }
+    } catch (e) {
+      log('❌ Cancellation Error: $e');
+      throw ApiException('Failed to cancel booking: $e');
     }
   }
 

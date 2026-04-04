@@ -416,19 +416,22 @@ class _BookingConfirmationPageState extends State<BookingConfirmationPage> {
                         ),
                       );
                     } else {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text("Error"),
-                          content: Text(message),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text("OK"),
-                            ),
-                          ],
-                        ),
-                      );
+                      log(message);
+
+                      log('--------------');
+                      // showDialog(
+                      //   context: context,
+                      //   builder: (context) => AlertDialog(
+                      //     title: const Text("Error"),
+                      //     content: Text(message),
+                      //     actions: [
+                      //       TextButton(
+                      //         onPressed: () => Navigator.pop(context),
+                      //         child: const Text("OK"),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // );
                     }
                   },
               success: (data) {

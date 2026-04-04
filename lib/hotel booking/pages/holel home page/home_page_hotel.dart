@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/hotel%20booking/domain/Nation%20and%20city/city.dart';
-import 'package:minna/hotel%20booking/domain/Nation%20and%20city/nation';
+import 'package:minna/hotel%20booking/domain/Nation%20and%20city/nation.dart';
 import 'package:minna/hotel%20booking/functions/hotel_api.dart';
 import 'package:minna/hotel%20booking/pages/hotel%20list/hotel_list.dart';
 

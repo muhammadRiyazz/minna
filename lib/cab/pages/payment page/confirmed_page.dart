@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:minna/cab/domain/confirm%20model/confirm_model.dart';
-import 'package:minna/comman/pages/main%20home/home.dart';
+import 'package:minna/cab/domain/confirm model/confirm_model.dart';
+import 'package:minna/comman/pages/main home/home.dart';
 import 'package:minna/comman/const/const.dart';
+import 'package:iconsax/iconsax.dart';
 
 class CabSuccessPage extends StatelessWidget {
   final BookingConfirmData bookingResponse;
 
   const CabSuccessPage({super.key, required this.bookingResponse});
-
-  // Color Theme - Black & Gold Premium (matching booked_cab_details.dart)
-  // Theme standardizing: Use global constants directly from const.dart
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +17,7 @@ class CabSuccessPage extends StatelessWidget {
       onWillPop: () async {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (_) => HomePage()),
+          MaterialPageRoute(builder: (_) => const HomePage()),
           (route) => false,
         );
         return false;
@@ -27,43 +25,76 @@ class CabSuccessPage extends StatelessWidget {
       child: Scaffold(
         backgroundColor: backgroundColor,
         body: Container(
-          color: Colors.green,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                maincolor1,
+                maincolor1.withOpacity(0.9),
+                backgroundColor,
+              ],
+              stops: const [0.0, 0.3, 0.45],
+            ),
+          ),
           child: Column(
             children: [
               // Header section
               Container(
-                padding: const EdgeInsets.only(top: 60, bottom: 20),
+                padding: const EdgeInsets.only(top: 80, bottom: 40),
                 child: Column(
                   children: [
                     Container(
-                      width: 90,
-                      height: 90,
+                      width: 100,
+                      height: 100,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-
+                        color: Colors.white.withOpacity(0.15),
                         shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.2),
+                          width: 2,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 20,
+                            spreadRadius: 5,
+                          ),
+                        ],
                       ),
-                      child: const Icon(
-                        Icons.check_circle,
-                        color: Colors.white,
-                        size: 50,
+                      child: Center(
+                        child: Container(
+                          width: 70,
+                          height: 70,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.check_rounded,
+                            color: successColor,
+                            size: 45,
+                          ),
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 15),
+                    const SizedBox(height: 24),
                     const Text(
                       'Booking Confirmed!',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 26,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: -0.5,
                       ),
                     ),
-                    const SizedBox(height: 5),
+                    const SizedBox(height: 8),
                     Text(
-                      'Your cab booking is confirmed',
+                      'Your trip has been successfully scheduled',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.9),
-                        fontSize: 13,
+                        color: Colors.white.withOpacity(0.8),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
@@ -77,119 +108,96 @@ class CabSuccessPage extends StatelessWidget {
                   decoration: const BoxDecoration(
                     color: backgroundColor,
                     borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
+                      topLeft: Radius.circular(32),
+                      topRight: Radius.circular(32),
                     ),
                   ),
-                  padding: const EdgeInsets.all(15),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(height: 12),
-                        // Booking ID
-                        _buildInfoCard(
-                          icon: Icons.confirmation_number,
-                          title: 'Booking ID',
-                          value: data.bookingId,
-                        ),
+                        const SizedBox(height: 32),
 
-                        const SizedBox(height: 10),
-
-                        // Verification Code
-                        _buildInfoCard(
-                          icon: Icons.vpn_key,
-                          title: 'Verification Code',
-                          value: data.verificationCode,
-                          highlight: true,
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        // Date and Time Section - Redesigned
-                        Text(
-                          'Date & Time',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: textPrimary,
-                          ),
-                        ),
-
-                        const SizedBox(height: 10),
-
-                        _buildDateTimeCard(data.startDate, data.startTime),
-
-                        const SizedBox(height: 24),
-
-                        // Cab Information
-                        Text(
-                          'Cab Information',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: textPrimary,
-                          ),
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        _buildCabInfoCard(data.cabRate.cab),
-
-                        const SizedBox(height: 24),
-
-                        // Fare Details
-                        Text(
-                          'Fare Details',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: textPrimary,
-                          ),
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        _buildFareCard(data.cabRate.fare),
-
-                        const SizedBox(height: 10),
-
-                        // Action buttons
+                        // ID Section
                         Row(
                           children: [
                             Expanded(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => HomePage(),
-                                    ),
-                                    (route) => false,
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: maincolor1,
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 16,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  elevation: 0,
-                                ),
-                                child: const Text(
-                                  'GO TO HOME',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                              child: _buildInfoCard(
+                                icon: Iconsax.ticket,
+                                title: 'BOOKING ID',
+                                value: data.bookingId,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildInfoCard(
+                                icon: Iconsax.key,
+                                title: 'OTP / CODE',
+                                value: data.verificationCode,
+                                highlight: true,
                               ),
                             ),
                           ],
                         ),
+
+                        const SizedBox(height: 32),
+
+                        // Date and Time Section
+                        _buildSectionHeader('Schedule Details'),
+                        const SizedBox(height: 16),
+                        _buildDateTimeCard(data.startDate, data.startTime),
+
+                        const SizedBox(height: 32),
+
+                        // Cab Information
+                        _buildSectionHeader('Vehicle Information'),
+                        const SizedBox(height: 16),
+                        _buildCabInfoCard(data.cabRate.cab),
+
+                        const SizedBox(height: 32),
+
+                        // Fare Details
+                        _buildSectionHeader('Fare Summary'),
+                        const SizedBox(height: 16),
+                        _buildFareCard(data),
+
+                        const SizedBox(height: 40),
+
+                        // Action buttons
+                        SizedBox(
+                          width: double.infinity,
+                          height: 60,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const HomePage(),
+                                ),
+                                (route) => false,
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: maincolor1,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(18),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: const Text(
+                              'GO TO HOME',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 40),
                       ],
                     ),
                   ),
@@ -202,166 +210,175 @@ class CabSuccessPage extends StatelessWidget {
     );
   }
 
+  Widget _buildSectionHeader(String title) {
+    return Text(
+      title,
+      style: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w900,
+        color: textPrimary,
+        letterSpacing: -0.5,
+      ),
+    );
+  }
+
   Widget _buildInfoCard({
     required IconData icon,
     required String title,
     required String value,
     bool highlight = false,
   }) {
-    return Card(
-      elevation: 0,
-      color: cardColor,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: highlight
-                    ? secondaryColor.withOpacity(0.1)
-                    : backgroundColor,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(
-                icon,
-                color: highlight ? secondaryColor : textSecondary,
-                size: 24,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: textSecondary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    value,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: highlight ? secondaryColor : textPrimary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+        border: Border.all(
+          color: highlight ? secondaryColor.withOpacity(0.2) : borderSoft,
         ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: (highlight ? secondaryColor : maincolor1).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              icon,
+              color: highlight ? secondaryColor : maincolor1,
+              size: 20,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 10,
+              color: textLight,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w900,
+              color: highlight ? secondaryColor : textPrimary,
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildDateTimeCard(String dateString, String timeString) {
-    // Parse the date and time
     final date = DateTime.parse(dateString);
-
-    // Parse time string (assuming format like "14:30:00")
     final timeParts = timeString.split(':');
     final hour = int.parse(timeParts[0]);
     final minute = int.parse(timeParts[1]);
-
-    // Create a DateTime object for time formatting
     final timeDateTime = DateTime(2023, 1, 1, hour, minute);
 
-    // Format time in 12-hour format with AM/PM
     final formattedTime = _formatTime12Hour(timeDateTime);
-
-    // Format date with month name and year
     final formattedDate = _formatDateWithMonthName(date);
 
-    return Card(
-      elevation: 0,
-      color: cardColor,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            // Calendar icon section
-            Container(
-              width: 70,
-              height: 70,
-              decoration: BoxDecoration(
-                color: secondaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    date.day.toString(),
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: secondaryColor,
-                    ),
-                  ),
-                  Text(
-                    _getMonthAbbreviation(date.month),
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: secondaryColor,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+        border: Border.all(color: borderSoft),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 65,
+            height: 65,
+            decoration: BoxDecoration(
+              color: secondaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(18),
             ),
-
-            const SizedBox(width: 16),
-
-            // Date and time details
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Scheduled Pickup',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: textSecondary,
-                      fontWeight: FontWeight.w500,
-                    ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  date.day.toString(),
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                    color: secondaryColor,
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    formattedDate,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: textPrimary,
-                    ),
+                ),
+                Text(
+                  _getMonthAbbreviation(date.month),
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: secondaryColor,
+                    fontWeight: FontWeight.w800,
                   ),
-                  const SizedBox(height: 6),
-                  Row(
-                    children: [
-                      Icon(Icons.access_time, size: 16, color: textSecondary),
-                      const SizedBox(width: 6),
-                      Text(
-                        formattedTime,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: textSecondary,
-                          fontWeight: FontWeight.w500,
-                        ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 20),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Scheduled Pickup',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: textLight,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  formattedDate,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                    color: textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    const Icon(Iconsax.clock, size: 14, color: textLight),
+                    const SizedBox(width: 6),
+                    Text(
+                      formattedTime,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: textSecondary,
+                        fontWeight: FontWeight.w600,
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -388,7 +405,6 @@ class CabSuccessPage extends StatelessWidget {
       'November',
       'December',
     ];
-
     return '${dateTime.day} ${monthNames[dateTime.month - 1]}, ${dateTime.year}';
   }
 
@@ -407,201 +423,182 @@ class CabSuccessPage extends StatelessWidget {
       'NOV',
       'DEC',
     ];
-
     return monthAbbreviations[month - 1];
   }
 
   Widget _buildCabInfoCard(Cab cab) {
-    return Card(
-      elevation: 0,
-      color: cardColor,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                color: secondaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                Icons.directions_car,
-                size: 32,
-                color: secondaryColor,
-              ),
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+        border: Border.all(color: borderSoft),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: borderSoft),
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    cab.type,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    cab.category,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: textSecondary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: backgroundColor,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.people, size: 16, color: textSecondary),
-                            const SizedBox(width: 4),
-                            Text(
-                              '${cab.seatingCapacity}',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: textSecondary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
+            child: cab.image.isNotEmpty
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.network(
+                      cab.image,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) => const Icon(
+                        Iconsax.car,
+                        size: 32,
+                        color: secondaryColor,
                       ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: backgroundColor,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.luggage,
-                              size: 16,
-                              color: textSecondary,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              '${cab.bagCapacity}',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: textSecondary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                    ),
+                  )
+                : const Icon(Iconsax.car, size: 32, color: secondaryColor),
+          ),
+          const SizedBox(width: 20),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  cab.type,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                    color: textPrimary,
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  cab.category.toUpperCase(),
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: secondaryColor,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    _buildFeatureIcon(
+                      Iconsax.user_tick,
+                      cab.seatingCapacity.toString(),
+                    ),
+                    const SizedBox(width: 12),
+                    _buildFeatureIcon(
+                      Iconsax.bag_2,
+                      cab.bagCapacity.toString(),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildFareCard(Fare fare) {
-    return Card(
-      elevation: 0,
-      color: cardColor,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+  Widget _buildFeatureIcon(IconData icon, String value) {
+    return Row(
+      children: [
+        Icon(icon, size: 14, color: textLight),
+        const SizedBox(width: 6),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 12,
+            color: textSecondary,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFareCard(BookingConfirmData data) {
+    final fare = data.cabRate.fare;
+    final totalPaid = data.paidAmount ?? fare.totalAmount.toDouble();
+    final serviceCharge = totalPaid - fare.totalAmount;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+        border: Border.all(color: maincolor1.withOpacity(0.05)),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Base fare
             _buildFareRow('Base Fare', '₹${fare.baseFare}'),
-            const SizedBox(height: 12),
-
-            // Additional charges
             if (fare.driverAllowance > 0)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: _buildFareRow(
-                  'Driver Allowance',
-                  '₹${fare.driverAllowance}',
-                ),
-              ),
-
-            if (fare.gst > 0)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: _buildFareRow('GST', '₹${fare.gst}'),
-              ),
-
-            if (fare.tollTax > 0)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: _buildFareRow('Toll Tax', '₹${fare.tollTax}'),
-              ),
-
+              _buildFareRow('Driver Allowance', '₹${fare.driverAllowance}'),
+            if (fare.gst > 0) _buildFareRow('GST', '₹${fare.gst}'),
+            if (fare.tollTax > 0) _buildFareRow('Toll Tax', '₹${fare.tollTax}'),
             if (fare.stateTax > 0)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: _buildFareRow('State Tax', '₹${fare.stateTax}'),
-              ),
-
+              _buildFareRow('State Tax', '₹${fare.stateTax}'),
             if (fare.airportFee > 0)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: _buildFareRow('Airport Fee', '₹${fare.airportFee}'),
-              ),
+              _buildFareRow('Airport Fee', '₹${fare.airportFee}'),
 
-            // Divider
-            Divider(
-              height: 32,
-              thickness: 1,
-              color: textLight.withOpacity(0.3),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Divider(height: 1, color: borderSoft),
             ),
 
-            // Total amount
+            _buildFareRow(
+              'Service Fee & Commission',
+              '₹${serviceCharge.toStringAsFixed(0)}',
+              isHighlighted: true,
+            ),
+
+            const SizedBox(height: 16),
+
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: secondaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
+                color: maincolor1.withOpacity(0.04),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: maincolor1.withOpacity(0.1)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Total Amount',
+                  const Text(
+                    'TOTAL PAID',
                     style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: textPrimary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w900,
+                      color: maincolor1,
+                      letterSpacing: 0.5,
                     ),
                   ),
                   Text(
-                    '₹${fare.totalAmount}',
-                    style: TextStyle(
+                    '₹${totalPaid.toStringAsFixed(0)}',
+                    style: const TextStyle(
                       fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: secondaryColor,
+                      fontWeight: FontWeight.w900,
+                      color: maincolor1,
                     ),
                   ),
                 ],
@@ -613,27 +610,34 @@ class CabSuccessPage extends StatelessWidget {
     );
   }
 
-  Widget _buildFareRow(String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            color: textSecondary,
-            fontWeight: FontWeight.w500,
+  Widget _buildFareRow(
+    String label,
+    String value, {
+    bool isHighlighted = false,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              color: isHighlighted ? secondaryColor : textSecondary,
+              fontWeight: isHighlighted ? FontWeight.w800 : FontWeight.w600,
+            ),
           ),
-        ),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 14,
-            color: textPrimary,
-            fontWeight: FontWeight.w600,
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 14,
+              color: isHighlighted ? secondaryColor : textPrimary,
+              fontWeight: FontWeight.w900,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

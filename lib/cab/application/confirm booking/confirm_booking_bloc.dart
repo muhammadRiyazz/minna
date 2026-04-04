@@ -106,9 +106,15 @@ class ConfirmBookingBloc
           "✅ confirmBookingResponse.success = ${confirmBookingResponse.success}",
         );
 
-        if (confirmBookingResponse.success) {
-          log('🔹 Calling cab-status API for success...');
+        if (confirmBookingResponse.success && confirmBookingResponse.data != null) {
+          log('✅ Booking confirmation successful. Emitting success state.');
+          
+          // Emit success state immediately so UI can navigate to success screen
+          emit(ConfirmBookingSuccess(data: confirmBookingResponse.data!.copyWith(paidAmount: event.amount)));
+
+          // Try to save cab-status in the background, but don't let it block or change the state anymore
           try {
+            log('🔹 Attempting background cab-status update...');
             final saveResponse = await http.post(
               Uri.parse('${baseUrl}cab-status'),
               body: {
@@ -117,43 +123,17 @@ class ConfirmBookingBloc
                 "request": jsonEncode({"bookingId": event.bookingid}),
                 "response": jsonEncode(jsonData),
               },
-            );
+            ).timeout(const Duration(seconds: 10));
 
             log("📩 cab-status Response code: ${saveResponse.statusCode}");
-            log("📩 cab-status Response body: ${saveResponse.body}");
-
             final saveJson = jsonDecode(saveResponse.body);
-
             if (saveJson["status"] == "success") {
-              log("✅ cab-status saved successfully");
-              emit(ConfirmBookingSuccess(data: confirmBookingResponse.data!));
+              log("✅ Background status save successful");
             } else {
-              log("❌ cab-status save failed: ${saveJson["message"]}");
-              emit(
-                ConfirmBookingError(
-                  message: "Failed to save booking. Please try again.",
-                  shouldRefund: false,
-                  orderId: event.orderId,
-                  transactionId: event.transactionId,
-                  amount: event.amount,
-                  tableid: event.tableid,
-                  bookingid: event.bookingid,
-                ),
-              );
+              log("❌ Background status save failed: ${saveJson["message"]}");
             }
           } catch (e) {
-            log("💥 Exception while saving cab-status: $e");
-            emit(
-              ConfirmBookingError(
-                message: "Booking succeeded, but saving failed: $e",
-                shouldRefund: false,
-                orderId: event.orderId,
-                transactionId: event.transactionId,
-                amount: event.amount,
-                tableid: event.tableid,
-                bookingid: event.bookingid,
-              ),
-            );
+            log("💥 Background status save exception ignored: $e");
           }
         } else {
           log(

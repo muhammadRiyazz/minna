@@ -46,6 +46,8 @@ class BookingConfirmData {
   final List<RouteInfo> routes;
   final CabRate cabRate;
 
+  final double? paidAmount;
+
   BookingConfirmData({
     required this.bookingId,
     required this.referenceId,
@@ -62,7 +64,45 @@ class BookingConfirmData {
     required this.verificationCode,
     required this.routes,
     required this.cabRate,
+    this.paidAmount,
   });
+
+  BookingConfirmData copyWith({
+    String? bookingId,
+    String? referenceId,
+    String? statusDesc,
+    int? statusCode,
+    String? tripType,
+    String? tripDesc,
+    int? cabType,
+    String? startDate,
+    String? startTime,
+    int? totalDistance,
+    int? estimatedDuration,
+    int? id,
+    String? verificationCode,
+    List<RouteInfo>? routes,
+    CabRate? cabRate,
+    double? paidAmount,
+  }) =>
+      BookingConfirmData(
+        bookingId: bookingId ?? this.bookingId,
+        referenceId: referenceId ?? this.referenceId,
+        statusDesc: statusDesc ?? this.statusDesc,
+        statusCode: statusCode ?? this.statusCode,
+        tripType: tripType ?? this.tripType,
+        tripDesc: tripDesc ?? this.tripDesc,
+        cabType: cabType ?? this.cabType,
+        startDate: startDate ?? this.startDate,
+        startTime: startTime ?? this.startTime,
+        totalDistance: totalDistance ?? this.totalDistance,
+        estimatedDuration: estimatedDuration ?? this.estimatedDuration,
+        id: id ?? this.id,
+        verificationCode: verificationCode ?? this.verificationCode,
+        routes: routes ?? this.routes,
+        cabRate: cabRate ?? this.cabRate,
+        paidAmount: paidAmount ?? this.paidAmount,
+      );
 
   factory BookingConfirmData.fromJson(Map<String, dynamic> json) =>
       BookingConfirmData(
@@ -84,6 +124,7 @@ class BookingConfirmData {
             : List<RouteInfo>.from(
                 json["routes"].map((x) => RouteInfo.fromJson(x))),
         cabRate: CabRate.fromJson(json["cabRate"] ?? {}),
+        paidAmount: json["paidAmount"] != null ? _toDouble(json["paidAmount"]) : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -102,6 +143,7 @@ class BookingConfirmData {
         "verification_code": verificationCode,
         "routes": List<dynamic>.from(routes.map((x) => x.toJson())),
         "cabRate": cabRate.toJson(),
+        "paidAmount": paidAmount,
       };
 }
 

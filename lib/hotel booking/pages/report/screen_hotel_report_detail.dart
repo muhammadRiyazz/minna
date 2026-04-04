@@ -1,60 +1,268 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
+import 'package:minna/hotel booking/application/report/hotel_report_bloc.dart';
 import 'package:minna/hotel booking/domain/report/hotel_report_model.dart';
 import 'package:minna/comman/const/const.dart';
+import 'package:minna/hotel booking/functions/hotel_api.dart'; // For the loading dialog if needed
 
 class ScreenHotelReportDetail extends StatelessWidget {
   final HotelBookingRecord record;
 
   const ScreenHotelReportDetail({super.key, required this.record});
 
+  void _showCancelDialog(BuildContext context, String bookingId) {
+    final TextEditingController remarksController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          "Cancel Booking",
+          style: TextStyle(fontWeight: FontWeight.w900),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "Please provide a reason for cancellation.",
+              style: TextStyle(fontSize: 14, color: Colors.grey),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: remarksController,
+              maxLines: 3,
+              decoration: InputDecoration(
+                hintText: "Enter remarks here...",
+                filled: true,
+                fillColor: Colors.grey[100],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (remarksController.text.trim().isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Please enter remarks")),
+                );
+                return;
+              }
+              context.read<HotelReportBloc>().add(
+                    CancelHotelBooking(
+                      bookingId: bookingId,
+                      remarks: remarksController.text.trim(),
+                    ),
+                  );
+              Navigator.pop(context);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: const Text(
+              "Confirm Cancel",
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showRefundDetails(BuildContext context, dynamic data) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+             Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              "Cancellation Summary",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+            ),
+            const SizedBox(height: 16),
+            _buildRefundRow("Refunded Amount", "₹${data['RefundedAmount']}"),
+            _buildRefundRow("Total Price", "₹${data['TotalPrice']}"),
+            if (data['CancellationChargeBreakUp'] != null) ...[
+              _buildRefundRow(
+                "Cancellation Fees",
+                "₹${data['CancellationChargeBreakUp']['CancellationFees']}",
+              ),
+            ],
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: maincolor1,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                child: const Text(
+                  "Done",
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRefundRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+              color: maincolor1,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final booking = record.booking;
     final tboData = booking.parsedTboResponse;
     final bool isConfirmed = booking.bookingStatus.toUpperCase() == "CONFIRMED";
+    final bool canCancel = isConfirmed && booking.bookingId != null;
 
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      appBar: AppBar(
-        backgroundColor: maincolor1,
-        elevation: 0,
-        centerTitle: true,
-        title: const Text(
-          "Booking Report",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w900,
-            letterSpacing: -0.5,
+    return BlocListener<HotelReportBloc, HotelReportState>(
+      listener: (context, state) {
+        if (state is HotelCancelLoading) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => const Center(
+              child: CircularProgressIndicator(color: Colors.white),
+            ),
+          );
+        } else if (state is HotelCancelSuccess) {
+          Navigator.pop(context); // Pop loading dialog
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message)),
+          );
+          _showRefundDetails(context, state.data);
+        } else if (state is HotelCancelError) {
+          Navigator.pop(context); // Pop loading dialog
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+          );
+        }
+      },
+      child: Scaffold(
+        backgroundColor: backgroundColor,
+        appBar: AppBar(
+          backgroundColor: maincolor1,
+          elevation: 0,
+          centerTitle: true,
+          title: const Text(
+            "Booking Report",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              letterSpacing: -0.5,
+            ),
+          ),
+          leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Iconsax.arrow_left, color: Colors.white),
           ),
         ),
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Iconsax.arrow_left, color: Colors.white),
-        ),
-      ),
-      body: SingleChildScrollView(
-        // physics: const BouncingScrollPhysics(),
-        child: Column(
-          children: [
-            _buildHeader(booking, isConfirmed),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  _buildItineraryCard(booking),
-                  const SizedBox(height: 16),
-                  if (tboData != null) _buildTboDetails(tboData),
-                  if (tboData == null) _buildBasicDetails(booking),
-                  const SizedBox(height: 16),
-                  _buildPaymentCard(record),
-                  const SizedBox(height: 32),
-                ],
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              _buildHeader(booking, isConfirmed),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    _buildItineraryCard(booking),
+                    const SizedBox(height: 16),
+                    if (tboData != null) _buildTboDetails(tboData),
+                    if (tboData == null) _buildBasicDetails(booking),
+                    const SizedBox(height: 16),
+                    _buildPaymentCard(record),
+                    const SizedBox(height: 24),
+                    if (canCancel)
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton(
+                          onPressed: () => _showCancelDialog(
+                            context,
+                            booking.bookingId!,
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Colors.red),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: const Text(
+                            "Cancel Booking",
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+                    const SizedBox(height: 32),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
