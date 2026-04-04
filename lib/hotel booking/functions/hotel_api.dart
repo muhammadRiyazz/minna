@@ -162,7 +162,7 @@ class HotelApiService {
   }) async {
     try {
       log('📡 Cancelling Hotel Booking: $bookingId');
-      final cancelUrl = Uri.parse('https://tictechnologies.in/stage/minna/hotel-api-booking-cancel');
+      final cancelUrl = Uri.parse('${baseUrl}hotel-api-booking-cancel');
       
       final response = await _client.post(
         cancelUrl,
@@ -224,6 +224,38 @@ class HotelApiService {
     } catch (e) {
       log('Error in getCities: ${e.toString()}');
       throw Exception('Failed to load cities: $e');
+    }
+  }
+
+
+
+  Future<Map<String, dynamic>> checkBookingStatus({
+    required String bookingId,
+  }) async {
+    try {
+      log('📡 Checking Booking Status: $bookingId');
+      final checkUrl = Uri.parse('${baseUrl}hotel-api-booking-cancel-check-status');
+      
+      final response = await _client.post(
+        checkUrl,
+        body: {
+          'booking_id': bookingId,
+        },
+      );
+
+      log('📡 Status Check Response: ${response.body}');
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw ApiException(
+          'Failed to check status: Status ${response.statusCode}',
+          statusCode: response.statusCode,
+        );
+      }
+    } catch (e) {
+      log('❌ Status Check Error: $e');
+      throw ApiException('Failed to check booking status: $e');
     }
   }
 

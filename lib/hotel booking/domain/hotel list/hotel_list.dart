@@ -198,6 +198,7 @@ class RoomDetail {
   final bool isRefundable;
   final bool withTransfers;
   final List<List<Supplement>>? supplements;
+  final double netAmount;
 
   RoomDetail({
     required this.name,
@@ -211,6 +212,7 @@ class RoomDetail {
     required this.mealType,
     required this.isRefundable,
     required this.withTransfers,
+    required this.netAmount,
     this.supplements,
   });
 
@@ -232,6 +234,9 @@ class RoomDetail {
           [],
       totalFare: (json['TotalFare'] as num?)?.toDouble() ?? 0.0,
       totalTax: (json['TotalTax'] as num?)?.toDouble() ?? 0.0,
+      netAmount: (json['NetAmount'] as num?)?.toDouble() ??
+          (json['TotalFare'] as num?)?.toDouble() ??
+          0.0,
       roomPromotion:
           (json['RoomPromotion'] as List<dynamic>?)
               ?.map((e) => e.toString())

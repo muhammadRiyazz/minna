@@ -11,11 +11,12 @@ import 'package:minna/hotel%20booking/domain/authentication/authendication.dart'
 import 'package:minna/hotel%20booking/domain/hotel%20list/hotel_list.dart'
     hide CancelPolicy;
 import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:minna/hotel%20booking/functions/auth.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:minna/comman/application/login/login_bloc.dart';
 import 'package:minna/comman/pages/log%20in/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:minna/hotel%20booking/functions/auth.dart';
 
 class HotelBookingConfirmationPage extends StatefulWidget {
   final String prebookId;
@@ -53,6 +54,7 @@ class _HotelBookingConfirmationPageState
   late Razorpay _razorpay;
   String? _orderId;
   String _displayTime = '08:00';
+  bool _isServiceChargeLoading = true;
 
   // Theme colors
   final Color _primaryColor = maincolor1;
@@ -65,7 +67,6 @@ class _HotelBookingConfirmationPageState
   final Color _errorColor = const Color(0xFFD62828);
   final Color _successColor = const Color(0xFF2D6A4F);
   final Color _warningColor = const Color(0xFFF77F00);
-  final Color _borderColor = const Color(0xFFE9ECEF);
 
   // Service Charge
   double _serviceChargePercentage = 0.0;
@@ -84,6 +85,7 @@ class _HotelBookingConfirmationPageState
   }
 
   Future<void> _fetchServiceCharge() async {
+    setState(() => _isServiceChargeLoading = true);
     try {
       final result = await _apiService.getServiceCharge();
       if (result.isSuccess && result.data != null) {
@@ -95,6 +97,10 @@ class _HotelBookingConfirmationPageState
       }
     } catch (e) {
       log("Error fetching service charge: $e");
+    } finally {
+      if (mounted) {
+        setState(() => _isServiceChargeLoading = false);
+      }
     }
   }
 
@@ -180,72 +186,94 @@ class _HotelBookingConfirmationPageState
     showModalBottomSheet(
       context: context,
       isDismissible: false,
+      isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
         return Container(
-          margin: EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: _cardColor,
-            borderRadius: BorderRadius.circular(20),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: _errorColor.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.timer_off_rounded,
-                    size: 40,
-                    color: _errorColor,
-                  ),
-                ),
-                SizedBox(height: 20),
-                Text(
-                  "Booking Time Expired",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: _textPrimary,
-                  ),
-                ),
-                SizedBox(height: 12),
-                Text(
-                  "Your hotel booking time has expired. Please try again.",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 16, color: _textSecondary),
-                ),
-                SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).popUntil((route) => route.isFirst);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _primaryColor,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 16),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Text(
-                      "Go to Home",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
+                  ),
+                  const SizedBox(height: 32),
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: _errorColor.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Iconsax.timer_1,
+                        size: 40,
+                        color: _errorColor,
                       ),
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 24),
+                  const Text(
+                    "Booking Session Expired",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFF1A1A1A),
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    "Your hotel booking session has expired due to inactivity. Please restart the process to secure your stay.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: _textSecondary,
+                      height: 1.5,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(
+                          context,
+                        ).popUntil((route) => route.isFirst);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _primaryColor,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 18),
+                        elevation: 0,
+                      ),
+                      child: const Text(
+                        "Return to Home",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -267,20 +295,24 @@ class _HotelBookingConfirmationPageState
     return widget.room.totalFare + widget.room.totalTax;
   }
 
-  double _calculateServiceCharge(double baseAmount) {
+  double _calculateServiceCharge(double netAmount) {
     if (_serviceChargePercentage > 0) {
-      return (baseAmount * _serviceChargePercentage) / 100;
+      return (netAmount * _serviceChargePercentage) / 100;
     }
     return 0.0;
   }
 
   double _getTotalAmount() {
-    final baseAmount = _getBaseAmount();
-    return baseAmount + _calculateServiceCharge(baseAmount);
+    log('_getTotalAmount-------------------');
+
+    final netAmount = _getNetAmount();
+    log(netAmount.toString());
+    return netAmount + _calculateServiceCharge(netAmount);
   }
 
   // Add a new method to get just the net amount (room fare without taxes)
   double _getNetAmount() {
+    log('_getNetAmount-------------------');
     final preBookRoom = widget
         .preBookResponse
         .preBookResponse
@@ -289,11 +321,13 @@ class _HotelBookingConfirmationPageState
         ?.rooms
         .firstOrNull;
     if (preBookRoom != null) {
+      log(preBookRoom.netAmount.toString());
       // This returns just the NET amount (room fare without taxes)
-      return preBookRoom.totalFare;
+      return preBookRoom.netAmount;
     }
     // Fallback to widget.room data
-    return widget.room.totalFare;
+    log(widget.room.netAmount.toString());
+    return widget.room.netAmount;
   }
 
   Future<Map<String, dynamic>> _generateBookingRequest() async {
@@ -463,98 +497,128 @@ class _HotelBookingConfirmationPageState
 
     final shouldExit = await showModalBottomSheet<bool>(
       context: context,
+      isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
         return Container(
-          margin: EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: _cardColor,
-            borderRadius: BorderRadius.circular(20),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: _warningColor.withOpacity(0.1),
-                    shape: BoxShape.circle,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Top Handle
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
-                  child: Icon(
-                    Icons.exit_to_app_rounded,
-                    color: _warningColor,
-                    size: 30,
+                  const SizedBox(height: 32),
+
+                  // Icon
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: _warningColor.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Iconsax.warning_2,
+                        color: _warningColor,
+                        size: 40,
+                      ),
+                    ),
                   ),
-                ),
-                SizedBox(height: 16),
-                Text(
-                  "Exit Hotel Booking?",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: _textPrimary,
+                  const SizedBox(height: 24),
+
+                  // Title
+                  const Text(
+                    "Exit Hotel Booking?",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFF1A1A1A),
+                      letterSpacing: -0.5,
+                    ),
                   ),
-                ),
-                SizedBox(height: 12),
-                Text(
-                  "Are you sure you want to exit the booking process?",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: _textSecondary, fontSize: 15),
-                ),
-                SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () => Navigator.pop(context, false),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: _textSecondary,
-                          side: BorderSide(color: Colors.grey.shade400),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                  const SizedBox(height: 12),
+
+                  // Subtitle
+                  Text(
+                    "Are you sure you want to stop the booking process? Your progress will be lost.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: _textSecondary,
+                      fontSize: 15,
+                      height: 1.5,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+
+                  // Actions
+                  Column(
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _primaryColor,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 18),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            elevation: 0,
                           ),
-                          padding: EdgeInsets.symmetric(vertical: 16),
-                        ),
-                        child: Text(
-                          "Continue Booking",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
+                          child: const Text(
+                            "Continue with Booking",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 16,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(
-                            context,
-                          ).popUntil((route) => route.isFirst);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _primaryColor,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.of(
+                              context,
+                            ).popUntil((route) => route.isFirst);
+                          },
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
                           ),
-                          padding: EdgeInsets.symmetric(vertical: 16),
-                        ),
-                        child: Text(
-                          "Exit",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
+                          child: Text(
+                            "Yes, Exit Process",
+                            style: TextStyle(
+                              color: _errorColor,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 15,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -591,13 +655,14 @@ class _HotelBookingConfirmationPageState
       SharedPreferences preferences = await SharedPreferences.getInstance();
       final userId = preferences.getString('userId') ?? '';
       final bookingPayload = await _generateBookingRequest();
+      final netAmount = _getNetAmount();
 
       context.read<HotelBookingConfirmBloc>().add(
         HotelBookingConfirmEvent.createOrder(
           userId: userId,
           bookingPayload: bookingPayload,
           amount: totalAmount,
-          serviceCharge: serviceChargeAmount,
+          serviceCharge: _calculateServiceCharge(netAmount),
         ),
       );
     } catch (e) {
@@ -785,64 +850,66 @@ class _HotelBookingConfirmationPageState
     );
   }
 
-  Widget _buildHotelSummary() {
+  Widget _buildHotelSummaryCard() {
     return Container(
       decoration: BoxDecoration(
         color: _cardColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 12,
-            offset: Offset(0, 4),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
       child: Padding(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionHeader('Hotel Information', Icons.hotel_rounded),
-            SizedBox(height: 16),
+            _buildSectionHeader('Hotel Information', Iconsax.status),
+            const SizedBox(height: 20),
             Text(
               widget.hotel.hotelDetails.hotelName,
               style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
                 color: _textPrimary,
+                letterSpacing: -0.5,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 12),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  Icons.location_on_rounded,
-                  color: _secondaryColor,
-                  size: 16,
-                ),
-                SizedBox(width: 6),
+                Icon(Iconsax.location, color: _secondaryColor, size: 18),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     widget.hotel.hotelDetails.address,
-                    style: TextStyle(color: _textSecondary),
+                    style: TextStyle(
+                      color: _textSecondary,
+                      fontSize: 14,
+                      height: 1.5,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 12),
             Row(
               children: [
-                Icon(
-                  Icons.room_service_rounded,
-                  color: _secondaryColor,
-                  size: 16,
-                ),
-                SizedBox(width: 6),
+                Icon(Iconsax.house, color: _secondaryColor, size: 18),
+                const SizedBox(width: 10),
                 Text(
                   '${widget.roomPassengers?.length ?? 1} Room${(widget.roomPassengers?.length ?? 1) > 1 ? 's' : ''}',
-                  style: TextStyle(color: _textSecondary),
+                  style: TextStyle(
+                    color: _textSecondary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),
@@ -852,64 +919,58 @@ class _HotelBookingConfirmationPageState
     );
   }
 
-  Widget _buildBookingDetails() {
+  Widget _buildRoomInfoCard() {
     return Container(
       decoration: BoxDecoration(
         color: _cardColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 12,
-            offset: Offset(0, 4),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
       child: Padding(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 10),
-            _buildSectionHeader(
-              'Booking Details',
-              Icons.calendar_month_rounded,
-            ),
+            _buildSectionHeader('Booking Stays', Iconsax.calendar_1),
+            const SizedBox(height: 20),
             GridView.count(
               shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.zero,
+              physics: const NeverScrollableScrollPhysics(),
               crossAxisCount: 2,
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
-              childAspectRatio: 1.8,
+              childAspectRatio: 2,
               children: [
-                _buildDetailItem('Check-in', '14:00', Icons.login_rounded),
-                _buildDetailItem('Check-out', '12:00', Icons.logout_rounded),
-                _buildDetailItem(
-                  'Duration',
-                  '1 Night',
-                  Icons.access_time_rounded,
-                ),
+                _buildDetailItem('Check-in', '14:00', Iconsax.login_1),
+                _buildDetailItem('Check-out', '12:00', Iconsax.logout_1),
+                _buildDetailItem('Duration', '1 Night', Iconsax.clock),
                 _buildDetailItem(
                   'Guests',
                   '${widget.passengers.length}',
-                  Icons.people_rounded,
+                  Iconsax.user,
                 ),
               ],
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 16),
             _buildDetailItem(
               'Room Type',
               widget.room.name.join(', '),
-              Icons.king_bed_rounded,
+              Iconsax.house_2,
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             _buildDetailItem(
               'Meal Plan',
               widget.room.mealType.isNotEmpty
                   ? widget.room.mealType
                   : 'Not Included',
-              Icons.restaurant_rounded,
+              Iconsax.coffee,
             ),
           ],
         ),
@@ -967,43 +1028,57 @@ class _HotelBookingConfirmationPageState
     );
   }
 
-  Widget _buildGuestSummary() {
+  Widget _buildPassengerSummaryCard() {
     final totalGuests = widget.passengers.length;
     final totalRooms = widget.roomPassengers?.length ?? 1;
 
     return Container(
       decoration: BoxDecoration(
         color: _cardColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 12,
-            offset: Offset(0, 4),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
       child: Padding(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionHeader('Guest Summary', Icons.people_alt_rounded),
-            SizedBox(height: 12),
+            _buildSectionHeader('Guest Summary', Iconsax.user_octagon),
+            const SizedBox(height: 16),
             Text(
               '$totalGuests guest${totalGuests > 1 ? 's' : ''} across $totalRooms room${totalRooms > 1 ? 's' : ''}',
-              style: TextStyle(fontSize: 15, color: _textPrimary),
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: _textPrimary,
+              ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 12),
             if (widget.roomPassengers != null)
               ...widget.roomPassengers!.asMap().entries.map((entry) {
                 final roomIndex = entry.key;
                 final room = entry.value;
                 return Padding(
-                  padding: EdgeInsets.only(top: 8),
-                  child: Text(
-                    'Room ${roomIndex + 1}: ${room.length} guest${room.length > 1 ? 's' : ''}',
-                    style: TextStyle(fontSize: 13, color: _textSecondary),
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Row(
+                    children: [
+                      Icon(Iconsax.user_tag, size: 14, color: _secondaryColor),
+                      const SizedBox(width: 10),
+                      Text(
+                        'Room ${roomIndex + 1}: ${room.length} guest${room.length > 1 ? 's' : ''}',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: _textSecondary,
+                        ),
+                      ),
+                    ],
                   ),
                 );
               }),
@@ -1772,7 +1847,10 @@ class _HotelBookingConfirmationPageState
             color: Colors.white,
             size: 20,
           ),
-          onPressed: () => _onWillPop(),
+          onPressed: () {
+            log('_onWillPop-------------------');
+            // _onWillPop();
+          },
         ),
       ),
       flexibleSpace: FlexibleSpaceBar(
@@ -1855,286 +1933,44 @@ class _HotelBookingConfirmationPageState
     );
   }
 
-  Widget _buildHotelSummaryCard() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: _cardColor,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: _borderColor),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: _secondaryColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  Icons.hotel_class_rounded,
-                  color: _secondaryColor,
-                  size: 20,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.hotel.hotelDetails.hotelName,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: _textPrimary,
-                      ),
-                    ),
-                    Text(
-                      widget.hotel.hotelDetails.address,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 12, color: _textSecondary),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const Divider(height: 32),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildSimpleInfo(
-                'Hotel Code',
-                widget.hotel.hotelDetails.hotelCode,
-              ),
-              // _buildSimpleInfo('Currency', widget.hotel.hotelDetails.c),
-              _buildSimpleInfo(
-                'Ratings',
-                widget.hotel.hotelDetails.hotelRating.toString(),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSimpleInfo(String label, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: TextStyle(fontSize: 11, color: _textSecondary)),
-        const SizedBox(height: 4),
-        Text(
-          value.isEmpty ? 'N/A' : value,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: _textPrimary,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRoomInfoCard() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: _cardColor,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: _borderColor),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.king_bed_outlined, color: _primaryColor, size: 20),
-              const SizedBox(width: 12),
-              Text(
-                'Room Information',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: _textPrimary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Text(
-            widget.room.name.join(', '),
-            style: TextStyle(fontSize: 13, color: _textSecondary, height: 1.4),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              _buildAmenityChip('Premium Stay'),
-              _buildAmenityChip('Verified Room'),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAmenityChip(String label) {
-    return Container(
-      margin: const EdgeInsets.only(right: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: _backgroundColor,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 11,
-          color: _textSecondary,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPassengerSummaryCard() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: _cardColor,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: _borderColor),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.people_outline_rounded,
-                color: _primaryColor,
-                size: 20,
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'Passenger Summary',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: _textPrimary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: widget.passengers.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
-            itemBuilder: (context, index) {
-              final p = widget.passengers[index];
-              return Row(
-                children: [
-                  CircleAvatar(
-                    radius: 12,
-                    backgroundColor: _primaryColor.withOpacity(0.05),
-                    child: Text(
-                      '${index + 1}',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: _primaryColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    '${p['Title'] ?? ''} ${p['FirstName'] ?? ''} ${p['LastName'] ?? ''}',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: _textPrimary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const Spacer(),
-                  if (p['LeadPassenger'] == true)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _secondaryColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        'LEAD',
-                        style: TextStyle(
-                          fontSize: 8,
-                          color: _secondaryColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                ],
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildPriceDetailedCard(double totalAmount) {
-    final baseAmount = _getBaseAmount();
-    final serviceChargeAmount = _calculateServiceCharge(baseAmount);
+    if (_isServiceChargeLoading) {
+      return _buildPriceShimmerCard();
+    }
+
+    final netAmount = _getNetAmount();
+    final taxAmount = widget.room.totalTax;
+    final serviceChargeAmount = _calculateServiceCharge(netAmount);
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: _primaryColor,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
-            color: _primaryColor.withOpacity(0.2),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
+            color: _primaryColor.withOpacity(0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
       child: Column(
         children: [
           _buildSummaryPriceRow(
-            'Total Fare',
-            '₹${widget.room.totalFare.toStringAsFixed(2)}',
-            Colors.white70,
+            'Room Rate',
+            '₹${netAmount.toStringAsFixed(2)}',
+            Colors.white.withOpacity(0.9),
           ),
-
-          const SizedBox(height: 8),
-
+          const SizedBox(height: 12),
           _buildSummaryPriceRow(
             'Service Charge',
-            serviceChargeAmount.toStringAsFixed(2),
-            Colors.white70,
+            '₹${serviceChargeAmount.toStringAsFixed(2)}',
+            Colors.white.withOpacity(0.9),
           ),
-
           const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: Divider(color: Colors.white24),
+            padding: EdgeInsets.symmetric(vertical: 20),
+            child: Divider(color: Colors.white24, thickness: 1),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -2144,20 +1980,107 @@ class _HotelBookingConfirmationPageState
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.white,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.5,
                 ),
               ),
               Text(
                 '₹${totalAmount.toStringAsFixed(2)}',
                 style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w900,
                   color: _secondaryColor,
                 ),
               ),
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildPriceShimmerCard() {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: _primaryColor.withOpacity(0.8),
+        borderRadius: BorderRadius.circular(32),
+      ),
+      child: Shimmer.fromColors(
+        baseColor: Colors.white.withOpacity(0.1),
+        highlightColor: Colors.white.withOpacity(0.2),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  height: 14,
+                  width: 100,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                Container(
+                  height: 14,
+                  width: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  height: 14,
+                  width: 110,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                Container(
+                  height: 14,
+                  width: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ],
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 20),
+              child: Divider(color: Colors.white12, thickness: 1),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  height: 18,
+                  width: 120,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                Container(
+                  height: 28,
+                  width: 90,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -2180,6 +2103,8 @@ class _HotelBookingConfirmationPageState
   }
 
   Widget _buildBottomActionBar(double totalAmount, bool isLoading) {
+    final bool isActuallyLoading = isLoading || _isServiceChargeLoading;
+
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
       decoration: BoxDecoration(
@@ -2200,18 +2125,42 @@ class _HotelBookingConfirmationPageState
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Total Payable',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-                Text(
-                  '₹${totalAmount.toStringAsFixed(2)}',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: _primaryColor,
+                if (_isServiceChargeLoading)
+                  Shimmer.fromColors(
+                    baseColor: Colors.grey.shade200,
+                    highlightColor: Colors.grey.shade100,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          height: 10,
+                          width: 60,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Container(
+                          height: 18,
+                          width: 90,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                else
+                  Text(
+                    '₹${totalAmount.toStringAsFixed(2)}',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
+                      color: _primaryColor,
+                    ),
                   ),
-                ),
               ],
             ),
           ),
@@ -2219,34 +2168,32 @@ class _HotelBookingConfirmationPageState
           Expanded(
             flex: 2,
             child: ElevatedButton(
-              onPressed: isLoading
+              onPressed: isActuallyLoading
                   ? null
                   : () {
-                      final baseAmount = _getBaseAmount();
-                      final calculatedServiceCharge = _calculateServiceCharge(
-                        baseAmount,
-                      );
+                      final netAmount = _getNetAmount();
                       _onProceedToPayment(
                         totalAmount: totalAmount,
-                        serviceChargeAmount: calculatedServiceCharge,
+                        serviceChargeAmount: _calculateServiceCharge(netAmount),
                       );
                     },
               style: ElevatedButton.styleFrom(
                 backgroundColor: _secondaryColor,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: 18),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
                 elevation: 0,
+                disabledBackgroundColor: _secondaryColor.withOpacity(0.5),
               ),
-              child: isLoading
+              child: isActuallyLoading
                   ? const SizedBox(
-                      height: 20,
-                      width: 20,
+                      height: 22,
+                      width: 22,
                       child: CircularProgressIndicator(
                         color: Colors.white,
-                        strokeWidth: 2,
+                        strokeWidth: 2.5,
                       ),
                     )
                   : const Row(
@@ -2256,11 +2203,11 @@ class _HotelBookingConfirmationPageState
                           'Confirm & Pay',
                           style: TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w900,
                           ),
                         ),
                         SizedBox(width: 8),
-                        Icon(Icons.arrow_forward_rounded, size: 20),
+                        Icon(Iconsax.arrow_right_3, size: 18),
                       ],
                     ),
             ),

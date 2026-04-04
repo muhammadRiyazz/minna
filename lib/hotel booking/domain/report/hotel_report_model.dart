@@ -54,6 +54,12 @@ class BookingInfo {
   final String createdAt;
   final String paymentStatus;
   final String? failureReason;
+  final String? changeRequestId;
+  final String? refundAmount;
+  final String? cancellationCharge;
+  final String? refundStatus;
+  final String? refundId;
+  final String? refundCreatedAt;
 
   BookingInfo({
     required this.id,
@@ -70,6 +76,12 @@ class BookingInfo {
     required this.createdAt,
     required this.paymentStatus,
     this.failureReason,
+    this.changeRequestId,
+    this.refundAmount,
+    this.cancellationCharge,
+    this.refundStatus,
+    this.refundId,
+    this.refundCreatedAt,
   });
 
   factory BookingInfo.fromJson(Map<String, dynamic> json) {
@@ -88,6 +100,12 @@ class BookingInfo {
       createdAt: json['created_at']?.toString() ?? '',
       paymentStatus: json['payment_status']?.toString() ?? 'PENDING',
       failureReason: json['failure_reason'],
+      changeRequestId: json['change_request_id']?.toString(),
+      refundAmount: json['refund_amount']?.toString(),
+      cancellationCharge: json['cancellation_charge']?.toString(),
+      refundStatus: json['refund_status']?.toString(),
+      refundId: json['refund_id']?.toString(),
+      refundCreatedAt: json['refund_created_at']?.toString(),
     );
   }
 

@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:minna/hotel booking/application/report/hotel_report_bloc.dart';
 import 'package:minna/hotel booking/domain/report/hotel_report_model.dart';
 import 'package:minna/comman/const/const.dart';
-import 'package:minna/hotel booking/functions/hotel_api.dart'; // For the loading dialog if needed
 
 class ScreenHotelReportDetail extends StatelessWidget {
   final HotelBookingRecord record;
@@ -16,68 +15,167 @@ class ScreenHotelReportDetail extends StatelessWidget {
     final TextEditingController remarksController = TextEditingController();
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
-          "Cancel Booking",
-          style: TextStyle(fontWeight: FontWeight.w900),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              "Please provide a reason for cancellation.",
-              style: TextStyle(fontSize: 14, color: Colors.grey),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: remarksController,
-              maxLines: 3,
-              decoration: InputDecoration(
-                hintText: "Enter remarks here...",
-                filled: true,
-                fillColor: Colors.grey[100],
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        backgroundColor: Colors.white,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header Icon
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Iconsax.close_circle,
+                    color: Colors.red,
+                    size: 32,
+                  ),
                 ),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (remarksController.text.trim().isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Please enter remarks")),
-                );
-                return;
-              }
-              context.read<HotelReportBloc>().add(
-                    CancelHotelBooking(
-                      bookingId: bookingId,
-                      remarks: remarksController.text.trim(),
+                const SizedBox(height: 20),
+
+                // Title
+                const Text(
+                  "Cancel Booking",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF1A1A1A),
+                  ),
+                ),
+                const SizedBox(height: 8),
+
+                // Subtitle
+                const Text(
+                  "Are you sure? Please provide a reason for cancellation below.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Color(0xFF64748B),
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Remark Input
+                TextField(
+                  controller: remarksController,
+                  maxLines: 4,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: "Enter your reason for cancellation...",
+                    hintStyle: const TextStyle(
+                      color: Color(0xFF94A3B8),
+                      fontWeight: FontWeight.w400,
                     ),
-                  );
-              Navigator.pop(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            child: const Text(
-              "Confirm Cancel",
-              style: TextStyle(color: Colors.white),
+                    filled: true,
+                    fillColor: const Color(0xFFF8FAFC),
+                    prefixIcon: const Padding(
+                      padding: EdgeInsets.only(bottom: 50),
+                      child: Icon(
+                        Iconsax.edit_2,
+                        size: 18,
+                        color: Color(0xFF64748B),
+                      ),
+                    ),
+                    contentPadding: const EdgeInsets.all(16),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: const BorderSide(
+                        color: maincolor1,
+                        width: 1.5,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Actions
+                Column(
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          side: const BorderSide(color: Color(0xFFE2E8F0)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        child: const Text(
+                          "Keep Booking",
+                          style: TextStyle(
+                            color: Color(0xFF64748B),
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (remarksController.text.trim().isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  "Please enter a cancellation reason",
+                                ),
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                            return;
+                          }
+                          context.read<HotelReportBloc>().add(
+                            CancelHotelBooking(
+                              bookingId: bookingId,
+                              remarks: remarksController.text.trim(),
+                            ),
+                          );
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        child: const Text(
+                          "Confirm Cancel",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -85,9 +183,10 @@ class ScreenHotelReportDetail extends StatelessWidget {
   void _showRefundDetails(BuildContext context, dynamic data) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
@@ -96,45 +195,114 @@ class ScreenHotelReportDetail extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-             Center(
+            Center(
               child: Container(
-                width: 40,
-                height: 4,
+                width: 48,
+                height: 5,
                 decoration: BoxDecoration(
-                  color: Colors.grey,
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  color: const Color(0xFFE2E8F0),
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
             ),
-            const SizedBox(height: 24),
-            const Text(
-              "Cancellation Summary",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+            const SizedBox(height: 32),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: maincolor1.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(Iconsax.receipt_2, color: maincolor1, size: 24),
+                ),
+                const SizedBox(width: 16),
+                const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Cancellation Summary",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF1A1A1A),
+                      ),
+                    ),
+                    Text(
+                      "Review your refund details below",
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Color(0xFF64748B),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            _buildRefundRow("Refunded Amount", "₹${data['RefundedAmount']}"),
-            _buildRefundRow("Total Price", "₹${data['TotalPrice']}"),
-            if (data['CancellationChargeBreakUp'] != null) ...[
-              _buildRefundRow(
-                "Cancellation Fees",
-                "₹${data['CancellationChargeBreakUp']['CancellationFees']}",
+            const SizedBox(height: 32),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: const Color(0xFFF1F5F9)),
               ),
-            ],
-            const SizedBox(height: 24),
+              child: Column(
+                children: [
+                  _buildRefundRow(
+                    "Total Price",
+                    "₹${data['TotalPrice']?.toStringAsFixed(2) ?? '0.00'}",
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: Divider(height: 1, color: Color(0xFFE2E8F0)),
+                  ),
+                  if (data['CancellationChargeBreakUp'] != null) ...[
+                    _buildRefundRow(
+                      "Cancellation Fees",
+                      "₹${data['CancellationChargeBreakUp']['CancellationFees']?.toStringAsFixed(2) ?? '0.00'}",
+                      isNegative: true,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildRefundRow(
+                      "Service Charges",
+                      "₹${data['CancellationChargeBreakUp']['CancellationServiceCharge']?.toStringAsFixed(2) ?? '0.00'}",
+                      isNegative: true,
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: Divider(height: 1, color: Color(0xFFE2E8F0)),
+                    ),
+                  ],
+                  _buildRefundRow(
+                    "Amount to Refund",
+                    "₹${data['RefundedAmount']?.toStringAsFixed(2) ?? '0.00'}",
+                    isHighlight: true,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 32),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: maincolor1,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 18),
+                  elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
                 child: const Text(
                   "Done",
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 16,
+                  ),
                 ),
               ),
             ),
@@ -144,22 +312,35 @@ class ScreenHotelReportDetail extends StatelessWidget {
     );
   }
 
-  Widget _buildRefundRow(String label, String value) {
+  Widget _buildRefundRow(
+    String label,
+    String value, {
+    bool isNegative = false,
+    bool isHighlight = false,
+  }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             label,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: isHighlight ? FontWeight.w900 : FontWeight.w600,
+              color: isHighlight
+                  ? const Color(0xFF1A1A1A)
+                  : const Color(0xFF64748B),
+            ),
           ),
           Text(
-            value,
+            isNegative ? "- $value" : value,
             style: TextStyle(
-              fontSize: 16,
+              fontSize: isHighlight ? 18 : 15,
               fontWeight: FontWeight.w900,
-              color: maincolor1,
+              color: isHighlight
+                  ? maincolor1
+                  : (isNegative ? Colors.red : const Color(0xFF1A1A1A)),
             ),
           ),
         ],
@@ -171,12 +352,15 @@ class ScreenHotelReportDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     final booking = record.booking;
     final tboData = booking.parsedTboResponse;
-    final bool isConfirmed = booking.bookingStatus.toUpperCase() == "CONFIRMED";
+    final String status = booking.bookingStatus.toUpperCase();
+    final bool isConfirmed = status == "CONFIRMED" || status == "CONFORMS";
+    final bool isCancellationPending = status == "CANCELLATION_PENDING";
+    final bool isCancelled = status == "CANCELLED";
     final bool canCancel = isConfirmed && booking.bookingId != null;
 
     return BlocListener<HotelReportBloc, HotelReportState>(
       listener: (context, state) {
-        if (state is HotelCancelLoading) {
+        if (state is HotelCancelLoading || state is HotelStatusCheckLoading) {
           showDialog(
             context: context,
             barrierDismissible: false,
@@ -187,13 +371,41 @@ class ScreenHotelReportDetail extends StatelessWidget {
         } else if (state is HotelCancelSuccess) {
           Navigator.pop(context); // Pop loading dialog
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
+            SnackBar(
+              content: Text(state.message),
+              behavior: SnackBarBehavior.floating,
+            ),
           );
-          _showRefundDetails(context, state.data);
+          // Wait for status check to complete (handled in Bloc)
+          // We stay on the page until final status is confirmed
         } else if (state is HotelCancelError) {
           Navigator.pop(context); // Pop loading dialog
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        } else if (state is HotelStatusCheckSuccess) {
+          Navigator.pop(context); // Pop loading dialog
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+          // Auto-navigate back to the list as requested
+          Navigator.pop(context);
+        } else if (state is HotelStatusCheckError) {
+          Navigator.pop(context); // Pop loading dialog
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ),
           );
         }
       },
@@ -220,7 +432,12 @@ class ScreenHotelReportDetail extends StatelessWidget {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              _buildHeader(booking, isConfirmed),
+              _buildHeader(
+                booking,
+                isConfirmed,
+                isCancellationPending,
+                isCancelled,
+              ),
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -231,15 +448,17 @@ class ScreenHotelReportDetail extends StatelessWidget {
                     if (tboData == null) _buildBasicDetails(booking),
                     const SizedBox(height: 16),
                     _buildPaymentCard(record),
+                    if (isCancelled || booking.refundStatus != null) ...[
+                      const SizedBox(height: 16),
+                      _buildRefundCard(booking),
+                    ],
                     const SizedBox(height: 24),
                     if (canCancel)
                       SizedBox(
                         width: double.infinity,
                         child: OutlinedButton(
-                          onPressed: () => _showCancelDialog(
-                            context,
-                            booking.bookingId!,
-                          ),
+                          onPressed: () =>
+                              _showCancelDialog(context, booking.bookingId!),
                           style: OutlinedButton.styleFrom(
                             side: const BorderSide(color: Colors.red),
                             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -257,6 +476,33 @@ class ScreenHotelReportDetail extends StatelessWidget {
                           ),
                         ),
                       ),
+                    if (isCancellationPending)
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            context.read<HotelReportBloc>().add(
+                              CheckBookingStatus(bookingId: booking.bookingId!),
+                            );
+                          },
+                          icon: const Icon(Iconsax.refresh, size: 20),
+                          label: const Text(
+                            "Check Status",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 16,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.orange,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                        ),
+                      ),
                     const SizedBox(height: 32),
                   ],
                 ),
@@ -268,7 +514,29 @@ class ScreenHotelReportDetail extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BookingInfo booking, bool isConfirmed) {
+  Widget _buildHeader(
+    BookingInfo booking,
+    bool isConfirmed,
+    bool isCancellationPending,
+    bool isCancelled,
+  ) {
+    Color statusColor;
+    IconData statusIcon;
+
+    if (isConfirmed) {
+      statusColor = Colors.green;
+      statusIcon = Iconsax.tick_circle;
+    } else if (isCancellationPending) {
+      statusColor = Colors.orange;
+      statusIcon = Iconsax.clock;
+    } else if (isCancelled) {
+      statusColor = Colors.red;
+      statusIcon = Iconsax.close_circle;
+    } else {
+      statusColor = Colors.grey;
+      statusIcon = Iconsax.info_circle;
+    }
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -301,31 +569,27 @@ class ScreenHotelReportDetail extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: isConfirmed
-                  ? Colors.green.withOpacity(0.2)
-                  : Colors.orange.withOpacity(0.2),
+              color: statusColor.withOpacity(0.2),
               borderRadius: BorderRadius.circular(100),
-              border: Border.all(
-                color: isConfirmed
-                    ? Colors.green.withOpacity(0.3)
-                    : Colors.orange.withOpacity(0.3),
-              ),
+              border: Border.all(color: statusColor.withOpacity(0.3)),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
-                  isConfirmed ? Iconsax.tick_circle : Iconsax.info_circle,
+                  statusIcon,
                   size: 14,
-                  color: isConfirmed ? Colors.greenAccent : Colors.orangeAccent,
+                  color: statusColor == Colors.green
+                      ? Colors.greenAccent
+                      : statusColor,
                 ),
                 const SizedBox(width: 8),
                 Text(
                   booking.bookingStatus.toUpperCase(),
                   style: TextStyle(
-                    color: isConfirmed
+                    color: statusColor == Colors.green
                         ? Colors.greenAccent
-                        : Colors.orangeAccent,
+                        : statusColor,
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 1,
@@ -336,6 +600,44 @@ class ScreenHotelReportDetail extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildRefundCard(BookingInfo booking) {
+    return Column(
+      children: [
+        _buildSectionHeader("Refund Information", Iconsax.money_send),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: Colors.red.withOpacity(0.2)),
+          ),
+          child: Column(
+            children: [
+              _buildDetailRow(
+                "Refund Status",
+                booking.refundStatus ?? "PROCESSING",
+              ),
+              _buildDetailRow(
+                "Refund Amount",
+                "${booking.currency} ${booking.refundAmount ?? '0.00'}",
+              ),
+              if (booking.cancellationCharge != null)
+                _buildDetailRow(
+                  "Cancellation Fee",
+                  "${booking.currency} ${booking.cancellationCharge}",
+                ),
+              if (booking.changeRequestId != null)
+                _buildDetailRow("Change Request ID", booking.changeRequestId!),
+              if (booking.refundId != null)
+                _buildDetailRow("Refund ID", booking.refundId!),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

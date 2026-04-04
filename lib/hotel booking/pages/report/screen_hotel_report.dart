@@ -118,7 +118,11 @@ class _ScreenHotelReportState extends State<ScreenHotelReport> {
                         ],
                       ),
                       const SizedBox(height: 20),
-                      Container(height: 1, width: double.infinity, color: borderSoft),
+                      Container(
+                        height: 1,
+                        width: double.infinity,
+                        color: borderSoft,
+                      ),
                       const SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -138,7 +142,11 @@ class _ScreenHotelReportState extends State<ScreenHotelReport> {
     );
   }
 
-  Widget _buildShimmerBox({required double width, required double height, double radius = 4}) {
+  Widget _buildShimmerBox({
+    required double width,
+    required double height,
+    double radius = 4,
+  }) {
     return Container(
       width: width,
       height: height,
@@ -154,7 +162,11 @@ class _ScreenHotelReportState extends State<ScreenHotelReport> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Iconsax.house_2, size: 80, color: secondaryColor.withOpacity(0.3)),
+          Icon(
+            Iconsax.house_2,
+            size: 80,
+            color: secondaryColor.withOpacity(0.3),
+          ),
           const SizedBox(height: 16),
           Text(
             "No Hotel Bookings Found",
@@ -181,11 +193,15 @@ class _ScreenHotelReportState extends State<ScreenHotelReport> {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                color: Colors.redAccent,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: () => context.read<HotelReportBloc>().add(FetchHotelReports()),
+              onPressed: () =>
+                  context.read<HotelReportBloc>().add(FetchHotelReports()),
               style: ElevatedButton.styleFrom(backgroundColor: maincolor1),
               child: const Text("Retry", style: TextStyle(color: Colors.white)),
             ),
@@ -213,7 +229,7 @@ class _ScreenHotelReportState extends State<ScreenHotelReport> {
 
   Widget _buildBookingCard(HotelBookingRecord record) {
     final booking = record.booking;
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -287,11 +303,10 @@ class _ScreenHotelReportState extends State<ScreenHotelReport> {
                           ],
                         ),
                       ),
-                      _buildStatusBadge(booking.bookingStatus),
                     ],
                   ),
                 ),
-                
+
                 // Content Section
                 Padding(
                   padding: const EdgeInsets.all(20),
@@ -305,11 +320,7 @@ class _ScreenHotelReportState extends State<ScreenHotelReport> {
                             value: _formatDate(booking.checkIn),
                             icon: Iconsax.calendar_1,
                           ),
-                          Container(
-                            height: 30,
-                            width: 1,
-                            color: borderSoft,
-                          ),
+                          Container(height: 30, width: 1, color: borderSoft),
                           _buildInfoItem(
                             label: "Check-Out",
                             value: _formatDate(booking.checkOut),
@@ -326,7 +337,11 @@ class _ScreenHotelReportState extends State<ScreenHotelReport> {
                         children: [
                           Row(
                             children: [
-                              Icon(Iconsax.user, size: 14, color: secondaryColor),
+                              Icon(
+                                Iconsax.user,
+                                size: 14,
+                                color: secondaryColor,
+                              ),
                               const SizedBox(width: 6),
                               Text(
                                 "${booking.guests} Guest(s)",
@@ -361,26 +376,28 @@ class _ScreenHotelReportState extends State<ScreenHotelReport> {
 
   Widget _buildStatusBadge(String status) {
     bool isConfirmed = status.toUpperCase() == "CONFIRMED";
-    bool isPending = status.toUpperCase() == "INITIATED" || status.toUpperCase() == "PENDING";
-    
+    bool isPending =
+        status.toUpperCase() == "INITIATED" ||
+        status.toUpperCase() == "PENDING";
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: isConfirmed 
-            ? Colors.green.withOpacity(0.1) 
-            : isPending 
-                ? Colors.orange.withOpacity(0.1) 
-                : Colors.red.withOpacity(0.1),
+        color: isConfirmed
+            ? Colors.green.withOpacity(0.1)
+            : isPending
+            ? Colors.orange.withOpacity(0.1)
+            : Colors.red.withOpacity(0.1),
         borderRadius: BorderRadius.circular(100),
       ),
       child: Text(
         status.toUpperCase(),
         style: TextStyle(
-          color: isConfirmed 
-              ? Colors.green 
-              : isPending 
-                  ? Colors.orange[800] 
-                  : Colors.red,
+          color: isConfirmed
+              ? Colors.green
+              : isPending
+              ? Colors.orange[800]
+              : Colors.red,
           fontSize: 10,
           fontWeight: FontWeight.w800,
           letterSpacing: 0.5,

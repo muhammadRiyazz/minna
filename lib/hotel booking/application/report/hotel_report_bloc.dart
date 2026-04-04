@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
+import 'package:minna/comman/core/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:minna/hotel booking/domain/report/hotel_report_model.dart';
 import '../../functions/hotel_api.dart';
@@ -14,6 +16,11 @@ class CancelHotelBooking extends HotelReportEvent {
   final String bookingId;
   final String remarks;
   CancelHotelBooking({required this.bookingId, required this.remarks});
+}
+
+class CheckBookingStatus extends HotelReportEvent {
+  final String bookingId;
+  CheckBookingStatus({required this.bookingId});
 }
 
 // States
@@ -46,6 +53,19 @@ class HotelCancelError extends HotelReportState {
   HotelCancelError(this.message);
 }
 
+class HotelStatusCheckLoading extends HotelReportState {}
+
+class HotelStatusCheckSuccess extends HotelReportState {
+  final String message;
+  final dynamic data;
+  HotelStatusCheckSuccess(this.message, this.data);
+}
+
+class HotelStatusCheckError extends HotelReportState {
+  final String message;
+  HotelStatusCheckError(this.message);
+}
+
 // Bloc
 class HotelReportBloc extends Bloc<HotelReportEvent, HotelReportState> {
   final HotelApiService _apiService = HotelApiService();
@@ -63,17 +83,19 @@ class HotelReportBloc extends Bloc<HotelReportEvent, HotelReportState> {
         }
 
         final response = await http.post(
-          Uri.parse("https://tictechnologies.in/stage/minna/hotel-api-call-report"),
+          Uri.parse("${baseUrl}hotel-api-call-report"),
           body: {"userId": userId},
         );
-
+        // log(response.body.toString());
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body);
           if (data['status'] == true) {
             final reportResponse = HotelReportResponse.fromJson(data);
             emit(HotelReportLoaded(reportResponse.data));
           } else {
-            emit(HotelReportError(data['message'] ?? "Failed to fetch reports"));
+            emit(
+              HotelReportError(data['message'] ?? "Failed to fetch reports"),
+            );
           }
         } else {
           emit(HotelReportError("Server error: ${response.statusCode}"));
@@ -98,20 +120,88 @@ class HotelReportBloc extends Bloc<HotelReportEvent, HotelReportState> {
         );
 
         if (response['status'] == true) {
-          emit(HotelCancelSuccess(
-            response['message'] ?? "Cancel request sent successfully",
-            response['data'],
-          ));
+          // Success from Cancel API -> Now call Status Update API to set CANCELLATION_PENDING
+          try {
+            final response = await _apiService.checkBookingStatus(
+              bookingId: event.bookingId,
+            );
+            log(response.toString());
+            if (response['status'] == true) {
+              emit(
+                HotelStatusCheckSuccess(
+                  response['message'] ?? "Status checked successfully",
+                  response['data'],
+                ),
+              );
+              add(FetchHotelReports());
+            } else {
+              emit(
+                HotelStatusCheckError(response['message'] ?? "Status check failed"),
+              );
+              if (previousReports != null) {
+                emit(HotelReportLoaded(previousReports));
+              }
+            }
+          } catch (e) {
+            log("⚠️ Status update failed but cancel was successful: $e");
+          }
+
+          emit(
+            HotelCancelSuccess(
+              "Cancellation request sent for ${event.bookingId}. Status changed to CANCELLATION_PENDING.",
+              response['data'],
+            ),
+          );
+
           // Refresh reports after success
           add(FetchHotelReports());
         } else {
-          emit(HotelCancelError(response['message'] ?? "Failed to cancel booking"));
+          emit(
+            HotelCancelError(response['message'] ?? "Failed to cancel booking"),
+          );
           if (previousReports != null) {
             emit(HotelReportLoaded(previousReports));
           }
         }
       } catch (e) {
         emit(HotelCancelError("Error: $e"));
+        if (previousReports != null) {
+          emit(HotelReportLoaded(previousReports));
+        }
+      }
+    });
+
+    on<CheckBookingStatus>((event, emit) async {
+      final currentState = state;
+      List<HotelBookingRecord>? previousReports;
+      if (currentState is HotelReportLoaded) {
+        previousReports = currentState.reports;
+      }
+
+      emit(HotelStatusCheckLoading());
+      try {
+        final response = await _apiService.checkBookingStatus(
+          bookingId: event.bookingId,
+        );
+        log(response.toString());
+        if (response['status'] == true) {
+          emit(
+            HotelStatusCheckSuccess(
+              response['message'] ?? "Status checked successfully",
+              response['data'],
+            ),
+          );
+          add(FetchHotelReports());
+        } else {
+          emit(
+            HotelStatusCheckError(response['message'] ?? "Status check failed"),
+          );
+          if (previousReports != null) {
+            emit(HotelReportLoaded(previousReports));
+          }
+        }
+      } catch (e) {
+        emit(HotelStatusCheckError("Check error: $e"));
         if (previousReports != null) {
           emit(HotelReportLoaded(previousReports));
         }
