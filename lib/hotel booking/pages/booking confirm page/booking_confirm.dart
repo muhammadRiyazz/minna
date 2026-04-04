@@ -6,12 +6,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/core/api.dart';
-import 'package:minna/comman/functions/create_order_id.dart';
 import 'package:minna/hotel%20booking/application/hotel/hotel_booking_confirm_bloc.dart';
 import 'package:minna/hotel%20booking/domain/authentication/authendication.dart';
 import 'package:minna/hotel%20booking/domain/hotel%20list/hotel_list.dart'
     hide CancelPolicy;
 import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:minna/comman/application/login/login_bloc.dart';
 import 'package:minna/comman/pages/log%20in/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -76,9 +76,7 @@ class _HotelBookingConfirmationPageState
   void initState() {
     super.initState();
     _confirmBloc = context.read<HotelBookingConfirmBloc>();
-    _confirmBloc.add(
-      const HotelBookingConfirmEvent.reset(),
-    );
+    _confirmBloc.add(const HotelBookingConfirmEvent.reset());
     context.read<LoginBloc>().add(const LoginEvent.loginInfo());
     _startOptimizedTimer();
     _initRazorpay();
@@ -104,9 +102,7 @@ class _HotelBookingConfirmationPageState
   void dispose() {
     _timer.cancel();
     _razorpay.clear();
-    _confirmBloc.add(
-      const HotelBookingConfirmEvent.reset(),
-    );
+    _confirmBloc.add(const HotelBookingConfirmEvent.reset());
     super.dispose();
   }
 
@@ -324,7 +320,7 @@ class _HotelBookingConfirmationPageState
     // Calculate amounts
     final roomFare = preBookRoom?.totalFare ?? widget.room.totalFare;
     final roomTax = preBookRoom?.totalTax ?? widget.room.totalTax;
-    final netAmount = roomFare; // Net amount is room fare without taxes
+    final netAmount = preBookRoom?.netAmount ?? roomFare;
     final totalAmount = roomFare + roomTax;
 
     // Get required authentication fields
@@ -2123,16 +2119,11 @@ class _HotelBookingConfirmationPageState
       child: Column(
         children: [
           _buildSummaryPriceRow(
-            'Base Price',
+            'Total Fare',
             '₹${widget.room.totalFare.toStringAsFixed(2)}',
             Colors.white70,
           ),
-          const SizedBox(height: 8),
-          _buildSummaryPriceRow(
-            'Taxes & Fees',
-            '₹${widget.room.totalTax.toStringAsFixed(2)}',
-            Colors.white70,
-          ),
+
           const SizedBox(height: 8),
 
           _buildSummaryPriceRow(
@@ -2639,6 +2630,26 @@ class _HotelBookingConfirmationPageState
   }
 
   Widget _buildErrorViewContent(String message) {
+    // Detect refund scenario
+    final isRefundScenario =
+        message.toLowerCase().contains('refund') ||
+        message.toLowerCase().contains('not done');
+    final title = isRefundScenario
+        ? 'Booking Not Completed'
+        : 'Something Went Wrong';
+    final icon = isRefundScenario
+        ? Iconsax.info_circle
+        : Icons.sentiment_dissatisfied_rounded;
+    final iconColor = isRefundScenario
+        ? Colors.orange.shade700
+        : const Color(0xFFE11D48);
+    final bgColor = isRefundScenario
+        ? const Color(0xFFFFF7ED)
+        : const Color(0xFFFFF1F2);
+    final borderColor = isRefundScenario
+        ? const Color(0xFFFFEDD5)
+        : const Color(0xFFFFE4E6);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -2652,21 +2663,17 @@ class _HotelBookingConfirmationPageState
                 width: 120,
                 height: 120,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFF1F2),
+                  color: bgColor,
                   shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFFFFE4E6), width: 8),
+                  border: Border.all(color: borderColor, width: 8),
                 ),
-                child: const Icon(
-                  Icons.sentiment_dissatisfied_rounded,
-                  size: 60,
-                  color: Color(0xFFE11D48),
-                ),
+                child: Icon(icon, size: 60, color: iconColor),
               ),
               const SizedBox(height: 40),
-              const Text(
-                'Something Went Wrong',
+              Text(
+                title,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.w900,
                   color: Color(0xFF002855),
@@ -2703,15 +2710,24 @@ class _HotelBookingConfirmationPageState
                 ),
               ),
               const Spacer(),
-              _buildActionButton('TRY AGAIN', () {
-                context.read<HotelBookingConfirmBloc>().add(
-                  const HotelBookingConfirmEvent.reset(),
-                );
-              }),
-              const SizedBox(height: 16),
-              _buildActionButton('CONTACT SUPPORT', () {
-                // Navigate to support logic
-              }, isPrimary: false),
+              _buildActionButton(
+                isRefundScenario ? 'GO TO HOME' : 'TRY AGAIN',
+                () {
+                  if (isRefundScenario) {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  } else {
+                    context.read<HotelBookingConfirmBloc>().add(
+                      const HotelBookingConfirmEvent.reset(),
+                    );
+                  }
+                },
+              ),
+              if (!isRefundScenario) ...[
+                const SizedBox(height: 16),
+                _buildActionButton('CONTACT SUPPORT', () {
+                  // Navigate to support logic
+                }, isPrimary: false),
+              ],
               const SizedBox(height: 20),
             ],
           ),

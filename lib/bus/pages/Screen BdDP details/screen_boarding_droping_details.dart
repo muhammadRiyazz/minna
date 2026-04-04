@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:minna/bus/infrastructure/time.dart';
 import 'package:minna/bus/pages/screen%20passengers%20input/screen_passengers_input.dart';
 import 'package:minna/comman/const/const.dart';
@@ -44,99 +45,116 @@ class _ScreenBdDpDetailsState extends State<ScreenBdDpDetails> {
           backgroundColor: maincolor1,
           iconTheme: const IconThemeData(color: Colors.white),
           elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Iconsax.arrow_left_2, color: Colors.white),
+            onPressed: () => Navigator.pop(context),
+          ),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Boarding & Dropping',
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.white,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
               const SizedBox(height: 2),
               Text(
                 '${widget.selectedSeats.length} ${widget.selectedSeats.length == 1 ? 'Seat' : 'Seats'} • ${widget.travelsname}',
                 style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.white.withOpacity(0.8),
-                  fontWeight: FontWeight.w400,
+                  fontSize: 11,
+                  color: Colors.white.withOpacity(0.7),
+                  fontWeight: FontWeight.w500,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
         ),
         body: Column(
           children: [
-            // Immersive Header with TabBar
+            // Standard Premium Header
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
                 color: maincolor1,
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(24),
-                  bottomRight: Radius.circular(24),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
+                // borderRadius: const BorderRadius.only(
+                //   bottomLeft: Radius.circular(24),
+                //   bottomRight: Radius.circular(24),
+                // ),
+                // boxShadow: [
+                //   BoxShadow(
+                //     color: Colors.black.withOpacity(0.1),
+                //     blurRadius: 10,
+                //     offset: const Offset(0, 4),
+                //   ),
+                //  ],
               ),
               child: Column(
                 children: [
-                  // Tab Selection Area
-                  TabBar(
-                    labelColor: secondaryColor,
-                    unselectedLabelColor: Colors.white.withOpacity(0.6),
-                    indicatorColor: secondaryColor,
-                    indicatorWeight: 3,
-                    indicatorPadding: const EdgeInsets.symmetric(
-                      horizontal: 40,
+                  SizedBox(height: 20),
+
+                  // Tab Selection Area - Simple and Clean
+                  Container(
+                    // margin: const EdgeInsets.symmetric(
+                    //   horizontal: 16,
+                    //   vertical: 8,
+                    // ),
+                    decoration: BoxDecoration(
+                      // color: Colors.white.withOpacity(0.08),
+                      // borderRadius: BorderRadius.circular(12),
                     ),
-                    labelPadding: const EdgeInsets.symmetric(vertical: 12),
-                    labelStyle: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.5,
-                    ),
-                    unselectedLabelStyle: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    tabs: const [
-                      Tab(text: 'BOARDING'),
-                      Tab(text: 'DROPPING'),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  // Current Selection Summaries
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildHeaderSelectionSummary(
-                          'Boarding',
-                          boardingpointname,
-                          Icons.login_rounded,
-                        ),
-                        Container(
-                          width: 1,
-                          height: 30,
-                          color: Colors.white.withOpacity(0.2),
-                        ),
-                        _buildHeaderSelectionSummary(
-                          'Dropping',
-                          droppingpointname,
-                          Icons.logout_rounded,
-                        ),
+                    child: TabBar(
+                      labelColor: secondaryColor,
+                      unselectedLabelColor: Colors.white.withOpacity(0.5),
+                      indicatorColor: secondaryColor,
+                      indicatorWeight: 3,
+                      dividerColor: Colors.transparent,
+                      labelPadding: const EdgeInsets.symmetric(vertical: 0),
+                      labelStyle: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.5,
+                      ),
+                      unselectedLabelStyle: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      tabs: const [
+                        Tab(text: 'BOARDING'),
+                        Tab(text: 'DROPPING'),
                       ],
                     ),
                   ),
+                  // const SizedBox(height: 12),
+
+                  // Current Selection Summaries - Horizontal Flow
+                  // Padding(
+                  //   padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                  //   child: Row(
+                  //     children: [
+                  //       _buildHeaderSelectionSummary(
+                  //         'Boarding',
+                  //         boardingpointname,
+                  //         Iconsax.location,
+                  //       ),
+                  //       Container(
+                  //         width: 1,
+                  //         height: 24,
+                  //         color: Colors.white.withOpacity(0.15),
+                  //         margin: const EdgeInsets.symmetric(horizontal: 16),
+                  //       ),
+                  //       _buildHeaderSelectionSummary(
+                  //         'Dropping',
+                  //         droppingpointname,
+                  //         Iconsax.gps,
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                 ],
               ),
             ),
@@ -170,15 +188,16 @@ class _ScreenBdDpDetailsState extends State<ScreenBdDpDetails> {
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 14, color: Colors.white.withOpacity(0.6)),
+              Icon(icon, size: 12, color: Colors.white.withOpacity(0.5)),
               const SizedBox(width: 6),
               Text(
                 label.toUpperCase(),
                 style: TextStyle(
                   fontSize: 10,
-                  color: Colors.white.withOpacity(0.6),
-                  fontWeight: FontWeight.w600,
+                  color: Colors.white.withOpacity(0.5),
+                  fontWeight: FontWeight.w700,
                   letterSpacing: 1,
                 ),
               ),
@@ -186,15 +205,14 @@ class _ScreenBdDpDetailsState extends State<ScreenBdDpDetails> {
           ),
           const SizedBox(height: 4),
           Text(
-            value ?? 'Not Selected',
+            value ?? 'Select Point',
             style: TextStyle(
               fontSize: 13,
-              color: value != null
-                  ? secondaryColor
-                  : Colors.white.withOpacity(0.4),
-              fontWeight: value != null ? FontWeight.w600 : FontWeight.w400,
+              color: Colors.white,
+              fontWeight: value != null ? FontWeight.w700 : FontWeight.w400,
             ),
             maxLines: 1,
+            textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
           ),
         ],
@@ -499,7 +517,7 @@ class _ScreenBdDpDetailsState extends State<ScreenBdDpDetails> {
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
-                      color: secondaryColor,
+                      color: Colors.white,
                     ),
                   ),
                 ],

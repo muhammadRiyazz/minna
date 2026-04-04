@@ -4,11 +4,13 @@ import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:minna/comman/core/api.dart';
 
+//createOrderTest
+//createOrder
 Future<String?> createOrder(double amount) async {
   try {
     log("createOrder---");
     final response = await http.post(
-      Uri.parse("${baseUrl}createOrder"),
+      Uri.parse("${baseUrl}createOrderTest"),
       body: {"amount": (amount * 100).toStringAsFixed(0)},
     );
     log(response.body);

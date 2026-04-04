@@ -53,12 +53,14 @@ class _ScreenReportState extends State<ScreenReport> {
       final resp = await fetchReport(fromdate: startDate, todate: endDate);
       final data = busTicketReportFromJson(resp.body);
 
+      if (!mounted) return;
       setState(() {
         _reportData = data.reversed.toList();
         _isLoading = false;
       });
     } catch (e) {
       log("Fetch error: $e");
+      if (!mounted) return;
       setState(() {
         _isError = true;
         _isLoading = false;

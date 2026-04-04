@@ -9,6 +9,7 @@ import 'package:minna/comman/application/login/login_bloc.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/pages/log%20in/login_page.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:minna/comman/widgets/status_bottom_sheet.dart';
 
 class BookingPage extends StatefulWidget {
   final CabRate selectedCab;
@@ -628,11 +629,11 @@ class _BookingPageState extends State<BookingPage> {
 
           // Counters Selection Card
           Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: backgroundColor,
-              borderRadius: BorderRadius.circular(20),
-            ),
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            // decoration: BoxDecoration(
+            //   color: backgroundColor,
+            //   borderRadius: BorderRadius.circular(20),
+            // ),
             child: Column(
               children: [
                 _buildNumericSelector(
@@ -663,6 +664,7 @@ class _BookingPageState extends State<BookingPage> {
 
           // Toggle Services Row (Wrap for responsiveness)
           Wrap(
+            alignment: WrapAlignment.spaceBetween,
             spacing: 12,
             runSpacing: 12,
             children: [
@@ -701,14 +703,14 @@ class _BookingPageState extends State<BookingPage> {
   }) {
     return Row(
       children: [
-        Icon(icon, size: 20, color: secondaryColor),
-        const SizedBox(width: 12),
+        Icon(icon, size: 16, color: secondaryColor),
+        const SizedBox(width: 10),
         Expanded(
           child: Text(
             label,
             style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
               color: textPrimary,
             ),
           ),
@@ -768,12 +770,7 @@ class _BookingPageState extends State<BookingPage> {
             color: value ? maincolor1 : maincolor1.withOpacity(0.1),
           ),
           boxShadow: value
-              ? [
-                  BoxShadow(
-                    color: maincolor1.withOpacity(0.2),
-                    blurRadius: 8,
-                  ),
-                ]
+              ? [BoxShadow(color: maincolor1.withOpacity(0.2), blurRadius: 8)]
               : null,
         ),
         child: Text(
@@ -792,7 +789,14 @@ class _BookingPageState extends State<BookingPage> {
     return BlocConsumer<HoldCabBloc, HoldCabState>(
       listener: (context, state) {
         if (state is HoldCabError) {
-          _showCustomSnackbar(state.message, isError: true);
+          StatusBottomSheet.show(
+            context: context,
+            type: StatusType.error,
+            title: 'Booking Issue',
+            message:
+                'Our server is currently busy or experiencing a connection issue. Please try again after some time or contact support if the problem persists.',
+            showContactSupport: true,
+          );
         }
 
         if (state is HoldCabSuccess) {

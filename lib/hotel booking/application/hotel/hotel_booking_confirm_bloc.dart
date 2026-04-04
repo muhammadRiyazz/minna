@@ -52,7 +52,9 @@ class HotelBookingConfirmBloc extends Bloc<HotelBookingConfirmEvent, HotelBookin
       if (response != null && response['status'] == true) {
         emit(HotelBookingConfirmSuccess(data: response));
       } else {
-        final message = response?['message'] ?? "Booking verification failed. If amount was debited, it will be refunded.";
+        // Specific message for refund initiation when payment verification fails
+        final message = response?['message'] ??
+            "Booking not done. Some issue occurred during verification. Refund has been initiated; your amount will be credited back within some working days.";
         emit(HotelBookingConfirmError(message: message, data: response));
       }
     } catch (e) {

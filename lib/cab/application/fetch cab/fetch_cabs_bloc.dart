@@ -17,12 +17,20 @@ class FetchCabsBloc extends Bloc<FetchCabsEvent, FetchCabsState> {
       log('call fetch cab');
 
       try {
-        final mainUri = Uri.parse("${baseUrl}Cabapi");
+        // final response = await http.post(
+        //   Uri.parse('${cabBaseUrl}api/cpapi/booking/getQuote'),
+        //   headers: {
+        //     'Authorization': cabauth,
+        //     'Content-Type': 'application/json',
+        //   },
+        //   body: jsonEncode(event.requestData),
+        // );
 
+        final mainUri = Uri.parse("${baseUrl}Cabapi");
         final response = await http.post(
           mainUri,
           body: {
-            "link": "http://gozotech2.ddns.net:5192/api/cpapi/booking/getQuote",
+            "link": "${cabBaseUrl}api/cpapi/booking/getQuote",
             "data": jsonEncode(event.requestData),
           },
         );
@@ -47,18 +55,21 @@ class FetchCabsBloc extends Bloc<FetchCabsEvent, FetchCabsState> {
           }
         } else {
           // Extract errors from actualData (Gozotech response)
-          final errorMsg = (actualData['errors'] as List<dynamic>?)
-                  ?.map((e) => e.toString())
-                  .join(', ') ??
-              actualData['message']?.toString() ??
-              jsonData['message']?.toString() ??
-              'Search Interrupted. Please try again.';
-
-          emit(FetchCabsError(message: errorMsg));
+          // Handle any failure as "no cabs available" to simplify user experience
+          emit(
+            FetchCabsError(
+              message: 'No cabs available for this route at the moment.',
+            ),
+          );
         }
       } catch (e) {
         log(e.toString());
-        emit(FetchCabsError(message: e.toString()));
+        // Map catch errors to the same friendly message
+        emit(
+          FetchCabsError(
+            message: 'No cabs available for this route at the moment.',
+          ),
+        );
       }
     });
 

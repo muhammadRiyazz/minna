@@ -261,9 +261,20 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
       },
       child: WillPopScope(
         onWillPop: () async {
+          final state = context.read<BookingBloc>().state;
+          if (state.isBookingCompleted == true ||
+              state.isBookingConfirmed == true ||
+              state.bookingFailed == true) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (_) => const HomePage()),
+              (route) => false,
+            );
+            return false;
+          }
           await _showBottomSheetbooking(
             context: context,
-            state: context.read<BookingBloc>().state,
+            state: state,
           );
           return false;
         },
@@ -715,7 +726,13 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Iconsax.arrow_left, color: Colors.white),
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => const HomePage()),
+                (route) => false,
+              );
+            },
           ),
           flexibleSpace: FlexibleSpaceBar(
             title: const Text(
@@ -896,7 +913,13 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
             elevation: 0,
             leading: IconButton(
               icon: const Icon(Iconsax.arrow_left, color: Colors.white),
-              onPressed: () => Navigator.pop(context),
+              onPressed: () {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (_) => const HomePage()),
+                  (route) => false,
+                );
+              },
             ),
             title: const Text(
               'Booking Failed',

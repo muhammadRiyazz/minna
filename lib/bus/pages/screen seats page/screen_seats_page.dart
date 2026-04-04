@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:minna/comman/const/const.dart';
+import 'package:iconsax/iconsax.dart';
 import '../../domain/BlockTicket/block_ticket_request_modal.dart';
 import '../../domain/seatlayout/seatlayoutmodal.dart';
 import '../../infrastructure/fetch seatlayout/seatlayout.dart';
@@ -102,11 +103,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                   color: secondaryColor,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  Icons.airline_seat_recline_normal_rounded,
-                  color: Colors.white,
-                  size: 28,
-                ),
+                child: Icon(Iconsax.ticket_2, color: Colors.white, size: 24),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -154,7 +151,11 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                     shape: BoxShape.circle,
                     color: backgroundColor,
                   ),
-                  child: Icon(Icons.close, color: textSecondary, size: 18),
+                  child: Icon(
+                    Iconsax.close_circle,
+                    color: textSecondary,
+                    size: 18,
+                  ),
                 ),
                 onPressed: () {
                   ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -194,7 +195,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                 color: errorColor.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.event_seat, size: 48, color: errorColor),
+              child: Icon(Iconsax.danger, size: 48, color: errorColor),
             ),
             const SizedBox(height: 24),
             Text(
@@ -210,11 +211,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
             SizedBox(height: 8),
             Text(
               'You can select up to 6 seats per booking',
-              style: TextStyle(
-                fontSize: 15,
-                color: textSecondary,
-                height: 1.5,
-              ),
+              style: TextStyle(fontSize: 15, color: textSecondary, height: 1.5),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 30),
@@ -251,38 +248,48 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
+        leading: IconButton(
+          icon: const Icon(Iconsax.arrow_left_2, color: Colors.white, size: 24),
+          onPressed: () => Navigator.pop(context),
+        ),
         backgroundColor: maincolor1,
         elevation: 0,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Select Seats',
               style: TextStyle(
                 fontSize: 16,
-                color: cardColor,
-                fontWeight: FontWeight.w600,
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
               ),
             ),
-            // Text(
-            //   widget.trpinfo,
-            //   style: TextStyle(
-            //     fontSize: 12,
-            //     color: secondaryColor.withOpacity(0.8),
-            //     fontWeight: FontWeight.w400,
-            //   ),
-            // ),
+            const SizedBox(height: 2),
+            Text(
+              widget.travelsname,
+              style: TextStyle(
+                fontSize: 11,
+                color: Colors.white.withOpacity(0.6),
+                fontWeight: FontWeight.w500,
+                letterSpacing: 0.3,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ],
         ),
         actions: [
           IconButton(
-            onPressed: () {
-              _showSeatLegend(context);
-            },
-            icon: Icon(Icons.info_outline_rounded, color: Colors.white),
+            onPressed: () => _showSeatLegend(context),
+            icon: const Icon(
+              Iconsax.info_circle,
+              color: Colors.white,
+              size: 22,
+            ),
             tooltip: 'Seat Information',
           ),
+          const SizedBox(width: 8),
         ],
       ),
       body: SafeArea(
@@ -318,25 +325,33 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                           ],
                         ),
                         child: TabBar(
-                          labelColor: maincolor1,
+                          labelColor: Colors.white,
                           unselectedLabelColor: textSecondary,
-                          indicatorColor: secondaryColor,
-                          indicatorWeight: 3,
-                          indicatorPadding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                          ),
-                          labelStyle: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
+                          indicator: BoxDecoration(
                             color: maincolor1,
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          unselectedLabelStyle: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: textSecondary,
+                          indicatorPadding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 8,
+                          ),
+                          labelStyle: const TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 13,
+                          ),
+                          unselectedLabelStyle: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
                           ),
                           tabs: const [
-                            Tab(text: 'Lower Berth'),
-                            Tab(text: 'Upper Berth'),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 16),
+                              child: Tab(text: 'Lower Berth'),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 16),
+                              child: Tab(text: 'Upper Berth'),
+                            ),
                           ],
                         ),
                       ),
@@ -436,68 +451,74 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
         children: [
           if (newselectedseats.isNotEmpty) ...[
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
               child: Row(
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${newselectedseats.length} ${newselectedseats.length == 1 ? 'Seat' : 'Seats'} Selected',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: textPrimary,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${newselectedseats.length} ${newselectedseats.length == 1 ? 'SEAT' : 'SEATS'} SELECTED',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
+                            color: textSecondary.withOpacity(0.6),
+                            letterSpacing: 1.2,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 6),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.6,
-                        child: Wrap(
-                          spacing: 6,
-                          runSpacing: 4,
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 6,
                           children: newselectedseats.map((seat) {
                             return Container(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
+                                horizontal: 10,
+                                vertical: 6,
                               ),
                               decoration: BoxDecoration(
                                 color: secondaryColor.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                  color: secondaryColor.withOpacity(0.3),
-                                ),
+                                borderRadius: BorderRadius.circular(10),
+                                // border: Border.all(
+                                //   color: secondaryColor.withOpacity(0.3),
+                                // ),
                               ),
                               child: Text(
                                 seat.name,
                                 style: TextStyle(
                                   fontSize: 12,
-                                  fontWeight: FontWeight.w500,
+                                  fontWeight: FontWeight.w800,
                                   color: maincolor1,
                                 ),
                               ),
                             );
                           }).toList(),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  const Spacer(),
+                  const SizedBox(width: 16),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        'Total Amount',
-                        style: TextStyle(fontSize: 12, color: textPrimary),
+                        'TOTAL AMOUNT',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: textSecondary.withOpacity(0.6),
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.8,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         '₹${totalAmount.toStringAsFixed(0)}',
                         style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                          fontWeight: FontWeight.w900,
                           color: secondaryColor,
+                          letterSpacing: -0.5,
                         ),
                       ),
                     ],
@@ -505,25 +526,21 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                 ],
               ),
             ),
-            const SizedBox(height: 5),
           ],
-
-          // Continue button
+          SizedBox(height: 20),
           Container(
-            margin: const EdgeInsets.fromLTRB(20, 8, 20, 10),
+            margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: newselectedseats.isEmpty
-                    ? textLight.withOpacity(0.6)
+                    ? textLight.withOpacity(0.2)
                     : maincolor1,
-                foregroundColor: newselectedseats.isEmpty
-                    ? textSecondary
-                    : secondaryColor,
+                foregroundColor: Colors.white,
                 elevation: 0,
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                minimumSize: const Size.fromHeight(56),
               ),
               onPressed: () {
                 if (newselectedseats.isEmpty) {
@@ -551,22 +568,23 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                 children: [
                   Text(
                     newselectedseats.isEmpty
-                        ? 'Select Seats to Continue'
-                        : 'Continue with ${newselectedseats.length} ${newselectedseats.length == 1 ? 'Seat' : 'Seats'}',
+                        ? 'SELECT SEATS TO PROCEED'
+                        : 'CONTINUE WITH ${newselectedseats.length} SEATS',
                     style: TextStyle(
                       color: newselectedseats.isEmpty
-                          ? Colors.white
-                          : cardColor,
+                          ? textSecondary.withOpacity(0.5)
+                          : Colors.white,
                       fontSize: 13,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.5,
                     ),
                   ),
                   if (newselectedseats.isNotEmpty) ...[
-                    const SizedBox(width: 8),
-                    Icon(
-                      Icons.arrow_forward_rounded,
-                      size: 20,
-                      color: cardColor,
+                    const SizedBox(width: 12),
+                    const Icon(
+                      Iconsax.arrow_right_3,
+                      size: 18,
+                      color: Colors.white,
                     ),
                   ],
                 ],
@@ -605,11 +623,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                 color: warningColor.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                Icons.event_seat_outlined,
-                size: 48,
-                color: warningColor,
-              ),
+              child: Icon(Iconsax.info_circle, size: 48, color: warningColor),
             ),
             const SizedBox(height: 24),
             Text(
@@ -625,11 +639,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
             SizedBox(height: 8),
             Text(
               'Please select at least one seat to proceed with your booking',
-              style: TextStyle(
-                fontSize: 15,
-                color: textSecondary,
-                height: 1.5,
-              ),
+              style: TextStyle(fontSize: 15, color: textSecondary, height: 1.5),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 30),
@@ -703,26 +713,33 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
               maincolor1,
               'Available Seat',
               'Regular seats available for booking',
+              Iconsax.box,
             ),
             _buildLegendItem(
               secondaryColor,
               'Selected Seat',
               'Seats you have selected',
+              Iconsax.tick_square,
             ),
             _buildLegendItem(
-              Colors.grey,
+              Colors.grey[300]!,
               'Booked Seat',
               'Already booked by other passengers',
+              Iconsax.slash,
             ),
             _buildLegendItem(
-              Colors.pink,
+              Colors.pink.withOpacity(0.2),
               'Ladies Seat',
               'Reserved for female passengers',
+              Iconsax.user,
+              borderColor: Colors.pink,
             ),
             _buildLegendItem(
-              Colors.blue,
+              Colors.blue.withOpacity(0.2),
               'Gents Seat',
               'Reserved for male passengers',
+              Iconsax.user,
+              borderColor: Colors.blue,
             ),
             const SizedBox(height: 16),
             Container(
@@ -751,23 +768,40 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
     );
   }
 
-  Widget _buildLegendItem(Color color, String title, String description) {
+  Widget _buildLegendItem(
+    Color color,
+    String title,
+    String description,
+    IconData icon, {
+    Color? borderColor,
+  }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 20,
-            height: 20,
-            margin: const EdgeInsets.only(top: 2),
+            width: 40,
+            height: 40,
             decoration: BoxDecoration(
               color: color,
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: color.withOpacity(0.3)),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: borderColor ?? color.withOpacity(0.3),
+                width: 1.5,
+              ),
+            ),
+            child: Icon(
+              icon,
+              size: 20,
+              color:
+                  borderColor ??
+                  (color == maincolor1 || color == secondaryColor
+                      ? Colors.white
+                      : textSecondary),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -776,14 +810,18 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                   title,
                   style: TextStyle(
                     fontSize: 14,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w800,
                     color: textPrimary,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   description,
-                  style: TextStyle(fontSize: 12, color: textSecondary),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: textSecondary,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ],
             ),
@@ -799,9 +837,28 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
       child: Column(
         children: [
           Container(
-            color: cardColor,
-            child: const TabBar(
-              tabs: [
+            decoration: BoxDecoration(
+              color: cardColor,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: TabBar(
+              labelColor: Colors.white,
+              unselectedLabelColor: textSecondary,
+              indicator: BoxDecoration(
+                color: maincolor1,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              indicatorPadding: const EdgeInsets.symmetric(
+                horizontal: 4,
+                vertical: 8,
+              ),
+              tabs: const [
                 Tab(text: 'Lower Berth'),
                 Tab(text: 'Upper Berth'),
               ],
@@ -819,30 +876,30 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
 
   Widget _buildShimmerSeatLayout() {
     const rows = 8;
-    const cols = 4;
+    const cols = 5;
 
     return Shimmer.fromColors(
-      baseColor: textLight.withOpacity(0.1),
-      highlightColor: textLight.withOpacity(0.05),
+      baseColor: textSecondary.withOpacity(0.05),
+      highlightColor: textSecondary.withOpacity(0.02),
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(24.0),
         child: GridView.builder(
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: cols,
-            childAspectRatio: 0.8,
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
+            childAspectRatio: 0.85,
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 16,
           ),
           itemCount: rows * cols,
           itemBuilder: (context, index) {
             final col = index % cols;
-            if (col == 1) return const SizedBox.shrink();
+            if (col == 2) return const SizedBox.shrink();
 
             return Container(
               decoration: BoxDecoration(
-                color: cardColor,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: textLight.withOpacity(0.1)),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.white, width: 1),
               ),
             );
           },

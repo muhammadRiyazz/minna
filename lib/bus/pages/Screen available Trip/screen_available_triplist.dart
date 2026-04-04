@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:iconsax/iconsax.dart';
 
 class ScreenAvailableTrips extends StatefulWidget {
   const ScreenAvailableTrips({super.key});
@@ -17,10 +18,6 @@ class ScreenAvailableTrips extends StatefulWidget {
 }
 
 class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
-  // Color Theme - Consistent with flight booking
-  // Theme standardizing: Use global constants directly from const.dart
-
-  // Filter state
   late FilterState _currentFilterState;
 
   @override
@@ -35,80 +32,457 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
 
     return Scaffold(
       backgroundColor: backgroundColor,
-      appBar: AppBar(
-        backgroundColor: maincolor1,
-        iconTheme: IconThemeData(color: Colors.white),
-        elevation: 0,
-        // title: Text(
-        //   'Available Buses',
-        //   style: TextStyle(
-        //     color: Colors.white,
-        //     fontSize: 15,
-        //     fontWeight: FontWeight.w600,
-        //   ),
-        // ),
-        actions: [
-          // Filter Button
-          BlocBuilder<BusListFetchBloc, BusListFetchState>(
-            builder: (context, state) {
-              final hasActiveFilters = _hasActiveFilters();
-              return Stack(
-                children: [
-                  IconButton(
-                    icon: Icon(
-                      Icons.filter_alt_rounded,
-                      color: hasActiveFilters ? secondaryColor : Colors.white,
-                    ),
-                    onPressed: () {
-                      _showFilterBottomSheet(context, state);
-                    },
-                    tooltip: 'Filter',
-                  ),
-                  if (hasActiveFilters)
-                    Positioned(
-                      right: 8,
-                      top: 8,
-                      child: Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: secondaryColor,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
-                ],
-              );
-            },
-          ),
-        ],
-      ),
       body: BlocConsumer<BusListFetchBloc, BusListFetchState>(
         listener: (context, state) {
-          // Update filter state when filters are applied
           if (state.availableTrips != null) {
             _updateFilterStateFromBloc(state);
           }
         },
         builder: (context, state) {
-          if (state.isLoading) {
-            return BusListloadingPage();
-          }
+          return CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              // Premium Unified Header
+              SliverAppBar(
+                expandedHeight: 180,
+                pinned: true,
+                floating: false,
+                elevation: 0,
+                backgroundColor: maincolor1,
+                leading: IconButton(
+                  icon: const Icon(
+                    Iconsax.arrow_left_2,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                actions: [_buildFilterAction(context, state)],
+                flexibleSpace: FlexibleSpaceBar(
+                  background: _buildHeaderBackground(selectedData, state),
+                ),
+              ),
 
-          if (state.isError) {
-            return _buildErrorWidget(context, selectedData);
-          }
+              // Content Section
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                  child: Row(
+                    children: [
+                      Icon(Iconsax.bus, color: secondaryColor, size: 18),
+                      const SizedBox(width: 8),
+                      Text(
+                        state.isLoading
+                            ? 'Searching buses...'
+                            : '${state.availableTrips?.length ?? 0} Buses Available',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: textPrimary,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.2,
+                        ),
+                      ),
+                      const Spacer(),
+                      if (_hasActiveFilters())
+                        _buildActiveFilterBadge(context, state),
+                    ],
+                  ),
+                ),
+              ),
 
-          if (state.notripp! ||
-              state.availableTrips == null ||
-              state.availableTrips!.isEmpty) {
-            return _buildNoTripsWidget();
-          }
-
-          return _buildTripList(context, state, selectedData);
+              // Results List
+              _buildSliverContent(context, state, selectedData),
+            ],
+          );
         },
       ),
     );
+  }
+
+  Widget _buildHeaderBackground(
+    LocationState selectedData,
+    BusListFetchState state,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        color: maincolor1,
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [maincolor1, maincolor1.withOpacity(0.95)],
+        ),
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 50, 20, 20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'FROM',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.white.withOpacity(0.5),
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          selectedData.from?.name ?? '--',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.2),
+                        ),
+                      ),
+                      child: const Icon(
+                        Iconsax.arrow_swap_horizontal,
+                        color: Colors.white,
+                        size: 16,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          'TO',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.white.withOpacity(0.5),
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          selectedData.to?.name ?? '--',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.white.withOpacity(0.1)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Iconsax.calendar_1, color: secondaryColor, size: 14),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Search Results for ${selectedData.dateOfJourney.day} ${_getMonth(selectedData.dateOfJourney.month)} ${selectedData.dateOfJourney.year}',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.9),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _getMonth(int month) {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    return months[month - 1];
+  }
+
+  Widget _buildFilterAction(BuildContext context, BusListFetchState state) {
+    final hasActiveFilters = _hasActiveFilters();
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        IconButton(
+          icon: Icon(
+            Iconsax.filter_edit,
+            color: hasActiveFilters ? secondaryColor : Colors.white,
+            size: 22,
+          ),
+          onPressed: () => _showFilterBottomSheet(context, state),
+        ),
+        if (hasActiveFilters)
+          Positioned(
+            right: 12,
+            top: 12,
+            child: Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: secondaryColor,
+                shape: BoxShape.circle,
+                border: Border.all(color: maincolor1, width: 1.5),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildActiveFilterBadge(
+    BuildContext context,
+    BusListFetchState state,
+  ) {
+    return GestureDetector(
+      onTap: () => _showFilterBottomSheet(context, state),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: secondaryColor.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(100),
+          border: Border.all(color: secondaryColor.withOpacity(0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Iconsax.filter_tick, size: 12, color: secondaryColor),
+            const SizedBox(width: 4),
+            Text(
+              'Filters Applied',
+              style: TextStyle(
+                fontSize: 10,
+                color: secondaryColor,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSliverContent(
+    BuildContext context,
+    BusListFetchState state,
+    LocationState selectedData,
+  ) {
+    if (state.isLoading) {
+      return SliverFillRemaining(child: BusListloadingPage());
+    }
+
+    if (state.isError) {
+      return SliverToBoxAdapter(
+        child: _buildErrorWidget(context, selectedData),
+      );
+    }
+
+    if (state.notripp! ||
+        state.availableTrips == null ||
+        state.availableTrips!.isEmpty) {
+      return SliverToBoxAdapter(child: _buildNoTripsWidget());
+    }
+
+    return SliverList(
+      delegate: SliverChildBuilderDelegate((context, index) {
+        final trip = state.availableTrips![index];
+        final startfare = faredecode(fare: trip.fareDetails);
+        final arrivalTime = changetime(time: trip.arrivalTime);
+        final departureTime = changetime(time: trip.departureTime);
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: TripCountainer(
+            index: index,
+            availableTriplist: state.availableTrips!,
+            startfare: startfare,
+            departureTime: departureTime,
+            arrivalTime: arrivalTime,
+          ),
+        );
+      }, childCount: state.availableTrips!.length),
+    );
+  }
+
+  Widget _buildErrorWidget(BuildContext context, LocationState selectedData) {
+    return Container(
+      height: 400,
+      alignment: Alignment.center,
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: errorColor.withOpacity(0.05),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Iconsax.danger, color: errorColor, size: 48),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Something went wrong',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: textPrimary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'We couldn\'t load the bus list. Please try again.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13,
+              color: textSecondary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 32),
+          ElevatedButton(
+            onPressed: () {
+              context.read<BusListFetchBloc>().add(
+                FetchTrip(
+                  dateOfjurny: selectedData.dateOfJourney,
+                  destID: selectedData.to!,
+                  sourceID: selectedData.from!,
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: maincolor1,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 0,
+            ),
+            child: const Text(
+              'Try Again',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNoTripsWidget() {
+    return Container(
+      height: 400,
+      alignment: Alignment.center,
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: maincolor1.withOpacity(0.05),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Iconsax.map_1, color: maincolor1, size: 48),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'No Buses Found',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: textPrimary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Text(
+              'We couldn\'t find any buses for your selected route and date. Try changing your criteria.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13,
+                color: textSecondary,
+                fontWeight: FontWeight.w500,
+                height: 1.5,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  double faredecode({required dynamic fare}) {
+    List<FareDetail> fareList;
+
+    if (fare is List<FareDetail>) {
+      fareList = fare;
+    } else if (fare is FareDetail) {
+      fareList = [fare];
+    } else {
+      return 0.0;
+    }
+
+    if (fareList.isEmpty) return 0.0;
+
+    num smallestValue = double.parse(fareList[0].baseFare);
+
+    for (int i = 1; i < fareList.length; i++) {
+      num currentValue = double.parse(fareList[i].baseFare);
+      if (currentValue < smallestValue) {
+        smallestValue = currentValue;
+      }
+    }
+
+    return double.parse(smallestValue.toString());
   }
 
   void _showFilterBottomSheet(BuildContext context, BusListFetchState state) {
@@ -147,352 +521,6 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
     return _currentFilterState.busTypes.any((element) => element) ||
         _currentFilterState.departureTimes.any((element) => element) ||
         _currentFilterState.arrivalTimes.any((element) => element);
-  }
-
-  Widget _buildErrorWidget(BuildContext context, LocationState selectedData) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: cardColor,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Icon(
-                Icons.error_outline_rounded,
-                color: errorColor,
-                size: 48,
-              ),
-            ),
-            SizedBox(height: 24),
-            Text(
-              'Something went wrong',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: textPrimary,
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'We couldn\'t load the bus list. Please try again.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: textSecondary),
-            ),
-            SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () {
-                context.read<BusListFetchBloc>().add(
-                  FetchTrip(
-                    dateOfjurny: selectedData.dateOfJourney,
-                    destID: selectedData.to!,
-                    sourceID: selectedData.from!,
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: maincolor1,
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: Text(
-                'Try Again',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNoTripsWidget() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: cardColor,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Icon(
-                Icons.directions_bus_rounded,
-                color: textLight,
-                size: 48,
-              ),
-            ),
-            SizedBox(height: 24),
-            Text(
-              'No buses found',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: textPrimary,
-              ),
-            ),
-            SizedBox(height: 12),
-            Text(
-              'We couldn\'t find any buses for your selected route and date. '
-              'Try changing your search criteria or select a different date.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: textSecondary, height: 1.5),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTripList(
-    BuildContext context,
-    BusListFetchState state,
-    LocationState selectedData,
-  ) {
-    return Column(
-      children: [
-        // Route Header
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: maincolor1,
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(20),
-              bottomRight: Radius.circular(20),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                blurRadius: 10,
-                offset: Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'FROM',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.white.withOpacity(0.7),
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      selectedData.from?.name ?? '--',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: secondaryColor,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.arrow_forward_rounded,
-                        color: Colors.white,
-                        size: 16,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      '${state.availableTrips!.length} buses',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.white.withOpacity(0.7),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      'TO',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.white.withOpacity(0.7),
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      selectedData.to?.name ?? '--',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: 16),
-
-        // Trip Count and Filter Indicator
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Row(
-            children: [
-              Icon(
-                Icons.directions_bus_rounded,
-                color: secondaryColor,
-                size: 16,
-              ),
-              SizedBox(width: 8),
-              Text(
-                '${state.availableTrips!.length} buses available',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: textSecondary,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              Spacer(),
-              // Active Filters Indicator
-              if (_hasActiveFilters())
-                GestureDetector(
-                  onTap: () {
-                    _showFilterBottomSheet(context, state);
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: secondaryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: secondaryColor.withOpacity(0.3),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.filter_alt_rounded,
-                          size: 12,
-                          color: secondaryColor,
-                        ),
-                        SizedBox(width: 4),
-                        Text(
-                          'Filters Active',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: secondaryColor,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-        SizedBox(height: 12),
-
-        // Trip List
-        Expanded(
-          child: ListView.builder(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            itemCount: state.availableTrips!.length,
-            itemBuilder: (context, index) {
-              final startfare = faredecode(
-                fare: state.availableTrips![index].fareDetails,
-              );
-              final arrivalTime = changetime(
-                time: state.availableTrips![index].arrivalTime,
-              );
-              final departureTime = changetime(
-                time: state.availableTrips![index].departureTime,
-              );
-              return TripCountainer(
-                index: index,
-                availableTriplist: state.availableTrips!,
-                startfare: startfare,
-                departureTime: departureTime,
-                arrivalTime: arrivalTime,
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  double faredecode({required dynamic fare}) {
-    List<FareDetail> fareList;
-
-    if (fare is List<FareDetail>) {
-      fareList = fare;
-    } else if (fare is FareDetail) {
-      fareList = [fare];
-    } else {
-      return 0.0;
-    }
-
-    if (fareList.isEmpty) return 0.0;
-
-    num smallestValue = double.parse(fareList[0].baseFare);
-
-    for (int i = 1; i < fareList.length; i++) {
-      num currentValue = double.parse(fareList[i].baseFare);
-      if (currentValue < smallestValue) {
-        smallestValue = currentValue;
-      }
-    }
-
-    return double.parse(smallestValue.toString());
   }
 }
 
@@ -612,14 +640,13 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
           Expanded(
             child: SingleChildScrollView(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-
                 children: [
                   // Bus Types
                   _buildFilterSection(
-                    title: 'Bus Types',
+                    title: 'BUS TYPES',
                     options: ['Sleeper', 'Seater', 'AC', 'Non AC'],
                     selectedOptions: _filterState.busTypes,
                     onOptionChanged: (index, value) {
@@ -629,16 +656,16 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     },
                   ),
 
-                  SizedBox(height: 24),
+                  const SizedBox(height: 32),
 
                   // Departure Times
                   _buildFilterSection(
-                    title: 'Departure Times',
+                    title: 'DEPARTURE TIME',
                     options: [
-                      'Before 6 am',
-                      '6 am to 12 pm',
-                      '12 pm to 6 pm',
-                      'After 6 pm',
+                      'Before 6 AM',
+                      '6 AM - 12 PM',
+                      '12 PM - 6 PM',
+                      'After 6 PM',
                     ],
                     selectedOptions: _filterState.departureTimes,
                     onOptionChanged: (index, value) {
@@ -648,16 +675,16 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     },
                   ),
 
-                  SizedBox(height: 24),
+                  const SizedBox(height: 32),
 
                   // Arrival Times
                   _buildFilterSection(
-                    title: 'Arrival Times',
+                    title: 'ARRIVAL TIME',
                     options: [
-                      'Before 6 am',
-                      '6 am to 12 pm',
-                      '12 pm to 6 pm',
-                      'After 6 pm',
+                      'Before 6 AM',
+                      '6 AM - 12 PM',
+                      '12 PM - 6 PM',
+                      'After 6 PM',
                     ],
                     selectedOptions: _filterState.arrivalTimes,
                     onOptionChanged: (index, value) {
@@ -739,37 +766,45 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
         Text(
           title,
           style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: widget.textPrimary,
+            fontSize: 10,
+            fontWeight: FontWeight.w900,
+            color: widget.textSecondary.withOpacity(0.6),
+            letterSpacing: 1.5,
           ),
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 16),
         Wrap(
-          spacing: 8,
-          runSpacing: 8,
+          spacing: 12,
+          runSpacing: 12,
           children: List.generate(options.length, (index) {
-            return FilterChip(
-              label: Text(options[index]),
-              selected: selectedOptions[index],
-              onSelected: (selected) => onOptionChanged(index, selected),
-              selectedColor: widget.secondaryColor.withOpacity(0.2),
-              checkmarkColor: widget.secondaryColor,
-              labelStyle: TextStyle(
-                color: selectedOptions[index]
-                    ? widget.secondaryColor
-                    : widget.textPrimary,
-                fontWeight: selectedOptions[index]
-                    ? FontWeight.w600
-                    : FontWeight.normal,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-                // side: BorderSide(
-                //   color: selectedOptions[index]
-                //       ? widget.secondaryColor
-                //       : widget.textSecondary.withOpacity(0.3),
-                // ),
+            final isSelected = selectedOptions[index];
+            return GestureDetector(
+              onTap: () => onOptionChanged(index, !isSelected),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? widget.secondaryColor
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isSelected
+                        ? widget.secondaryColor
+                        : widget.textSecondary.withOpacity(0.2),
+                    width: 1,
+                  ),
+                ),
+                child: Text(
+                  options[index],
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: isSelected ? FontWeight.w900 : FontWeight.w700,
+                    color: isSelected ? Colors.white : widget.textPrimary,
+                  ),
+                ),
               ),
             );
           }),
@@ -806,229 +841,113 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   }
 }
 
-// Rest of the code remains the same (BusListloadingPage, etc.)
 class BusListloadingPage extends StatelessWidget {
-  BusListloadingPage({super.key});
+  const BusListloadingPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       itemCount: 6,
       itemBuilder: (context, index) {
         return Container(
-          margin: EdgeInsets.only(bottom: 16),
+          margin: const EdgeInsets.only(bottom: 16),
+          height: 180,
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: Offset(0, 4),
+                color: Colors.black.withOpacity(0.03),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
               ),
             ],
           ),
-          padding: EdgeInsets.all(16),
-          child: Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
-            child: Column(
-              children: [
-                // Top section: Bus info and price
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(18),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Shimmer.fromColors(
+              baseColor: Colors.grey[200]!,
+              highlightColor: Colors.grey[50]!,
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
                       ),
-                    ),
-                    SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            height: 16,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Container(
-                            width: 120,
-                            height: 14,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Container(
-                          width: 60,
-                          height: 12,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                        SizedBox(height: 6),
-                        Container(
-                          width: 80,
-                          height: 18,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                SizedBox(height: 16),
-
-                // Divider
-                Container(
-                  width: double.infinity,
-                  height: 1,
-                  color: Colors.white,
-                ),
-                SizedBox(height: 16),
-
-                // Time section
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: 50,
-                          height: 12,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Container(
-                          width: 70,
-                          height: 16,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        Container(
-                          width: 60,
-                          height: 14,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Row(
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
-                              width: 20,
-                              height: 1,
-                              color: Colors.white,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 4,
-                              ),
-                              child: Container(
-                                width: 16,
-                                height: 16,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                ),
+                              width: 150,
+                              height: 16,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(4),
                               ),
                             ),
+                            const SizedBox(height: 8),
                             Container(
-                              width: 20,
-                              height: 1,
-                              color: Colors.white,
+                              width: 80,
+                              height: 12,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Container(
-                          width: 50,
-                          height: 12,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Container(
-                          width: 70,
-                          height: 16,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                SizedBox(height: 16),
-
-                // Divider
-                Container(
-                  width: double.infinity,
-                  height: 1,
-                  color: Colors.white,
-                ),
-                SizedBox(height: 16),
-
-                // Bottom section: Seats and button
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      width: 100,
-                      height: 16,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(4),
                       ),
-                    ),
-                    Container(
-                      width: 100,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
+                      Container(
+                        width: 60,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
                       ),
+                    ],
+                  ),
+                  const Spacer(),
+                  Container(
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: 100,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                      ),
+                      Container(
+                        width: 120,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         );

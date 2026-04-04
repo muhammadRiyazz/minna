@@ -219,10 +219,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(16),
                         gradient: LinearGradient(
-                          colors: [
-                            maincolor1,
-                            maincolor1.withOpacity(0.9),
-                          ],
+                          colors: [maincolor1, maincolor1.withOpacity(0.9)],
                         ),
                         boxShadow: [
                           BoxShadow(
@@ -286,9 +283,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: isSelected
-                ? secondaryColor.withOpacity(0.05)
-                : Colors.white,
+            color: isSelected ? secondaryColor.withOpacity(0.05) : Colors.white,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: isSelected
@@ -533,9 +528,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                           'Quickly pick your precise location',
                                           style: TextStyle(
                                             fontSize: 10,
-                                            color: textPrimary.withOpacity(
-                                              0.6,
-                                            ),
+                                            color: textPrimary.withOpacity(0.6),
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
@@ -693,9 +686,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                     Container(
                                       padding: const EdgeInsets.all(24),
                                       decoration: BoxDecoration(
-                                        color: secondaryColor.withOpacity(
-                                          0.05,
-                                        ),
+                                        color: secondaryColor.withOpacity(0.05),
                                         shape: BoxShape.circle,
                                       ),
                                       child: Icon(
@@ -753,9 +744,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                         width: 48,
                                         height: 48,
                                         decoration: BoxDecoration(
-                                          color: maincolor1.withOpacity(
-                                            0.05,
-                                          ),
+                                          color: maincolor1.withOpacity(0.05),
                                           borderRadius: BorderRadius.circular(
                                             14,
                                           ),
@@ -873,11 +862,9 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
             switch (fieldType) {
               case LocationFieldType.source:
                 _sourceController.text = locationData['address'] as String;
-                _sourceLocationData = locationData;
                 break;
               case LocationFieldType.destination:
                 _destinationController.text = locationData['address'] as String;
-                _destinationLocationData = locationData;
                 break;
               case LocationFieldType.multiCitySource:
                 _multiCityRoutes[multiCityIndex!]['source'].text =
@@ -1015,11 +1002,9 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
             switch (fieldType) {
               case LocationFieldType.source:
                 _sourceController.text = locationData['address'] as String;
-                _sourceLocationData = locationData;
                 break;
               case LocationFieldType.destination:
                 _destinationController.text = locationData['address'] as String;
-                _destinationLocationData = locationData;
                 break;
               case LocationFieldType.multiCitySource:
                 _multiCityRoutes[multiCityIndex!]['source'].text =
@@ -1047,11 +1032,9 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
         switch (fieldType) {
           case LocationFieldType.source:
             _sourceController.text = locationData['address'] as String;
-            _sourceLocationData = locationData;
             break;
           case LocationFieldType.destination:
             _destinationController.text = locationData['address'] as String;
-            _destinationLocationData = locationData;
             break;
           case LocationFieldType.multiCitySource:
             _multiCityRoutes[multiCityIndex!]['source'].text =
@@ -1684,9 +1667,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   decoration: BoxDecoration(
-                    color: _isAirportPickup
-                        ? secondaryColor
-                        : backgroundColor,
+                    color: _isAirportPickup ? secondaryColor : backgroundColor,
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Row(
@@ -1695,9 +1676,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                       Icon(
                         Iconsax.airplane,
                         size: 16,
-                        color: _isAirportPickup
-                            ? Colors.white
-                            : secondaryColor,
+                        color: _isAirportPickup ? Colors.white : secondaryColor,
                       ),
                       const SizedBox(width: 8),
                       Text(
@@ -1724,9 +1703,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   decoration: BoxDecoration(
-                    color: !_isAirportPickup
-                        ? secondaryColor
-                        : backgroundColor,
+                    color: !_isAirportPickup ? secondaryColor : backgroundColor,
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Row(
@@ -1743,9 +1720,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                       Text(
                         'Airport Drop',
                         style: TextStyle(
-                          color: !_isAirportPickup
-                              ? Colors.white
-                              : textPrimary,
+                          color: !_isAirportPickup ? Colors.white : textPrimary,
                           fontWeight: FontWeight.w700,
                           fontSize: 12,
                         ),

@@ -12,6 +12,7 @@ import 'package:minna/cab/function/commission_data.dart';
 import 'package:minna/comman/core/api.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:iconsax/iconsax.dart';
 
 class BookingDetailsPage extends StatefulWidget {
   final String bookingId;
@@ -229,29 +230,37 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
           slivers: [
             // Sliver App Bar
             SliverAppBar(
-              expandedHeight: 140.0,
+              expandedHeight: 160.0,
               floating: false,
               pinned: true,
               backgroundColor: maincolor1,
-              elevation: 4,
-              shadowColor: Colors.black.withOpacity(0.2),
-              leading: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  color: Colors.white,
-                  size: 20,
+              elevation: 0,
+              leading: Center(
+                child: GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Iconsax.arrow_left_2,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                  ),
                 ),
-                onPressed: () => Navigator.pop(context),
               ),
               flexibleSpace: FlexibleSpaceBar(
                 centerTitle: true,
                 title: const Text(
-                  'Booking Details',
+                  'Trip Report',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.5,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -0.5,
                   ),
                 ),
                 background: Stack(
@@ -260,50 +269,70 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                     Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
                           colors: [maincolor1, maincolor1.withOpacity(0.8)],
                         ),
                       ),
                     ),
+                    // Status Badge
                     Positioned(
-                      top: -40,
-                      right: -40,
-                      child: Container(
-                        width: 150,
-                        height: 150,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: secondaryColor.withOpacity(0.08),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 20,
+                      bottom: 25,
                       right: 20,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
+                          horizontal: 14,
+                          vertical: 8,
                         ),
                         decoration: BoxDecoration(
                           color: isCancelled
                               ? errorColor.withOpacity(0.2)
-                              : successColor.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(12),
+                              : secondaryColor.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(14),
                           border: Border.all(
-                            color: isCancelled ? errorColor : successColor,
+                            color: isCancelled
+                                ? errorColor.withOpacity(0.5)
+                                : secondaryColor.withOpacity(0.5),
                             width: 1,
                           ),
                         ),
-                        child: Text(
-                          details.statusDesc.toUpperCase(),
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w900,
-                            color: isCancelled ? errorColor : successColor,
-                            letterSpacing: 1,
-                          ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: isCancelled
+                                    ? errorColor
+                                    : secondaryColor,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color:
+                                        (isCancelled
+                                                ? errorColor
+                                                : secondaryColor)
+                                            .withOpacity(0.4),
+                                    blurRadius: 4,
+                                    spreadRadius: 1,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              details.statusDesc.toUpperCase(),
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w900,
+                                color: isCancelled
+                                    ? errorColor
+                                    : secondaryColor,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -1195,8 +1224,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
           .post(
             mainUri,
             body: {
-              "link":
-                  "http://gozotech2.ddns.net:5192/api/cpapi/booking/getCancellationList",
+              "link": "${cabBaseUrl}api/cpapi/booking/getCancellationList",
               "data": "",
             },
           )
@@ -1462,8 +1490,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
           .post(
             mainUri,
             body: {
-              "link":
-                  "http://gozotech2.ddns.net:5192/api/cpapi/booking/cancelBooking",
+              "link": "${cabBaseUrl}api/cpapi/booking/cancelBooking",
               "data": jsonEncode(bodyMap),
             },
           )
@@ -1803,29 +1830,78 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
   }
 
   Widget _buildErrorState(BuildContext context, String message) {
-    return Center(
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.error_outline, size: 64, color: errorColor),
-          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(28),
+            decoration: BoxDecoration(
+              color: errorColor.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Iconsax.cloud_cross, size: 56, color: errorColor),
+          ),
+          const SizedBox(height: 32),
           Text(
-            message,
-            style: const TextStyle(fontSize: 16, color: Colors.red),
+            'Connection Issue',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+              color: maincolor1,
+              letterSpacing: -0.5,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'The server is currently busy or experiencing a technical delay. Your data is safe—please try refreshing.',
+            style: TextStyle(
+              fontSize: 14,
+              color: textSecondary,
+              height: 1.5,
+              fontWeight: FontWeight.w500,
+            ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {
-              context.read<BookedDetailsBloc>().add(
-                BookedDetailsEvent.fetchDetails(widget.bookingId),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: maincolor1,
-              foregroundColor: Colors.white,
+          const SizedBox(height: 40),
+          SizedBox(
+            width: double.infinity,
+            height: 56,
+            child: ElevatedButton(
+              onPressed: () {
+                context.read<BookedDetailsBloc>().add(
+                  BookedDetailsEvent.fetchDetails(widget.bookingId),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: maincolor1,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 0,
+              ),
+              child: const Text(
+                'TRY REFRESHING',
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1,
+                  fontSize: 14,
+                ),
+              ),
             ),
-            child: const Text('Retry'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Back to List',
+              style: TextStyle(
+                color: textSecondary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
         ],
       ),
@@ -1833,7 +1909,32 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
   }
 
   Widget _buildInitialState() {
-    return const Center(child: Text('Loading booking details...'));
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 45,
+            height: 45,
+            child: CircularProgressIndicator(
+              strokeWidth: 3,
+              color: secondaryColor,
+              backgroundColor: secondaryColor.withOpacity(0.1),
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Syncing Booking Details...',
+            style: TextStyle(
+              fontSize: 14,
+              color: textSecondary,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.2,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   String _formatDate(String date) {

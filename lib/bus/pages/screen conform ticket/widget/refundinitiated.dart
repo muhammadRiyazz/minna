@@ -1,22 +1,10 @@
-// screen_refund_initiated.dart
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/pages/main%20home/home.dart';
 
 class ScreenRefundInitiated extends StatelessWidget {
-   ScreenRefundInitiated({super.key});
-
-  // Updated Theme Colors
-  final Color _primaryColor = Colors.black;
-  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
-  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
-  final Color _backgroundColor = Color(0xFFF8F9FA);
-  final Color _cardColor = Colors.white;
-  final Color _textPrimary = Colors.black;
-  final Color _textSecondary = Color(0xFF666666);
-  final Color _textLight = Color(0xFF999999);
-  final Color _errorColor = Color(0xFFE53935);
-  final Color _successColor = Color(0xFF388E3C);
-  final Color _warningColor = Color(0xFFF57C00);
+  const ScreenRefundInitiated({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -30,29 +18,47 @@ class ScreenRefundInitiated extends StatelessWidget {
         return false;
       },
       child: Scaffold(
-        backgroundColor: _backgroundColor,
+        backgroundColor: backgroundColor,
         appBar: AppBar(
-          title: Text(
-            'Booking Status',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
+          automaticallyImplyLeading: false,
+          title: Row(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const HomePage()),
+                    (route) => false,
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Iconsax.arrow_left_2,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              const Text(
+                'Booking Status',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -0.5,
+                ),
+              ),
+            ],
           ),
-          backgroundColor: _primaryColor,
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => HomePage()),
-                (route) => false,
-              );
-            },
-          ),
+          backgroundColor: maincolor1,
           elevation: 0,
+          toolbarHeight: 70,
         ),
         body: Center(
           child: SingleChildScrollView(
@@ -61,185 +67,230 @@ class ScreenRefundInitiated extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Animated icon container
                   Container(
-                    width: 100,
-                    height: 100,
+                    width: 110,
+                    height: 110,
                     decoration: BoxDecoration(
-                      color: _secondaryColor.withOpacity(0.1),
+                      color: secondaryColor.withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(15.0),
+                    child: Center(
                       child: Container(
-decoration: BoxDecoration(                                      color: 
-_secondaryColor,
-                                shape: BoxShape.circle,
-),
-                        child: Padding(
-                          padding: const EdgeInsets.all(3.0),
-                          child: Icon(
-                            Icons.info_outline_rounded,
-                            size: 35,
-                            color: Colors.white,
-                          ),
+                        width: 80,
+                        height: 80,
+                        decoration: const BoxDecoration(
+                          color: secondaryColor,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: secondaryColor,
+                              blurRadius: 15,
+                              spreadRadius: -5,
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Iconsax.rotate_left,
+                          size: 38,
+                          color: Colors.white,
                         ),
                       ),
                     ),
                   ),
-                  
-                  const SizedBox(height: 10),
-                  
-                  // Main title
-                  Text(
-                    'Refund Initiated',
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Booking Not Completed',
                     style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: _primaryColor,
-                      letterSpacing: 0.5,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w900,
+                      color: maincolor1,
+                      letterSpacing: -0.5,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  
-                  const SizedBox(height: 10),
-                  
-                  // Status card
-                  Card(elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                  const SizedBox(height: 12),
+                  Text(
+                    'We apology for the technical issue. Your refund of the full booking amount is being processed.',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: textSecondary,
+                      height: 1.5,
+                      fontWeight: FontWeight.w500,
                     ),
-                    color: _secondaryColor.withOpacity(0.1),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.info_outline_rounded,
-                                color: _warningColor,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Booking Not Confirmed',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: _textPrimary,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            'We apologize for the inconvenience. Your booking could not be confirmed due to a technical issue.',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: _textSecondary,
-                              height: 1.4,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  
-                  const SizedBox(height: 10),
-                  
-                  // Refund information card
+                  const SizedBox(height: 32),
                   Container(
-                    width: double.infinity,
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: _successColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(16),
-                     
+                      color: cardColor,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.04),
+                          blurRadius: 20,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                      border: Border.all(color: errorColor.withOpacity(0.1)),
                     ),
                     child: Column(
                       children: [
-                        Icon(
-                          Icons.verified_rounded,
-                          color: _successColor,
-                          size: 30,
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          'Refund Processing',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: _successColor,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Your refund has been initiated and will be credited to your original payment method within 5-7 business days.',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: _textSecondary,
-                            height: 1.4,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 10),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: _successColor.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            'Track refund in Payment History',
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                              color: _successColor,
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: errorColor.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(
+                                Iconsax.info_circle,
+                                color: errorColor,
+                                size: 18,
+                              ),
                             ),
+                            const SizedBox(width: 12),
+                            const Expanded(
+                              child: Text(
+                                'Issue Notification',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w900,
+                                  color: textPrimary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Due to a temporary connection delay with the booking service, we were unable to confirm your ticket. Please don\'t worry, your payment is safe.',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: textSecondary,
+                            height: 1.5,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  
+
+                  const SizedBox(height: 10),
+
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: cardColor,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.04),
+                          blurRadius: 20,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                      border: Border.all(color: successColor.withOpacity(0.1)),
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: successColor.withOpacity(0.12),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Iconsax.tick_circle,
+                            color: successColor,
+                            size: 32,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'Refund Initiated Successfully',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                            color: successColor,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'We have processed your refund. The full amount will be credited back to your original source of payment within 5-7 business days.',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: textSecondary,
+                            height: 1.5,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 20),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: successColor.withOpacity(0.08),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Iconsax.radar,
+                                size: 14,
+                                color: successColor,
+                              ),
+                              const SizedBox(width: 8),
+                              const Text(
+                                'Track refund in Payment History',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w800,
+                                  color: successColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
                   const SizedBox(height: 20),
-                  
-                  // Action button
+
                   SizedBox(
                     width: double.infinity,
+                    height: 56,
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => HomePage(),
+                            builder: (context) => const HomePage(),
                           ),
                           (route) => false,
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
+                        backgroundColor: maincolor1,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 32,
-                          vertical: 16,
-                        ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        elevation: 2,
+                        elevation: 0,
                       ),
-                      child: Text(
-                        'Return to Home',
+                      child: const Text(
+                        'RETURN TO HOME',
                         style: TextStyle(
                           fontSize: 14,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1,
                         ),
                       ),
                     ),

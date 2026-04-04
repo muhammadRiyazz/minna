@@ -6,6 +6,7 @@ import 'package:minna/comman/application/login/login_bloc.dart';
 import 'package:minna/bus/pages/bus%20report/screen_reports.dart';
 import 'package:minna/comman/pages/log%20in/login_page.dart';
 import 'package:minna/flight/presendation/report_list/report_list.dart';
+import 'package:minna/hotel%20booking/pages/report/screen_hotel_report.dart';
 import 'package:minna/comman/const/const.dart';
 
 class ScreenBooking extends StatefulWidget {
@@ -248,7 +249,7 @@ class _ScreenBookingState extends State<ScreenBooking> {
       case 2:
         return const CabBookingList(); // Cab
       case 3:
-        return _buildEmptyContent('Hotel', Iconsax.house);
+        return const ScreenHotelReport(); // Hotel
       default:
         return const SizedBox();
     }

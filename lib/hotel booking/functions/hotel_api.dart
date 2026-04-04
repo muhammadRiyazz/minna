@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:minna/comman/core/api.dart';
+import 'package:minna/hotel%20booking/core/core.dart';
 import 'package:minna/hotel%20booking/domain/Nation%20and%20city/city.dart';
 import 'package:minna/hotel%20booking/domain/Nation%20and%20city/nation';
 import 'package:minna/hotel%20booking/domain/hotel%20list/hotel_list.dart';
@@ -58,7 +59,7 @@ class HotelApiService {
         };
       }).toList();
 
-      final searchUrl = Uri.parse('https://mttrip.in/hotel-api-search');
+      final searchUrl = Uri.parse('$baseUrl/hotel-api-search');
       log('📡 Search API URL: $searchUrl');
 
       final requestBody = {
@@ -99,12 +100,23 @@ class HotelApiService {
   // final http.Client _client = http.Client();
 
   // Basic Authentication credentials for static APIs
-
+  String get _basicAuth =>
+      'Basic ${base64Encode(utf8.encode('$hotelusername:$hoteluserpass'))}';
   // Base64 encoded authorization header
   Future<List<CountryModel>> getCountries() async {
     log("getCountries via callback----");
 
     try {
+      // final response = await _client.get(
+      //   Uri.parse(
+      //     'http://api.tbotechnology.in/TBOHolidays_HotelAPI/CountryList',
+      //   ),
+      //   headers: {
+      //     'Authorization': _basicAuth,
+      //     'Content-Type': 'application/json',
+      //   },
+      // );
+
       final response = await _client.post(
         Uri.parse('$baseUrl/hotel-api-call-basic'),
         body: {

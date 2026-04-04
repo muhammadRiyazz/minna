@@ -69,6 +69,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
   @override
   void initState() {
     super.initState();
+
     fetchCountries();
   }
 
@@ -77,7 +78,9 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
 
     setState(() => isLoadingCountries = true);
     try {
-      countries = await apiService.getCountries();
+      countries = [CountryModel(name: 'India', code: 'IN')];
+
+      //  await apiService.getCountries();
       _countriesLoaded = true;
     } catch (e) {
       debugPrint('Error fetching countries: $e');
@@ -91,7 +94,13 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
     try {
       // Find the CountryModel by name
       final country = countries.firstWhere((c) => c.name == countryName);
-      cities = await apiService.getCities(country.code);
+
+      cities =
+          // [
+          //   HotelCityHotel(name: 'Kochi', code: 'COK'),
+          //   HotelCityHotel(name: 'Munnar', code: 'MNN'),
+          // ];
+          await apiService.getCities(country.code);
 
       if (cities.isNotEmpty) {
         selectedCity = cities.first.name;

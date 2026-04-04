@@ -5,55 +5,61 @@ import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:minna/comman/core/api.dart';
 
+//payrefundTest
+//payrefund
+
 Future<Map<String, dynamic>> refundPayment({
   required String transactionId,
   required double amount,
   required String tableId,
-  required String table
+  required String table,
 }) async {
   try {
     log('Initiating refund for transaction: $transactionId, amount: $amount');
-    
+
     final response = await http.post(
-      Uri.parse('${baseUrl}payrefund'),
+      Uri.parse('${baseUrl}payrefundTest'),
       body: {
         'id': tableId,
         'transaction_id': transactionId,
         'amount': amount.toString(),
-        'table': table
+        'table': table,
       },
     );
-    log( {
+    log(
+      {
         'id': tableId,
         'transaction_id': transactionId,
         'amount': amount.toString(),
-        'table': table
-      }.toString());
+        'table': table,
+      }.toString(),
+    );
     log('Refund API response: ${response.statusCode}, ${response.body}');
-          final jsonResponse = jsonDecode(response.body);
+    final jsonResponse = jsonDecode(response.body);
 
-    if (jsonResponse['statusCode']== 200) {
+    if (jsonResponse['statusCode'] == 200) {
       final jsonResponse = jsonDecode(response.body);
       return {
         'success': jsonResponse['statusCode'] == 200,
-        'message': jsonResponse['message'] ?? 'Refund processed successfully'
+        'message': jsonResponse['message'] ?? 'Refund processed successfully',
       };
     }
     return {
-      'success': false, 
-      'message': 'Failed to process refund. HTTP Status: ${response.statusCode}'
+      'success': false,
+      'message':
+          'Failed to process refund. HTTP Status: ${response.statusCode}',
     };
   } on TimeoutException {
     log('Refund API timeout');
     return {
-      'success': false, 
-      'message': 'Refund request timed out. Please check with support.'
+      'success': false,
+      'message': 'Refund request timed out. Please check with support.',
     };
   } catch (e) {
     log('Refund API error: $e');
     return {
-      'success': false, 
-      'message': 'Error processing refund: ${e.toString()}'
+      'success': false,
+      'message': 'Error processing refund: ${e.toString()}',
     };
   }
 }

@@ -175,6 +175,7 @@ class PreBookRoom {
   final List<List<Supplement>> supplements;
   final bool withTransfers;
   final List<String> amenities;
+  final double netAmount;
 
   PreBookRoom({
     required this.name,
@@ -190,6 +191,7 @@ class PreBookRoom {
     required this.supplements,
     required this.withTransfers,
     required this.amenities,
+    required this.netAmount,
   });
 
   factory PreBookRoom.fromJson(Map<String, dynamic> json) {
@@ -213,6 +215,7 @@ class PreBookRoom {
       amenities: (json['Amenities'] as List? ?? [])
           .map((e) => e.toString())
           .toList(),
+      netAmount: (json['NetAmount'] ?? 0).toDouble(),
     );
   }
 
@@ -238,6 +241,7 @@ class PreBookRoom {
         .toList();
     data['WithTransfers'] = withTransfers;
     data['Amenities'] = amenities;
+    data['NetAmount'] = netAmount;
     return data;
   }
 

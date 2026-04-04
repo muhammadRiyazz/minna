@@ -48,7 +48,6 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
   // Loading State
   int? _loadingRoomIndex;
   bool _isFabVisible = true;
-  double _serviceChargePercentage = 0.0;
 
   final AuthApiService _apiService = AuthApiService();
 
@@ -57,18 +56,6 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
     super.initState();
     _startImageSlider();
     _scrollController.addListener(_scrollListener);
-    _fetchServiceCharge();
-  }
-
-  Future<void> _fetchServiceCharge() async {
-    final result = await _apiService.getServiceCharge();
-    if (result.isSuccess && result.data != null) {
-      if (mounted) {
-        setState(() {
-          _serviceChargePercentage = result.data!.percentage;
-        });
-      }
-    }
   }
 
   @override
@@ -1408,7 +1395,7 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                                   ? room.name[0]
                                   : 'Standard Room',
                               style: TextStyle(
-                                fontSize: 20,
+                                fontSize: 18,
                                 fontWeight: FontWeight.w900,
                                 color: textPrimary,
                                 letterSpacing: -0.5,
@@ -1416,64 +1403,73 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                             ),
                             if (room.mealType.isNotEmpty) ...[
                               const SizedBox(height: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 5,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: secondaryColor.withOpacity(0.12),
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                    color: secondaryColor.withOpacity(0.2),
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 5,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: secondaryColor.withOpacity(0.12),
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: Border.all(
+                                        color: secondaryColor.withOpacity(0.2),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      room.mealType,
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: secondaryColor,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                                child: Text(
-                                  room.mealType,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: secondaryColor,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
+                                  SizedBox(width: 10),
+                                  if (isRefundable)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 8,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: const Color(
+                                          0xFF10B981,
+                                        ).withOpacity(0.12),
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(
+                                          color: const Color(
+                                            0xFF10B981,
+                                          ).withOpacity(0.3),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Iconsax.tick_circle,
+                                            size: 14,
+                                            color: const Color(0xFF10B981),
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Text(
+                                            'Refundable',
+                                            style: TextStyle(
+                                              fontSize: 8,
+                                              color: const Color(0xFF10B981),
+                                              fontWeight: FontWeight.w900,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                ],
                               ),
                             ],
                           ],
                         ),
                       ),
-                      if (isRefundable)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF10B981).withOpacity(0.12),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: const Color(0xFF10B981).withOpacity(0.3),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Iconsax.tick_circle,
-                                size: 14,
-                                color: const Color(0xFF10B981),
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                'Refundable',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: const Color(0xFF10B981),
-                                  fontWeight: FontWeight.w900,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -1579,17 +1575,15 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
 
   // UPDATED: Now shows full details (Base Fare + Taxes + Service Charge)
   Widget _buildPriceBreakdown(RoomDetail room) {
-    final double serviceCharge =
-        room.totalFare * (_serviceChargePercentage / 100);
-    final double totalPrice = room.totalFare + room.totalTax + serviceCharge;
+    final double totalPrice = room.totalFare;
     final int nights = _calculateNights();
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(0),
       decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: borderSoft.withOpacity(0.8), width: 1.5),
+        // color: backgroundColor,
+        // borderRadius: BorderRadius.circular(24),
+        // border: Border.all(color: borderSoft.withOpacity(0.8), width: 1.5),
       ),
       child: Column(
         children: [
@@ -1639,13 +1633,11 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          _buildPriceRow('Base Fare', room.totalFare),
-          const SizedBox(height: 8),
-          _buildPriceRow('Taxes & Professional Fees', room.totalTax),
-          const SizedBox(height: 8),
-          _buildPriceRow('Service Charge & Other', serviceCharge),
-          const SizedBox(height: 12),
+          // const SizedBox(height: 16),
+          // _buildPriceRow('Base Fare', room.totalFare),
+          // const SizedBox(height: 8),
+          // _buildPriceRow('Taxes & Professional Fees', room.totalTax),
+          // const SizedBox(height: 12),
           if (room.cancelPolicies.isNotEmpty)
             Container(
               padding: const EdgeInsets.all(10),
@@ -1832,7 +1824,7 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
         noOfRooms: room.name.isNotEmpty ? room.name.length : 1,
         hotelCode: widget.hotelSearchData.hotelDetails.hotelCode,
         response: preBookResponse.toJson(),
-        serviceCharge: room.totalFare * (_serviceChargePercentage / 100),
+        serviceCharge: 0.0,
         amount: room.totalFare,
       );
       log(response['status'].toString());

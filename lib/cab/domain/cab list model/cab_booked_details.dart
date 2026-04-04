@@ -39,7 +39,8 @@ class BookingDetails {
       pickupTime: json['pickupTime'] ?? '',
       bookingDate: json['bookingDate'] ?? '',
       bookingTime: json['bookingTime'] ?? '',
-      routes: (json['routes'] as List<dynamic>?)
+      routes:
+          (json['routes'] as List<dynamic>?)
               ?.map((route) => BookedRoute.fromJson(route))
               .toList() ??
           [],
@@ -95,10 +96,7 @@ class BookedLocation {
   final String address;
   final BookedCoordinates coordinates;
 
-  BookedLocation({
-    required this.address,
-    required this.coordinates,
-  });
+  BookedLocation({required this.address, required this.coordinates});
 
   factory BookedLocation.fromJson(Map<String, dynamic> json) {
     return BookedLocation(
@@ -112,10 +110,7 @@ class BookedCoordinates {
   final double latitude;
   final double longitude;
 
-  BookedCoordinates({
-    required this.latitude,
-    required this.longitude,
-  });
+  BookedCoordinates({required this.latitude, required this.longitude});
 
   factory BookedCoordinates.fromJson(Map<String, dynamic> json) {
     return BookedCoordinates(
@@ -157,10 +152,7 @@ class BookedContact {
   final String code;
   final String number;
 
-  BookedContact({
-    required this.code,
-    required this.number,
-  });
+  BookedContact({required this.code, required this.number});
 
   factory BookedContact.fromJson(Map<String, dynamic> json) {
     return BookedContact(
@@ -176,10 +168,7 @@ class BookedCabRate {
   final BookedCab cab;
   final BookedFare fare;
 
-  BookedCabRate({
-    required this.cab,
-    required this.fare,
-  });
+  BookedCabRate({required this.cab, required this.fare});
 
   factory BookedCabRate.fromJson(Map<String, dynamic> json) {
     return BookedCabRate(
@@ -217,7 +206,8 @@ class BookedCab {
       type: json['type'] ?? '',
       category: json['category'] ?? '',
       sClass: json['sClass'] ?? '',
-      instructions: (json['instructions'] as List<dynamic>?)
+      instructions:
+          (json['instructions'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],
@@ -297,11 +287,7 @@ class BookingDetailsResponse {
   final BookingDetails? data;
   final String? errorMessage;
 
-  BookingDetailsResponse({
-    required this.success,
-    this.data,
-    this.errorMessage,
-  });
+  BookingDetailsResponse({required this.success, this.data, this.errorMessage});
 
   factory BookingDetailsResponse.fromJson(Map<String, dynamic> json) {
     return BookingDetailsResponse(

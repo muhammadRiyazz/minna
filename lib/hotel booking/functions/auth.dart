@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:http/http.dart' as http;
+import 'package:minna/comman/core/api.dart';
 import 'package:minna/hotel%20booking/domain/authentication/authendication.dart';
 
 class AuthApiService {
@@ -9,7 +10,6 @@ class AuthApiService {
   factory AuthApiService() => _instance;
   AuthApiService._internal();
 
-  static const String _baseUrl = 'https://mttrip.in';
 
   String? _token;
   Member? _currentMember;
@@ -38,7 +38,7 @@ class AuthApiService {
     log('authenticate mttrip ------------------------------');
     try {
       final response = await http.get(
-        Uri.parse('$_baseUrl/hotel-api-authenticateApi'),
+        Uri.parse('$baseUrl/hotel-api-authenticateApi'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -70,7 +70,7 @@ class AuthApiService {
   Future<ApiResult<ServiceChargeResponse>> getServiceCharge() async {
     try {
       final response = await http.get(
-        Uri.parse('$_baseUrl/hotel-api-get-service-charge'),
+        Uri.parse('$baseUrl/hotel-api-get-service-charge'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -179,7 +179,7 @@ class AuthApiService {
     log('preBookRoomInternal ------------------------------$bookingCode');
     try {
       final response = await http.post(
-        Uri.parse('$_baseUrl/hotel-api-prebook'),
+        Uri.parse('$baseUrl/hotel-api-prebook'),
         body: {'bookingCode': bookingCode},
       );
 

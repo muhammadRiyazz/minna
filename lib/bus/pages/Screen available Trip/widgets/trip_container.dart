@@ -3,9 +3,10 @@ import 'package:minna/bus/domain/BlockTicket/block_ticket_request_modal.dart';
 import 'package:minna/bus/domain/trips%20list%20modal/trip_list_modal.dart';
 import 'package:minna/bus/pages/screen%20seats%20page/screen_seats_page.dart';
 import 'package:minna/comman/const/const.dart';
+import 'package:iconsax/iconsax.dart';
 
 class TripCountainer extends StatelessWidget {
-   TripCountainer({
+  const TripCountainer({
     super.key,
     required this.availableTriplist,
     required this.startfare,
@@ -20,286 +21,128 @@ class TripCountainer extends StatelessWidget {
   final String arrivalTime;
   final int index;
 
-  // Theme standardizing: Use global constants directly from const.dart
-
   @override
   Widget build(BuildContext context) {
     final trip = availableTriplist[index];
-    final size = MediaQuery.of(context).size;
 
     final formattedPrice = startfare != null
         ? '₹${startfare!.round().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},')}'
         : '₹0';
 
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.grey.withOpacity(0.05), width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 15,
-            spreadRadius: 2,
-            offset: Offset(0, 4),
+            color: maincolor1.withOpacity(0.04),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
         child: Column(
           children: [
-            /// Top Section: Logo + Bus Info + Price
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: secondaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    Icons.directions_bus_rounded,
-                    color: secondaryColor,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
+            Padding(
+              padding: const EdgeInsets.all(15),
+              child: Column(
+                children: [
+                  // Top Row: Agency + Price
+                  Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        trip.travels.isNotEmpty ? trip.travels : 'Travels Name',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: textPrimary,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        trip.busType.isNotEmpty ? trip.busType : 'A/C Sleeper',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: textSecondary,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      // if (trip.rating.isNotEmpty)
-                      //   Row(
-                      //     children: [
-                      //       Icon(
-                      //         Icons.star_rounded,
-                      //         color: secondaryColor,
-                      //         size: 14,
-                      //       ),
-                      //       SizedBox(width: 4),
-                      //       Text(
-                      //         trip.rating,
-                      //         style: TextStyle(
-                      //           fontSize: 12,
-                      //           color: textSecondary,
-                      //           fontWeight: FontWeight.w500,
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
-                    ],
-                  ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      'Starts from',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: textLight,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      formattedPrice,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: secondaryColor,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-
-            /// Middle Section: Departure - Duration - Arrival
-            Container(
-              padding: EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: backgroundColor,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildTimeBlock(
-                    "Departure",
-                    departureTime.isNotEmpty ? departureTime : '10:00 AM',
-                    CrossAxisAlignment.start,
-                  ),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: secondaryColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            trip.duration.isNotEmpty
-                                ? convertTimeString(trip.duration)
-                                : '0h 0m',
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: secondaryColor,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Stack(
-                          alignment: Alignment.center,
+                      _buildBusIcon(),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              height: 1,
-                              color: textLight.withOpacity(0.3),
-                              width: double.infinity,
-                            ),
-                            Container(
-                              padding: EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: cardColor,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: textLight.withOpacity(0.3),
-                                ),
+                            Text(
+                              trip.travels.isNotEmpty
+                                  ? trip.travels
+                                  : 'Unknown Travels',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w900,
+                                color: maincolor1,
+                                letterSpacing: -0.5,
                               ),
-                              child: Icon(
-                                Icons.arrow_forward_rounded,
-                                size: 12,
-                                color: textLight,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 4),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: maincolor1.withOpacity(0.05),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                trip.busType.isNotEmpty
+                                    ? trip.busType
+                                    : 'Standard Bus',
+                                style: TextStyle(
+                                  fontSize: 8,
+                                  color: maincolor1.withOpacity(0.7),
+                                  fontWeight: FontWeight.w700,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(width: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            'STARTING AT',
+                            style: TextStyle(
+                              fontSize: 8,
+                              color: textSecondary.withOpacity(0.6),
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            formattedPrice,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900,
+                              color: secondaryColor,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  _buildTimeBlock(
-                    "Arrival",
-                    arrivalTime.isNotEmpty ? arrivalTime : '5:00 PM',
-                    CrossAxisAlignment.end,
+                  const SizedBox(height: 24),
+
+                  // Middle Section: Journey Path
+                  _buildJourneyPath(trip),
+                  const SizedBox(height: 20),
+
+                  // Bottom Row: Seats + Action
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildSeatsInfo(trip.availableSeats),
+                      _buildViewSeatsButton(context, trip),
+                    ],
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 16),
-
-            /// Bottom Section: Seats Left + View Seats Button
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color:int.parse( trip.availableSeats) > 10
-                        ? Color(0xFFE8F5E8)
-                        :int.parse( trip.availableSeats)> 0
-                            ? Color(0xFFFFF4E5)
-                            : Color(0xFFFFEBEE),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                       int.parse( trip.availableSeats) > 10
-                            ? Icons.event_seat_rounded
-                            : int.parse( trip.availableSeats) > 0
-                                ? Icons.warning_amber_rounded
-                                : Icons.error_outline_rounded,
-                        color:int.parse( trip.availableSeats) > 10
-                            ? Color(0xFF4CAF50)
-                            : int.parse( trip.availableSeats) > 0
-                                ? Color(0xFFFF9800)
-                                : Color(0xFFF44336),
-                        size: 14,
-                      ),
-                      SizedBox(width: 6),
-                      Text(
-                        '${trip.availableSeats} SEATS LEFT',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color:int.parse( trip.availableSeats) > 10
-                              ? Color(0xFF4CAF50)
-                              :int.parse( trip.availableSeats) > 0
-                                  ? Color(0xFFFF9800)
-                                  : Color(0xFFF44336),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ScreenSeateLayout(
-                          boardingTimeList: trip.boardingTimes,
-                          dropingTimeList: trip.droppingTimes,
-                          alldata: BlockTicketRequest(
-                            callFareBreakUpAPI: trip.callFareBreakUpApi,
-                            availableTripID: trip.id,
-                          ),
-                          travelsname: trip.travels,
-                          trpinfo: trip.busType,
-                        ),
-                      ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: maincolor1,
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'View Seats',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      SizedBox(width: 6),
-                      Icon(Icons.arrow_forward_rounded, size: 14),
-                    ],
-                  ),
-                ),
-              ],
             ),
           ],
         ),
@@ -307,7 +150,94 @@ class TripCountainer extends StatelessWidget {
     );
   }
 
-  Widget _buildTimeBlock(
+  Widget _buildBusIcon() {
+    return Container(
+      width: 48,
+      height: 48,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            secondaryColor.withOpacity(0.1),
+            secondaryColor.withOpacity(0.2),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Icon(Iconsax.bus, color: secondaryColor, size: 24),
+    );
+  }
+
+  Widget _buildJourneyPath(AvailableTrip trip) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: backgroundColor.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.grey.withOpacity(0.05)),
+      ),
+      child: Row(
+        children: [
+          _buildTimeNode("DEPART", departureTime, CrossAxisAlignment.start),
+          Expanded(
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Iconsax.timer_1,
+                      size: 12,
+                      color: maincolor1.withOpacity(0.5),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      trip.duration.isNotEmpty
+                          ? convertTimeString(trip.duration)
+                          : '0h 0m',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: maincolor1.withOpacity(0.7),
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Container(
+                      height: 1.5,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            maincolor1.withOpacity(0),
+                            maincolor1.withOpacity(0.2),
+                            maincolor1.withOpacity(0),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Icon(
+                      Iconsax.record_circle,
+                      size: 12,
+                      color: secondaryColor,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          _buildTimeNode("ARRIVE", arrivalTime, CrossAxisAlignment.end),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimeNode(
     String label,
     String time,
     CrossAxisAlignment alignment,
@@ -318,21 +248,106 @@ class TripCountainer extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            fontSize: 10,
-            color: textLight,
-            fontWeight: FontWeight.w500,
+            fontSize: 9,
+            color: textSecondary.withOpacity(0.5),
+            fontWeight: FontWeight.w900,
+            letterSpacing: 0.5,
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 4),
         Text(
           time,
           style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: textPrimary,
+            fontSize: 16,
+            fontWeight: FontWeight.w900,
+            color: maincolor1,
+            letterSpacing: -0.5,
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildSeatsInfo(String availableSeats) {
+    final int seats = int.tryParse(availableSeats) ?? 0;
+    Color statusColor;
+    IconData statusIcon;
+    if (seats > 10) {
+      statusColor = const Color(0xFF2E7D32);
+      statusIcon = Iconsax.status;
+    } else if (seats > 0) {
+      statusColor = const Color(0xFFEF6C00);
+      statusIcon = Iconsax.info_circle;
+    } else {
+      statusColor = const Color(0xFFC62828);
+      statusIcon = Iconsax.close_circle;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: statusColor.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(statusIcon, color: statusColor, size: 14),
+          const SizedBox(width: 6),
+          Text(
+            '$seats Seats Left',
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w900,
+              color: statusColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildViewSeatsButton(BuildContext context, AvailableTrip trip) {
+    return ElevatedButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ScreenSeateLayout(
+              boardingTimeList: trip.boardingTimes,
+              dropingTimeList: trip.droppingTimes,
+              alldata: BlockTicketRequest(
+                callFareBreakUpAPI: trip.callFareBreakUpApi,
+                availableTripID: trip.id,
+              ),
+              travelsname: trip.travels,
+              trpinfo: trip.busType,
+            ),
+          ),
+        );
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: maincolor1,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        elevation: 0,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            'VIEW SEATS',
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(width: 8),
+          const Icon(Iconsax.arrow_right_3, size: 14, color: Colors.white),
+        ],
+      ),
     );
   }
 

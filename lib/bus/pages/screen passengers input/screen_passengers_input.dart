@@ -4,6 +4,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iconsax/iconsax.dart';
 
 import 'package:minna/bus/application/change%20location/location_bloc.dart';
 import 'package:minna/bus/domain/BlockTicket/block_respo.dart';
@@ -14,6 +15,7 @@ import 'package:minna/bus/pages/screen%20conform%20ticket/screen_conform_ticket.
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/application/login/login_bloc.dart';
 import 'package:minna/comman/pages/log%20in/login_page.dart';
+import 'package:minna/comman/widgets/status_bottom_sheet.dart';
 
 class ScreenPassengerInput extends StatefulWidget {
   final BlockTicketRequest alldata;
@@ -87,33 +89,62 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
       backgroundColor: backgroundColor,
       appBar: AppBar(
         backgroundColor: maincolor1,
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
-       
+        leading: IconButton(
+          icon: const Icon(Iconsax.arrow_left_2, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Passenger Details',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              '${widget.travelsname} • ${widget.selctseat.length} Seats',
+              style: TextStyle(
+                fontSize: 11,
+                color: Colors.white.withOpacity(0.7),
+                fontWeight: FontWeight.w500,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       ),
       body: SafeArea(
         child: Column(
           children: [
             // Trip Summary Card
-            
             Expanded(
               child: Form(
                 key: formKey2,
                 child: ListView(
                   padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                   children: [
-                                _buildTripSummaryCard(),
+                    _buildTripSummaryCard(),
                     SizedBox(height: 16),
 
                     _buildContactCard(),
                     SizedBox(height: 16),
-                    ...List.generate(widget.selctseat.length, (i) => buildPassengerCard(i)),
+                    ...List.generate(
+                      widget.selctseat.length,
+                      (i) => buildPassengerCard(i),
+                    ),
                     SizedBox(height: 20),
                   ],
                 ),
               ),
             ),
-            
+
             // Bottom Button Section
             _buildBottomSection(),
           ],
@@ -124,34 +155,29 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
 
   Widget _buildTripSummaryCard() {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 12,
-            spreadRadius: 1,
-            offset: Offset(0, 4),
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: secondaryColor.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              Icons.directions_bus_rounded,
-              color: secondaryColor,
-              size: 24,
-            ),
+            child: Icon(Iconsax.bus4, color: secondaryColor, size: 24),
           ),
-          SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -159,50 +185,44 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
                 Text(
                   widget.travelsname,
                   style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
                     color: textPrimary,
+                    letterSpacing: -0.2,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   widget.trpinfo,
                   style: TextStyle(
                     fontSize: 12,
                     color: textSecondary,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  '${widget.selctseat.length} ${widget.selctseat.length == 1 ? 'Seat' : 'Seats'} Selected',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: secondaryColor,
                     fontWeight: FontWeight.w500,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
           ),
-         
         ],
       ),
     );
   }
 
-
   Widget _buildContactCard() {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 8,
-            spreadRadius: 1,
-            offset: Offset(0, 2),
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -211,44 +231,20 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
         children: [
           Row(
             children: [
-              Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: secondaryColor.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.contact_mail_rounded,
-                  color: secondaryColor,
-                  size: 20,
-                ),
-              ),
-              SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Contact Details',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: textPrimary,
-                      ),
-                    ),
-                    Text(
-                      'Ticket details will be sent to this contact',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: textSecondary,
-                      ),
-                    ),
-                  ],
+              Icon(Iconsax.sms, color: secondaryColor, size: 18),
+              const SizedBox(width: 10),
+              Text(
+                'CONTACT DETAILS',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w900,
+                  color: textSecondary.withOpacity(0.7),
+                  letterSpacing: 1.2,
                 ),
               ),
             ],
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           TextFormField(
             controller: passengerEmail,
             validator: (value) {
@@ -261,39 +257,38 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
               return null;
             },
             keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(
-              hintText: 'Email Address',
-              prefixIcon: Icon(Icons.email_rounded, color: textLight),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: textLight.withOpacity(0.3)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: secondaryColor),
-              ),
+            style: TextStyle(
+              color: textPrimary,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+            decoration: _buildInputDecoration(
+              hint: 'Email Address',
+              icon: Iconsax.sms,
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                width: 80,
-                child: TextField(
-                  enabled: false,
-                  decoration: InputDecoration(
-                    hintText: '+91',
-
-                    hintStyle: TextStyle(color: textLight),
-                    // prefixIcon: Icon(Icons.flag_rounded, color: _textLight),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: textLight.withOpacity(0.3)),
-                    ),
+              Container(
+                width: 70,
+                height: 54,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: textLight.withOpacity(0.2)),
+                ),
+                child: Text(
+                  '+91',
+                  style: TextStyle(
+                    color: textPrimary,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
                   ),
                 ),
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Expanded(
                 child: TextFormField(
                   controller: passengerNumber,
@@ -306,256 +301,317 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
                     return null;
                   },
                   keyboardType: TextInputType.phone,
-                  decoration: InputDecoration(
-                    hintText: 'Phone Number',
-                    prefixIcon: Icon(Icons.phone_rounded, color: textLight),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: textLight.withOpacity(0.3)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: secondaryColor),
-                    ),
+                  style: TextStyle(
+                    color: textPrimary,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                  decoration: _buildInputDecoration(
+                    hint: 'Phone Number',
+                    icon: Iconsax.call,
                   ),
                 ),
               ),
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  InputDecoration _buildInputDecoration({
+    required String hint,
+    required IconData icon,
+  }) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: TextStyle(
+        color: textSecondary,
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+      ),
+      prefixIcon: Icon(icon, color: maincolor1, size: 18),
+      filled: true,
+      fillColor: backgroundColor.withOpacity(0.5),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: textLight.withOpacity(0.4)),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: textLight.withOpacity(0.4)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: maincolor1, width: 2),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: errorColor.withOpacity(0.5)),
       ),
     );
   }
 
   Widget buildPassengerCard(int index) {
     final seat = widget.selctseat[index];
-    final isRestricted = (seat.ladiesSeat == 'true') || (seat.malesSeat == 'true');
+    final isRestricted =
+        (seat.ladiesSeat == 'true') || (seat.malesSeat == 'true');
     final restrictedGender = seat.ladiesSeat == 'true' ? 'Female' : 'Male';
 
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 8,
-            spreadRadius: 1,
-            offset: Offset(0, 2),
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: Padding(
-          padding: EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: secondaryColor.withOpacity(0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      seat.ladiesSeat == 'true' ? Icons.woman_rounded : Icons.person_rounded,
-                      color: secondaryColor,
-                      size: 20,
-                    ),
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Passenger ${index + 1}',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: textPrimary,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: maincolor1.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          'P${index + 1}',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w900,
+                            color: maincolor1,
                           ),
                         ),
+                      ),
+                      const SizedBox(width: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Passenger info',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w900,
+                              color: textSecondary.withOpacity(0.5),
+                              letterSpacing: 1,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Seat ${seat.name}',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w800,
+                              color: textPrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                if (isRestricted)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: restrictedGender == 'Female'
+                          ? Colors.pink.withOpacity(0.08)
+                          : Colors.blue.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: restrictedGender == 'Female'
+                            ? Colors.pink.withOpacity(0.2)
+                            : Colors.blue.withOpacity(0.2),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Iconsax.info_circle,
+                          size: 14,
+                          color: restrictedGender == 'Female'
+                              ? Colors.pink
+                              : Colors.blue,
+                        ),
+                        const SizedBox(width: 6),
                         Text(
-                          'Seat ${seat.name} • ₹${seat.baseFare}',
+                          restrictedGender == 'Female'
+                              ? 'LADIES ONLY'
+                              : 'GENTS ONLY',
                           style: TextStyle(
-                            fontSize: 12,
-                            color: textSecondary,
+                            fontSize: 9,
+                            color: restrictedGender == 'Female'
+                                ? Colors.pink
+                                : Colors.blue,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0.5,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  if (isRestricted)
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              ],
+            ),
+            const SizedBox(height: 20),
+            TextFormField(
+              controller: passengerNameControllers[index],
+              validator: (value) => (value == null || value.trim().isEmpty)
+                  ? 'Please enter name'
+                  : null,
+              style: TextStyle(
+                color: textPrimary,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+              decoration: _buildInputDecoration(
+                hint: 'Full Name',
+                icon: Iconsax.user,
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: passengerAgeControllers[index],
+              keyboardType: TextInputType.number,
+              validator: (value) {
+                final text = (value ?? '').trim();
+                final age = int.tryParse(text);
+                if (age == null || age < 1 || age > 120) {
+                  return 'Enter valid age (1-120)';
+                }
+                return null;
+              },
+              style: TextStyle(
+                color: textPrimary,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+              decoration: _buildInputDecoration(
+                hint: 'Passenger Age',
+                icon: Iconsax.cake,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'GENDER SELECTION',
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w900,
+                color: textSecondary.withOpacity(0.5),
+                letterSpacing: 1.2,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: ['Male', 'Female'].map((gender) {
+                final canChange = !isRestricted;
+                final isSelected = passengerGenderSelections[index] == gender;
+                final isForced = isRestricted && gender == restrictedGender;
+
+                return Expanded(
+                  child: GestureDetector(
+                    onTap: canChange
+                        ? () {
+                            setState(() {
+                              passengerGenderSelections[index] = gender;
+                            });
+                          }
+                        : null,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      margin: EdgeInsets.only(
+                        left: gender == 'Female' ? 6 : 0,
+                        right: gender == 'Male' ? 6 : 0,
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
-                        color: restrictedGender == 'Female' 
-                            ? Colors.pink.withOpacity(0.1)
-                            : Colors.blue.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
+                        color: isSelected
+                            ? maincolor1
+                            : backgroundColor.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: restrictedGender == 'Female'
-                              ? Colors.pink.withOpacity(0.3)
-                              : Colors.blue.withOpacity(0.3),
+                          color: isSelected
+                              ? maincolor1
+                              : textLight.withOpacity(0.1),
+                          width: 1,
                         ),
                       ),
-                      child: Text(
-                        restrictedGender == 'Female' ? 'Ladies Only' : 'Gents Only',
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: restrictedGender == 'Female' ? Colors.pink : Colors.blue,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                controller: passengerNameControllers[index],
-                validator: (value) =>
-                    (value == null || value.trim().isEmpty) ? 'Please enter name' : null,
-                decoration: InputDecoration(
-                  hintText: 'Full Name',
-                  prefixIcon: Icon(Icons.person_outline_rounded, color: textLight),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: textLight.withOpacity(0.3)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: secondaryColor),
-                  ),
-                ),
-              ),
-              SizedBox(height: 12),
-              TextFormField(
-                controller: passengerAgeControllers[index],
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  final text = (value ?? '').trim();
-                  final age = int.tryParse(text);
-                  if (age == null || age < 1 || age > 120) {
-                    return 'Enter valid age (1-120)';
-                  }
-                  return null;
-                },
-                decoration: InputDecoration(
-                  hintText: 'Age',
-                  prefixIcon: Icon(Icons.cake_rounded, color: textLight),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: textLight.withOpacity(0.3)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: secondaryColor),
-                  ),
-                ),
-              ),
-              SizedBox(height: 16),
-              Text(
-                'Gender',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: textPrimary,
-                ),
-              ),
-              SizedBox(height: 8),
-              Row(
-                children: ['Male', 'Female'].map((gender) {
-                  final canChange = !isRestricted;
-                  final isSelected = passengerGenderSelections[index] == gender;
-                  final isForced = isRestricted && gender == restrictedGender;
-                  
-                  return Expanded(
-                    child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 4),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(12),
-                          onTap: canChange
-                              ? () {
-                                  setState(() {
-                                    passengerGenderSelections[index] = gender;
-                                  });
-                                }
-                              : null,
-                          child: Container(
-                            padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? secondaryColor.withOpacity(0.15)
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: isSelected
-                                    ? secondaryColor
-                                    : textLight.withOpacity(0.3),
-                                width:  1,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  gender == 'Male' 
-                                      ? Icons.male_rounded 
-                                      : Icons.female_rounded,
-                                  color: isSelected ? secondaryColor : textLight,
-                                  size: 16,
-                                ),
-                                SizedBox(width: 6),
-                                Text(
-                                  gender,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                                    color: isSelected ? secondaryColor : textLight,
-                                  ),
-                                ),
-                                if (isForced) ...[
-                                  SizedBox(width: 4),
-                                  Icon(Icons.lock_rounded, size: 12, color: secondaryColor),
-                                ],
-                              ],
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            gender == 'Male' ? Iconsax.man : Iconsax.woman,
+                            color: isSelected ? Colors.white : textSecondary,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            gender,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: isSelected
+                                  ? FontWeight.w800
+                                  : FontWeight.w600,
+                              color: isSelected ? Colors.white : textSecondary,
                             ),
                           ),
-                        ),
+                          if (isForced) ...[
+                            const SizedBox(width: 6),
+                            Icon(
+                              Icons.lock,
+                              size: 12,
+                              color: Colors.white.withOpacity(0.7),
+                            ),
+                          ],
+                        ],
                       ),
                     ),
-                  );
-                }).toList(),
-              ),
-            ],
-          ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildBottomSection() {
+    double totalFare = 0;
+    for (var seat in widget.selctseat) {
+      totalFare += double.tryParse(seat.baseFare) ?? 0;
+    }
+
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
         color: cardColor,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
             blurRadius: 16,
-            offset: Offset(0, -4),
+            offset: const Offset(0, -4),
           ),
         ],
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
         ),
       ),
       child: SafeArea(
@@ -563,50 +619,84 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (_isLoading)
-              LinearProgressIndicator(
-                backgroundColor: backgroundColor,
+              const LinearProgressIndicator(
+                backgroundColor: maincolor1,
                 color: secondaryColor,
                 minHeight: 3,
               )
             else
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: maincolor1,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 18),
-                  ),
-                  onPressed: _isLoading
-                      ? null
-                      : () async {
-                          if (formKey2.currentState!.validate()) {
-                            await callApi();
-                          }
-                        },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        _showRetryButton ? Icons.refresh_rounded : Icons.arrow_forward_rounded,
-                        size: 20,                          color: Colors.white,
-
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        _showRetryButton ? 'Retry Booking' : 'Proceed to Payment',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'TOTAL FARE',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
+                            color: textSecondary.withOpacity(0.6),
+                            letterSpacing: 1,
+                          ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 2),
+                        Text(
+                          '₹${totalFare.toStringAsFixed(0)}',
+                          style: const TextStyle(
+                            color: secondaryColor,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -1,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    flex: 1,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: maincolor1,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      onPressed: _isLoading
+                          ? null
+                          : () async {
+                              if (formKey2.currentState!.validate()) {
+                                await callApi();
+                              }
+                            },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            _showRetryButton ? 'RETRY' : 'CONTINUE',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                          // const SizedBox(width: 8),
+                          // Icon(
+                          //   _showRetryButton
+                          //       ? Icons.refresh_rounded
+                          //       : Iconsax.arrow_right_3,
+                          //   size: 16,
+                          // ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
           ],
         ),
@@ -624,28 +714,34 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
   }
 
   Future<void> callApi() async {
-
-
-
     final isLoggedIn = context.read<LoginBloc>().state.isLoggedIn ?? false;
 
     if (!isLoggedIn) {
       showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => const LoginBottomSheet(login: 1),
-    );
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => const LoginBottomSheet(login: 1),
+      );
       final newLoginState = context.read<LoginBloc>().state;
       if (newLoginState.isLoggedIn != true) {
-        _showCustomSnackbar('Please login to continue', isError: true);
+        _showStatusBottomSheet(
+          title: 'Login Required',
+          message:
+              'Please login to your account to continue with the booking process.',
+        );
         return;
       }
     }
 
     // limit retries to 3 attempts
     if (retryCount >= 3) {
-      _showCustomSnackbar('Maximum retry attempts reached', isError: true);
+      _showStatusBottomSheet(
+        title: 'Limit Reached',
+        message:
+            'Maximum retry attempts reached. Please check your connection or contact support.',
+        showContactSupport: true,
+      );
       return;
     }
     retryCount++;
@@ -703,102 +799,69 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
       if (response.statusCode == 200) {
         final body = response.body;
         if (body.contains("Authorization failed") || body.contains("Error")) {
-          _showCustomSnackbar('Server returned error. Please try again.', isError: true);
+          _showStatusBottomSheet(
+            title: 'Server Error',
+            message:
+                'We encountered an error while processing your request. Please try again.',
+          );
           setState(() => _showRetryButton = true);
           return;
         }
-       final BlockResponse respoData=           BlockResponse.fromJson(jsonDecode(body) );
+        final BlockResponse respoData = BlockResponse.fromJson(
+          jsonDecode(body),
+        );
         final blockKey = respoData.blockKey;
 
         // reset retryCount on success
         retryCount = 0;
 
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => ScreenConfirmTicket(blockResponse: respoData,
-                blockKey: blockKey,
-                selectedSeats: widget.selctseat,
-                alldata: widget.alldata,
-              ),
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ScreenConfirmTicket(
+              blockResponse: respoData,
+              blockKey: blockKey,
+              selectedSeats: widget.selctseat,
+              alldata: widget.alldata,
             ),
-          );
-      
+          ),
+        );
       } else {
         // Non-200 status
-        _showCustomSnackbar('Server error: ${response.statusCode}', isError: true);
+        _showStatusBottomSheet(
+          title: 'Connection Issue',
+          message:
+              'Unable to connect to the server (Error ${response.statusCode}). Please check your connection or try again.',
+        );
         setState(() => _showRetryButton = true);
       }
     } catch (e, st) {
       log('API error: ${e.toString()}');
       log(st.toString());
-      _showCustomSnackbar('Something went wrong. Please try again.', isError: true);
+      _showStatusBottomSheet(
+        title: 'Sorry, some issue',
+        message:
+            'The server is currently busy or under maintenance. Please try again later or connect with our support.',
+        showContactSupport: true,
+      );
       setState(() => _showRetryButton = true);
     } finally {
       setState(() => _isLoading = false);
     }
   }
 
-  void _showCustomSnackbar(String message, {bool isError = false}) {
-    final color = isError ? errorColor : successColor;
-    final icon = isError ? Icons.error_outline_rounded : Icons.check_circle_rounded;
-
-    final snackBar = SnackBar(
-      margin: EdgeInsets.all(16),
-      behavior: SnackBarBehavior.floating,
-      backgroundColor: color,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: color.withOpacity(0.2), width: 1),
-      ),
-      duration: Duration(seconds: 4),
-      content: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: color, size: 20),
-          ),
-          SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  isError ? 'Error' : 'Success',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
-                ),
-                SizedBox(height: 2),
-                Text(
-                  message,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-      action: SnackBarAction(
-        label: 'OK',
-        textColor: Colors.white,
-        onPressed: () {
-          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        },
-      ),
+  void _showStatusBottomSheet({
+    required String title,
+    required String message,
+    StatusType type = StatusType.error,
+    bool showContactSupport = false,
+  }) {
+    StatusBottomSheet.show(
+      context: context,
+      type: type,
+      title: title,
+      message: message,
+      showContactSupport: showContactSupport,
     );
-
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

@@ -86,11 +86,13 @@ class ConfirmBookingBloc
         final response = await http.post(
           Uri.parse('${baseUrl}Cabapi'),
           body: {
-            "link": "http://gozotech2.ddns.net:5192/api/cpapi/booking/confirm",
+            "link": "${cabBaseUrl}api/cpapi/booking/confirm",
             "data": jsonEncode({"bookingId": event.bookingid}),
           },
         );
-
+        log(
+          "📩 confirm API Request body: ${jsonEncode({"bookingId": event.bookingid})}",
+        );
         log("📩 confirm API Response code: ${response.statusCode}");
         log("📩 confirm API Response body: ${response.body}");
 

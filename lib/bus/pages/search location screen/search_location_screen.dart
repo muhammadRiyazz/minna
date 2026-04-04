@@ -4,6 +4,8 @@ import 'package:minna/bus/domain/location/location_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:minna/comman/const/const.dart';
+import 'package:iconsax/iconsax.dart';
 
 class LocationSearchPage extends StatefulWidget {
   final String fromOrto;
@@ -17,16 +19,6 @@ class LocationSearchPage extends StatefulWidget {
 class _LocationSearchPageState extends State<LocationSearchPage> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
-
-  // Color Theme - Consistent with flight booking
-  final Color _primaryColor = Colors.black;
-  final Color _secondaryColor = Color(0xFFD4AF37); // Gold
-  final Color _accentColor = Color(0xFFC19B3C); // Darker Gold
-  final Color _backgroundColor = Color(0xFFF8F9FA);
-  final Color _cardColor = Colors.white;
-  final Color _textPrimary = Colors.black;
-  final Color _textSecondary = Color(0xFF666666);
-  final Color _textLight = Color(0xFF999999);
 
   @override
   void initState() {
@@ -48,86 +40,99 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Container(
-      height: screenHeight * 0.9,
+      height: screenHeight * 0.95,
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
       decoration: BoxDecoration(
-        color: _backgroundColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        color: backgroundColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 20,
-            spreadRadius: 2,
-            offset: Offset(0, -4),
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 30,
+            spreadRadius: 0,
+            offset: const Offset(0, -5),
           ),
         ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Drag handle
-          Container(
-            margin: EdgeInsets.only(top: 12, bottom: 8),
-            width: 48,
-            height: 4,
-            decoration: BoxDecoration(
-              color: _textLight.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(2),
+          // Premium Drag Handle
+          Center(
+            child: Container(
+              margin: const EdgeInsets.only(top: 12, bottom: 8),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
           ),
-          
-          // Header
+
+          // Enhanced Header
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Select ${widget.fromOrto == 'from' ? 'Origin' : 'Destination'}',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: _textPrimary,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      'Choose your ${widget.fromOrto == 'from' ? 'starting point' : 'destination'}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: _textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
                 Container(
                   decoration: BoxDecoration(
-                    color: _secondaryColor.withOpacity(0.1),
+                    color: cardColor,
                     shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                      ),
+                    ],
                   ),
                   child: IconButton(
-                    icon: Icon(Icons.close_rounded, color: _secondaryColor),
+                    icon: Icon(
+                      Iconsax.arrow_left_2,
+                      color: maincolor1,
+                      size: 22,
+                    ),
                     onPressed: () => Navigator.pop(context),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Select ${widget.fromOrto == 'from' ? 'Origin' : 'Destination'}',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                          color: maincolor1,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      Text(
+                        'Where are you ${widget.fromOrto == 'from' ? 'starting from' : 'heading to'}?',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: textSecondary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
-          
-          // const SizedBox(height: 10),
 
-          // Search Bar
+          // Modern Search Bar
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: _buildSearchBar(context),
           ),
-          
-          const SizedBox(height: 10),
+
+          const SizedBox(height: 20),
 
           // Search Results
           Expanded(
@@ -152,48 +157,41 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
       itemCount: 8,
       itemBuilder: (context, index) {
         return Shimmer.fromColors(
-          baseColor: Colors.grey[300]!,
-          highlightColor: Colors.grey[100]!,
+          baseColor: Colors.grey[200]!,
+          highlightColor: Colors.white,
           child: Container(
-            margin: EdgeInsets.only(bottom: 12),
-            padding: EdgeInsets.all(16),
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: _cardColor,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 8,
-                  offset: Offset(0, 2),
-                ),
-              ],
+              color: cardColor,
+              borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
               children: [
                 Container(
-                  width: 44,
-                  height: 44,
+                  width: 48,
+                  height: 48,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        width: double.infinity,
+                        width: 140,
                         height: 16,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Container(
-                        width: 120,
+                        width: 80,
                         height: 12,
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -214,73 +212,70 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
   Widget _buildSearchBar(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: _cardColor,
-        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: Offset(0, 4),
+            color: maincolor1.withOpacity(0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       child: TextField(
         controller: _controller,
         focusNode: _searchFocusNode,
-        autofocus: true,
         style: TextStyle(
           fontSize: 16,
-          color: _textPrimary,
-          fontWeight: FontWeight.w500,
+          color: textPrimary,
+          fontWeight: FontWeight.w700,
         ),
         decoration: InputDecoration(
-          hintText: 'Search city, station or location...',
+          hintText: 'Search city or station...',
           hintStyle: TextStyle(
-            color: _textLight,
-            fontSize: 14,
+            color: textLight.withOpacity(0.6),
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
           ),
           prefixIcon: Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             child: Icon(
-              Icons.search_rounded,
-              color: _secondaryColor,
-              size: 24,
+              Iconsax.search_normal_1,
+              color: secondaryColor,
+              size: 22,
             ),
           ),
           suffixIcon: _controller.text.isNotEmpty
-              ? Container(
-                  padding: EdgeInsets.all(12),
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.clear_rounded,
-                      color: _textLight,
-                      size: 20,
-                    ),
-                    onPressed: () {
-                      _controller.clear();
-                      context.read<BusLocationFetchBloc>().add(const GetData());
-                    },
-                  ),
+              ? IconButton(
+                  icon: Icon(Iconsax.close_circle, color: textLight, size: 20),
+                  onPressed: () {
+                    _controller.clear();
+                    context.read<BusLocationFetchBloc>().add(const GetData());
+                  },
                 )
               : null,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(18),
             borderSide: BorderSide.none,
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide.none,
+            borderRadius: BorderRadius.circular(18),
+            borderSide: BorderSide(
+              color: Colors.grey.withOpacity(0.1),
+              width: 1,
+            ),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(18),
             borderSide: BorderSide(
-              color: _secondaryColor.withOpacity(0.5),
-              width: 2,
+              color: secondaryColor.withOpacity(0.05),
+              width: .5,
             ),
           ),
           filled: true,
-          fillColor: _cardColor,
-          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          fillColor: cardColor,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 18,
+          ),
         ),
         onChanged: (value) {
           context.read<BusLocationFetchBloc>().add(
@@ -302,128 +297,105 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      shrinkWrap: true,
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+      physics: const BouncingScrollPhysics(),
       itemCount: suggestions.length,
       itemBuilder: (context, index) {
         final location = suggestions[index];
-        return _buildLocationCard(context, location, index);
+        return _buildLocationItem(context, location);
       },
     );
   }
 
   Widget _buildEmptyState() {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(25.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: EdgeInsets.all(15),
-              decoration: BoxDecoration(
-                color: _secondaryColor.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.location_searching_rounded,
-                size: 35,
-                color: _secondaryColor,
-              ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(28),
+            decoration: BoxDecoration(
+              color: secondaryColor.withOpacity(0.05),
+              shape: BoxShape.circle,
             ),
-            const SizedBox(height: 10),
-            Text(
-              _controller.text.isEmpty ? 'Search Locations' : 'No results found',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: _textPrimary,
-              ),
+            child: Icon(
+              Iconsax.location_add,
+              size: 56,
+              color: secondaryColor.withOpacity(0.3),
             ),
-            const SizedBox(height: 5),
-            Text(
+          ),
+          const SizedBox(height: 24),
+          Text(
+            _controller.text.isEmpty ? 'Start Searching' : 'No Results Found',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: maincolor1,
+              letterSpacing: -0.5,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 48),
+            child: Text(
               _controller.text.isEmpty
-                  ? 'Enter a city or station name to search'
+                  ? 'Enter a city or station name to find your route'
                   : 'We couldn\'t find any locations matching "${_controller.text}"',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 12,
-                color: _textSecondary,
+                fontSize: 13,
+                color: textSecondary,
+                fontWeight: FontWeight.w500,
                 height: 1.5,
               ),
             ),
-            if (_controller.text.isNotEmpty) ...[
-              const SizedBox(height: 5),
-              ElevatedButton(
-                onPressed: () {
-                  _controller.clear();
-                  context.read<BusLocationFetchBloc>().add(const GetData());
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _primaryColor,
-                  foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Text(
-                  'Clear Search',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildLocationCard(BuildContext context, City location, int index) {
-    return AnimatedContainer(
-      duration: Duration(milliseconds: 200),
-      margin: EdgeInsets.only(bottom: 10),
+  Widget _buildLocationItem(BuildContext context, City location) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Material(
-        color: _cardColor,
-        borderRadius: BorderRadius.circular(16),
-        elevation: 0,
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(20),
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           onTap: () => _handleLocationSelection(context, location),
-          splashColor: _secondaryColor.withOpacity(0.1),
-          highlightColor: _secondaryColor.withOpacity(0.05),
-          child: Container(
+          child: Padding(
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: _cardColor,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 8,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
             child: Row(
               children: [
                 Container(
-                  width: 40,
-                  height: 40,
+                  width: 52,
+                  height: 52,
                   decoration: BoxDecoration(
-                    color: _secondaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        maincolor1.withOpacity(0.05),
+                        maincolor1.withOpacity(0.1),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Icon(
-                    Icons.location_on_rounded,
-                    color: _secondaryColor,
-                    size: 20,
-                  ),
+                  child: Icon(Iconsax.location, color: maincolor1, size: 24),
                 ),
-                const SizedBox(width: 14),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -432,44 +404,38 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
                         location.name,
                         style: TextStyle(
                           fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: _textPrimary,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        location.state,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: _textSecondary,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w700,
+                          color: maincolor1,
+                          letterSpacing: -0.3,
                         ),
                       ),
-                      // if (location.countryCode.isNotEmpty) ...[
-                      //   const SizedBox(height: 2),
-                      //   Text(
-                      //     location.countryCode,
-                      //     style: TextStyle(
-                      //       fontSize: 11,
-                      //       color: _textLight,
-                      //     ),
-                      //   ),
-                      // ],
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Text(
+                            location.state,
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: textSecondary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.all(8),
+                  width: 32,
+                  height: 32,
                   decoration: BoxDecoration(
-                    color: _secondaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    color: backgroundColor,
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
-                    Icons.arrow_forward_ios_rounded,
+                    Iconsax.arrow_right_3,
                     size: 14,
-                    color: _secondaryColor,
+                    color: maincolor1.withOpacity(0.5),
                   ),
                 ),
               ],

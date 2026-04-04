@@ -26,8 +26,8 @@ class HoldCabBloc extends Bloc<HoldCabEvent, HoldCabState> {
         final response = await http.post(
           Uri.parse('${baseUrl}Cabapi'),
           body: {
-            "link": "http://gozotech2.ddns.net:5192/api/cpapi/booking/hold",
-            "data": jsonEncode(event.requestData)
+            "link": "${cabBaseUrl}api/cpapi/booking/hold",
+            "data": jsonEncode(event.requestData),
           },
         );
 
@@ -45,7 +45,7 @@ class HoldCabBloc extends Bloc<HoldCabEvent, HoldCabState> {
               Uri.parse('${baseUrl}cab-hold'),
               body: {
                 "request": jsonEncode(event.requestData), // ✅ request JSON
-                "hold": jsonEncode(jsonData), // ✅ raw hold API response JSON
+                "hold": jsonEncode(actualData), // ✅ inner message JSON only
                 "user_id": userId, // ✅ string, no int.parse
               },
             );

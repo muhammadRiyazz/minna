@@ -7,15 +7,22 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
+
+
+
 // Common
 import 'package:minna/comman/application/login/login_bloc.dart';
 import 'package:minna/comman/application/home_data/home_data_bloc.dart';
 import 'package:minna/comman/pages/screen%20splash/splash_page.dart';
 
+
+
 // Bus
 import 'package:minna/bus/application/busListfetch/bus_list_fetch_bloc.dart';
 import 'package:minna/bus/application/change%20location/location_bloc.dart';
 import 'package:minna/bus/application/location%20fetch/bus_location_fetch_bloc.dart';
+
+
 
 // Cab
 import 'package:minna/cab/application/booked%20info%20list/booked_info_bloc.dart';
@@ -23,6 +30,7 @@ import 'package:minna/cab/application/confirm%20booking/confirm_booking_bloc.dar
 import 'package:minna/cab/application/fetch%20cab/fetch_cabs_bloc.dart';
 import 'package:minna/cab/application/hold%20cab/hold_cab_bloc.dart';
 import 'package:minna/cab/function/commission_data.dart';
+
 
 // DTH & Mobile
 import 'package:minna/DTH & Mobile/DTH/application/dth proceed/dth_confirm_bloc.dart';
@@ -47,6 +55,7 @@ import 'package:minna/flight/application/trip%20request/trip_request_bloc.dart';
 
 // Hotel
 import 'package:minna/hotel%20booking/application/hotel/hotel_booking_confirm_bloc.dart';
+import 'package:minna/hotel%20booking/application/report/hotel_report_bloc.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -219,6 +228,7 @@ class _MyAppState extends State<MyApp> {
 
         // Hotel BlocProviders
         BlocProvider(create: (_) => HotelBookingConfirmBloc()),
+        BlocProvider(create: (_) => HotelReportBloc()),
       ],
       child: MaterialApp(
         scaffoldMessengerKey: _scaffoldMessengerKey,

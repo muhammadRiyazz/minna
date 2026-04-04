@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/hotel booking/functions/hotel_api.dart';
 import 'package:minna/hotel booking/functions/hotel_details.dart';
@@ -835,63 +836,121 @@ class _HotelListPageState extends State<HotelListPage> {
   }
 
   Widget _buildShimmerCard() {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      height: 180,
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: borderSoft),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 140,
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(24),
-                bottomLeft: Radius.circular(24),
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[200]!,
+      highlightColor: Colors.white,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 20),
+        height: 150, // Match _buildHotelCard height
+        decoration: BoxDecoration(
+          color: cardColor,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: borderSoft),
+        ),
+        child: Row(
+          children: [
+            // Image Section Skeleton
+            Container(
+              width: 140,
+              height: 150,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  bottomLeft: Radius.circular(24),
+                ),
               ),
             ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    height: 20,
-                    width: 140,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(4),
+            // Details Section Skeleton
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 14,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  Container(
-                    height: 14,
-                    width: 80,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[50],
-                      borderRadius: BorderRadius.circular(4),
+                    const SizedBox(height: 6),
+                    Container(
+                      height: 14,
+                      width: 100,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
                     ),
-                  ),
-                  const Spacer(),
-                  Container(
-                    height: 30,
-                    width: 100,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(8),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Container(
+                          height: 12,
+                          width: 12,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Container(
+                          height: 10,
+                          width: 80,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
+                    const Spacer(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              height: 8,
+                              width: 60,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Container(
+                              height: 16,
+                              width: 80,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          height: 38,
+                          width: 38,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
+
       ),
     );
   }
@@ -961,7 +1020,10 @@ class _HotelListPageState extends State<HotelListPage> {
                 ),
                 child: const Text(
                   'RETRY SEARCH',
-                  style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1,
+                  ),
                 ),
               ),
             ),
@@ -995,10 +1057,11 @@ class _HotelListPageState extends State<HotelListPage> {
                     height: 140,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: (isFiltered || isSearching
-                              ? secondaryColor
-                              : maincolor1)
-                          .withOpacity(0.04),
+                      color:
+                          (isFiltered || isSearching
+                                  ? secondaryColor
+                                  : maincolor1)
+                              .withOpacity(0.04),
                     ),
                   ),
                   Container(
@@ -1006,19 +1069,23 @@ class _HotelListPageState extends State<HotelListPage> {
                     height: 100,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: (isFiltered || isSearching
-                              ? secondaryColor
-                              : maincolor1)
-                          .withOpacity(0.08),
+                      color:
+                          (isFiltered || isSearching
+                                  ? secondaryColor
+                                  : maincolor1)
+                              .withOpacity(0.08),
                     ),
                   ),
                   Icon(
                     isSearching
                         ? Iconsax.search_status
-                        : (isFiltered ? Iconsax.filter_remove : Iconsax.building),
+                        : (isFiltered
+                              ? Iconsax.filter_remove
+                              : Iconsax.building),
                     size: 60,
-                    color:
-                        isFiltered || isSearching ? secondaryColor : maincolor1,
+                    color: isFiltered || isSearching
+                        ? secondaryColor
+                        : maincolor1,
                   ),
                 ],
               ),
@@ -1039,8 +1106,8 @@ class _HotelListPageState extends State<HotelListPage> {
                 isSearching
                     ? 'We couldn\'t find any hotels matching "$_searchQuery". Try a different name.'
                     : (isFiltered
-                        ? 'None of your selected filters match our current hotel list in this city.'
-                        : 'Currently, there are no available hotels matching your search criteria in ${widget.cityName}.'),
+                          ? 'None of your selected filters match our current hotel list in this city.'
+                          : 'Currently, there are no available hotels matching your search criteria in ${widget.cityName}.'),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 15,

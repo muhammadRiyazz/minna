@@ -31,7 +31,7 @@ class BookedDetailsBloc extends Bloc<BookedDetailsEvent, BookedDetailsState> {
       final response = await http.post(
         Uri.parse('${baseUrl}Cabapi'),
         body: {
-          "link": "http://gozotech2.ddns.net:5192/api/cpapi/booking/getDetails",
+          "link": "${cabBaseUrl}api/cpapi/booking/getDetails",
           "data": jsonEncode({"bookingId": event.bookingId}),
         },
       );
@@ -43,7 +43,16 @@ class BookedDetailsBloc extends Bloc<BookedDetailsEvent, BookedDetailsState> {
 
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
-        final actualData = jsonResponse['message'] ?? jsonResponse;
+        var actualData = jsonResponse['message'] ?? jsonResponse;
+
+        // 🔹 Handle cases where 'message' might be a JSON-encoded string
+        if (actualData is String) {
+          try {
+            actualData = json.decode(actualData);
+          } catch (e) {
+            log('Wait, message is a string but not JSON: $actualData');
+          }
+        }
 
         final detailsResponse = BookingDetailsResponse.fromJson(actualData);
 
@@ -52,7 +61,8 @@ class BookedDetailsBloc extends Bloc<BookedDetailsEvent, BookedDetailsState> {
         } else {
           emit(
             BookedDetailsState.error(
-              detailsResponse.errorMessage ?? 'Failed to fetch booking details',
+              detailsResponse.errorMessage ??
+                  'Current status: No booking details found.',
             ),
           );
         }

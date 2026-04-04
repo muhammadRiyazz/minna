@@ -257,16 +257,14 @@ class _CabsListPageState extends State<CabsListPage> {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: errorColor.withOpacity(0.08),
+                color: textLight.withOpacity(0.08),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Iconsax.info_circle, size: 56, color: errorColor),
+              child: Icon(Iconsax.search_status, size: 56, color: textLight),
             ),
             const SizedBox(height: 24),
             Text(
-              message.toLowerCase().contains('no cabs')
-                  ? "No Cabs Found"
-                  : "Search Interrupted",
+              "No Cabs Found",
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w900,
