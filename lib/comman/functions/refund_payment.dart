@@ -18,7 +18,7 @@ Future<Map<String, dynamic>> refundPayment({
     log('Initiating refund for transaction: $transactionId, amount: $amount');
 
     final response = await http.post(
-      Uri.parse('${baseUrl}payrefundTest'),
+      Uri.parse('${baseUrl}payrefund'),
       body: {
         'id': tableId,
         'transaction_id': transactionId,

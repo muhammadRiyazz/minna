@@ -63,7 +63,7 @@ class _WaterBillInputPageState extends State<WaterBillInputPage> {
                   bottom: -10,
                   left: -10,
                   child: Icon(
-                    Iconsax.drop,
+                    Icons.water_drop_rounded,
                     size: 140,
                     color: Colors.white.withOpacity(0.04),
                   ),
@@ -119,7 +119,7 @@ class _WaterBillInputPageState extends State<WaterBillInputPage> {
                             children: [
                               Row(
                                 children: [
-                                  Icon(Iconsax.flash, color: maincolor1, size: 22),
+                                   Icon(Icons.water_drop_rounded, color: maincolor1, size: 22),
                                   const SizedBox(width: 12),
                                   Text(
                                     'Bill Details',

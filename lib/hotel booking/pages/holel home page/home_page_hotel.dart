@@ -78,9 +78,9 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
 
     setState(() => isLoadingCountries = true);
     try {
-      countries = [CountryModel(name: 'India', code: 'IN')];
-
-      //  await apiService.getCountries();
+      countries =
+          // [CountryModel(name: 'India', code: 'IN')];
+          await apiService.getCountries();
       _countriesLoaded = true;
     } catch (e) {
       debugPrint('Error fetching countries: $e');

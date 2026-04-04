@@ -43,7 +43,7 @@ class _HistoryPageState extends State<HistoryPage> {
     },
     {
       'name': 'Water',
-      'icon': Iconsax.drop,
+      'icon': Icons.water_drop_rounded,
       'page': BlocProvider(
         create: (context) => BillPaymentBloc(BillPaymentRepository()),
         child: const BillPaymentPage(

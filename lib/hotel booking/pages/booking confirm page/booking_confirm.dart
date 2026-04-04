@@ -1849,7 +1849,7 @@ class _HotelBookingConfirmationPageState
           ),
           onPressed: () {
             log('_onWillPop-------------------');
-            // _onWillPop();
+            _onWillPop();
           },
         ),
       ),

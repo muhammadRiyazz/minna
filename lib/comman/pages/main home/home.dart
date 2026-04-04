@@ -265,9 +265,9 @@ class _HomeContentPageState extends State<HomeContentPage> {
       },
     },
     {
-      'icon': Iconsax.drop,
+      'icon': Icons.water_drop_rounded,
       'label': 'Water',
-      'color': Color(0xFF003875), // Gold
+      'color': maincolor1,
       'onTap': (BuildContext context) {
         Navigator.push(
           context,
@@ -378,16 +378,6 @@ class _HomeContentPageState extends State<HomeContentPage> {
 
                   // Travel Services
                   _buildTravelServicesSection(
-                    context,
-                    isSmallScreen,
-                    isTablet,
-                    iconSize,
-                    headingFontSize,
-                    bodyFontSize,
-                  ),
-
-                  // Utility Hub
-                  _buildUtilityHubSection(
                     context,
                     isSmallScreen,
                     isTablet,
@@ -2255,47 +2245,51 @@ class _HomeContentPageState extends State<HomeContentPage> {
     double headingFontSize,
     double bodyFontSize,
   ) {
+    // Combine all services for display
+    final List<Map<String, dynamic>> allServices = [
+      ..._travelServices,
+      ..._quickServices,
+    ];
+
     return Container(
-      padding: EdgeInsets.symmetric(
-        // vertical: 18,
-        horizontal: isSmallScreen ? 16 : 24,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: isSmallScreen ? 16 : 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 20),
+          const SizedBox(height: 24),
           Text(
             'OUR SERVICES',
             style: TextStyle(
-              color: secondaryColor,
-              fontSize: 10,
+              color: secondaryColor.withOpacity(0.8),
+              fontSize: 11,
               fontWeight: FontWeight.w800,
               letterSpacing: 2.0,
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Text(
-            'Explore Travel Options',
+            'Travel & Essentials',
             style: TextStyle(
               fontSize: headingFontSize + 2,
               fontWeight: FontWeight.w900,
               color: maincolor1,
+              letterSpacing: -0.5,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           GridView.builder(
-            padding: EdgeInsets.all(0),
+            padding: EdgeInsets.zero,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 4,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 16,
-              childAspectRatio: 0.7,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 24,
+              childAspectRatio: 0.72,
             ),
-            itemCount: _travelServices.length,
+            itemCount: allServices.length,
             itemBuilder: (context, index) {
-              final service = _travelServices[index];
+              final service = allServices[index];
               return _buildPremiumServiceCard(
                 service,
                 isSmallScreen,
@@ -2349,121 +2343,6 @@ class _HomeContentPageState extends State<HomeContentPage> {
               letterSpacing: 0.2,
             ),
             textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildUtilityHubSection(
-    BuildContext context,
-    bool isSmallScreen,
-    bool isTablet,
-    double iconSize,
-    double headingFontSize,
-    double bodyFontSize,
-  ) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        vertical: 20,
-        horizontal: isSmallScreen ? 16 : 24,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      margin: EdgeInsets.symmetric(
-        horizontal: isSmallScreen ? 16 : 24,
-        vertical: 12,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'QUICK TOOLS',
-            style: TextStyle(
-              color: secondaryColor,
-              fontSize: 10,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 2.0,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Utilities & Bills',
-            style: TextStyle(
-              fontSize: headingFontSize + 2,
-              fontWeight: FontWeight.w900,
-              color: maincolor1,
-            ),
-          ),
-          const SizedBox(height: 20),
-          GridView.builder(
-            padding: EdgeInsets.all(0),
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 4,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 16,
-              childAspectRatio: 0.7,
-            ),
-            itemCount: _quickServices.length,
-            itemBuilder: (context, index) {
-              final service = _quickServices[index];
-              return _buildPremiumQuickServiceCard(
-                service,
-                isSmallScreen,
-                iconSize,
-                bodyFontSize,
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPremiumQuickServiceCard(
-    Map<String, dynamic> service,
-    bool isSmallScreen,
-    double iconSize,
-    double bodyFontSize,
-  ) {
-    return GestureDetector(
-      onTap: () => service['onTap'](context),
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
-            decoration: BoxDecoration(
-              color: backgroundColor, // Soft grey background inside white card
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              service['icon'],
-              color: service['color'],
-              size: isSmallScreen ? 18 : 22,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            service['label'],
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: maincolor1,
-            ),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

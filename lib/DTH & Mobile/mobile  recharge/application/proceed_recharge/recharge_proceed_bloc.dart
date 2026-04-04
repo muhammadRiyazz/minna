@@ -129,7 +129,25 @@ class RechargeProceedBloc
       );
 
       if (response.statusCode == 200) {
-        dynamic responseData = jsonDecode(response.body);
+        String body = response.body;
+
+        // Sanitize response: Find the first occurrence of '{' or '[' to handle cases where 
+        // the server might prepend text to the JSON response.
+        int jsonStartIndex = body.indexOf('{');
+        int listStartIndex = body.indexOf('[');
+        int startIndex = -1;
+
+        if (jsonStartIndex != -1 && listStartIndex != -1) {
+          startIndex = jsonStartIndex < listStartIndex ? jsonStartIndex : listStartIndex;
+        } else {
+          startIndex = jsonStartIndex != -1 ? jsonStartIndex : listStartIndex;
+        }
+
+        if (startIndex != -1) {
+          body = body.substring(startIndex);
+        }
+
+        dynamic responseData = jsonDecode(body);
 
         // Handle both List and Map response formats
         Map<String, dynamic> json;
