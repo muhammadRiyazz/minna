@@ -14,6 +14,7 @@ import 'package:provider/provider.dart';
 import 'package:minna/comman/application/login/login_bloc.dart';
 import 'package:minna/comman/application/home_data/home_data_bloc.dart';
 import 'package:minna/comman/pages/screen%20splash/splash_page.dart';
+import 'package:minna/comman/functions/update_manager.dart';
 
 
 
@@ -80,6 +81,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _initializeConnectivity();
+    UpdateManager.checkForUpdate();
   }
 
   @override

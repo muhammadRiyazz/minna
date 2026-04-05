@@ -539,54 +539,89 @@ class _HomeContentPageState extends State<HomeContentPage> {
           ),
         ],
       ),
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(
-            isSmallScreen ? 16 : 24,
-            isSmallScreen ? 16 : 24,
-            isSmallScreen ? 16 : 24,
-            24,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+      child: ClipRRect(
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(36)),
+        child: Stack(
+          children: [
+            // Background Image
+            Positioned.fill(
+              child: Image.network(
+                'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&q=80&w=1000',
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    Container(color: maincolor1),
+              ),
+            ),
+            // Gradient Overlay for Readability
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      maincolor1,
+                      maincolor1.withOpacity(0.3),
+                      // maincolor1,
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            // Header Content
+            SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  isSmallScreen ? 16 : 24,
+                  isSmallScreen ? 16 : 24,
+                  isSmallScreen ? 16 : 24,
+                  24,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          isLoggedIn ? 'Welcome back,' : 'Hello, Traveler!',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.8),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                isLoggedIn
+                                    ? 'Welcome back,'
+                                    : 'Hello, Traveler!',
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.8),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Where to next?',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: titleFontSize + 4,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Where to next?',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: titleFontSize + 4,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
+                        _buildProfileAvatar(isLoggedIn),
                       ],
                     ),
-                  ),
-                  _buildProfileAvatar(isLoggedIn),
-                ],
+                    const SizedBox(
+                      height: 40,
+                    ), // Spacing for searching bar overlap
+                  ],
+                ),
               ),
-              const SizedBox(
-                height: 40,
-              ), // Padding to account for the overlapping search bar
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -1386,6 +1421,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) =>
                                     Container(
+                                      width: double.infinity,
                                       height: 280,
                                       color: Colors.grey[200],
                                       child: Icon(
@@ -1466,24 +1502,6 @@ class _HomeContentPageState extends State<HomeContentPage> {
                                     ),
                                   ),
                                   const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Iconsax.star1,
-                                        color: secondaryColor,
-                                        size: 14,
-                                      ),
-                                      const SizedBox(width: 4),
-                                      const Text(
-                                        '4.8 (120+ Reviews)',
-                                        style: TextStyle(
-                                          color: textSecondary,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
                                 ],
                               ),
                             ),
