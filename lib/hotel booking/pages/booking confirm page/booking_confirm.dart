@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/core/api.dart';
 import 'package:minna/hotel%20booking/application/hotel/hotel_booking_confirm_bloc.dart';
@@ -2672,7 +2673,8 @@ class _HotelBookingConfirmationPageState
               if (!isRefundScenario) ...[
                 const SizedBox(height: 16),
                 _buildActionButton('CONTACT SUPPORT', () {
-                  // Navigate to support logic
+                  final Uri whatsappUri = Uri.parse("https://wa.me/917511100557");
+                  launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
                 }, isPrimary: false),
               ],
               const SizedBox(height: 20),

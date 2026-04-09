@@ -1628,9 +1628,9 @@ class _HomeContentPageState extends State<HomeContentPage> {
                         margin: const EdgeInsets.only(bottom: 40),
                         child: ElevatedButton(
                           onPressed: () {
-                            const String supportNumber = "+919656666556";
-                            final Uri callUri = Uri.parse("tel:$supportNumber");
-                            launchUrl(callUri);
+                            const String supportNumber = "917511100557";
+                            final Uri whatsappUri = Uri.parse("https://wa.me/$supportNumber");
+                            launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: maincolor1,

@@ -4,6 +4,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:minna/flight/domain/report/report_model.dart';
 import 'package:minna/comman/const/const.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // Add this class definition at the top of your file
 class AdditionalCharge {
@@ -1251,7 +1252,8 @@ class ReportDetailScreen extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              // Handle support contact
+              final Uri whatsappUri = Uri.parse("https://wa.me/917511100557");
+              launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: secondaryColor,

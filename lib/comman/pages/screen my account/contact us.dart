@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:minna/comman/const/const.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ContactUsPage extends StatefulWidget {
   const ContactUsPage({super.key});
@@ -252,10 +253,14 @@ class _ContactUsPageState extends State<ContactUsPage> {
                           ),
                           const SizedBox(height: 16),
                           _buildContactItem(
-                            Iconsax.call,
-                            "Phone Number",
-                            "+91 9656666556",
+                            Iconsax.message,
+                            "WhatsApp",
+                            "+91 7511100557",
                             _secondaryColor,
+                            onTap: () {
+                              final Uri whatsappUri = Uri.parse("https://wa.me/917511100557");
+                              launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
+                            },
                           ),
                           const SizedBox(height: 16),
                            _buildContactItem(
@@ -413,52 +418,56 @@ class _ContactUsPageState extends State<ContactUsPage> {
     );
   }
 
-  Widget _buildContactItem(IconData icon, String title, String subtitle, Color color) {
-    return Container(
-      decoration: BoxDecoration(
-        color: _backgroundColor.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _secondaryColor.withOpacity(0.05)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
+  Widget _buildContactItem(IconData icon, String title, String subtitle, Color color, {VoidCallback? onTap}) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        decoration: BoxDecoration(
+          color: _backgroundColor.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: _secondaryColor.withOpacity(0.05)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: color, size: 20),
               ),
-              child: Icon(icon, color: color, size: 20),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: _textLight,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.5,
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: _textLight,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: _textPrimary,
-                      fontWeight: FontWeight.w800,
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: _textPrimary,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

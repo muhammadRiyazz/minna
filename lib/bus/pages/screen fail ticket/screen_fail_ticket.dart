@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:minna/comman/pages/main%20home/home.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ScreenFailTicket extends StatelessWidget {
    ScreenFailTicket({super.key});
@@ -133,34 +134,39 @@ class ScreenFailTicket extends StatelessWidget {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 16),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: _secondaryColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(20),
-                         
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.support_agent_rounded,
-                              color: _secondaryColor,
-                              size: 16,
-                            ),
-                            SizedBox(width: 8),
-                            Text(
-                              'Contact Support',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
+                      GestureDetector(
+                        onTap: () {
+                          final Uri whatsappUri = Uri.parse("https://wa.me/917511100557");
+                          launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _secondaryColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.support_agent_rounded,
                                 color: _secondaryColor,
+                                size: 16,
                               ),
-                            ),
-                          ],
+                              SizedBox(width: 8),
+                              Text(
+                                'Contact Support',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: _secondaryColor,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],

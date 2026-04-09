@@ -941,32 +941,61 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
     });
 
     try {
-      final url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$query&key=$_apiKey&components=country:in',
+      // Modern Google Places API (New) Autocomplete
+      final url = Uri.parse('https://places.googleapis.com/v1/places:autocomplete');
+      
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Goog-Api-Key': _apiKey,
+        },
+        body: json.encode({
+          'input': query,
+          'includedRegionCodes': ['IN'],
+        }),
       );
 
-      final response = await http.get(url);
+      log('Search Places Response: ${response.statusCode}');
+      log('Search Places Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        if (data['status'] == 'OK') {
+        
+        // The New API returns 'suggestions' which contain 'placePrediction'
+        if (data['suggestions'] != null && data['suggestions'] is List) {
+          final List<dynamic> suggestions = data['suggestions'];
+          
           setModalState(() {
-            _searchResults = data['predictions'];
+            // Map the New API format to the existing UI expectation to avoid breakage
+            _searchResults = suggestions.map((s) {
+              final prediction = s['placePrediction'];
+              return {
+                'description': prediction['text']['text'] ?? '',
+                'place_id': prediction['placeId'] ?? '',
+                'structured_formatting': {
+                  'secondary_text': prediction['structuredFormat']?['secondaryText']?['text'] ?? '',
+                },
+              };
+            }).toList();
             _isSearching = false;
           });
         } else {
+          log('No suggestions found in response');
           setModalState(() {
             _searchResults = [];
             _isSearching = false;
           });
         }
       } else {
+        log('Error: Server returned status code ${response.statusCode}');
         setModalState(() {
           _searchResults = [];
           _isSearching = false;
         });
       }
     } catch (e) {
+      log('Exception during _searchPlaces: $e');
       setModalState(() {
         _searchResults = [];
         _isSearching = false;
@@ -981,21 +1010,31 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
   ) async {
     try {
       final placeId = place['place_id'];
-      final detailsUrl = Uri.parse(
-        'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$_apiKey&fields=name,formatted_address,geometry',
+      log('Fetching details for Place ID: $placeId');
+
+      // Modern Google Places API (New) Details
+      final detailsUrl = Uri.parse('https://places.googleapis.com/v1/places/$placeId');
+
+      final detailsResponse = await http.get(
+        detailsUrl,
+        headers: {
+          'X-Goog-Api-Key': _apiKey,
+          'X-Goog-FieldMask': 'id,formattedAddress,location',
+        },
       );
 
-      final detailsResponse = await http.get(detailsUrl);
+      log('Place Details Response: ${detailsResponse.statusCode}');
+      log('Place Details Body: ${detailsResponse.body}');
 
       if (detailsResponse.statusCode == 200) {
         final detailsData = json.decode(detailsResponse.body);
 
-        if (detailsData['status'] == 'OK') {
-          final result = detailsData['result'];
+        // The New API returns flattened structure if FieldMask is set correctly
+        if (detailsData['formattedAddress'] != null) {
           final locationData = {
-            'address': result['formatted_address'] ?? place['description'],
-            'latitude': result['geometry']['location']['lat'],
-            'longitude': result['geometry']['location']['lng'],
+            'address': detailsData['formattedAddress'] ?? place['description'],
+            'latitude': detailsData['location']?['latitude'] ?? 0.0,
+            'longitude': detailsData['location']?['longitude'] ?? 0.0,
           };
 
           setState(() {
@@ -1022,6 +1061,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
         }
       }
     } catch (e) {
+      log('Exception during _selectPlace: $e');
       final locationData = {
         'address': place['description'] ?? '',
         'latitude': 0.0,

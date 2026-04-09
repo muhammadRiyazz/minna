@@ -18,8 +18,7 @@ class VisaPage extends StatefulWidget {
 
 class _VisaPageState extends State<VisaPage> {
   final TextEditingController _searchController = TextEditingController();
-  final String _supportPhoneNumber =
-      '+919876543210'; // Replace with actual support number
+  final String _supportPhoneNumber = '7511100557';
 
   List<VisaModel> _allVisas = [];
   List<VisaModel> _filteredVisas = [];
@@ -50,16 +49,16 @@ class _VisaPageState extends State<VisaPage> {
     });
   }
 
-  Future<void> _makePhoneCall() async {
-    final Uri phoneUri = Uri(scheme: 'tel', path: _supportPhoneNumber);
+  Future<void> _openWhatsApp() async {
+    final Uri whatsappUri = Uri.parse("https://wa.me/91$_supportPhoneNumber");
     try {
-      if (await canLaunchUrl(phoneUri)) {
-        await launchUrl(phoneUri);
+      if (await canLaunchUrl(whatsappUri)) {
+        await launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Could not make phone call'),
+              content: Text('Could not open WhatsApp'),
               backgroundColor: errorColor,
             ),
           );
@@ -600,7 +599,7 @@ class _VisaPageState extends State<VisaPage> {
                   ],
                 ),
                 GestureDetector(
-                  onTap: _makePhoneCall,
+                  onTap: _openWhatsApp,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24,
@@ -634,7 +633,7 @@ class _VisaPageState extends State<VisaPage> {
                         // ),
                         // const SizedBox(width: 8),
                         const Icon(
-                          Iconsax.call_calling,
+                          Icons.message_rounded,
                           color: Colors.white,
                           size: 18,
                         ),
