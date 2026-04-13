@@ -80,6 +80,7 @@ flutter:
     - asset/
     - asset/bus/
     - asset/flight/
+    - asset/splash/
 
 
   fonts:

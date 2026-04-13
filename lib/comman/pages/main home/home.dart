@@ -390,6 +390,18 @@ class _HomeContentPageState extends State<HomeContentPage> {
 
                   // Promo Banner
                   _buildPromoBanner(isSmallScreen, isTablet, bodyFontSize),
+
+                  // Where 2 Go (Attractive Popular Destinations)
+                  BlocBuilder<HomeDataBloc, HomeDataState>(
+                    builder: (context, state) {
+                      return _buildWhere2GoSection(
+                        isSmallScreen,
+                        isTablet,
+                        headingFontSize,
+                        state,
+                      );
+                    },
+                  ),
                   SizedBox(
                     height: isSmallScreen
                         ? 20
@@ -969,7 +981,9 @@ class _HomeContentPageState extends State<HomeContentPage> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const LoginScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
+                    ),
                   );
                 },
                 style: TextButton.styleFrom(
@@ -1273,7 +1287,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               clipBehavior: Clip.none,
-              itemCount: destinations.length,
+              itemCount: destinations.length > 5 ? 5 : destinations.length,
               itemBuilder: (context, index) {
                 final destination = destinations[index];
                 return _buildPremiumDestinationCard(
@@ -1658,50 +1672,52 @@ class _HomeContentPageState extends State<HomeContentPage> {
                       ],
 
                       // Final CTA
-                      Container(
-                        width: double.infinity,
-                        margin: const EdgeInsets.only(bottom: 40),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            const String supportNumber = "917511100557";
-                            final Uri whatsappUri = Uri.parse(
-                              "https://wa.me/$supportNumber",
-                            );
-                            launchUrl(
-                              whatsappUri,
-                              mode: LaunchMode.externalApplication,
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: maincolor1,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 20),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
+                      Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              const String supportNumber = "917511100557";
+                              final Uri whatsappUri = Uri.parse(
+                                "https://wa.me/$supportNumber",
+                              );
+                              launchUrl(
+                                whatsappUri,
+                                mode: LaunchMode.externalApplication,
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: maincolor1,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              elevation: 8,
+                              shadowColor: maincolor1.withOpacity(0.4),
                             ),
-                            elevation: 8,
-                            shadowColor: maincolor1.withOpacity(0.4),
-                          ),
-                          child: Column(
-                            children: [
-                              const Text(
-                                'Book Holiday Now',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 0.5,
+                            child: Column(
+                              children: [
+                                const Text(
+                                  'Book Holiday Now',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 0.5,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Talk to our Travel Experts',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.white.withOpacity(0.8),
-                                  fontWeight: FontWeight.w600,
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Talk to our Travel Experts',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.white.withOpacity(0.8),
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -2407,6 +2423,236 @@ class _HomeContentPageState extends State<HomeContentPage> {
     );
   }
 
+  Widget _buildWhere2GoSection(
+    bool isSmallScreen,
+    bool isTablet,
+    double headingFontSize,
+    HomeDataState state,
+  ) {
+    final destinations = state.popularDestinations ?? [];
+    if (destinations.isEmpty) return const SizedBox.shrink();
+
+    // Show different set or same set but in restricted view
+    // For "Where 2 Go", we show them in a more attractive vertical/grid fashion
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        vertical: 20,
+        horizontal: isSmallScreen ? 16 : 24,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'DISCOVER MORE',
+                    style: TextStyle(
+                      color: secondaryColor,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Destinations',
+                    style: TextStyle(
+                      fontSize: headingFontSize + 8,
+                      fontWeight: FontWeight.w900,
+                      color: maincolor1,
+                      letterSpacing: -1,
+                    ),
+                  ),
+                ],
+              ),
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AllDestinationsPage(
+                        destinations: destinations,
+                        primaryColor: maincolor1,
+                        secondaryColor: secondaryColor,
+                        backgroundColor: backgroundColor,
+                        cardColor: cardColor,
+                        textPrimary: textPrimary,
+                        textSecondary: textSecondary,
+                        textLight: textLight,
+                      ),
+                    ),
+                  );
+                },
+                borderRadius: BorderRadius.circular(30),
+                child: Text(
+                  'View All',
+                  style: TextStyle(
+                    color: secondaryColor,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          // Staggered (Unaligned) 2-Column Grid showing all destinations
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Left Column
+              Expanded(
+                child: Column(
+                  children: [
+                    for (int i = 0; i < destinations.length; i += 2) ...[
+                      if (i > 0) const SizedBox(height: 10),
+                      _buildWhere2GoCard(
+                        destinations[i],
+                        isSmallScreen,
+                        height: i % 4 == 0 ? 280 : 240,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              // Right Column (with offset)
+              Expanded(
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 32,
+                    ), // Initial offset for staggered look
+                    for (int i = 1; i < destinations.length; i += 2) ...[
+                      if (i > 1) const SizedBox(height: 10),
+                      _buildWhere2GoCard(
+                        destinations[i],
+                        isSmallScreen,
+                        height: (i - 1) % 4 == 0 ? 240 : 300,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 40),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWhere2GoCard(
+    DestinationModel destination,
+    bool isSmallScreen, {
+    double height = 260,
+  }) {
+    // Generate a mock rating for the "Attractive" look
+    final String rating = (4.0 + (destination.id.length % 10) / 10)
+        .toStringAsFixed(1);
+
+    return GestureDetector(
+      onTap: () => _showDestinationDetailsBottomSheet(context, destination),
+      child: Container(
+        height: height,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.12),
+              blurRadius: 25,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(25),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.network(
+                destination.image,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  color: Colors.grey[200],
+                  child: Icon(Iconsax.image, color: Colors.grey[400]),
+                ),
+              ),
+              // Gradient Overlay
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.1),
+                      Colors.black.withOpacity(0.8),
+                    ],
+                    stops: const [0.4, 0.6, 1.0],
+                  ),
+                ),
+              ),
+              // Rating Badge
+
+              // Gallery Icon (Top Right)
+
+              // Title and Location (Bottom)
+              Positioned(
+                left: 12,
+                right: 12,
+                bottom: 12,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      destination.location.isNotEmpty
+                          ? destination.location
+                          : destination.title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        height: 1,
+                        letterSpacing: -0.5,
+                      ),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+
+                    const SizedBox(height: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: secondaryColor,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        "₹ ${destination.priceToShow}",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildPromoBanner(
     bool isSmallScreen,
     bool isTablet,
@@ -2420,7 +2666,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [maincolor1, Color(0xFF001F45)],
+          colors: [maincolor1, const Color(0xFF001F45)],
         ),
         boxShadow: [
           BoxShadow(
@@ -2457,9 +2703,9 @@ class _HomeContentPageState extends State<HomeContentPage> {
                 ),
               ),
               const SizedBox(height: 12),
-              Text(
+              const Text(
                 'Travel The World\nWith Confidence',
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
                   fontSize: 22,
                   fontWeight: FontWeight.w900,
@@ -2478,24 +2724,6 @@ class _HomeContentPageState extends State<HomeContentPage> {
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 16),
-              // Container(
-              //   padding: const EdgeInsets.symmetric(
-              //     horizontal: 16,
-              //     vertical: 8,
-              //   ),
-              //   decoration: BoxDecoration(
-              //     color: secondaryColor,
-              //     borderRadius: BorderRadius.circular(12),
-              //   ),
-              //   child: const Text(
-              //     'Explore Collections',
-              //     style: TextStyle(
-              //       color: Colors.white,
-              //       fontWeight: FontWeight.bold,
-              //       fontSize: 12,
-              //     ),
-              //   ),
-              // ),
             ],
           ),
         ],
@@ -2506,32 +2734,32 @@ class _HomeContentPageState extends State<HomeContentPage> {
   void _showComingSoonBottomSheet(BuildContext context, String service) {
     showModalBottomSheet(
       context: context,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
       ),
       builder: (context) {
         return Container(
-          padding: EdgeInsets.all(25),
+          padding: const EdgeInsets.all(25),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Iconsax.discover, size: 120, color: Colors.white),
-              SizedBox(height: 20),
+              const Icon(Iconsax.discover, size: 120, color: Colors.white),
+              const SizedBox(height: 20),
               Text(
                 '$service Coming Soon!',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: textPrimary,
                 ),
               ),
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               Text(
                 'We\'re working hard to bring you the best $service booking experience. Stay tuned!',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: textSecondary),
+                style: const TextStyle(fontSize: 16, color: textSecondary),
               ),
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(
@@ -2540,14 +2768,17 @@ class _HomeContentPageState extends State<HomeContentPage> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 30,
+                    vertical: 12,
+                  ),
                 ),
-                child: Text(
+                child: const Text(
                   'Got It!',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
             ],
           ),
         );

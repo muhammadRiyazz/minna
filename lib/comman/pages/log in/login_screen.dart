@@ -91,8 +91,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Stack(
                           children: [
                             Positioned.fill(
-                              child: Image.network(
-                                'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&q=80&w=1000',
+                              child: Image.asset(
+                                'asset/splash/onboarding1.jpeg',
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) =>
                                     Container(color: maincolor1),

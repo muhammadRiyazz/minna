@@ -20,7 +20,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       description:
           'Book flights, hotels, and tours seamlessly with MT TRIP. Experience premium travel at your fingertips.',
       imageUrl:
-          'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=1000',
+          'asset/splash/onboarding1.jpeg',
       icon: Iconsax.airplane,
     ),
     OnboardingData(
@@ -28,7 +28,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       description:
           'Experience premium comfort like never before. Discover hand-picked luxury hotels and resorts at exclusive prices.',
       imageUrl:
-          'https://images.unsplash.com/photo-1590490359683-658d3d23f972?q=80&w=1000',
+          'asset/splash/onboarding2.jpeg',
       icon: Iconsax.building,
     ),
     OnboardingData(
@@ -36,7 +36,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       description:
           'Join thousands of travelers and simplify your lifestyle with our state-of-the-art booking platform.',
       imageUrl:
-          'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=1000',
+          'asset/splash/onboarding3.jpeg',
       icon: Iconsax.magic_star,
     ),
   ];
@@ -168,7 +168,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 width: double.infinity,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: NetworkImage(data.imageUrl),
+                    image: AssetImage(data.imageUrl),
                     fit: BoxFit.cover,
                   ),
                 ),
