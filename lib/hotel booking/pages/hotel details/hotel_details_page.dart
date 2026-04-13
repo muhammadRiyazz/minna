@@ -3,6 +3,9 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:minna/comman/application/login/login_bloc.dart';
+import 'package:minna/comman/pages/log%20in/login_page.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/hotel%20booking/domain/authentication/authendication.dart';
 import 'package:minna/hotel%20booking/domain/hotel%20list/hotel_list.dart';
@@ -1701,6 +1704,21 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
   // --- Booking Logic with ROBUST ERROR HANDLING ---
 
   Future<void> _bookRoom(RoomDetail room, int index) async {
+    // 0. Check Login Status
+    final isLoggedIn = context.read<LoginBloc>().state.isLoggedIn ?? false;
+
+    if (!isLoggedIn) {
+      await showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => const LoginBottomSheet(login: 1),
+      );
+
+      final newLoginState = context.read<LoginBloc>().state;
+      if (newLoginState.isLoggedIn != true) return;
+    }
+
     // 1. Set loading state for this specific button
     setState(() {
       _loadingRoomIndex = index;

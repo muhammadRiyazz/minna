@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:developer' as dev;
 import 'package:flutter/material.dart';
+import 'package:minna/comman/functions/storage_utils.dart';
 import 'package:minna/comman/pages/main%20home/home.dart';
+import 'package:minna/comman/pages/onboarding/onboarding_page.dart';
 import 'package:video_player/video_player.dart';
 
 class GradientSplashScreen extends StatefulWidget {
@@ -22,12 +24,21 @@ class _GradientSplashScreenState extends State<GradientSplashScreen> {
     _initializePlayer();
 
     // Navigate after 5 seconds
-    Timer(const Duration(seconds: 5), () {
+    Timer(const Duration(seconds: 5), () async {
       if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const HomePage()),
-        );
+        final isFirstTime = await StorageUtils.isFirstTime();
+
+        if (isFirstTime) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const OnboardingPage()),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const HomePage()),
+          );
+        }
       }
     });
   }

@@ -352,10 +352,10 @@ class _HotelBookingConfirmationPageState
         ?.rooms
         .firstOrNull;
 
-    // Calculate amounts
+    // Calculate amounts using helper
+    final netAmount = _getNetAmount();
     final roomFare = preBookRoom?.totalFare ?? widget.room.totalFare;
     final roomTax = preBookRoom?.totalTax ?? widget.room.totalTax;
-    final netAmount = preBookRoom?.netAmount ?? roomFare;
     final totalAmount = roomFare + roomTax;
 
     // Get required authentication fields
@@ -369,7 +369,8 @@ class _HotelBookingConfirmationPageState
 
     // Build passenger data
     if (widget.roomPassengers != null) {
-      for (final room in widget.roomPassengers!) {
+      for (int i = 0; i < widget.roomPassengers!.length; i++) {
+        final room = widget.roomPassengers![i];
         final hotelPassengers = <Map<String, dynamic>>[];
 
         for (final passenger in room) {
@@ -404,7 +405,33 @@ class _HotelBookingConfirmationPageState
           hotelPassengers[0]['LeadPassenger'] = true;
         }
 
-        hotelRoomsDetails.add({"HotelPassenger": hotelPassengers});
+        hotelRoomsDetails.add({
+          "RoomIndex": preBookRoom?.roomIndex ?? (i + 1),
+          "RoomTypeCode": preBookRoom?.roomTypeCode ?? widget.room.bookingCode,
+          "RatePlanCode": preBookRoom?.ratePlanCode ?? widget.room.bookingCode,
+          "HotelPassenger": hotelPassengers,
+          "Price": {
+            "CurrencyCode": hotelResult.currency,
+            "RoomPrice": roomFare - roomTax,
+            "Tax": roomTax,
+            "ExtraGuestCharge": 0,
+            "ChildCharge": 0,
+            "OtherCharges": 0,
+            "Discount": 0,
+            "PublishedPrice": totalAmount,
+            "PublishedPriceRoundedOff": 0,
+            "OfferedPrice": roomFare,
+            "OfferedPriceRoundedOff": 0,
+            "AgentCommission": 0,
+            "AgentMarkUp": 0,
+            "ServiceTax": 0,
+            "TDS": 0,
+            "TCS": 0,
+            "ServiceCharge": 0,
+            "TotalGSTAmount": 0,
+            "NetAmount": netAmount,
+          }
+        });
       }
     } else {
       // Fallback to single room structure
@@ -442,7 +469,33 @@ class _HotelBookingConfirmationPageState
         hotelPassengers[0]['LeadPassenger'] = true;
       }
 
-      hotelRoomsDetails.add({"HotelPassenger": hotelPassengers});
+      hotelRoomsDetails.add({
+        "RoomIndex": preBookRoom?.roomIndex ?? 1,
+        "RoomTypeCode": preBookRoom?.roomTypeCode ?? widget.room.bookingCode,
+        "RatePlanCode": preBookRoom?.ratePlanCode ?? widget.room.bookingCode,
+        "HotelPassenger": hotelPassengers,
+        "Price": {
+          "CurrencyCode": hotelResult.currency,
+          "RoomPrice": roomFare - roomTax,
+          "Tax": roomTax,
+          "ExtraGuestCharge": 0,
+          "ChildCharge": 0,
+          "OtherCharges": 0,
+          "Discount": 0,
+          "PublishedPrice": totalAmount,
+          "PublishedPriceRoundedOff": 0,
+          "OfferedPrice": roomFare,
+          "OfferedPriceRoundedOff": 0,
+          "AgentCommission": 0,
+          "AgentMarkUp": 0,
+          "ServiceTax": 0,
+          "TDS": 0,
+          "TCS": 0,
+          "ServiceCharge": 0,
+          "TotalGSTAmount": 0,
+          "NetAmount": netAmount,
+        }
+      });
     }
 
     // Base booking request - COMMON for both modes

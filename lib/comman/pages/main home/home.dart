@@ -21,6 +21,7 @@ import 'package:minna/comman/application/home_data/home_data_state.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/pages/histoy/histoty.dart';
 import 'package:minna/comman/pages/log%20in/login_page.dart';
+import 'package:minna/comman/pages/log%20in/login_screen.dart';
 import 'package:minna/comman/pages/screen%20bookings/screen_booking.dart';
 import 'package:minna/comman/pages/screen%20my%20account/my_account_page.dart';
 import 'package:minna/flight/presendation/screen%20flight/home_flight.dart';
@@ -891,11 +892,9 @@ class _HomeContentPageState extends State<HomeContentPage> {
   Widget _buildLoginAlertBanner(bool isSmallScreen) {
     return GestureDetector(
       onTap: () {
-        showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          backgroundColor: Colors.transparent,
-          builder: (context) => LoginBottomSheet(login: 2),
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
         );
       },
       child: Container(
@@ -968,11 +967,9 @@ class _HomeContentPageState extends State<HomeContentPage> {
               ),
               child: TextButton(
                 onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => LoginBottomSheet(login: 2),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginScreen()),
                   );
                 },
                 style: TextButton.styleFrom(

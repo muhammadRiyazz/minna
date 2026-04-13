@@ -176,6 +176,9 @@ class PreBookRoom {
   final bool withTransfers;
   final List<String> amenities;
   final double netAmount;
+  final int roomIndex;
+  final String roomTypeCode;
+  final String ratePlanCode;
 
   PreBookRoom({
     required this.name,
@@ -192,6 +195,9 @@ class PreBookRoom {
     required this.withTransfers,
     required this.amenities,
     required this.netAmount,
+    this.roomIndex = 1,
+    this.roomTypeCode = '',
+    this.ratePlanCode = '',
   });
 
   factory PreBookRoom.fromJson(Map<String, dynamic> json) {
@@ -216,6 +222,9 @@ class PreBookRoom {
           .map((e) => e.toString())
           .toList(),
       netAmount: (json['NetAmount'] ?? 0).toDouble(),
+      roomIndex: json['RoomIndex'] ?? 1,
+      roomTypeCode: json['RoomTypeCode'] ?? '',
+      ratePlanCode: json['RatePlanCode'] ?? '',
     );
   }
 
@@ -242,6 +251,9 @@ class PreBookRoom {
     data['WithTransfers'] = withTransfers;
     data['Amenities'] = amenities;
     data['NetAmount'] = netAmount;
+    data['RoomIndex'] = roomIndex;
+    data['RoomTypeCode'] = roomTypeCode;
+    data['RatePlanCode'] = ratePlanCode;
     return data;
   }
 
