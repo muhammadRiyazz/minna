@@ -18,6 +18,8 @@ class BerthGridView extends StatefulWidget {
     required this.textPrimary,
     required this.textSecondary,
     required this.textLight,
+    this.title,
+    this.showSteering = false,
   });
 
   final List<Seat> seatlist;
@@ -31,6 +33,8 @@ class BerthGridView extends StatefulWidget {
   final Color textPrimary;
   final Color textSecondary;
   final Color textLight;
+  final String? title;
+  final bool showSteering;
 
   @override
   State<BerthGridView> createState() => _BerthGridViewState();
@@ -39,7 +43,6 @@ class BerthGridView extends StatefulWidget {
 class _BerthGridViewState extends State<BerthGridView> {
   late int totalRowno;
   late int totalcolumn;
-  bool showSeatInfo = true;
 
   @override
   void initState() {
@@ -50,438 +53,229 @@ class _BerthGridViewState extends State<BerthGridView> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-            decoration: BoxDecoration(
-              color: widget.cardColor,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
-                  blurRadius: 20,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 10),
-                ),
-              ],
+    if (widget.seatlist.isEmpty) return const SizedBox.shrink();
+
+    // Find normalized boundaries
+    int minRow = 999;
+    int maxRow = 0;
+    int minCol = 999;
+    int maxCol = 0;
+
+    for (final seat in widget.seatlist) {
+      final r = int.parse(seat.row);
+      final c = int.parse(seat.column);
+      if (r < minRow) minRow = r;
+      if (r > maxRow) maxRow = r;
+      if (c < minCol) minCol = c;
+      if (c > maxCol) maxCol = c;
+    }
+
+    final rowCount = maxRow - minRow + 1;
+    final colCount = maxCol - minCol + 1;
+
+    return Column(
+      children: [
+        if (widget.title != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Text(
+              '${widget.title!.toUpperCase()} (${widget.seatlist.length})',
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: widget.textLight,
+                letterSpacing: 1.1,
+              ),
             ),
-            child: widget.seatlist.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 100),
-                        Lottie.asset(
-                          'asset/90333-error.json',
-                          width: 120,
-                          height: 120,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No Seats Available',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: widget.textSecondary,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Please try another berth type',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: widget.textSecondary.withOpacity(0.7),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : Padding(
-                    padding: _getPaddingBasedOnRows(totalRowno),
-                    child: GridView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: totalRowno * totalcolumn,
-                      itemBuilder: (context, index) {
-                        final seat = _getSeatForIndex(index);
-                        if (seat == null) return Container();
-                        return _buildSeatWidget(seat);
-                      },
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        childAspectRatio: .9,
-                        crossAxisCount: totalRowno,
-                      ),
-                    ),
-                  ),
           ),
-          _buildSeatInfoSection(),
-          const SizedBox(height: 10),
-        ],
-      ),
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 8),
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: widget.textLight.withOpacity(0.1)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.02),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              const double spacing = 2.0; // Reduced spacing
+              final double availableWidth = constraints.maxWidth;
+              final double unitWidth =
+                  (availableWidth - (rowCount - 1) * spacing) / rowCount;
+              // Made units shorter to reduce vertical scrolling
+              final double unitHeight = unitWidth / 0.60;
+
+              // Calculate the actual required height by finding the maximum extent of any seat
+              double maxComputedHeight = 0;
+              for (final seat in widget.seatlist) {
+                final int c = int.parse(seat.column) - minCol;
+                final int sl = int.tryParse(seat.length) ?? 1;
+                final double top = c * (unitHeight + spacing);
+                final double h = sl * unitHeight + (sl - 1) * spacing;
+                // seat height + spacing for label + padding
+                final double totalSeatHeight = top + h + 25;
+                if (totalSeatHeight > maxComputedHeight) {
+                  maxComputedHeight = totalSeatHeight;
+                }
+              }
+
+              return Column(
+                children: [
+                  Stack(
+                    children: [
+                      SizedBox(
+                        width: availableWidth,
+                        height: maxComputedHeight,
+                        child: Stack(
+                          children: widget.seatlist.map((seat) {
+                            final int r = int.parse(seat.row) - minRow;
+                            final int c = int.parse(seat.column) - minCol;
+                            final int sw = int.tryParse(seat.width) ?? 1;
+                            final int sl = int.tryParse(seat.length) ?? 1;
+
+                            final double left = r * (unitWidth + spacing);
+                            final double top = c * (unitHeight + spacing);
+                            final double width =
+                                sw * unitWidth + (sw - 1) * spacing;
+                            final double height =
+                                sl * unitHeight + (sl - 1) * spacing;
+
+                            return Positioned(
+                              left: left,
+                              top: top,
+                              width: width,
+                              height:
+                                  height +
+                                  10, // Enough space for seat + price label
+                              child: _buildSeatItem(seat),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
-  EdgeInsets _getPaddingBasedOnRows(int rows) {
-    switch (rows) {
-      case 1:
-        return const EdgeInsets.symmetric(horizontal: 100, vertical: 32);
-      case 2:
-        return const EdgeInsets.symmetric(horizontal: 80, vertical: 32);
-      case 3:
-        return const EdgeInsets.symmetric(horizontal: 60, vertical: 32);
-      case 4:
-        return const EdgeInsets.symmetric(horizontal: 32, vertical: 32);
-      default:
-        return const EdgeInsets.all(24);
-    }
-  }
-
-  Seat? _getSeatForIndex(int index) {
-    final row = index % totalRowno;
-    final column = index ~/ totalRowno;
-
-    for (final seat in widget.seatlist) {
-      final seatRow = int.parse(seat.row);
-      final seatColumn = int.parse(seat.column);
-      if (row == seatRow && column == seatColumn) {
-        return seat;
-      }
-    }
-    return null;
-  }
-
-  Widget _buildSeatWidget(Seat seat) {
+  Widget _buildSeatItem(Seat seat) {
     final isSelected = widget.selectedseats.any((s) => s.name == seat.name);
     final isAvailable = seat.available == 'true';
+    final isSleeper =
+        (int.tryParse(seat.width) ?? 1) > 1 ||
+        (int.tryParse(seat.length) ?? 1) > 1;
+    final isLadies = seat.ladiesSeat == 'true';
+    final isMens = seat.malesSeat == 'true';
 
-    return InkWell(
+    Color seatColor = isSelected
+        ? widget.accentColor
+        : !isAvailable
+        ? widget.textLight.withOpacity(0.1)
+        : Colors.white;
+
+    Color borderColor = isSelected
+        ? widget.accentColor
+        : !isAvailable
+        ? widget.textLight.withOpacity(0.05)
+        : widget.textLight.withOpacity(0.3);
+
+    return GestureDetector(
       onTap: () {
         if (isAvailable) {
           widget.onSeatSelected(seat, !isSelected);
         }
       },
-      child: _getSeatImage(seat, isSelected, isAvailable),
-    );
-  }
-
-  Widget _getSeatImage(Seat seat, bool isSelected, bool isAvailable) {
-    if (!isAvailable) {
-      return _getUnavailableSeatImage(seat);
-    }
-
-    if (isSelected) {
-      return _getSelectedSeatImage(seat);
-    }
-
-    if (seat.ladiesSeat == 'true') {
-      return _buildSeatContainer(
-        width: seat.width,
-        length: seat.length,
-        borderColor: Colors.pink,
-        fillColor: Colors.transparent,
-        seatColor: Colors.pink,
-        isSelected: isSelected,
-      );
-    }
-
-    if (seat.malesSeat == 'true') {
-      return _buildSeatContainer(
-        width: seat.width,
-        length: seat.length,
-        borderColor: Colors.blue,
-        fillColor: Colors.transparent,
-        seatColor: Colors.blue,
-        isSelected: isSelected,
-      );
-    }
-
-    return _buildSeatContainer(
-      width: seat.width,
-      length: seat.length,
-      borderColor: widget.primaryColor.withOpacity(0.5),
-      fillColor: Colors.transparent,
-      seatColor: widget.primaryColor,
-      isSelected: isSelected,
-    );
-  }
-
-  Widget _getUnavailableSeatImage(Seat seat) {
-    return _buildSeatContainer(
-      width: seat.width,
-      length: seat.length,
-      borderColor: Colors.grey.withOpacity(0.3),
-      fillColor: Colors.grey.withOpacity(0.1),
-      seatColor: Colors.grey,
-      isSelected: false,
-    );
-  }
-
-  Widget _getSelectedSeatImage(Seat seat) {
-    return _buildSeatContainer(
-      width: seat.width,
-      length: seat.length,
-      borderColor: widget.secondaryColor,
-      fillColor: widget.secondaryColor,
-      seatColor: Colors.white,
-      isSelected: true,
-    );
-  }
-
-  Widget _buildSeatContainer({
-    required String width,
-    required String length,
-    required Color borderColor,
-    required Color fillColor,
-    required Color seatColor,
-    required bool isSelected,
-  }) {
-    bool sleeper = width == '2' || length == '2';
-    double containerHeight = sleeper ? 100 : 52;
-    double containerWidth = 44;
-
-    return Padding(
-      padding: EdgeInsets.only(top: sleeper ? 0 : 8),
-      child: Container(
-        margin: const EdgeInsets.all(4),
-        width: containerWidth,
-        height: containerHeight,
-        decoration: BoxDecoration(
-          color: isSelected ? fillColor : fillColor,
-          borderRadius: BorderRadius.circular(sleeper ? 8 : 12),
-          border: Border.all(
-            color: isSelected ? borderColor : borderColor.withOpacity(0.5),
-            width: 1.5,
-          ),
-          boxShadow: isSelected ? [
-            BoxShadow(
-              color: borderColor.withOpacity(0.2),
-              offset: const Offset(0, 4),
-              blurRadius: 8,
-            ),
-          ] : [],
-        ),
-        child: Column(
-          children: [
-            if (sleeper) ...[
-              Container(
-                margin: const EdgeInsets.all(6),
-                height: 12,
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? Colors.white.withOpacity(0.4)
-                      : borderColor.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-              const Spacer(),
-              Container(
-                margin: const EdgeInsets.only(bottom: 6, left: 10, right: 10),
-                height: 3,
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? Colors.white.withOpacity(0.3)
-                      : borderColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ] else ...[
-              Container(
-                margin: const EdgeInsets.only(top: 6, left: 8, right: 8),
-                height: 8,
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? Colors.white.withOpacity(0.4)
-                      : borderColor.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-              const Spacer(),
-              Container(
-                margin: const EdgeInsets.only(bottom: 6, left: 10, right: 10),
-                height: 4,
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? Colors.white.withOpacity(0.3)
-                      : borderColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSeatInfoSection() {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      margin: const EdgeInsets.symmetric(horizontal: 15),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: widget.cardColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                showSeatInfo = !showSeatInfo;
-              });
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: widget.secondaryColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        Iconsax.info_circle,
-                        color: widget.secondaryColor,
-                        size: 16,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      'Seat Information',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
-                        color: widget.textPrimary,
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                  ],
-                ),
-                Icon(
-                  showSeatInfo ? Iconsax.arrow_up_1 : Iconsax.arrow_down_1,
-                  color: widget.textSecondary.withOpacity(0.6),
-                  size: 20,
-                ),
-              ],
-            ),
-          ),
-
-          if (showSeatInfo) ...[
-            const SizedBox(height: 10),
-            const Divider(height: 25),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'SEAT TYPES',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w900,
-                    color: widget.textSecondary.withOpacity(0.6),
-                    letterSpacing: 1.2,
-                  ),
-                ),
-                Row(
-                  children: [
-                    _buildSmallIndicator('Seater'),
-                    const SizedBox(width: 16),
-                    _buildSmallIndicator('Sleeper'),
-                  ],
-                ),
-              ],
-            ),
-            const Divider(height: 25),
-
-            _buildBerthTypeInfo(),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBerthTypeInfo() {
-    return Column(
-      children: [
-        _buildSeatInfoRow(txt: 'Available for all', color: widget.primaryColor),
-        _buildSeatInfoRow(txt: 'Men only', color: Colors.blue),
-        _buildSeatInfoRow(txt: 'Women only', color: Colors.pink),
-        _buildSeatInfoRow(txt: 'Already booked', color: Colors.grey[300]!),
-        _buildSeatInfoRow(txt: 'Your selection', color: widget.secondaryColor),
-      ],
-    );
-  }
-
-  Widget _buildSmallIndicator(String label) {
-    return Text(
-      label,
-      style: TextStyle(
-        fontSize: 10,
-        fontWeight: FontWeight.w800,
-        color: widget.textPrimary,
-        letterSpacing: 0.5,
-      ),
-    );
-  }
-
-  Widget _buildSeatInfoRow({required String txt, required Color color}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-      child: Row(
         children: [
           Expanded(
-            child: Text(
-              txt,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: widget.textPrimary.withOpacity(0.8),
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: seatColor,
+                borderRadius: BorderRadius.circular(isSleeper ? 5 : 3),
+                border: Border.all(color: borderColor, width: 0.8),
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Positioned(
+                    top: 1,
+                    left: 2,
+                    right: 2,
+                    child: Container(
+                      height: isSleeper ? 10 : 2.5,
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? Colors.white.withOpacity(0.25)
+                            : borderColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(1),
+                      ),
+                    ),
+                  ),
+
+                  if (!isAvailable || isSelected || isLadies || isMens)
+                    Icon(
+                      isLadies
+                          ? Iconsax.woman
+                          : (isMens ? Iconsax.man : Iconsax.user),
+                      size: isSleeper ? 16 : 10,
+                      color: isSelected
+                          ? Colors.white
+                          : isLadies
+                          ? Colors.pink.withOpacity(0.4)
+                          : isMens
+                          ? Colors.blue.withOpacity(0.4)
+                          : widget.textLight.withOpacity(0.4),
+                    ),
+
+                  Positioned(
+                    bottom: 1.5,
+                    left: 3,
+                    right: 3,
+                    child: Container(
+                      height: 1,
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? Colors.white.withOpacity(0.2)
+                            : borderColor.withOpacity(0.1),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-          const SizedBox(width: 16),
-          Row(
-            children: [
-              _buildMinSeat(color, isSleeper: false),
-              const SizedBox(width: 12),
-              _buildMinSeat(color, isSleeper: true),
-            ],
+          const SizedBox(height: 1),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 15.0),
+            child: Text(
+              !isAvailable
+                  ? 'SOLD'
+                  : '₹${double.parse(seat.baseFare).toStringAsFixed(0)}',
+              style: TextStyle(
+                fontSize: 6,
+                fontWeight: FontWeight.w600,
+                color: !isAvailable
+                    ? widget.textLight
+                    : widget.textSecondary.withOpacity(0.8),
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildMinSeat(Color color, {required bool isSleeper}) {
-    return Container(
-      width: 24,
-      height: isSleeper ? 32 : 24,
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(isSleeper ? 4 : 6),
-        border: Border.all(color: color, width: 1.5),
-      ),
-      child: Center(
-        child: Container(
-          width: 12,
-          height: 3,
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.3),
-            borderRadius: BorderRadius.circular(1),
-          ),
-        ),
       ),
     );
   }

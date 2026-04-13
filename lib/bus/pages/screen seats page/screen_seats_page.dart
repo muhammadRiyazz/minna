@@ -79,63 +79,82 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
   }
 
   void _showSeatSelectedSnackbar(Seat seat) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
+    ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
         margin: EdgeInsets.only(
-          bottom: MediaQuery.of(context).size.height - 180,
+          bottom: MediaQuery.of(context).size.height - 160,
           left: 16,
           right: 16,
         ),
-        duration: const Duration(seconds: 3),
-        backgroundColor: cardColor,
+        duration: const Duration(milliseconds: 1500),
         content: Container(
-          padding: const EdgeInsets.symmetric(vertical: 4),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: maincolor1.withOpacity(0.1)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 15,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
           child: Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: secondaryColor,
+                  color: maincolor1.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Iconsax.ticket_2, color: Colors.white, size: 24),
+                child: Icon(Iconsax.tick_circle, color: maincolor1, size: 20),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Seat Selected',
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        color: textSecondary,
-                        letterSpacing: 0.5,
-                        fontWeight: FontWeight.w600,
+                      'Seat Added!',
+                      style: TextStyle(
+                        color: textPrimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
+                    // Text(
+                    //   'Seat ${seat.name} successfully selected',
+                    //   style: TextStyle(
+                    //     color: textSecondary,
+                    //     fontSize: 12,
+                    //     fontWeight: FontWeight.w500,
+                    //   ),
+                    // ),
                     const SizedBox(height: 4),
                     RichText(
                       text: TextSpan(
                         children: [
                           TextSpan(
-                            text: seat.name,
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              color: maincolor1,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
+                            text: 'Fare: ',
+                            style: TextStyle(
+                              color: textSecondary,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                           TextSpan(
-                            text: ' • ₹${seat.baseFare}',
-                            style: theme.textTheme.titleMedium?.copyWith(
+                            text: '₹${seat.baseFare}',
+                            style: TextStyle(
                               color: successColor,
-                              fontWeight: FontWeight.w600,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ],
@@ -249,48 +268,35 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
       backgroundColor: backgroundColor,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Iconsax.arrow_left_2, color: Colors.white, size: 24),
+          icon: Icon(Iconsax.arrow_left_2, color: Colors.white, size: 22),
           onPressed: () => Navigator.pop(context),
         ),
         backgroundColor: maincolor1,
         elevation: 0,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Select Seats',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.white,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              widget.travelsname,
-              style: TextStyle(
-                fontSize: 11,
-                color: Colors.white.withOpacity(0.6),
-                fontWeight: FontWeight.w500,
-                letterSpacing: 0.3,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            onPressed: () => _showSeatLegend(context),
-            icon: const Icon(
-              Iconsax.info_circle,
-              color: Colors.white,
-              size: 22,
-            ),
-            tooltip: 'Seat Information',
+        centerTitle: false,
+        title: Text(
+          'Select Seats',
+          style: TextStyle(
+            fontSize: 18,
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
           ),
-          const SizedBox(width: 8),
-        ],
+        ),
+        // actions: [
+        //   TextButton.icon(
+        //     onPressed: () => _showSeatLegend(context),
+        //     icon: Icon(Iconsax.box, color: accentColor, size: 16),
+        //     label: Text(
+        //       'INFO',
+        //       style: TextStyle(
+        //         fontSize: 10,
+        //         color: accentColor,
+        //         fontWeight: FontWeight.w800,
+        //       ),
+        //     ),
+        //   ),
+        //   const SizedBox(width: 8),
+        // ],
       ),
       body: SafeArea(
         child: Column(
@@ -309,92 +315,116 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
               )
             else
               Expanded(
-                child: DefaultTabController(
-                  length: 2,
-                  child: Column(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: cardColor,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: TabBar(
-                          labelColor: Colors.white,
-                          unselectedLabelColor: textSecondary,
-                          indicator: BoxDecoration(
-                            color: maincolor1,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          indicatorPadding: const EdgeInsets.symmetric(
-                            horizontal: 4,
-                            vertical: 8,
-                          ),
-                          labelStyle: const TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 13,
-                          ),
-                          unselectedLabelStyle: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13,
-                          ),
-                          tabs: const [
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16),
-                              child: Tab(text: 'Lower Berth'),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16),
-                              child: Tab(text: 'Upper Berth'),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: TabBarView(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Column(
                           children: [
-                            if (lowerBerth != null && lowerBerth!.isNotEmpty)
-                              BerthGridView(
-                                seatlist: lowerBerth!,
-                                selectedseats: newselectedseats,
-                                onSeatSelected: updateSelectedSeat,
-                                primaryColor: maincolor1,
-                                secondaryColor: secondaryColor,
-                                accentColor: accentColor,
-                                backgroundColor: backgroundColor,
-                                cardColor: cardColor,
-                                textPrimary: textPrimary,
-                                textSecondary: textSecondary,
-                                textLight: textLight,
-                              )
-                            else
-                              _buildEmptyState('Lower Berth'),
-                            if (upperBerth != null && upperBerth!.isNotEmpty)
-                              BerthGridView(
-                                seatlist: upperBerth!,
-                                selectedseats: newselectedseats,
-                                onSeatSelected: updateSelectedSeat,
-                                primaryColor: maincolor1,
-                                secondaryColor: secondaryColor,
-                                accentColor: accentColor,
-                                backgroundColor: backgroundColor,
-                                cardColor: cardColor,
-                                textPrimary: textPrimary,
-                                textSecondary: textSecondary,
-                                textLight: textLight,
-                              )
-                            else
-                              _buildEmptyState('Upper Berth'),
+                            _buildInlineLegend(),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Case: Only Lower Berth
+                                if ((lowerBerth != null &&
+                                        lowerBerth!.isNotEmpty) &&
+                                    (upperBerth == null ||
+                                        upperBerth!.isEmpty)) ...[
+                                  const Spacer(flex: 1),
+                                  Expanded(
+                                    flex: 4,
+                                    child: BerthGridView(
+                                      title: 'Lower Berth',
+                                      seatlist: lowerBerth!,
+                                      selectedseats: newselectedseats,
+                                      onSeatSelected: updateSelectedSeat,
+                                      primaryColor: maincolor1,
+                                      secondaryColor: secondaryColor,
+                                      accentColor: maincolor1,
+                                      backgroundColor: backgroundColor,
+                                      cardColor: cardColor,
+                                      textPrimary: textPrimary,
+                                      textSecondary: textSecondary,
+                                      textLight: textLight,
+                                      showSteering: true,
+                                    ),
+                                  ),
+                                  const Spacer(flex: 1),
+                                ]
+                                // Case: Only Upper Berth
+                                else if ((upperBerth != null &&
+                                        upperBerth!.isNotEmpty) &&
+                                    (lowerBerth == null ||
+                                        lowerBerth!.isEmpty)) ...[
+                                  const Spacer(flex: 1),
+                                  Expanded(
+                                    flex: 4,
+                                    child: BerthGridView(
+                                      title: 'Upper Berth',
+                                      seatlist: upperBerth!,
+                                      selectedseats: newselectedseats,
+                                      onSeatSelected: updateSelectedSeat,
+                                      primaryColor: maincolor1,
+                                      secondaryColor: secondaryColor,
+                                      accentColor: maincolor1,
+                                      backgroundColor: backgroundColor,
+                                      cardColor: cardColor,
+                                      textPrimary: textPrimary,
+                                      textSecondary: textSecondary,
+                                      textLight: textLight,
+                                    ),
+                                  ),
+                                  const Spacer(flex: 1),
+                                ]
+                                // Case: Both Berths
+                                else ...[
+                                  if (lowerBerth != null &&
+                                      lowerBerth!.isNotEmpty)
+                                    Expanded(
+                                      child: BerthGridView(
+                                        title: 'Lower Berth',
+                                        seatlist: lowerBerth!,
+                                        selectedseats: newselectedseats,
+                                        onSeatSelected: updateSelectedSeat,
+                                        primaryColor: maincolor1,
+                                        secondaryColor: secondaryColor,
+                                        accentColor: maincolor1,
+                                        backgroundColor: backgroundColor,
+                                        cardColor: cardColor,
+                                        textPrimary: textPrimary,
+                                        textSecondary: textSecondary,
+                                        textLight: textLight,
+                                        showSteering: true,
+                                      ),
+                                    ),
+                                  const SizedBox(width: 8),
+                                  if (upperBerth != null &&
+                                      upperBerth!.isNotEmpty)
+                                    Expanded(
+                                      child: BerthGridView(
+                                        title: 'Upper Berth',
+                                        seatlist: upperBerth!,
+                                        selectedseats: newselectedseats,
+                                        onSeatSelected: updateSelectedSeat,
+                                        primaryColor: maincolor1,
+                                        secondaryColor: secondaryColor,
+                                        accentColor: maincolor1,
+                                        backgroundColor: backgroundColor,
+                                        cardColor: cardColor,
+                                        textPrimary: textPrimary,
+                                        textSecondary: textSecondary,
+                                        textLight: textLight,
+                                      ),
+                                    ),
+                                ],
+                              ],
+                            ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             if (!isloading && !iserror) _buildBottomSummaryPanel(),
@@ -404,191 +434,230 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
     );
   }
 
-  Widget _buildEmptyState(String berthType) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.event_seat_outlined, size: 64, color: textLight),
-          const SizedBox(height: 16),
-          Text(
-            'No $berthType seats available',
-            style: TextStyle(
-              fontSize: 16,
-              color: textSecondary,
-              fontWeight: FontWeight.w500,
+  Widget _buildTopSelectionBanner() {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      transitionBuilder: (child, animation) {
+        return SizeTransition(
+          sizeFactor: animation,
+          child: FadeTransition(opacity: animation, child: child),
+        );
+      },
+      child: newselectedseats.isEmpty
+          ? const SizedBox.shrink()
+          : Container(
+              key: const ValueKey('selection_banner'),
+              // margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [maincolor1, maincolor1.withOpacity(0.8)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: maincolor1.withOpacity(0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Iconsax.info_circle,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'You have selected:',
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text(
+                          newselectedseats.map((s) => s.name).join(', '),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 0.5,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      '${newselectedseats.length} ${newselectedseats.length == 1 ? 'Seat' : 'Seats'}',
+                      style: TextStyle(
+                        color: maincolor1,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Please check other berth options',
-            style: TextStyle(fontSize: 14, color: textLight),
-          ),
-        ],
-      ),
     );
   }
 
   Widget _buildBottomSummaryPanel() {
     return Container(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
       decoration: BoxDecoration(
-        color: cardColor,
+        color: Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 16,
-            offset: const Offset(0, -4),
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 20,
+            offset: const Offset(0, -5),
           ),
         ],
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (newselectedseats.isNotEmpty) ...[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${newselectedseats.length} ${newselectedseats.length == 1 ? 'SEAT' : 'SEATS'} SELECTED',
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w900,
-                            color: textSecondary.withOpacity(0.6),
-                            letterSpacing: 1.2,
+          // Drag handle
+          Container(
+            width: 40,
+            height: 4,
+            margin: const EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              color: textLight.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+            child: Column(
+              children: [
+                // Operator Info
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        widget.travelsname,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: textPrimary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                _buildTopSelectionBanner(),
+                const SizedBox(height: 8),
+
+                // Continue Button / Summary
+                Row(
+                  children: [
+                    if (newselectedseats.isNotEmpty)
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${newselectedseats.length} ${newselectedseats.length == 1 ? 'Seat' : 'Seats'}',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: textSecondary,
+                              ),
+                            ),
+                            Text(
+                              '₹${totalAmount.toStringAsFixed(0)}',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                                color: textPrimary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    Expanded(
+                      flex: newselectedseats.isNotEmpty ? 1 : 2,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: newselectedseats.isEmpty
+                              ? textLight.withOpacity(0.3)
+                              : maincolor1,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 6,
-                          children: newselectedseats.map((seat) {
-                            return Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: secondaryColor.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(10),
-                                // border: Border.all(
-                                //   color: secondaryColor.withOpacity(0.3),
-                                // ),
-                              ),
-                              child: Text(
-                                seat.name,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w800,
-                                  color: maincolor1,
+                        onPressed: () {
+                          if (newselectedseats.isEmpty) {
+                            _showNoSelectionDialog();
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ScreenBdDpDetails(
+                                  boardingTimeList: widget.boardingTimeList,
+                                  dropingTimeList: widget.dropingTimeList,
+                                  selectedSeats: newselectedseats,
+                                  travelsname: widget.travelsname,
+                                  trpinfo: widget.trpinfo,
+                                  alldata: widget.alldata,
                                 ),
                               ),
                             );
-                          }).toList(),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        'TOTAL AMOUNT',
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: textSecondary.withOpacity(0.6),
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 0.8,
+                          }
+                        },
+                        child: Text(
+                          newselectedseats.isEmpty
+                              ? 'SELECT SEATS'
+                              : 'CONTINUE',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0.5,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '₹${totalAmount.toStringAsFixed(0)}',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w900,
-                          color: secondaryColor,
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-          SizedBox(height: 20),
-          Container(
-            margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: newselectedseats.isEmpty
-                    ? textLight.withOpacity(0.2)
-                    : maincolor1,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-              onPressed: () {
-                if (newselectedseats.isEmpty) {
-                  _showNoSelectionDialog();
-                } else {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return ScreenBdDpDetails(
-                          boardingTimeList: widget.boardingTimeList,
-                          dropingTimeList: widget.dropingTimeList,
-                          selectedSeats: newselectedseats,
-                          travelsname: widget.travelsname,
-                          trpinfo: widget.trpinfo,
-                          alldata: widget.alldata,
-                        );
-                      },
-                    ),
-                  );
-                }
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    newselectedseats.isEmpty
-                        ? 'SELECT SEATS TO PROCEED'
-                        : 'CONTINUE WITH ${newselectedseats.length} SEATS',
-                    style: TextStyle(
-                      color: newselectedseats.isEmpty
-                          ? textSecondary.withOpacity(0.5)
-                          : Colors.white,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                  if (newselectedseats.isNotEmpty) ...[
-                    const SizedBox(width: 12),
-                    const Icon(
-                      Iconsax.arrow_right_3,
-                      size: 18,
-                      color: Colors.white,
                     ),
                   ],
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
@@ -731,14 +800,14 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
               Colors.pink.withOpacity(0.2),
               'Ladies Seat',
               'Reserved for female passengers',
-              Iconsax.user,
+              Iconsax.woman,
               borderColor: Colors.pink,
             ),
             _buildLegendItem(
               Colors.blue.withOpacity(0.2),
               'Gents Seat',
               'Reserved for male passengers',
-              Iconsax.user,
+              Iconsax.man,
               borderColor: Colors.blue,
             ),
             const SizedBox(height: 16),
@@ -768,6 +837,63 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
     );
   }
 
+  Widget _buildInlineLegend() {
+    return GestureDetector(
+      onTap: () => _showSeatLegend(context),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: textLight.withOpacity(0.1)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildCompactLegendItem(
+                  Colors.white,
+                  'Available',
+                  null,
+                  borderColor: textLight.withOpacity(0.3),
+                ),
+                _buildCompactLegendItem(maincolor1, 'Selected', null),
+                _buildCompactLegendItem(
+                  textLight.withOpacity(0.15),
+                  'Booked',
+                  null,
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildCompactLegendItem(
+                  Colors.pink.withOpacity(0.15),
+                  'Ladies',
+                  Iconsax.woman,
+                  iconColor: Colors.pink,
+                ),
+                _buildCompactLegendItem(
+                  Colors.blue.withOpacity(0.15),
+                  'Gents',
+                  Iconsax.man,
+                  iconColor: Colors.blue,
+                ),
+                // Dummy item for alignment
+                const SizedBox(width: 80),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildLegendItem(
     Color color,
     String title,
@@ -781,11 +907,11 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 32,
+            height: 32,
             decoration: BoxDecoration(
               color: color,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: borderColor ?? color.withOpacity(0.3),
                 width: 1.5,
@@ -793,7 +919,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
             ),
             child: Icon(
               icon,
-              size: 20,
+              size: 16,
               color:
                   borderColor ??
                   (color == maincolor1 || color == secondaryColor
@@ -809,8 +935,8 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
                     color: textPrimary,
                   ),
                 ),
@@ -818,7 +944,7 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
                 Text(
                   description,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 11,
                     color: textSecondary,
                     fontWeight: FontWeight.w500,
                   ),
@@ -831,45 +957,90 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
     );
   }
 
+  Widget _buildCompactLegendItem(
+    Color color,
+    String label,
+    IconData? icon, {
+    Color? borderColor,
+    Color? iconColor,
+  }) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 18,
+          height: 18,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(4),
+            border: Border.all(
+              color: borderColor ?? Colors.transparent,
+              width: 1,
+            ),
+          ),
+          child: icon != null
+              ? Icon(icon, size: 12, color: iconColor ?? Colors.white)
+              : null,
+        ),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            color: textSecondary,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildShimmerLoading() {
-    return DefaultTabController(
-      length: 2,
-      child: Column(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: cardColor,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: TabBar(
-              labelColor: Colors.white,
-              unselectedLabelColor: textSecondary,
-              indicator: BoxDecoration(
-                color: maincolor1,
+    return SingleChildScrollView(
+      physics: const NeverScrollableScrollPhysics(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Column(
+          children: [
+            // Dummy Legend Shimmer
+            Container(
+              height: 60,
+              width: double.infinity,
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: textLight.withOpacity(0.05)),
               ),
-              indicatorPadding: const EdgeInsets.symmetric(
-                horizontal: 4,
-                vertical: 8,
+              child: Shimmer.fromColors(
+                baseColor: textSecondary.withOpacity(0.05),
+                highlightColor: textSecondary.withOpacity(0.02),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: List.generate(
+                    3,
+                    (i) => Container(
+                      width: 80,
+                      height: 12,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ),
+                ),
               ),
-              tabs: const [
-                Tab(text: 'Lower Berth'),
-                Tab(text: 'Upper Berth'),
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: _buildShimmerSeatLayout()),
+                const SizedBox(width: 8),
+                Expanded(child: _buildShimmerSeatLayout()),
               ],
             ),
-          ),
-          Expanded(
-            child: TabBarView(
-              children: [_buildShimmerSeatLayout(), _buildShimmerSeatLayout()],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -884,6 +1055,8 @@ class _ScreenSeateLayoutState extends State<ScreenSeateLayout> {
       child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: cols,
             childAspectRatio: 0.85,

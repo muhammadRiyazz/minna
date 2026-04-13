@@ -122,12 +122,14 @@ class HotelSearchResponse {
     return HotelSearchResponse(
       status: json['status'] as bool? ?? false,
       message: json['message'] as String? ?? '',
-      totalHotels: json['total'] as int? ??
+      totalHotels:
+          json['total'] as int? ??
           json['total_hotels'] as int? ??
           json['totalHotels'] as int? ??
           0,
       nextOffset: json['next_offset'] as int? ?? 0,
-      hotels: (json['hotels'] as List<dynamic>?)
+      hotels:
+          (json['hotels'] as List<dynamic>?)
               ?.map((e) => HotelSearchItem.fromJson(e))
               .toList() ??
           [],
@@ -234,7 +236,8 @@ class RoomDetail {
           [],
       totalFare: (json['TotalFare'] as num?)?.toDouble() ?? 0.0,
       totalTax: (json['TotalTax'] as num?)?.toDouble() ?? 0.0,
-      netAmount: (json['NetAmount'] as num?)?.toDouble() ??
+      netAmount:
+          (json['NetAmount'] as num?)?.toDouble() ??
           (json['TotalFare'] as num?)?.toDouble() ??
           0.0,
       roomPromotion:

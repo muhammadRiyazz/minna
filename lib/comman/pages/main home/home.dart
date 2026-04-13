@@ -27,6 +27,7 @@ import 'package:minna/flight/presendation/screen%20flight/home_flight.dart';
 
 import 'package:minna/visa/pages/visa_page.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'all_destinations_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -1230,6 +1231,43 @@ class _HomeContentPageState extends State<HomeContentPage> {
                   ),
                 ],
               ),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AllDestinationsPage(
+                        destinations: destinations,
+                        primaryColor: maincolor1,
+                        secondaryColor: secondaryColor,
+                        backgroundColor: backgroundColor,
+                        cardColor: cardColor,
+                        textPrimary: textPrimary,
+                        textSecondary: textSecondary,
+                        textLight: textLight,
+                      ),
+                    ),
+                  );
+                },
+                child: Row(
+                  children: [
+                    Text(
+                      'View All',
+                      style: TextStyle(
+                        color: secondaryColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Icon(
+                      Iconsax.arrow_right_3,
+                      color: secondaryColor,
+                      size: 14,
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 20),
@@ -1629,8 +1667,13 @@ class _HomeContentPageState extends State<HomeContentPage> {
                         child: ElevatedButton(
                           onPressed: () {
                             const String supportNumber = "917511100557";
-                            final Uri whatsappUri = Uri.parse("https://wa.me/$supportNumber");
-                            launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
+                            final Uri whatsappUri = Uri.parse(
+                              "https://wa.me/$supportNumber",
+                            );
+                            launchUrl(
+                              whatsappUri,
+                              mode: LaunchMode.externalApplication,
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: maincolor1,

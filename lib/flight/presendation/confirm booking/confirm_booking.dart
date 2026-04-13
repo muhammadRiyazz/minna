@@ -159,7 +159,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
       log('Creating flight order with body: $body');
 
       final response = await http.post(
-        Uri.parse('https://mttrip.in/create-razorpay-order-for-flight'),
+        Uri.parse('${baseUrl}create-razorpay-order-for-flight'),
         body: body,
       );
 

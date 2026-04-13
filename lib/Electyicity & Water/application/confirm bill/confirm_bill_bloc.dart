@@ -162,7 +162,6 @@ class ConfirmBillBloc extends Bloc<ConfirmBillEvent, ConfirmBillState> {
     final userId = preferences.getString('userId') ?? '';
 
     final url = Uri.parse(
-      // 'https://mttrip.in/bill-payment-create-razorpay-order-api',
       '${baseUrl}bill-payment-create-razorpay-order-api',
     );
 
@@ -212,7 +211,6 @@ class ConfirmBillBloc extends Bloc<ConfirmBillEvent, ConfirmBillState> {
     final userId = preferences.getString('userId') ?? '';
 
     final url = Uri.parse(
-      // 'https://mttrip.in/bill-payment-verify-razorpay-api',
       '${baseUrl}bill-payment-verify-razorpay-api',
     );
 

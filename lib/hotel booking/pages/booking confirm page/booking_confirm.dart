@@ -2673,7 +2673,9 @@ class _HotelBookingConfirmationPageState
               if (!isRefundScenario) ...[
                 const SizedBox(height: 16),
                 _buildActionButton('CONTACT SUPPORT', () {
-                  final Uri whatsappUri = Uri.parse("https://wa.me/917511100557");
+                  final Uri whatsappUri = Uri.parse(
+                    "https://wa.me/917511100557",
+                  );
                   launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
                 }, isPrimary: false),
               ],
