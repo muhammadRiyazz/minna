@@ -13,6 +13,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
+import 'widget/flight_filter_bottom_sheet.dart';
 
 class FlightSearchPage extends StatelessWidget {
   final String tripType;
@@ -79,10 +80,40 @@ class FlightSearchPage extends StatelessWidget {
           ],
         ),
         actions: [
-          IconButton(
-            icon: Icon(Iconsax.filter_edit, color: Colors.white, size: 22),
-            onPressed: () {
-              // Add filter functionality
+          BlocBuilder<TripRequestBloc, TripRequestState>(
+            builder: (context, state) {
+              return IconButton(
+                icon: Icon(Iconsax.filter_edit, color: Colors.white, size: 22),
+                onPressed:
+                    (state.allRespo != null && state.allRespo!.isNotEmpty)
+                    ? () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => FlightFilterBottomSheet(
+                            allFlights: state.allRespo!,
+                            onApply: (min, max, stops, airlines, times) {
+                              context.read<TripRequestBloc>().add(
+                                TripRequestEvent.filterRespo(
+                                  minPrice: min,
+                                  maxPrice: max,
+                                  stops: stops,
+                                  airlines: airlines,
+                                  departureTimes: times,
+                                ),
+                              );
+                            },
+                            onReset: () {
+                              context.read<TripRequestBloc>().add(
+                                const TripRequestEvent.resetFilter(),
+                              );
+                            },
+                          ),
+                        );
+                      }
+                    : null,
+              );
             },
           ),
           const SizedBox(width: 8),
@@ -674,7 +705,7 @@ class FlightCard extends StatelessWidget {
                       Text(
                         flightOption.flightName ?? '---',
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 11,
                           fontWeight: FontWeight.bold,
                           color: textPrimary,
                         ),
@@ -699,7 +730,7 @@ class FlightCard extends StatelessWidget {
                       Text(
                         flightOption.ticketingCarrier ?? '---',
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 9,
                           color: textSecondary,
                           fontWeight: FontWeight.w500,
                         ),
@@ -746,8 +777,8 @@ class FlightCard extends StatelessWidget {
               Text(
                 '₹${totalWithCommission.toStringAsFixed(0)}',
                 style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w900,
                   color: primaryColor,
                 ),
               ),

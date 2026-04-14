@@ -97,7 +97,7 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
                     onPressed: () => Navigator.pop(context),
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,7 +105,7 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
                       Text(
                         'Select ${widget.fromOrto == 'from' ? 'Origin' : 'Destination'}',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 16,
                           fontWeight: FontWeight.w900,
                           color: maincolor1,
                           letterSpacing: -0.5,
@@ -114,7 +114,7 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
                       Text(
                         'Where are you ${widget.fromOrto == 'from' ? 'starting from' : 'heading to'}?',
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 11,
                           color: textSecondary,
                           fontWeight: FontWeight.w500,
                         ),
@@ -224,7 +224,7 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
         controller: _controller,
         focusNode: _searchFocusNode,
         style: TextStyle(
-          fontSize: 16,
+          fontSize: 14,
           color: textPrimary,
           fontWeight: FontWeight.w700,
         ),
@@ -232,7 +232,7 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
           hintText: 'Search city or station...',
           hintStyle: TextStyle(
             color: textLight.withOpacity(0.6),
-            fontSize: 15,
+            fontSize: 13,
             fontWeight: FontWeight.w500,
           ),
           prefixIcon: Container(
@@ -328,7 +328,7 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
           Text(
             _controller.text.isEmpty ? 'Start Searching' : 'No Results Found',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.w700,
               color: maincolor1,
               letterSpacing: -0.5,
@@ -343,7 +343,7 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
                   : 'We couldn\'t find any locations matching "${_controller.text}"',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 11,
                 color: textSecondary,
                 fontWeight: FontWeight.w500,
                 height: 1.5,
@@ -357,7 +357,7 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
 
   Widget _buildLocationItem(BuildContext context, City location) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 6),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(20),
@@ -380,8 +380,8 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
             child: Row(
               children: [
                 Container(
-                  width: 52,
-                  height: 52,
+                  width: 45,
+                  height: 45,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
@@ -393,7 +393,7 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
                     ),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Icon(Iconsax.location, color: maincolor1, size: 24),
+                  child: Icon(Iconsax.location, color: maincolor1, size: 20),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -403,7 +403,7 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
                       Text(
                         location.name,
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 11,
                           fontWeight: FontWeight.w700,
                           color: maincolor1,
                           letterSpacing: -0.3,
@@ -415,7 +415,7 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
                           Text(
                             location.state,
                             style: TextStyle(
-                              fontSize: 10,
+                              fontSize: 9,
                               color: textSecondary,
                               fontWeight: FontWeight.w600,
                             ),

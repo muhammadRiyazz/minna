@@ -28,6 +28,15 @@ mixin _$TripRequestEvent {
     changeFare,
     required TResult Function(Airport fromAirportinfo, Airport toAirportinfo)
     getFlightinfo,
+    required TResult Function(
+      double? minPrice,
+      double? maxPrice,
+      List<int>? stops,
+      List<String>? airlines,
+      List<int>? departureTimes,
+    )
+    filterRespo,
+    required TResult Function() resetFilter,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
@@ -39,6 +48,15 @@ mixin _$TripRequestEvent {
     changeFare,
     TResult? Function(Airport fromAirportinfo, Airport toAirportinfo)?
     getFlightinfo,
+    TResult? Function(
+      double? minPrice,
+      double? maxPrice,
+      List<int>? stops,
+      List<String>? airlines,
+      List<int>? departureTimes,
+    )?
+    filterRespo,
+    TResult? Function()? resetFilter,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
@@ -47,6 +65,15 @@ mixin _$TripRequestEvent {
     changeFare,
     TResult Function(Airport fromAirportinfo, Airport toAirportinfo)?
     getFlightinfo,
+    TResult Function(
+      double? minPrice,
+      double? maxPrice,
+      List<int>? stops,
+      List<String>? airlines,
+      List<int>? departureTimes,
+    )?
+    filterRespo,
+    TResult Function()? resetFilter,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -54,18 +81,24 @@ mixin _$TripRequestEvent {
     required TResult Function(GetTripList value) getTripList,
     required TResult Function(ChangeFare value) changeFare,
     required TResult Function(GetFlightinfo value) getFlightinfo,
+    required TResult Function(FilterRespo value) filterRespo,
+    required TResult Function(ResetFilter value) resetFilter,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(GetTripList value)? getTripList,
     TResult? Function(ChangeFare value)? changeFare,
     TResult? Function(GetFlightinfo value)? getFlightinfo,
+    TResult? Function(FilterRespo value)? filterRespo,
+    TResult? Function(ResetFilter value)? resetFilter,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(GetTripList value)? getTripList,
     TResult Function(ChangeFare value)? changeFare,
     TResult Function(GetFlightinfo value)? getFlightinfo,
+    TResult Function(FilterRespo value)? filterRespo,
+    TResult Function(ResetFilter value)? resetFilter,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
 }
@@ -172,6 +205,15 @@ class _$GetTripListImpl implements GetTripList {
     changeFare,
     required TResult Function(Airport fromAirportinfo, Airport toAirportinfo)
     getFlightinfo,
+    required TResult Function(
+      double? minPrice,
+      double? maxPrice,
+      List<int>? stops,
+      List<String>? airlines,
+      List<int>? departureTimes,
+    )
+    filterRespo,
+    required TResult Function() resetFilter,
   }) {
     return getTripList(flightRequestData);
   }
@@ -187,6 +229,15 @@ class _$GetTripListImpl implements GetTripList {
     changeFare,
     TResult? Function(Airport fromAirportinfo, Airport toAirportinfo)?
     getFlightinfo,
+    TResult? Function(
+      double? minPrice,
+      double? maxPrice,
+      List<int>? stops,
+      List<String>? airlines,
+      List<int>? departureTimes,
+    )?
+    filterRespo,
+    TResult? Function()? resetFilter,
   }) {
     return getTripList?.call(flightRequestData);
   }
@@ -199,6 +250,15 @@ class _$GetTripListImpl implements GetTripList {
     changeFare,
     TResult Function(Airport fromAirportinfo, Airport toAirportinfo)?
     getFlightinfo,
+    TResult Function(
+      double? minPrice,
+      double? maxPrice,
+      List<int>? stops,
+      List<String>? airlines,
+      List<int>? departureTimes,
+    )?
+    filterRespo,
+    TResult Function()? resetFilter,
     required TResult orElse(),
   }) {
     if (getTripList != null) {
@@ -213,6 +273,8 @@ class _$GetTripListImpl implements GetTripList {
     required TResult Function(GetTripList value) getTripList,
     required TResult Function(ChangeFare value) changeFare,
     required TResult Function(GetFlightinfo value) getFlightinfo,
+    required TResult Function(FilterRespo value) filterRespo,
+    required TResult Function(ResetFilter value) resetFilter,
   }) {
     return getTripList(this);
   }
@@ -223,6 +285,8 @@ class _$GetTripListImpl implements GetTripList {
     TResult? Function(GetTripList value)? getTripList,
     TResult? Function(ChangeFare value)? changeFare,
     TResult? Function(GetFlightinfo value)? getFlightinfo,
+    TResult? Function(FilterRespo value)? filterRespo,
+    TResult? Function(ResetFilter value)? resetFilter,
   }) {
     return getTripList?.call(this);
   }
@@ -233,6 +297,8 @@ class _$GetTripListImpl implements GetTripList {
     TResult Function(GetTripList value)? getTripList,
     TResult Function(ChangeFare value)? changeFare,
     TResult Function(GetFlightinfo value)? getFlightinfo,
+    TResult Function(FilterRespo value)? filterRespo,
+    TResult Function(ResetFilter value)? resetFilter,
     required TResult orElse(),
   }) {
     if (getTripList != null) {
@@ -347,6 +413,15 @@ class _$ChangeFareImpl implements ChangeFare {
     changeFare,
     required TResult Function(Airport fromAirportinfo, Airport toAirportinfo)
     getFlightinfo,
+    required TResult Function(
+      double? minPrice,
+      double? maxPrice,
+      List<int>? stops,
+      List<String>? airlines,
+      List<int>? departureTimes,
+    )
+    filterRespo,
+    required TResult Function() resetFilter,
   }) {
     return changeFare(selectedFare, selectedTrip);
   }
@@ -362,6 +437,15 @@ class _$ChangeFareImpl implements ChangeFare {
     changeFare,
     TResult? Function(Airport fromAirportinfo, Airport toAirportinfo)?
     getFlightinfo,
+    TResult? Function(
+      double? minPrice,
+      double? maxPrice,
+      List<int>? stops,
+      List<String>? airlines,
+      List<int>? departureTimes,
+    )?
+    filterRespo,
+    TResult? Function()? resetFilter,
   }) {
     return changeFare?.call(selectedFare, selectedTrip);
   }
@@ -374,6 +458,15 @@ class _$ChangeFareImpl implements ChangeFare {
     changeFare,
     TResult Function(Airport fromAirportinfo, Airport toAirportinfo)?
     getFlightinfo,
+    TResult Function(
+      double? minPrice,
+      double? maxPrice,
+      List<int>? stops,
+      List<String>? airlines,
+      List<int>? departureTimes,
+    )?
+    filterRespo,
+    TResult Function()? resetFilter,
     required TResult orElse(),
   }) {
     if (changeFare != null) {
@@ -388,6 +481,8 @@ class _$ChangeFareImpl implements ChangeFare {
     required TResult Function(GetTripList value) getTripList,
     required TResult Function(ChangeFare value) changeFare,
     required TResult Function(GetFlightinfo value) getFlightinfo,
+    required TResult Function(FilterRespo value) filterRespo,
+    required TResult Function(ResetFilter value) resetFilter,
   }) {
     return changeFare(this);
   }
@@ -398,6 +493,8 @@ class _$ChangeFareImpl implements ChangeFare {
     TResult? Function(GetTripList value)? getTripList,
     TResult? Function(ChangeFare value)? changeFare,
     TResult? Function(GetFlightinfo value)? getFlightinfo,
+    TResult? Function(FilterRespo value)? filterRespo,
+    TResult? Function(ResetFilter value)? resetFilter,
   }) {
     return changeFare?.call(this);
   }
@@ -408,6 +505,8 @@ class _$ChangeFareImpl implements ChangeFare {
     TResult Function(GetTripList value)? getTripList,
     TResult Function(ChangeFare value)? changeFare,
     TResult Function(GetFlightinfo value)? getFlightinfo,
+    TResult Function(FilterRespo value)? filterRespo,
+    TResult Function(ResetFilter value)? resetFilter,
     required TResult orElse(),
   }) {
     if (changeFare != null) {
@@ -524,6 +623,15 @@ class _$GetFlightinfoImpl implements GetFlightinfo {
     changeFare,
     required TResult Function(Airport fromAirportinfo, Airport toAirportinfo)
     getFlightinfo,
+    required TResult Function(
+      double? minPrice,
+      double? maxPrice,
+      List<int>? stops,
+      List<String>? airlines,
+      List<int>? departureTimes,
+    )
+    filterRespo,
+    required TResult Function() resetFilter,
   }) {
     return getFlightinfo(fromAirportinfo, toAirportinfo);
   }
@@ -539,6 +647,15 @@ class _$GetFlightinfoImpl implements GetFlightinfo {
     changeFare,
     TResult? Function(Airport fromAirportinfo, Airport toAirportinfo)?
     getFlightinfo,
+    TResult? Function(
+      double? minPrice,
+      double? maxPrice,
+      List<int>? stops,
+      List<String>? airlines,
+      List<int>? departureTimes,
+    )?
+    filterRespo,
+    TResult? Function()? resetFilter,
   }) {
     return getFlightinfo?.call(fromAirportinfo, toAirportinfo);
   }
@@ -551,6 +668,15 @@ class _$GetFlightinfoImpl implements GetFlightinfo {
     changeFare,
     TResult Function(Airport fromAirportinfo, Airport toAirportinfo)?
     getFlightinfo,
+    TResult Function(
+      double? minPrice,
+      double? maxPrice,
+      List<int>? stops,
+      List<String>? airlines,
+      List<int>? departureTimes,
+    )?
+    filterRespo,
+    TResult Function()? resetFilter,
     required TResult orElse(),
   }) {
     if (getFlightinfo != null) {
@@ -565,6 +691,8 @@ class _$GetFlightinfoImpl implements GetFlightinfo {
     required TResult Function(GetTripList value) getTripList,
     required TResult Function(ChangeFare value) changeFare,
     required TResult Function(GetFlightinfo value) getFlightinfo,
+    required TResult Function(FilterRespo value) filterRespo,
+    required TResult Function(ResetFilter value) resetFilter,
   }) {
     return getFlightinfo(this);
   }
@@ -575,6 +703,8 @@ class _$GetFlightinfoImpl implements GetFlightinfo {
     TResult? Function(GetTripList value)? getTripList,
     TResult? Function(ChangeFare value)? changeFare,
     TResult? Function(GetFlightinfo value)? getFlightinfo,
+    TResult? Function(FilterRespo value)? filterRespo,
+    TResult? Function(ResetFilter value)? resetFilter,
   }) {
     return getFlightinfo?.call(this);
   }
@@ -585,6 +715,8 @@ class _$GetFlightinfoImpl implements GetFlightinfo {
     TResult Function(GetTripList value)? getTripList,
     TResult Function(ChangeFare value)? changeFare,
     TResult Function(GetFlightinfo value)? getFlightinfo,
+    TResult Function(FilterRespo value)? filterRespo,
+    TResult Function(ResetFilter value)? resetFilter,
     required TResult orElse(),
   }) {
     if (getFlightinfo != null) {
@@ -611,11 +743,464 @@ abstract class GetFlightinfo implements TripRequestEvent {
 }
 
 /// @nodoc
+abstract class _$$FilterRespoImplCopyWith<$Res> {
+  factory _$$FilterRespoImplCopyWith(
+    _$FilterRespoImpl value,
+    $Res Function(_$FilterRespoImpl) then,
+  ) = __$$FilterRespoImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({
+    double? minPrice,
+    double? maxPrice,
+    List<int>? stops,
+    List<String>? airlines,
+    List<int>? departureTimes,
+  });
+}
+
+/// @nodoc
+class __$$FilterRespoImplCopyWithImpl<$Res>
+    extends _$TripRequestEventCopyWithImpl<$Res, _$FilterRespoImpl>
+    implements _$$FilterRespoImplCopyWith<$Res> {
+  __$$FilterRespoImplCopyWithImpl(
+    _$FilterRespoImpl _value,
+    $Res Function(_$FilterRespoImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of TripRequestEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? minPrice = freezed,
+    Object? maxPrice = freezed,
+    Object? stops = freezed,
+    Object? airlines = freezed,
+    Object? departureTimes = freezed,
+  }) {
+    return _then(
+      _$FilterRespoImpl(
+        minPrice: freezed == minPrice
+            ? _value.minPrice
+            : minPrice // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        maxPrice: freezed == maxPrice
+            ? _value.maxPrice
+            : maxPrice // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        stops: freezed == stops
+            ? _value._stops
+            : stops // ignore: cast_nullable_to_non_nullable
+                  as List<int>?,
+        airlines: freezed == airlines
+            ? _value._airlines
+            : airlines // ignore: cast_nullable_to_non_nullable
+                  as List<String>?,
+        departureTimes: freezed == departureTimes
+            ? _value._departureTimes
+            : departureTimes // ignore: cast_nullable_to_non_nullable
+                  as List<int>?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+
+class _$FilterRespoImpl implements FilterRespo {
+  const _$FilterRespoImpl({
+    this.minPrice,
+    this.maxPrice,
+    final List<int>? stops,
+    final List<String>? airlines,
+    final List<int>? departureTimes,
+  }) : _stops = stops,
+       _airlines = airlines,
+       _departureTimes = departureTimes;
+
+  @override
+  final double? minPrice;
+  @override
+  final double? maxPrice;
+  final List<int>? _stops;
+  @override
+  List<int>? get stops {
+    final value = _stops;
+    if (value == null) return null;
+    if (_stops is EqualUnmodifiableListView) return _stops;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
+  final List<String>? _airlines;
+  @override
+  List<String>? get airlines {
+    final value = _airlines;
+    if (value == null) return null;
+    if (_airlines is EqualUnmodifiableListView) return _airlines;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
+  final List<int>? _departureTimes;
+  @override
+  List<int>? get departureTimes {
+    final value = _departureTimes;
+    if (value == null) return null;
+    if (_departureTimes is EqualUnmodifiableListView) return _departureTimes;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
+  @override
+  String toString() {
+    return 'TripRequestEvent.filterRespo(minPrice: $minPrice, maxPrice: $maxPrice, stops: $stops, airlines: $airlines, departureTimes: $departureTimes)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$FilterRespoImpl &&
+            (identical(other.minPrice, minPrice) ||
+                other.minPrice == minPrice) &&
+            (identical(other.maxPrice, maxPrice) ||
+                other.maxPrice == maxPrice) &&
+            const DeepCollectionEquality().equals(other._stops, _stops) &&
+            const DeepCollectionEquality().equals(other._airlines, _airlines) &&
+            const DeepCollectionEquality().equals(
+              other._departureTimes,
+              _departureTimes,
+            ));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    minPrice,
+    maxPrice,
+    const DeepCollectionEquality().hash(_stops),
+    const DeepCollectionEquality().hash(_airlines),
+    const DeepCollectionEquality().hash(_departureTimes),
+  );
+
+  /// Create a copy of TripRequestEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$FilterRespoImplCopyWith<_$FilterRespoImpl> get copyWith =>
+      __$$FilterRespoImplCopyWithImpl<_$FilterRespoImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(FlightSearchRequest flightRequestData)
+    getTripList,
+    required TResult Function(
+      FlightFare selectedFare,
+      FlightOptionElement selectedTrip,
+    )
+    changeFare,
+    required TResult Function(Airport fromAirportinfo, Airport toAirportinfo)
+    getFlightinfo,
+    required TResult Function(
+      double? minPrice,
+      double? maxPrice,
+      List<int>? stops,
+      List<String>? airlines,
+      List<int>? departureTimes,
+    )
+    filterRespo,
+    required TResult Function() resetFilter,
+  }) {
+    return filterRespo(minPrice, maxPrice, stops, airlines, departureTimes);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(FlightSearchRequest flightRequestData)? getTripList,
+    TResult? Function(
+      FlightFare selectedFare,
+      FlightOptionElement selectedTrip,
+    )?
+    changeFare,
+    TResult? Function(Airport fromAirportinfo, Airport toAirportinfo)?
+    getFlightinfo,
+    TResult? Function(
+      double? minPrice,
+      double? maxPrice,
+      List<int>? stops,
+      List<String>? airlines,
+      List<int>? departureTimes,
+    )?
+    filterRespo,
+    TResult? Function()? resetFilter,
+  }) {
+    return filterRespo?.call(
+      minPrice,
+      maxPrice,
+      stops,
+      airlines,
+      departureTimes,
+    );
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(FlightSearchRequest flightRequestData)? getTripList,
+    TResult Function(FlightFare selectedFare, FlightOptionElement selectedTrip)?
+    changeFare,
+    TResult Function(Airport fromAirportinfo, Airport toAirportinfo)?
+    getFlightinfo,
+    TResult Function(
+      double? minPrice,
+      double? maxPrice,
+      List<int>? stops,
+      List<String>? airlines,
+      List<int>? departureTimes,
+    )?
+    filterRespo,
+    TResult Function()? resetFilter,
+    required TResult orElse(),
+  }) {
+    if (filterRespo != null) {
+      return filterRespo(minPrice, maxPrice, stops, airlines, departureTimes);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(GetTripList value) getTripList,
+    required TResult Function(ChangeFare value) changeFare,
+    required TResult Function(GetFlightinfo value) getFlightinfo,
+    required TResult Function(FilterRespo value) filterRespo,
+    required TResult Function(ResetFilter value) resetFilter,
+  }) {
+    return filterRespo(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(GetTripList value)? getTripList,
+    TResult? Function(ChangeFare value)? changeFare,
+    TResult? Function(GetFlightinfo value)? getFlightinfo,
+    TResult? Function(FilterRespo value)? filterRespo,
+    TResult? Function(ResetFilter value)? resetFilter,
+  }) {
+    return filterRespo?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(GetTripList value)? getTripList,
+    TResult Function(ChangeFare value)? changeFare,
+    TResult Function(GetFlightinfo value)? getFlightinfo,
+    TResult Function(FilterRespo value)? filterRespo,
+    TResult Function(ResetFilter value)? resetFilter,
+    required TResult orElse(),
+  }) {
+    if (filterRespo != null) {
+      return filterRespo(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class FilterRespo implements TripRequestEvent {
+  const factory FilterRespo({
+    final double? minPrice,
+    final double? maxPrice,
+    final List<int>? stops,
+    final List<String>? airlines,
+    final List<int>? departureTimes,
+  }) = _$FilterRespoImpl;
+
+  double? get minPrice;
+  double? get maxPrice;
+  List<int>? get stops;
+  List<String>? get airlines;
+  List<int>? get departureTimes;
+
+  /// Create a copy of TripRequestEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$FilterRespoImplCopyWith<_$FilterRespoImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$ResetFilterImplCopyWith<$Res> {
+  factory _$$ResetFilterImplCopyWith(
+    _$ResetFilterImpl value,
+    $Res Function(_$ResetFilterImpl) then,
+  ) = __$$ResetFilterImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$ResetFilterImplCopyWithImpl<$Res>
+    extends _$TripRequestEventCopyWithImpl<$Res, _$ResetFilterImpl>
+    implements _$$ResetFilterImplCopyWith<$Res> {
+  __$$ResetFilterImplCopyWithImpl(
+    _$ResetFilterImpl _value,
+    $Res Function(_$ResetFilterImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of TripRequestEvent
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$ResetFilterImpl implements ResetFilter {
+  const _$ResetFilterImpl();
+
+  @override
+  String toString() {
+    return 'TripRequestEvent.resetFilter()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$ResetFilterImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(FlightSearchRequest flightRequestData)
+    getTripList,
+    required TResult Function(
+      FlightFare selectedFare,
+      FlightOptionElement selectedTrip,
+    )
+    changeFare,
+    required TResult Function(Airport fromAirportinfo, Airport toAirportinfo)
+    getFlightinfo,
+    required TResult Function(
+      double? minPrice,
+      double? maxPrice,
+      List<int>? stops,
+      List<String>? airlines,
+      List<int>? departureTimes,
+    )
+    filterRespo,
+    required TResult Function() resetFilter,
+  }) {
+    return resetFilter();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(FlightSearchRequest flightRequestData)? getTripList,
+    TResult? Function(
+      FlightFare selectedFare,
+      FlightOptionElement selectedTrip,
+    )?
+    changeFare,
+    TResult? Function(Airport fromAirportinfo, Airport toAirportinfo)?
+    getFlightinfo,
+    TResult? Function(
+      double? minPrice,
+      double? maxPrice,
+      List<int>? stops,
+      List<String>? airlines,
+      List<int>? departureTimes,
+    )?
+    filterRespo,
+    TResult? Function()? resetFilter,
+  }) {
+    return resetFilter?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(FlightSearchRequest flightRequestData)? getTripList,
+    TResult Function(FlightFare selectedFare, FlightOptionElement selectedTrip)?
+    changeFare,
+    TResult Function(Airport fromAirportinfo, Airport toAirportinfo)?
+    getFlightinfo,
+    TResult Function(
+      double? minPrice,
+      double? maxPrice,
+      List<int>? stops,
+      List<String>? airlines,
+      List<int>? departureTimes,
+    )?
+    filterRespo,
+    TResult Function()? resetFilter,
+    required TResult orElse(),
+  }) {
+    if (resetFilter != null) {
+      return resetFilter();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(GetTripList value) getTripList,
+    required TResult Function(ChangeFare value) changeFare,
+    required TResult Function(GetFlightinfo value) getFlightinfo,
+    required TResult Function(FilterRespo value) filterRespo,
+    required TResult Function(ResetFilter value) resetFilter,
+  }) {
+    return resetFilter(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(GetTripList value)? getTripList,
+    TResult? Function(ChangeFare value)? changeFare,
+    TResult? Function(GetFlightinfo value)? getFlightinfo,
+    TResult? Function(FilterRespo value)? filterRespo,
+    TResult? Function(ResetFilter value)? resetFilter,
+  }) {
+    return resetFilter?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(GetTripList value)? getTripList,
+    TResult Function(ChangeFare value)? changeFare,
+    TResult Function(GetFlightinfo value)? getFlightinfo,
+    TResult Function(FilterRespo value)? filterRespo,
+    TResult Function(ResetFilter value)? resetFilter,
+    required TResult orElse(),
+  }) {
+    if (resetFilter != null) {
+      return resetFilter(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class ResetFilter implements TripRequestEvent {
+  const factory ResetFilter() = _$ResetFilterImpl;
+}
+
+/// @nodoc
 mixin _$TripRequestState {
   bool get isLoading => throw _privateConstructorUsedError;
   String? get token => throw _privateConstructorUsedError;
   int get getdata => throw _privateConstructorUsedError;
   List<FlightOptionElement>? get respo => throw _privateConstructorUsedError;
+  List<FlightOptionElement>? get allRespo => throw _privateConstructorUsedError;
   bool get isflightLoading => throw _privateConstructorUsedError;
 
   /// Create a copy of TripRequestState
@@ -637,6 +1222,7 @@ abstract class $TripRequestStateCopyWith<$Res> {
     String? token,
     int getdata,
     List<FlightOptionElement>? respo,
+    List<FlightOptionElement>? allRespo,
     bool isflightLoading,
   });
 }
@@ -660,6 +1246,7 @@ class _$TripRequestStateCopyWithImpl<$Res, $Val extends TripRequestState>
     Object? token = freezed,
     Object? getdata = null,
     Object? respo = freezed,
+    Object? allRespo = freezed,
     Object? isflightLoading = null,
   }) {
     return _then(
@@ -679,6 +1266,10 @@ class _$TripRequestStateCopyWithImpl<$Res, $Val extends TripRequestState>
             respo: freezed == respo
                 ? _value.respo
                 : respo // ignore: cast_nullable_to_non_nullable
+                      as List<FlightOptionElement>?,
+            allRespo: freezed == allRespo
+                ? _value.allRespo
+                : allRespo // ignore: cast_nullable_to_non_nullable
                       as List<FlightOptionElement>?,
             isflightLoading: null == isflightLoading
                 ? _value.isflightLoading
@@ -704,6 +1295,7 @@ abstract class _$$TripRequestStateImplCopyWith<$Res>
     String? token,
     int getdata,
     List<FlightOptionElement>? respo,
+    List<FlightOptionElement>? allRespo,
     bool isflightLoading,
   });
 }
@@ -726,6 +1318,7 @@ class __$$TripRequestStateImplCopyWithImpl<$Res>
     Object? token = freezed,
     Object? getdata = null,
     Object? respo = freezed,
+    Object? allRespo = freezed,
     Object? isflightLoading = null,
   }) {
     return _then(
@@ -746,6 +1339,10 @@ class __$$TripRequestStateImplCopyWithImpl<$Res>
             ? _value._respo
             : respo // ignore: cast_nullable_to_non_nullable
                   as List<FlightOptionElement>?,
+        allRespo: freezed == allRespo
+            ? _value._allRespo
+            : allRespo // ignore: cast_nullable_to_non_nullable
+                  as List<FlightOptionElement>?,
         isflightLoading: null == isflightLoading
             ? _value.isflightLoading
             : isflightLoading // ignore: cast_nullable_to_non_nullable
@@ -763,8 +1360,10 @@ class _$TripRequestStateImpl implements _TripRequestState {
     this.token,
     required this.getdata,
     final List<FlightOptionElement>? respo,
+    final List<FlightOptionElement>? allRespo,
     required this.isflightLoading,
-  }) : _respo = respo;
+  }) : _respo = respo,
+       _allRespo = allRespo;
 
   @override
   final bool isLoading;
@@ -782,12 +1381,22 @@ class _$TripRequestStateImpl implements _TripRequestState {
     return EqualUnmodifiableListView(value);
   }
 
+  final List<FlightOptionElement>? _allRespo;
+  @override
+  List<FlightOptionElement>? get allRespo {
+    final value = _allRespo;
+    if (value == null) return null;
+    if (_allRespo is EqualUnmodifiableListView) return _allRespo;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
   @override
   final bool isflightLoading;
 
   @override
   String toString() {
-    return 'TripRequestState(isLoading: $isLoading, token: $token, getdata: $getdata, respo: $respo, isflightLoading: $isflightLoading)';
+    return 'TripRequestState(isLoading: $isLoading, token: $token, getdata: $getdata, respo: $respo, allRespo: $allRespo, isflightLoading: $isflightLoading)';
   }
 
   @override
@@ -800,6 +1409,7 @@ class _$TripRequestStateImpl implements _TripRequestState {
             (identical(other.token, token) || other.token == token) &&
             (identical(other.getdata, getdata) || other.getdata == getdata) &&
             const DeepCollectionEquality().equals(other._respo, _respo) &&
+            const DeepCollectionEquality().equals(other._allRespo, _allRespo) &&
             (identical(other.isflightLoading, isflightLoading) ||
                 other.isflightLoading == isflightLoading));
   }
@@ -811,6 +1421,7 @@ class _$TripRequestStateImpl implements _TripRequestState {
     token,
     getdata,
     const DeepCollectionEquality().hash(_respo),
+    const DeepCollectionEquality().hash(_allRespo),
     isflightLoading,
   );
 
@@ -832,6 +1443,7 @@ abstract class _TripRequestState implements TripRequestState {
     final String? token,
     required final int getdata,
     final List<FlightOptionElement>? respo,
+    final List<FlightOptionElement>? allRespo,
     required final bool isflightLoading,
   }) = _$TripRequestStateImpl;
 
@@ -843,6 +1455,8 @@ abstract class _TripRequestState implements TripRequestState {
   int get getdata;
   @override
   List<FlightOptionElement>? get respo;
+  @override
+  List<FlightOptionElement>? get allRespo;
   @override
   bool get isflightLoading;
 

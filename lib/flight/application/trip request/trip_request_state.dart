@@ -7,6 +7,7 @@ class TripRequestState with _$TripRequestState {
     String? token,
     required int getdata,
     List<FlightOptionElement>? respo,
+    List<FlightOptionElement>? allRespo,
     required bool isflightLoading,
   }) = _TripRequestState;
 

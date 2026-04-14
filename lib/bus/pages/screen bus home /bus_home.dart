@@ -85,7 +85,7 @@ class BusHomeTab extends StatelessWidget {
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 20,
+                                  fontSize: 18,
                                   fontWeight: FontWeight.w900,
                                   height: 1.2,
                                   shadows: [
@@ -291,7 +291,7 @@ class BusHomeTab extends StatelessWidget {
                   Text(
                     title,
                     style: TextStyle(
-                      fontSize: 10,
+                      fontSize: 9,
                       color: maincolor1,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.5,
@@ -303,7 +303,7 @@ class BusHomeTab extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 11,
                       fontWeight: isSelected
                           ? FontWeight.w800
                           : FontWeight.w600,
@@ -333,7 +333,7 @@ class BusHomeTab extends StatelessWidget {
           child: Text(
             "Date of Journey",
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 10,
               color: textSecondary,
               fontWeight: FontWeight.w800,
               letterSpacing: 0.5,
@@ -397,7 +397,7 @@ class BusHomeTab extends StatelessWidget {
                   Text(
                     "Selected Date",
                     style: TextStyle(
-                      fontSize: 10,
+                      fontSize: 9,
                       color: textSecondary,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.5,
@@ -407,7 +407,7 @@ class BusHomeTab extends StatelessWidget {
                   Text(
                     DateFormat('dd MMM yyyy').format(state.dateOfJourney),
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 11,
                       fontWeight: FontWeight.w900,
                       color: maincolor1,
                     ),
@@ -480,7 +480,7 @@ class BusHomeTab extends StatelessWidget {
           child: Text(
             label,
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 11,
               fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
               color: isSelected ? Colors.white : maincolor1,
             ),
@@ -544,7 +544,7 @@ class BusHomeTab extends StatelessWidget {
             const Text(
               "Search Buses",
               style: TextStyle(
-                fontSize: 15,
+                fontSize: 13,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 0.5,
               ),

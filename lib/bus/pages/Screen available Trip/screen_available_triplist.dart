@@ -76,7 +76,7 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
                             ? 'Searching buses...'
                             : '${state.availableTrips?.length ?? 0} Buses Available',
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 11,
                           color: textPrimary,
                           fontWeight: FontWeight.w800,
                           letterSpacing: -0.2,
@@ -127,7 +127,7 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
                         Text(
                           'FROM',
                           style: TextStyle(
-                            fontSize: 10,
+                            fontSize: 9,
                             color: Colors.white.withOpacity(0.5),
                             fontWeight: FontWeight.w900,
                             letterSpacing: 1.5,
@@ -138,7 +138,7 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
                           selectedData.from?.name ?? '--',
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 13,
+                            fontSize: 11,
                             fontWeight: FontWeight.w800,
                           ),
                           maxLines: 1,
@@ -172,7 +172,7 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
                         Text(
                           'TO',
                           style: TextStyle(
-                            fontSize: 10,
+                            fontSize: 9,
                             color: Colors.white.withOpacity(0.5),
                             fontWeight: FontWeight.w900,
                             letterSpacing: 1.5,
@@ -183,7 +183,7 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
                           selectedData.to?.name ?? '--',
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 13,
+                            fontSize: 11,
                             fontWeight: FontWeight.w800,
                           ),
                           maxLines: 1,
@@ -214,7 +214,7 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
                       'Search Results for ${selectedData.dateOfJourney.day} ${_getMonth(selectedData.dateOfJourney.month)} ${selectedData.dateOfJourney.year}',
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.9),
-                        fontSize: 11,
+                        fontSize: 9,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -592,158 +592,181 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   @override
   void initState() {
     super.initState();
-    // Initialize with current filter state
     _filterState = widget.currentFilterState.copyWith();
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.8,
       decoration: BoxDecoration(
         color: widget.cardColor,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(32),
+          topRight: Radius.circular(32),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 40,
+            offset: const Offset(0, -10),
+          ),
+        ],
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Header
+          // Premium Drag Handle
+          const SizedBox(height: 12),
           Container(
-            padding: EdgeInsets.all(16),
+            width: 40,
+            height: 4,
             decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: widget.backgroundColor.withOpacity(0.5),
-                ),
-              ),
+              color: Colors.grey.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(2),
             ),
+          ),
+
+          // Enhanced Header
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 16, 16, 16),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: widget.secondaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(Iconsax.filter_edit, color: widget.secondaryColor, size: 20),
+                ),
+                const SizedBox(width: 16),
                 Text(
                   'Filter Buses',
                   style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
                     color: widget.textPrimary,
+                    letterSpacing: -0.5,
                   ),
                 ),
+                const Spacer(),
                 IconButton(
-                  icon: Icon(Icons.close_rounded, color: widget.textSecondary),
+                  icon: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: widget.backgroundColor.withOpacity(0.5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.close_rounded, color: widget.textSecondary, size: 20),
+                  ),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
             ),
           ),
 
-          Expanded(
+          const Divider(height: 1),
+
+          Flexible(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Bus Types
-                  _buildFilterSection(
-                    title: 'BUS TYPES',
-                    options: ['Sleeper', 'Seater', 'AC', 'Non AC'],
-                    selectedOptions: _filterState.busTypes,
-                    onOptionChanged: (index, value) {
-                      setState(() {
-                        _filterState.busTypes[index] = value;
-                      });
-                    },
-                  ),
+                  // Bus Types Section
+                  _buildSectionHeader('BUS TYPES', Iconsax.bus),
+                  const SizedBox(height: 16),
+                  _buildBusTypeChips(),
 
                   const SizedBox(height: 32),
 
-                  // Departure Times
-                  _buildFilterSection(
-                    title: 'DEPARTURE TIME',
-                    options: [
-                      'Before 6 AM',
-                      '6 AM - 12 PM',
-                      '12 PM - 6 PM',
-                      'After 6 PM',
-                    ],
-                    selectedOptions: _filterState.departureTimes,
-                    onOptionChanged: (index, value) {
-                      setState(() {
-                        _filterState.departureTimes[index] = value;
-                      });
-                    },
-                  ),
+                  // Departure Time Section
+                  _buildSectionHeader('DEPARTURE TIME', Iconsax.timer_1),
+                  const SizedBox(height: 16),
+                  _buildTimeChips(_filterState.departureTimes, (index, val) {
+                    setState(() => _filterState.departureTimes[index] = val);
+                  }),
 
                   const SizedBox(height: 32),
 
-                  // Arrival Times
-                  _buildFilterSection(
-                    title: 'ARRIVAL TIME',
-                    options: [
-                      'Before 6 AM',
-                      '6 AM - 12 PM',
-                      '12 PM - 6 PM',
-                      'After 6 PM',
-                    ],
-                    selectedOptions: _filterState.arrivalTimes,
-                    onOptionChanged: (index, value) {
-                      setState(() {
-                        _filterState.arrivalTimes[index] = value;
-                      });
-                    },
-                  ),
+                  // Arrival Time Section
+                  _buildSectionHeader('ARRIVAL TIME', Iconsax.timer_start),
+                  const SizedBox(height: 16),
+                  _buildTimeChips(_filterState.arrivalTimes, (index, val) {
+                    setState(() => _filterState.arrivalTimes[index] = val);
+                  }),
+
+                  const SizedBox(height: 40),
                 ],
               ),
             ),
           ),
 
-          // Action Buttons
+          // Multi-Action Buttons
           Container(
-            padding: EdgeInsets.all(16),
+            padding: EdgeInsets.fromLTRB(24, 16, 24, 24 + MediaQuery.of(context).padding.bottom),
             decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(color: widget.backgroundColor.withOpacity(0.5)),
-              ),
+              color: widget.cardColor,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 20,
+                  offset: const Offset(0, -5),
+                ),
+              ],
             ),
             child: Row(
               children: [
                 Expanded(
-                  child: OutlinedButton(
+                  flex: 2,
+                  child: TextButton(
                     onPressed: () {
-                      setState(() {
-                        _filterState = FilterState();
-                      });
+                      setState(() => _filterState = FilterState());
                     },
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: widget.textSecondary,
-                      padding: EdgeInsets.symmetric(vertical: 12),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      side: BorderSide(
-                        color: widget.textSecondary.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(14),
                       ),
                     ),
-                    child: Text('Reset All'),
+                    child: Text(
+                      'Reset All',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        color: widget.textSecondary,
+                      ),
+                    ),
                   ),
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 16),
                 Expanded(
+                  flex: 3,
                   child: ElevatedButton(
-                    onPressed: () {
-                      _applyFilters(context);
-                    },
+                    onPressed: () => _applyFilters(context),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: widget.secondaryColor,
                       foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(vertical: 12),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                      elevation: 2,
+                      elevation: 0,
                     ),
-                    child: Text('Apply Filters'),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(Iconsax.tick_circle, size: 18),
+                        SizedBox(width: 8),
+                        Text(
+                          'Apply Filters',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -754,71 +777,141 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     );
   }
 
-  Widget _buildFilterSection({
-    required String title,
-    required List<String> options,
-    required List<bool> selectedOptions,
-    required Function(int, bool) onOptionChanged,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildSectionHeader(String title, IconData icon) {
+    return Row(
       children: [
+        Icon(icon, size: 14, color: widget.textSecondary.withOpacity(0.5)),
+        const SizedBox(width: 8),
         Text(
           title,
           style: TextStyle(
-            fontSize: 10,
+            fontSize: 9,
             fontWeight: FontWeight.w900,
             color: widget.textSecondary.withOpacity(0.6),
-            letterSpacing: 1.5,
+            letterSpacing: 1.2,
           ),
-        ),
-        const SizedBox(height: 16),
-        Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          children: List.generate(options.length, (index) {
-            final isSelected = selectedOptions[index];
-            return GestureDetector(
-              onTap: () => onOptionChanged(index, !isSelected),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? widget.secondaryColor
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: isSelected
-                        ? widget.secondaryColor
-                        : widget.textSecondary.withOpacity(0.2),
-                    width: 1,
-                  ),
-                ),
-                child: Text(
-                  options[index],
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: isSelected ? FontWeight.w900 : FontWeight.w700,
-                    color: isSelected ? Colors.white : widget.textPrimary,
-                  ),
-                ),
-              ),
-            );
-          }),
         ),
       ],
     );
   }
 
+  Widget _buildBusTypeChips() {
+    final types = ['Sleeper', 'Seater', 'AC', 'Non AC'];
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      children: List.generate(types.length, (index) {
+        final isSelected = _filterState.busTypes[index];
+        return _buildFilterChip(
+          label: types[index],
+          isSelected: isSelected,
+          onTap: () => setState(() => _filterState.busTypes[index] = !isSelected),
+        );
+      }),
+    );
+  }
+
+  Widget _buildTimeChips(List<bool> stateList, Function(int, bool) onChanged) {
+    final times = ['6AM', '6-12', '12-6', '6PM'];
+    final labels = ['Early Morning', 'Morning', 'Afternoon', 'Evening'];
+    final icons = [Iconsax.sun_1, Iconsax.cloud_sunny, Iconsax.cloud, Iconsax.moon];
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 2.5,
+        mainAxisSpacing: 10,
+        crossAxisSpacing: 10,
+      ),
+      itemCount: 4,
+      itemBuilder: (context, index) {
+        final isSelected = stateList[index];
+        return GestureDetector(
+          onTap: () => onChanged(index, !isSelected),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              color: isSelected ? widget.secondaryColor : widget.backgroundColor.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isSelected ? widget.secondaryColor : widget.backgroundColor.withOpacity(0.5),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  icons[index],
+                  size: 16,
+                  color: isSelected ? Colors.white : widget.textSecondary,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        times[index],
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w900,
+                          color: isSelected ? Colors.white : widget.textPrimary,
+                        ),
+                      ),
+                      Text(
+                        labels[index],
+                        style: TextStyle(
+                          fontSize: 8,
+                          fontWeight: FontWeight.w600,
+                          color: isSelected ? Colors.white.withOpacity(0.8) : widget.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildFilterChip({
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? widget.secondaryColor : Colors.transparent,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: isSelected ? widget.secondaryColor : widget.textSecondary.withOpacity(0.15),
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: isSelected ? FontWeight.w900 : FontWeight.w700,
+            color: isSelected ? Colors.white : widget.textPrimary,
+          ),
+        ),
+      ),
+    );
+  }
+
   void _applyFilters(BuildContext context) {
-    // Update the parent widget with new filter state
     widget.onFiltersChanged(_filterState);
-
     final busBloc = context.read<BusListFetchBloc>();
-
     busBloc.add(
       FilterConform(
         sleeper: _filterState.busTypes[0],
@@ -836,7 +929,6 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
         availableTrips: widget.availableTrips,
       ),
     );
-
     Navigator.pop(context);
   }
 }
@@ -852,7 +944,7 @@ class BusListloadingPage extends StatelessWidget {
       itemBuilder: (context, index) {
         return Container(
           margin: const EdgeInsets.only(bottom: 16),
-          height: 180,
+          height: 200,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(24),

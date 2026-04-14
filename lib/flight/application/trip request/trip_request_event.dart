@@ -13,4 +13,15 @@ class TripRequestEvent with _$TripRequestEvent {
   const factory TripRequestEvent.getFlightinfo({
     required Airport fromAirportinfo,
     required Airport toAirportinfo,
-  }) = GetFlightinfo;}
+  }) = GetFlightinfo;
+
+  const factory TripRequestEvent.filterRespo({
+    double? minPrice,
+    double? maxPrice,
+    List<int>? stops,
+    List<String>? airlines,
+    List<int>? departureTimes, // 0: Morning, 1: Noon, 2: Evening, 3: Night
+  }) = FilterRespo;
+
+  const factory TripRequestEvent.resetFilter() = ResetFilter;
+}

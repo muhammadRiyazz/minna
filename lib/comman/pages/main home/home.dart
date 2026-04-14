@@ -200,17 +200,17 @@ class _HomeContentPageState extends State<HomeContentPage> {
         );
       },
     },
-    {
-      'label': 'Airport Cabs',
-      'icon': Iconsax.car,
-      'color': Color(0xFF003875), // Gold
-      'onTap': (BuildContext context) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => TripSelectionPage()),
-        );
-      },
-    },
+    // {
+    //   'label': 'Airport Cabs',
+    //   'icon': Iconsax.car,
+    //   'color': Color(0xFF003875), // Gold
+    //   'onTap': (BuildContext context) {
+    //     Navigator.push(
+    //       context,
+    //       MaterialPageRoute(builder: (context) => TripSelectionPage()),
+    //     );
+    //   },
+    // },
     {
       'label': 'Train',
       'icon': Iconsax.bus,

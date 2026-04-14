@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/flight/application/search%20data/search_data_bloc.dart';
-import 'package:minna/flight/presendation/screen%20flight/widget/loading.dart' show buildShimmerLoading;
+import 'package:minna/flight/presendation/screen%20flight/widget/loading.dart'
+    show buildShimmerLoading;
 
 void showAirportBottomSheet(BuildContext context, {required bool isFrom}) {
   final TextEditingController searchController = TextEditingController();
   final FocusNode searchFocusNode = FocusNode();
 
-  // Clear previous search results on entry
-  context.read<SearchDataBloc>().add(const SearchDataEvent.clearSearchAirports());
+  context.read<SearchDataBloc>().add(
+    const SearchDataEvent.clearSearchAirports(),
+  );
 
   showModalBottomSheet(
     context: context,
@@ -18,9 +21,16 @@ void showAirportBottomSheet(BuildContext context, {required bool isFrom}) {
     builder: (context) {
       return Container(
         height: MediaQuery.of(context).size.height * 0.9,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 40,
+              offset: const Offset(0, -10),
+            ),
+          ],
         ),
         child: Column(
           children: [
@@ -33,22 +43,52 @@ void showAirportBottomSheet(BuildContext context, {required bool isFrom}) {
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: Colors.grey[300],
+                      color: Colors.grey.withOpacity(0.3),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          isFrom ? 'Flying From' : 'Flying To',
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -0.5,
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: secondaryColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Icon(
+                            Iconsax.airplane,
+                            color: secondaryColor,
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                isFrom ? 'Flying From' : 'Flying To',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w900,
+                                  color: maincolor1,
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                              Text(
+                                isFrom
+                                    ? 'Select your origin'
+                                    : 'Select your destination',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: textSecondary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         GestureDetector(
@@ -56,10 +96,14 @@ void showAirportBottomSheet(BuildContext context, {required bool isFrom}) {
                           child: Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Colors.grey[100],
+                              color: Colors.grey.withOpacity(0.1),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.close_rounded, size: 20),
+                            child: Icon(
+                              Icons.close_rounded,
+                              color: textSecondary,
+                              size: 20,
+                            ),
                           ),
                         ),
                       ],
@@ -69,23 +113,47 @@ void showAirportBottomSheet(BuildContext context, {required bool isFrom}) {
               ),
             ),
 
-            // Search Bar Area
+            // Modern Search Bar
             Container(
-              padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
               child: TextField(
                 controller: searchController,
                 focusNode: searchFocusNode,
                 autofocus: true,
-                style: const TextStyle(fontWeight: FontWeight.w500),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: textPrimary,
+                  fontWeight: FontWeight.w700,
+                ),
                 decoration: InputDecoration(
                   hintText: 'Search city or airport...',
-                  hintStyle: TextStyle(color: Colors.grey[400], fontWeight: FontWeight.w400),
-                  prefixIcon: Icon(Icons.search_rounded, color: Colors.grey[600]),
+                  hintStyle: TextStyle(
+                    color: textLight.withOpacity(0.6),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  prefixIcon: Icon(
+                    Iconsax.search_normal_1,
+                    color: secondaryColor,
+                    size: 20,
+                  ),
                   filled: true,
-                  fillColor: Colors.grey[100],
+                  fillColor: cardColor,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(18),
                     borderSide: BorderSide.none,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(18),
+                    borderSide: BorderSide(
+                      color: Colors.grey.withOpacity(0.05),
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(18),
+                    borderSide: BorderSide(
+                      color: secondaryColor.withOpacity(0.1),
+                    ),
                   ),
                   contentPadding: const EdgeInsets.symmetric(vertical: 16),
                   suffixIcon: ValueListenableBuilder<TextEditingValue>(
@@ -93,11 +161,17 @@ void showAirportBottomSheet(BuildContext context, {required bool isFrom}) {
                     builder: (context, value, _) {
                       return value.text.isNotEmpty
                           ? IconButton(
-                              icon: const Icon(Icons.cancel_rounded, size: 20),
+                              icon: Icon(
+                                Iconsax.close_circle5,
+                                color: textLight.withOpacity(0.5),
+                                size: 20,
+                              ),
                               onPressed: () {
                                 searchController.clear();
                                 context.read<SearchDataBloc>().add(
-                                  const SearchDataEvent.getAirports(searchKey: ''),
+                                  const SearchDataEvent.getAirports(
+                                    searchKey: '',
+                                  ),
                                 );
                               },
                             )
@@ -120,139 +194,144 @@ void showAirportBottomSheet(BuildContext context, {required bool isFrom}) {
               child: BlocBuilder<SearchDataBloc, SearchDataState>(
                 builder: (context, state) {
                   if (state.isLoading) {
-                    return ListView.builder(
-                      padding: const EdgeInsets.all(24),
-                      itemCount: 5,
-                      itemBuilder: (context, _) => Padding(
-                        padding: const EdgeInsets.only(bottom: 20),
-                        child: Row(
-                          children: [
-                            Container(width: 48, height: 48, decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(12))),
-                            const SizedBox(width: 16),
-                            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                              Container(width: 120, height: 16, color: Colors.grey[50]),
-                              const SizedBox(height: 8),
-                              Container(width: 200, height: 12, color: Colors.grey[50]),
-                            ])),
-                          ],
-                        ),
-                      ),
-                    );
+                    return _buildModernLoading();
                   }
 
                   if (state.airports.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            searchController.text.isEmpty ? Icons.flight_takeoff_rounded : Icons.search_off_rounded,
-                            size: 64,
-                            color: Colors.grey[200],
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            searchController.text.isEmpty
-                                ? 'Where are you going?'
-                                : 'No matches found',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            searchController.text.isEmpty
-                                ? 'Search by city name or airport code'
-                                : 'Try searching for another city or code',
-                            style: TextStyle(color: Colors.grey[400]),
-                          ),
-                        ],
-                      ),
-                    );
+                    return _buildModernEmptyState(searchController.text);
                   }
 
                   return ListView.builder(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+                    physics: const BouncingScrollPhysics(),
                     itemCount: state.airports.length,
                     itemBuilder: (context, index) {
                       final airport = state.airports[index];
-                      return InkWell(
-                        onTap: () {
-                          context.read<SearchDataBloc>().add(
-                            SearchDataEvent.fromOrTo(
-                              fromOrTo: isFrom ? 'from' : 'to',
-                              airport: airport,
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        decoration: BoxDecoration(
+                          color: cardColor,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.01),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
                             ),
-                          );
-                          Navigator.pop(context);
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: secondaryColor.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(14),
+                          ],
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(20),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(20),
+                            onTap: () {
+                              context.read<SearchDataBloc>().add(
+                                SearchDataEvent.fromOrTo(
+                                  fromOrTo: isFrom ? 'from' : 'to',
+                                  airport: airport,
                                 ),
-                                child: Icon(Icons.flight_rounded, color: secondaryColor),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
+                              );
+                              Navigator.pop(context);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 48,
+                                    height: 48,
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [
+                                          maincolor1.withOpacity(0.05),
+                                          maincolor1.withOpacity(0.1),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: Icon(
+                                      Iconsax.airplane,
+                                      color: maincolor1,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          airport.code,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w800,
-                                            fontSize: 15,
-                                            color: textPrimary,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey[100],
-                                            borderRadius: BorderRadius.circular(4),
-                                          ),
-                                          child: Text(
-                                            airport.type == 'I' ? 'INTL' : 'DOM',
-                                            style: TextStyle(
-                                              fontSize: 9,
-                                              fontWeight: FontWeight.bold,
-                                              color: textSecondary,
+                                        Row(
+                                          children: [
+                                            Text(
+                                              airport.code,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w900,
+                                                fontSize: 13,
+                                                color: maincolor1,
+                                                letterSpacing: 0.5,
+                                              ),
                                             ),
+                                            const SizedBox(width: 8),
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 6,
+                                                    vertical: 2,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color: secondaryColor
+                                                    .withOpacity(0.1),
+                                                borderRadius:
+                                                    BorderRadius.circular(6),
+                                              ),
+                                              child: Text(
+                                                airport.type == 'I'
+                                                    ? 'INTL'
+                                                    : 'DOM',
+                                                style: TextStyle(
+                                                  fontSize: 8,
+                                                  fontWeight: FontWeight.w900,
+                                                  color: secondaryColor,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          airport.name,
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            color: maincolor1,
+                                            fontWeight: FontWeight.w700,
+                                            letterSpacing: -0.2,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        Text(
+                                          airport.countryCode,
+                                          style: TextStyle(
+                                            fontSize: 9,
+                                            color: textSecondary,
+                                            fontWeight: FontWeight.w600,
                                           ),
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      airport.name,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: textPrimary,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    Text(
-                                      airport.countryCode,
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: textSecondary,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                  Icon(
+                                    Iconsax.arrow_right_3,
+                                    color: maincolor1.withOpacity(0.3),
+                                    size: 14,
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
                         ),
                       );
@@ -268,3 +347,66 @@ void showAirportBottomSheet(BuildContext context, {required bool isFrom}) {
   );
 }
 
+Widget _buildModernLoading() {
+  return ListView.builder(
+    padding: const EdgeInsets.all(20),
+    itemCount: 6,
+    itemBuilder: (context, _) => Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      height: 72,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: buildShimmerLoading(),
+    ),
+  );
+}
+
+Widget _buildModernEmptyState(String query) {
+  return Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: secondaryColor.withOpacity(0.05),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            query.isEmpty ? Iconsax.airplane : Iconsax.search_status,
+            size: 56,
+            color: secondaryColor.withOpacity(0.35),
+          ),
+        ),
+        const SizedBox(height: 24),
+        Text(
+          query.isEmpty ? 'Where are you going?' : 'No Matches Found',
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w900,
+            color: maincolor1,
+            letterSpacing: -0.5,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 40),
+          child: Text(
+            query.isEmpty
+                ? 'Search by city name or airport code to find your flight'
+                : 'We couldn\'t find any airports matching "$query"',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 11,
+              color: textSecondary,
+              fontWeight: FontWeight.w500,
+              height: 1.5,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}

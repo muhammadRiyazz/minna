@@ -54,6 +54,7 @@ class TripRequestBloc extends Bloc<TripRequestEvent, TripRequestState> {
             token: respo.token,
             isLoading: false,
             respo: processedFlightList,
+            allRespo: processedFlightList, // Sync master list
             getdata: 1,
           ),
         );
@@ -72,7 +73,18 @@ class TripRequestBloc extends Bloc<TripRequestEvent, TripRequestState> {
           return element;
         }).toList();
 
-        emit(state.copyWith(isLoading: false, respo: updatedData));
+        final updatedAllData = state.allRespo?.map((element) {
+          if (element == event.selectedTrip) {
+            return element.copyWith(selectedFare: event.selectedFare);
+          }
+          return element;
+        }).toList();
+
+        emit(state.copyWith(
+          isLoading: false,
+          respo: updatedData,
+          allRespo: updatedAllData,
+        ));
       } catch (e) {
         log('ChangeFare error: $e');
       }
@@ -91,6 +103,7 @@ class TripRequestBloc extends Bloc<TripRequestEvent, TripRequestState> {
 
         final updatedList = await Future.wait(
           state.respo!.map((trip) async {
+            // ... (rest of the mapping logic remains same)
             final tripCode = trip.ticketingCarrier ?? '';
             final tripFlightInfo = await _fetchCachedFlightInfo(
               tripCode,
@@ -167,11 +180,64 @@ class TripRequestBloc extends Bloc<TripRequestEvent, TripRequestState> {
           }),
         );
 
-        emit(state.copyWith(isflightLoading: false, respo: updatedList));
+        emit(state.copyWith(
+          isflightLoading: false,
+          respo: updatedList,
+          allRespo: updatedList, // Sync master list
+        ));
       } catch (e) {
         log('GetFlightinfo error: $e');
         emit(state.copyWith(isflightLoading: false));
       }
+    });
+
+    on<FilterRespo>((event, emit) {
+      if (state.allRespo == null) return;
+
+      final filteredList = state.allRespo!.where((flight) {
+        // Price Filter
+        final price = flight.selectedFare?.aprxTotalAmount ?? 0;
+        if (event.minPrice != null && price < event.minPrice!) return false;
+        if (event.maxPrice != null && price > event.maxPrice!) return false;
+
+        // Stops Filter
+        final stops = (flight.onwardLegs?.length ?? 1) - 1;
+        if (event.stops != null &&
+            event.stops!.isNotEmpty &&
+            !event.stops!.contains(stops)) return false;
+
+        // Airlines Filter
+        if (event.airlines != null && event.airlines!.isNotEmpty) {
+          if (!event.airlines!.contains(flight.ticketingCarrier)) return false;
+        }
+
+        // Departure Time Filter
+        if (event.departureTimes != null && event.departureTimes!.isNotEmpty) {
+          final depTimeStr = flight.onwardLegs?.first.departureTime;
+          if (depTimeStr != null) {
+            final depTime = DateTime.parse(depTimeStr);
+            final hour = depTime.hour;
+            bool match = false;
+            if (event.departureTimes!.contains(0) && (hour >= 0 && hour < 6))
+              match = true;
+            if (event.departureTimes!.contains(1) && (hour >= 6 && hour < 12))
+              match = true;
+            if (event.departureTimes!.contains(2) && (hour >= 12 && hour < 18))
+              match = true;
+            if (event.departureTimes!.contains(3) && (hour >= 18 && hour < 24))
+              match = true;
+            if (!match) return false;
+          }
+        }
+
+        return true;
+      }).toList();
+
+      emit(state.copyWith(respo: filteredList));
+    });
+
+    on<ResetFilter>((event, emit) {
+      emit(state.copyWith(respo: state.allRespo));
     });
   }
 

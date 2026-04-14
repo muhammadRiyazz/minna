@@ -56,7 +56,7 @@ class TripCountainer extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildBusIcon(),
-                      const SizedBox(width: 16),
+                      const SizedBox(width: 13),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,7 +66,7 @@ class TripCountainer extends StatelessWidget {
                                   ? trip.travels
                                   : 'Unknown Travels',
                               style: TextStyle(
-                                fontSize: 13,
+                                fontSize: 11,
                                 fontWeight: FontWeight.w900,
                                 color: maincolor1,
                                 letterSpacing: -0.5,
@@ -89,7 +89,7 @@ class TripCountainer extends StatelessWidget {
                                     ? trip.busType
                                     : 'Standard Bus',
                                 style: TextStyle(
-                                  fontSize: 8,
+                                  fontSize: 7,
                                   color: maincolor1.withOpacity(0.7),
                                   fontWeight: FontWeight.w700,
                                 ),
@@ -107,7 +107,7 @@ class TripCountainer extends StatelessWidget {
                           Text(
                             'STARTING AT',
                             style: TextStyle(
-                              fontSize: 8,
+                              fontSize: 7,
                               color: textSecondary.withOpacity(0.6),
                               fontWeight: FontWeight.w900,
                               letterSpacing: 0.5,
@@ -117,7 +117,7 @@ class TripCountainer extends StatelessWidget {
                           Text(
                             formattedPrice,
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: 14,
                               fontWeight: FontWeight.w900,
                               color: secondaryColor,
                               letterSpacing: -0.5,
@@ -127,11 +127,11 @@ class TripCountainer extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 10),
 
                   // Middle Section: Journey Path
                   _buildJourneyPath(trip),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
 
                   // Bottom Row: Seats + Action
                   Row(
@@ -152,8 +152,8 @@ class TripCountainer extends StatelessWidget {
 
   Widget _buildBusIcon() {
     return Container(
-      width: 48,
-      height: 48,
+      width: 42,
+      height: 42,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -165,12 +165,13 @@ class TripCountainer extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Icon(Iconsax.bus, color: secondaryColor, size: 24),
+      child: Icon(Iconsax.bus, color: secondaryColor, size: 20),
     );
   }
 
   Widget _buildJourneyPath(AvailableTrip trip) {
     return Container(
+      
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: backgroundColor.withOpacity(0.5),
@@ -197,7 +198,7 @@ class TripCountainer extends StatelessWidget {
                           ? convertTimeString(trip.duration)
                           : '0h 0m',
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: 9,
                         color: maincolor1.withOpacity(0.7),
                         fontWeight: FontWeight.w800,
                       ),
@@ -248,7 +249,7 @@ class TripCountainer extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            fontSize: 9,
+            fontSize: 8,
             color: textSecondary.withOpacity(0.5),
             fontWeight: FontWeight.w900,
             letterSpacing: 0.5,
@@ -258,7 +259,7 @@ class TripCountainer extends StatelessWidget {
         Text(
           time,
           style: TextStyle(
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: FontWeight.w900,
             color: maincolor1,
             letterSpacing: -0.5,
@@ -297,7 +298,7 @@ class TripCountainer extends StatelessWidget {
           Text(
             '$seats Seats Left',
             style: TextStyle(
-              fontSize: 10,
+              fontSize: 9,
               fontWeight: FontWeight.w900,
               color: statusColor,
             ),
@@ -339,7 +340,7 @@ class TripCountainer extends StatelessWidget {
           const Text(
             'VIEW SEATS',
             style: TextStyle(
-              fontSize: 10,
+              fontSize: 9,
               fontWeight: FontWeight.w900,
               letterSpacing: 0.5,
             ),
