@@ -13,164 +13,230 @@ class ScreenHotelReportDetail extends StatelessWidget {
 
   void _showCancelDialog(BuildContext context, String bookingId) {
     final TextEditingController remarksController = TextEditingController();
-    showDialog(
+    final formKey = GlobalKey<FormState>();
+
+    showModalBottomSheet(
       context: context,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-        backgroundColor: Colors.white,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.12),
+                blurRadius: 30,
+                offset: const Offset(0, -12),
+              ),
+            ],
+          ),
+          child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Header Icon
+                const SizedBox(height: 12),
+                // Drag Handle
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  width: 40,
+                  height: 4,
                   decoration: BoxDecoration(
-                    color: Colors.red.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Iconsax.close_circle,
-                    color: Colors.red,
-                    size: 32,
+                    color: textLight.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 12),
 
-                // Title
-                const Text(
-                  "Cancel Booking",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF1A1A1A),
-                  ),
-                ),
-                const SizedBox(height: 8),
-
-                // Subtitle
-                const Text(
-                  "Are you sure? Please provide a reason for cancellation below.",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Color(0xFF64748B),
-                    height: 1.5,
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Remark Input
-                TextField(
-                  controller: remarksController,
-                  maxLines: 4,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: "Enter your reason for cancellation...",
-                    hintStyle: const TextStyle(
-                      color: Color(0xFF94A3B8),
-                      fontWeight: FontWeight.w400,
-                    ),
-                    filled: true,
-                    fillColor: const Color(0xFFF8FAFC),
-                    prefixIcon: const Padding(
-                      padding: EdgeInsets.only(bottom: 50),
-                      child: Icon(
-                        Iconsax.edit_2,
-                        size: 18,
-                        color: Color(0xFF64748B),
-                      ),
-                    ),
-                    contentPadding: const EdgeInsets.all(16),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(
-                        color: maincolor1,
-                        width: 1.5,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Actions
-                Column(
-                  children: [
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton(
-                        onPressed: () => Navigator.pop(context),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          side: const BorderSide(color: Color(0xFFE2E8F0)),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
+                // Premium Header
+                Container(
+                  width: double.infinity,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.1),
+                          shape: BoxShape.circle,
                         ),
-                        child: const Text(
-                          "Keep Booking",
-                          style: TextStyle(
-                            color: Color(0xFF64748B),
-                            fontWeight: FontWeight.w700,
-                          ),
+                        child: const Icon(
+                          Iconsax.close_circle,
+                          color: Colors.red,
+                          size: 28,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          if (remarksController.text.trim().isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  "Please enter a cancellation reason",
-                                ),
-                                behavior: SnackBarBehavior.floating,
+                      const SizedBox(width: 16),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Cancel Hotel Booking',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: -0.5,
                               ),
-                            );
-                            return;
-                          }
-                          context.read<HotelReportBloc>().add(
-                            CancelHotelBooking(
-                              bookingId: bookingId,
-                              remarks: remarksController.text.trim(),
                             ),
-                          );
-                          Navigator.pop(context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        child: const Text(
-                          "Confirm Cancel",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w900,
-                          ),
+                            SizedBox(height: 2),
+                            Text(
+                              'Provide a reason for cancellation',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: textSecondary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
+                      IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: Icon(
+                          Icons.close_rounded,
+                          color: textSecondary,
+                          size: 20,
+                        ),
+                        style: IconButton.styleFrom(
+                          backgroundColor: backgroundColor,
+                          padding: const EdgeInsets.all(8),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  child: Divider(height: 1),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+                  child: Form(
+                    key: formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'CANCELLATION REMARKS',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                            color: textLight,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: remarksController,
+                          maxLines: 4,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: 'Enter your remarks here...',
+                            hintStyle: TextStyle(
+                              fontSize: 14,
+                              color: textLight,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            filled: true,
+                            fillColor: backgroundColor,
+                            contentPadding: const EdgeInsets.all(20),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(
+                                color: maincolor1.withOpacity(0.5),
+                                width: 1.5,
+                              ),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Please enter a valid reason';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.withOpacity(0.08),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: Colors.orange.withOpacity(0.2),
+                            ),
+                          ),
+                          child: const Row(
+                            children: [
+                              Icon(
+                                Iconsax.warning_2,
+                                color: Colors.orange,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 12),
+                              const Expanded(
+                                child: Text(
+                                  'Note: Cancellation charges may apply based on the hotel policy.',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF92400E),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              if (formKey.currentState!.validate()) {
+                                context.read<HotelReportBloc>().add(
+                                      CancelHotelBooking(
+                                        bookingId: bookingId,
+                                        remarks: remarksController.text.trim(),
+                                      ),
+                                    );
+                                Navigator.pop(context);
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              padding: const EdgeInsets.symmetric(vertical: 18),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                            child: const Text(
+                              'Confirm Cancellation',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ],
             ),

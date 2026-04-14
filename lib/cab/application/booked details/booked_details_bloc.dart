@@ -5,6 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:http/http.dart' as http;
 import 'package:minna/cab/domain/cab%20list%20model/cab_booked_details.dart';
+import 'package:minna/cab/domain/cab%20report/cab_driver_model.dart';
 import 'package:minna/comman/core/api.dart';
 
 part 'booked_details_event.dart';
@@ -57,7 +58,30 @@ class BookedDetailsBloc extends Bloc<BookedDetailsEvent, BookedDetailsState> {
         final detailsResponse = BookingDetailsResponse.fromJson(actualData);
 
         if (detailsResponse.success && detailsResponse.data != null) {
-          emit(BookedDetailsState.success(detailsResponse.data!));
+          // 🚘 Fetch Driver Info Sequentially
+          CabDriverResponse? driverInfo;
+          try {
+            log('➡️ DRIVER INFO API REQUEST');
+            final driverResponse = await http.post(
+              Uri.parse('${baseUrl}cab_driver'),
+              body: {"bookingid": event.bookingId},
+            );
+
+            log('⬅️ DRIVER INFO API RESPONSE: ${driverResponse.statusCode}');
+            if (driverResponse.statusCode == 200) {
+              final driverJson = json.decode(driverResponse.body);
+              driverInfo = CabDriverResponse.fromJson(driverJson);
+            }
+          } catch (e) {
+            log('❌ Error fetching driver info: $e');
+          }
+
+          emit(
+            BookedDetailsState.success(
+              detailsResponse.data!,
+              driverInfo: driverInfo,
+            ),
+          );
         } else {
           emit(
             BookedDetailsState.error(

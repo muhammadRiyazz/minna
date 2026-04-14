@@ -329,21 +329,27 @@ mixin _$BookedDetailsState {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(BookingDetails details) success,
+    required TResult Function(
+      BookingDetails details,
+      CabDriverResponse? driverInfo,
+    )
+    success,
     required TResult Function(String message) error,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(BookingDetails details)? success,
+    TResult? Function(BookingDetails details, CabDriverResponse? driverInfo)?
+    success,
     TResult? Function(String message)? error,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(BookingDetails details)? success,
+    TResult Function(BookingDetails details, CabDriverResponse? driverInfo)?
+    success,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
@@ -438,7 +444,11 @@ class _$InitialImpl implements _Initial {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(BookingDetails details) success,
+    required TResult Function(
+      BookingDetails details,
+      CabDriverResponse? driverInfo,
+    )
+    success,
     required TResult Function(String message) error,
   }) {
     return initial();
@@ -449,7 +459,8 @@ class _$InitialImpl implements _Initial {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(BookingDetails details)? success,
+    TResult? Function(BookingDetails details, CabDriverResponse? driverInfo)?
+    success,
     TResult? Function(String message)? error,
   }) {
     return initial?.call();
@@ -460,7 +471,8 @@ class _$InitialImpl implements _Initial {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(BookingDetails details)? success,
+    TResult Function(BookingDetails details, CabDriverResponse? driverInfo)?
+    success,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
@@ -557,7 +569,11 @@ class _$LoadingImpl implements _Loading {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(BookingDetails details) success,
+    required TResult Function(
+      BookingDetails details,
+      CabDriverResponse? driverInfo,
+    )
+    success,
     required TResult Function(String message) error,
   }) {
     return loading();
@@ -568,7 +584,8 @@ class _$LoadingImpl implements _Loading {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(BookingDetails details)? success,
+    TResult? Function(BookingDetails details, CabDriverResponse? driverInfo)?
+    success,
     TResult? Function(String message)? error,
   }) {
     return loading?.call();
@@ -579,7 +596,8 @@ class _$LoadingImpl implements _Loading {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(BookingDetails details)? success,
+    TResult Function(BookingDetails details, CabDriverResponse? driverInfo)?
+    success,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
@@ -638,7 +656,7 @@ abstract class _$$SuccessImplCopyWith<$Res> {
     $Res Function(_$SuccessImpl) then,
   ) = __$$SuccessImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({BookingDetails details});
+  $Res call({BookingDetails details, CabDriverResponse? driverInfo});
 }
 
 /// @nodoc
@@ -654,13 +672,17 @@ class __$$SuccessImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? details = null}) {
+  $Res call({Object? details = null, Object? driverInfo = freezed}) {
     return _then(
       _$SuccessImpl(
         null == details
             ? _value.details
             : details // ignore: cast_nullable_to_non_nullable
                   as BookingDetails,
+        driverInfo: freezed == driverInfo
+            ? _value.driverInfo
+            : driverInfo // ignore: cast_nullable_to_non_nullable
+                  as CabDriverResponse?,
       ),
     );
   }
@@ -669,14 +691,16 @@ class __$$SuccessImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$SuccessImpl implements _Success {
-  const _$SuccessImpl(this.details);
+  const _$SuccessImpl(this.details, {this.driverInfo});
 
   @override
   final BookingDetails details;
+  @override
+  final CabDriverResponse? driverInfo;
 
   @override
   String toString() {
-    return 'BookedDetailsState.success(details: $details)';
+    return 'BookedDetailsState.success(details: $details, driverInfo: $driverInfo)';
   }
 
   @override
@@ -684,11 +708,13 @@ class _$SuccessImpl implements _Success {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SuccessImpl &&
-            (identical(other.details, details) || other.details == details));
+            (identical(other.details, details) || other.details == details) &&
+            (identical(other.driverInfo, driverInfo) ||
+                other.driverInfo == driverInfo));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, details);
+  int get hashCode => Object.hash(runtimeType, details, driverInfo);
 
   /// Create a copy of BookedDetailsState
   /// with the given fields replaced by the non-null parameter values.
@@ -703,10 +729,14 @@ class _$SuccessImpl implements _Success {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(BookingDetails details) success,
+    required TResult Function(
+      BookingDetails details,
+      CabDriverResponse? driverInfo,
+    )
+    success,
     required TResult Function(String message) error,
   }) {
-    return success(details);
+    return success(details, driverInfo);
   }
 
   @override
@@ -714,10 +744,11 @@ class _$SuccessImpl implements _Success {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(BookingDetails details)? success,
+    TResult? Function(BookingDetails details, CabDriverResponse? driverInfo)?
+    success,
     TResult? Function(String message)? error,
   }) {
-    return success?.call(details);
+    return success?.call(details, driverInfo);
   }
 
   @override
@@ -725,12 +756,13 @@ class _$SuccessImpl implements _Success {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(BookingDetails details)? success,
+    TResult Function(BookingDetails details, CabDriverResponse? driverInfo)?
+    success,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
     if (success != null) {
-      return success(details);
+      return success(details, driverInfo);
     }
     return orElse();
   }
@@ -774,9 +806,13 @@ class _$SuccessImpl implements _Success {
 }
 
 abstract class _Success implements BookedDetailsState {
-  const factory _Success(final BookingDetails details) = _$SuccessImpl;
+  const factory _Success(
+    final BookingDetails details, {
+    final CabDriverResponse? driverInfo,
+  }) = _$SuccessImpl;
 
   BookingDetails get details;
+  CabDriverResponse? get driverInfo;
 
   /// Create a copy of BookedDetailsState
   /// with the given fields replaced by the non-null parameter values.
@@ -857,7 +893,11 @@ class _$ErrorImpl implements _Error {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(BookingDetails details) success,
+    required TResult Function(
+      BookingDetails details,
+      CabDriverResponse? driverInfo,
+    )
+    success,
     required TResult Function(String message) error,
   }) {
     return error(message);
@@ -868,7 +908,8 @@ class _$ErrorImpl implements _Error {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(BookingDetails details)? success,
+    TResult? Function(BookingDetails details, CabDriverResponse? driverInfo)?
+    success,
     TResult? Function(String message)? error,
   }) {
     return error?.call(message);
@@ -879,7 +920,8 @@ class _$ErrorImpl implements _Error {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(BookingDetails details)? success,
+    TResult Function(BookingDetails details, CabDriverResponse? driverInfo)?
+    success,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {

@@ -8,11 +8,13 @@ import 'package:intl/intl.dart';
 import 'package:minna/cab/application/booked%20details/booked_details_bloc.dart';
 import 'package:minna/cab/application/booked%20info%20list/booked_info_bloc.dart';
 import 'package:minna/cab/domain/cab%20list%20model/cab_booked_details.dart';
+import 'package:minna/cab/domain/cab%20report/cab_driver_model.dart';
 import 'package:minna/cab/function/commission_data.dart';
 import 'package:minna/comman/core/api.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BookingDetailsPage extends StatefulWidget {
   final String bookingId;
@@ -73,7 +75,8 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
             builder: (context, state) {
               return state.maybeWhen(
                 loading: () => _buildShimmerLoading(),
-                success: (details) => _buildSuccessState(context, details),
+                success: (details, driverInfo) =>
+                    _buildSuccessState(context, details, driverInfo),
                 error: (message) => _buildErrorState(context, message),
                 orElse: () => _buildInitialState(),
               );
@@ -212,7 +215,11 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     );
   }
 
-  Widget _buildSuccessState(BuildContext context, BookingDetails details) {
+  Widget _buildSuccessState(
+    BuildContext context,
+    BookingDetails details,
+    CabDriverResponse? driverInfo,
+  ) {
     // Check multiple ways the status might indicate cancellation
     final statusLower = details.statusDesc.toLowerCase();
     final isCancelled =
@@ -350,6 +357,16 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                   child: _buildJourneyCard(details),
                 ),
 
+                // Driver & Vehicle Details (New Section)
+                if (driverInfo != null && driverInfo.driverUpdate != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: _buildDriverInfoCard(driverInfo.driverUpdate!),
+                  ),
+
+                if (driverInfo != null && driverInfo.driverUpdate != null)
+                  const SizedBox(height: 16),
+
                 // Trip Information Card
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -395,6 +412,235 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
             child: _buildCancelButton(details),
           ),
       ],
+    );
+  }
+
+  Widget _buildDriverInfoCard(CabDriverUpdate update) {
+    return Container(
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: secondaryColor.withOpacity(0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+        border: Border.all(color: secondaryColor.withOpacity(0.1)),
+      ),
+      child: Column(
+        children: [
+          // Header: Driver Title & Status
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            decoration: BoxDecoration(
+              color: secondaryColor.withOpacity(0.05),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(24),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(Iconsax.personalcard, color: secondaryColor, size: 20),
+                const SizedBox(width: 10),
+                Text(
+                  'CAB DRIVER DETAILS',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: secondaryColor,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: successColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    update.statusDesc.toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: successColor,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                // Vehicle Details
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: backgroundColor,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Icon(
+                        Icons.drive_eta_rounded,
+                        color: textPrimary,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            update.car.model,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            update.car.number,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: textSecondary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // OTP Badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [maincolor1, maincolor1.withOpacity(0.8)],
+                        ),
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: [
+                          BoxShadow(
+                            color: maincolor1.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'OTP',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          Text(
+                            update.otp,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+                Divider(color: Colors.grey.shade200, height: 1),
+                const SizedBox(height: 20),
+
+                // Driver Contact
+                Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 24,
+                      backgroundColor: secondaryColor.withOpacity(0.1),
+                      child: Text(
+                        update.driver.name[0],
+                        style: TextStyle(
+                          color: secondaryColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            update.driver.name,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.star_rounded,
+                                color: Colors.orange,
+                                size: 16,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${update.driver.rating}',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Call Button
+                    GestureDetector(
+                      onTap: () => launchUrl(
+                        Uri.parse('tel:${update.driver.contact.fullNumber}'),
+                      ),
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: successColor.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.phone_in_talk_rounded,
+                          color: successColor,
+                          size: 22,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 

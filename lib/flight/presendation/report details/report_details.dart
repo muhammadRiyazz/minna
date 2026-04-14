@@ -197,27 +197,6 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                 child: _buildSummaryCard(),
               ),
 
-              // Cancellation Info Card
-              if (report.cancel != null && report.cancel!.status != 'NONE')
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 8.0,
-                  ),
-                  child: _buildCancellationCard(),
-                ),
-
-              // Refund Info Card
-              if (report.refund != null &&
-                  report.refund!.status != 'NOT_REFUNDED')
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 8.0,
-                  ),
-                  child: _buildRefundCard(),
-                ),
-
               // Flight Details Card
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -239,6 +218,29 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: _buildFareBreakdownCard(response),
               ),
+
+              const SizedBox(height: 16),
+
+              // Cancellation Info Card
+              if (report.cancel != null && report.cancel!.status != 'NONE')
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
+                  ),
+                  child: _buildCancellationCard(),
+                ),
+
+              // Refund Info Card
+              if (report.refund != null &&
+                  report.refund!.status != 'NOT_REFUNDED')
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
+                  ),
+                  child: _buildRefundCard(),
+                ),
 
               const SizedBox(height: 60),
             ]),
@@ -1308,7 +1310,8 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
     // Don't show if already cancelled or pending cancel
     if (_currentReport.bookingStatus.toUpperCase() == 'CANCELLED' ||
         _currentReport.cancel?.status.toUpperCase() == 'CANCELLED' ||
-        _currentReport.cancel?.status.toUpperCase() == 'PENDING') {
+        _currentReport.cancel?.status.toUpperCase() == 'PENDING' ||
+        _currentReport.cancel?.status.toUpperCase() == 'REQUESTED') {
       return false;
     }
 
@@ -1328,75 +1331,230 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
     final TextEditingController reasonController = TextEditingController();
     final formKey = GlobalKey<FormState>();
 
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Row(
-          children: [
-            Icon(Iconsax.info_circle, color: errorColor),
-            SizedBox(width: 10),
-            Text('Cancel Booking'),
-          ],
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
-        content: Form(
-          key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Please provide a reason for cancelling this booking.',
-                style: TextStyle(fontSize: 14, color: textSecondary),
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                controller: reasonController,
-                maxLines: 3,
-                decoration: InputDecoration(
-                  hintText: 'Enter cancellation reason...',
-                  hintStyle: TextStyle(fontSize: 13, color: textLight),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: secondaryColor, width: 2),
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Please enter a reason';
-                  }
-                  return null;
-                },
+        child: Container(
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.12),
+                blurRadius: 30,
+                offset: const Offset(0, -12),
               ),
             ],
           ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 12),
+                // Drag Handle
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: textLight.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // Premium Header
+                Container(
+                  width: double.infinity,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: errorColor.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Iconsax.info_circle,
+                          color: errorColor,
+                          size: 28,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Cancel Booking',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: -0.5,
+                              ),
+                            ),
+                            SizedBox(height: 2),
+                            Text(
+                              'Provide a reason for cancellation',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: textSecondary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: Icon(
+                          Icons.close_rounded,
+                          color: textSecondary,
+                          size: 20,
+                        ),
+                        style: IconButton.styleFrom(
+                          backgroundColor: backgroundColor,
+                          padding: const EdgeInsets.all(8),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  child: Divider(height: 1),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+                  child: Form(
+                    key: formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'CANCELLATION REASON',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                            color: textLight,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: reasonController,
+                          maxLines: 4,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: 'Enter reason here...',
+                            hintStyle: TextStyle(
+                              fontSize: 14,
+                              color: textLight,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            filled: true,
+                            fillColor: backgroundColor,
+                            contentPadding: const EdgeInsets.all(20),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(
+                                color: errorColor.withOpacity(0.5),
+                                width: 1.5,
+                              ),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Please enter a valid reason';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: warningColor.withOpacity(0.08),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: warningColor.withOpacity(0.2),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Iconsax.warning_2,
+                                color: warningColor,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 12),
+                              const Expanded(
+                                child: Text(
+                                  'Warning: This action is irreversible. Refund is subject to airline policy.',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF92400E),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              if (formKey.currentState!.validate()) {
+                                Navigator.pop(context);
+                                _handleCancelRequest(
+                                  reasonController.text.trim(),
+                                );
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: errorColor,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              padding: const EdgeInsets.symmetric(vertical: 18),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                            child: const Text(
+                              'Confirm Cancellation',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Close', style: TextStyle(color: textSecondary)),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (formKey.currentState!.validate()) {
-                Navigator.pop(context);
-                _handleCancelRequest(reasonController.text.trim());
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: errorColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            child: Text(
-              'Confirm Cancel',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ],
       ),
     );
   }
