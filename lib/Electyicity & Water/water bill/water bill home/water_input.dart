@@ -80,10 +80,10 @@ class _WaterBillInputPageState extends State<WaterBillInputPage> {
                           'Pay Your\nWater Bills',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 26,
+                            fontSize: 22,
                             fontWeight: FontWeight.w900,
                             height: 1.1,
-                            letterSpacing: -1,
+                            letterSpacing: -0.5,
                           ),
                         ),
                       ],
@@ -124,7 +124,7 @@ class _WaterBillInputPageState extends State<WaterBillInputPage> {
                                   Text(
                                     'Bill Details',
                                     style: TextStyle(
-                                      fontSize: 18,
+                                      fontSize: 16,
                                       fontWeight: FontWeight.w900,
                                       color: maincolor1,
                                     ),
@@ -267,11 +267,11 @@ class _WaterBillInputPageState extends State<WaterBillInputPage> {
                                 height: 60,
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: secondaryColor,
+                                    backgroundColor: maincolor1,
                                     foregroundColor: Colors.white,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                                    elevation: 8,
-                                    shadowColor: secondaryColor.withOpacity(0.4),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                    elevation: 0,
+                                    shadowColor: Colors.transparent,
                                   ),
                                   onPressed: () {
                                     if (_formKey.currentState!.validate()) {
@@ -352,10 +352,10 @@ class _WaterBillInputPageState extends State<WaterBillInputPage> {
                   Text(
                     'WATER BILL',
                     style: TextStyle(
-                      color: secondaryColor,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 2,
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.5,
                     ),
                   ),
                   const SizedBox(width: 40),

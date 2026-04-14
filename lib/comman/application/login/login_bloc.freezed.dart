@@ -19,24 +19,27 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$LoginEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String phoneNo) numbnerLogin,
+    required TResult Function(String phoneNo, bool isResend) numbnerLogin,
     required TResult Function(String otp) otpVerification,
     required TResult Function() loginInfo,
     required TResult Function() logout,
+    required TResult Function() resetNavigation,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String phoneNo)? numbnerLogin,
+    TResult? Function(String phoneNo, bool isResend)? numbnerLogin,
     TResult? Function(String otp)? otpVerification,
     TResult? Function()? loginInfo,
     TResult? Function()? logout,
+    TResult? Function()? resetNavigation,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String phoneNo)? numbnerLogin,
+    TResult Function(String phoneNo, bool isResend)? numbnerLogin,
     TResult Function(String otp)? otpVerification,
     TResult Function()? loginInfo,
     TResult Function()? logout,
+    TResult Function()? resetNavigation,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -45,6 +48,7 @@ mixin _$LoginEvent {
     required TResult Function(OtpVerification value) otpVerification,
     required TResult Function(LoginInfo value) loginInfo,
     required TResult Function(Logout value) logout,
+    required TResult Function(ResetNavigation value) resetNavigation,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
@@ -52,6 +56,7 @@ mixin _$LoginEvent {
     TResult? Function(OtpVerification value)? otpVerification,
     TResult? Function(LoginInfo value)? loginInfo,
     TResult? Function(Logout value)? logout,
+    TResult? Function(ResetNavigation value)? resetNavigation,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
@@ -59,6 +64,7 @@ mixin _$LoginEvent {
     TResult Function(OtpVerification value)? otpVerification,
     TResult Function(LoginInfo value)? loginInfo,
     TResult Function(Logout value)? logout,
+    TResult Function(ResetNavigation value)? resetNavigation,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
 }
@@ -92,7 +98,7 @@ abstract class _$$NumbnerLoginImplCopyWith<$Res> {
     $Res Function(_$NumbnerLoginImpl) then,
   ) = __$$NumbnerLoginImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({String phoneNo});
+  $Res call({String phoneNo, bool isResend});
 }
 
 /// @nodoc
@@ -108,13 +114,17 @@ class __$$NumbnerLoginImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? phoneNo = null}) {
+  $Res call({Object? phoneNo = null, Object? isResend = null}) {
     return _then(
       _$NumbnerLoginImpl(
         phoneNo: null == phoneNo
             ? _value.phoneNo
             : phoneNo // ignore: cast_nullable_to_non_nullable
                   as String,
+        isResend: null == isResend
+            ? _value.isResend
+            : isResend // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -123,14 +133,17 @@ class __$$NumbnerLoginImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$NumbnerLoginImpl implements NumbnerLogin {
-  const _$NumbnerLoginImpl({required this.phoneNo});
+  const _$NumbnerLoginImpl({required this.phoneNo, this.isResend = false});
 
   @override
   final String phoneNo;
+  @override
+  @JsonKey()
+  final bool isResend;
 
   @override
   String toString() {
-    return 'LoginEvent.numbnerLogin(phoneNo: $phoneNo)';
+    return 'LoginEvent.numbnerLogin(phoneNo: $phoneNo, isResend: $isResend)';
   }
 
   @override
@@ -138,11 +151,13 @@ class _$NumbnerLoginImpl implements NumbnerLogin {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$NumbnerLoginImpl &&
-            (identical(other.phoneNo, phoneNo) || other.phoneNo == phoneNo));
+            (identical(other.phoneNo, phoneNo) || other.phoneNo == phoneNo) &&
+            (identical(other.isResend, isResend) ||
+                other.isResend == isResend));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, phoneNo);
+  int get hashCode => Object.hash(runtimeType, phoneNo, isResend);
 
   /// Create a copy of LoginEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -155,36 +170,39 @@ class _$NumbnerLoginImpl implements NumbnerLogin {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String phoneNo) numbnerLogin,
+    required TResult Function(String phoneNo, bool isResend) numbnerLogin,
     required TResult Function(String otp) otpVerification,
     required TResult Function() loginInfo,
     required TResult Function() logout,
+    required TResult Function() resetNavigation,
   }) {
-    return numbnerLogin(phoneNo);
+    return numbnerLogin(phoneNo, isResend);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String phoneNo)? numbnerLogin,
+    TResult? Function(String phoneNo, bool isResend)? numbnerLogin,
     TResult? Function(String otp)? otpVerification,
     TResult? Function()? loginInfo,
     TResult? Function()? logout,
+    TResult? Function()? resetNavigation,
   }) {
-    return numbnerLogin?.call(phoneNo);
+    return numbnerLogin?.call(phoneNo, isResend);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String phoneNo)? numbnerLogin,
+    TResult Function(String phoneNo, bool isResend)? numbnerLogin,
     TResult Function(String otp)? otpVerification,
     TResult Function()? loginInfo,
     TResult Function()? logout,
+    TResult Function()? resetNavigation,
     required TResult orElse(),
   }) {
     if (numbnerLogin != null) {
-      return numbnerLogin(phoneNo);
+      return numbnerLogin(phoneNo, isResend);
     }
     return orElse();
   }
@@ -196,6 +214,7 @@ class _$NumbnerLoginImpl implements NumbnerLogin {
     required TResult Function(OtpVerification value) otpVerification,
     required TResult Function(LoginInfo value) loginInfo,
     required TResult Function(Logout value) logout,
+    required TResult Function(ResetNavigation value) resetNavigation,
   }) {
     return numbnerLogin(this);
   }
@@ -207,6 +226,7 @@ class _$NumbnerLoginImpl implements NumbnerLogin {
     TResult? Function(OtpVerification value)? otpVerification,
     TResult? Function(LoginInfo value)? loginInfo,
     TResult? Function(Logout value)? logout,
+    TResult? Function(ResetNavigation value)? resetNavigation,
   }) {
     return numbnerLogin?.call(this);
   }
@@ -218,6 +238,7 @@ class _$NumbnerLoginImpl implements NumbnerLogin {
     TResult Function(OtpVerification value)? otpVerification,
     TResult Function(LoginInfo value)? loginInfo,
     TResult Function(Logout value)? logout,
+    TResult Function(ResetNavigation value)? resetNavigation,
     required TResult orElse(),
   }) {
     if (numbnerLogin != null) {
@@ -228,10 +249,13 @@ class _$NumbnerLoginImpl implements NumbnerLogin {
 }
 
 abstract class NumbnerLogin implements LoginEvent {
-  const factory NumbnerLogin({required final String phoneNo}) =
-      _$NumbnerLoginImpl;
+  const factory NumbnerLogin({
+    required final String phoneNo,
+    final bool isResend,
+  }) = _$NumbnerLoginImpl;
 
   String get phoneNo;
+  bool get isResend;
 
   /// Create a copy of LoginEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -313,10 +337,11 @@ class _$OtpVerificationImpl implements OtpVerification {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String phoneNo) numbnerLogin,
+    required TResult Function(String phoneNo, bool isResend) numbnerLogin,
     required TResult Function(String otp) otpVerification,
     required TResult Function() loginInfo,
     required TResult Function() logout,
+    required TResult Function() resetNavigation,
   }) {
     return otpVerification(otp);
   }
@@ -324,10 +349,11 @@ class _$OtpVerificationImpl implements OtpVerification {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String phoneNo)? numbnerLogin,
+    TResult? Function(String phoneNo, bool isResend)? numbnerLogin,
     TResult? Function(String otp)? otpVerification,
     TResult? Function()? loginInfo,
     TResult? Function()? logout,
+    TResult? Function()? resetNavigation,
   }) {
     return otpVerification?.call(otp);
   }
@@ -335,10 +361,11 @@ class _$OtpVerificationImpl implements OtpVerification {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String phoneNo)? numbnerLogin,
+    TResult Function(String phoneNo, bool isResend)? numbnerLogin,
     TResult Function(String otp)? otpVerification,
     TResult Function()? loginInfo,
     TResult Function()? logout,
+    TResult Function()? resetNavigation,
     required TResult orElse(),
   }) {
     if (otpVerification != null) {
@@ -354,6 +381,7 @@ class _$OtpVerificationImpl implements OtpVerification {
     required TResult Function(OtpVerification value) otpVerification,
     required TResult Function(LoginInfo value) loginInfo,
     required TResult Function(Logout value) logout,
+    required TResult Function(ResetNavigation value) resetNavigation,
   }) {
     return otpVerification(this);
   }
@@ -365,6 +393,7 @@ class _$OtpVerificationImpl implements OtpVerification {
     TResult? Function(OtpVerification value)? otpVerification,
     TResult? Function(LoginInfo value)? loginInfo,
     TResult? Function(Logout value)? logout,
+    TResult? Function(ResetNavigation value)? resetNavigation,
   }) {
     return otpVerification?.call(this);
   }
@@ -376,6 +405,7 @@ class _$OtpVerificationImpl implements OtpVerification {
     TResult Function(OtpVerification value)? otpVerification,
     TResult Function(LoginInfo value)? loginInfo,
     TResult Function(Logout value)? logout,
+    TResult Function(ResetNavigation value)? resetNavigation,
     required TResult orElse(),
   }) {
     if (otpVerification != null) {
@@ -441,10 +471,11 @@ class _$LoginInfoImpl implements LoginInfo {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String phoneNo) numbnerLogin,
+    required TResult Function(String phoneNo, bool isResend) numbnerLogin,
     required TResult Function(String otp) otpVerification,
     required TResult Function() loginInfo,
     required TResult Function() logout,
+    required TResult Function() resetNavigation,
   }) {
     return loginInfo();
   }
@@ -452,10 +483,11 @@ class _$LoginInfoImpl implements LoginInfo {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String phoneNo)? numbnerLogin,
+    TResult? Function(String phoneNo, bool isResend)? numbnerLogin,
     TResult? Function(String otp)? otpVerification,
     TResult? Function()? loginInfo,
     TResult? Function()? logout,
+    TResult? Function()? resetNavigation,
   }) {
     return loginInfo?.call();
   }
@@ -463,10 +495,11 @@ class _$LoginInfoImpl implements LoginInfo {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String phoneNo)? numbnerLogin,
+    TResult Function(String phoneNo, bool isResend)? numbnerLogin,
     TResult Function(String otp)? otpVerification,
     TResult Function()? loginInfo,
     TResult Function()? logout,
+    TResult Function()? resetNavigation,
     required TResult orElse(),
   }) {
     if (loginInfo != null) {
@@ -482,6 +515,7 @@ class _$LoginInfoImpl implements LoginInfo {
     required TResult Function(OtpVerification value) otpVerification,
     required TResult Function(LoginInfo value) loginInfo,
     required TResult Function(Logout value) logout,
+    required TResult Function(ResetNavigation value) resetNavigation,
   }) {
     return loginInfo(this);
   }
@@ -493,6 +527,7 @@ class _$LoginInfoImpl implements LoginInfo {
     TResult? Function(OtpVerification value)? otpVerification,
     TResult? Function(LoginInfo value)? loginInfo,
     TResult? Function(Logout value)? logout,
+    TResult? Function(ResetNavigation value)? resetNavigation,
   }) {
     return loginInfo?.call(this);
   }
@@ -504,6 +539,7 @@ class _$LoginInfoImpl implements LoginInfo {
     TResult Function(OtpVerification value)? otpVerification,
     TResult Function(LoginInfo value)? loginInfo,
     TResult Function(Logout value)? logout,
+    TResult Function(ResetNavigation value)? resetNavigation,
     required TResult orElse(),
   }) {
     if (loginInfo != null) {
@@ -560,10 +596,11 @@ class _$LogoutImpl implements Logout {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String phoneNo) numbnerLogin,
+    required TResult Function(String phoneNo, bool isResend) numbnerLogin,
     required TResult Function(String otp) otpVerification,
     required TResult Function() loginInfo,
     required TResult Function() logout,
+    required TResult Function() resetNavigation,
   }) {
     return logout();
   }
@@ -571,10 +608,11 @@ class _$LogoutImpl implements Logout {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String phoneNo)? numbnerLogin,
+    TResult? Function(String phoneNo, bool isResend)? numbnerLogin,
     TResult? Function(String otp)? otpVerification,
     TResult? Function()? loginInfo,
     TResult? Function()? logout,
+    TResult? Function()? resetNavigation,
   }) {
     return logout?.call();
   }
@@ -582,10 +620,11 @@ class _$LogoutImpl implements Logout {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String phoneNo)? numbnerLogin,
+    TResult Function(String phoneNo, bool isResend)? numbnerLogin,
     TResult Function(String otp)? otpVerification,
     TResult Function()? loginInfo,
     TResult Function()? logout,
+    TResult Function()? resetNavigation,
     required TResult orElse(),
   }) {
     if (logout != null) {
@@ -601,6 +640,7 @@ class _$LogoutImpl implements Logout {
     required TResult Function(OtpVerification value) otpVerification,
     required TResult Function(LoginInfo value) loginInfo,
     required TResult Function(Logout value) logout,
+    required TResult Function(ResetNavigation value) resetNavigation,
   }) {
     return logout(this);
   }
@@ -612,6 +652,7 @@ class _$LogoutImpl implements Logout {
     TResult? Function(OtpVerification value)? otpVerification,
     TResult? Function(LoginInfo value)? loginInfo,
     TResult? Function(Logout value)? logout,
+    TResult? Function(ResetNavigation value)? resetNavigation,
   }) {
     return logout?.call(this);
   }
@@ -623,6 +664,7 @@ class _$LogoutImpl implements Logout {
     TResult Function(OtpVerification value)? otpVerification,
     TResult Function(LoginInfo value)? loginInfo,
     TResult Function(Logout value)? logout,
+    TResult Function(ResetNavigation value)? resetNavigation,
     required TResult orElse(),
   }) {
     if (logout != null) {
@@ -637,6 +679,131 @@ abstract class Logout implements LoginEvent {
 }
 
 /// @nodoc
+abstract class _$$ResetNavigationImplCopyWith<$Res> {
+  factory _$$ResetNavigationImplCopyWith(
+    _$ResetNavigationImpl value,
+    $Res Function(_$ResetNavigationImpl) then,
+  ) = __$$ResetNavigationImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$ResetNavigationImplCopyWithImpl<$Res>
+    extends _$LoginEventCopyWithImpl<$Res, _$ResetNavigationImpl>
+    implements _$$ResetNavigationImplCopyWith<$Res> {
+  __$$ResetNavigationImplCopyWithImpl(
+    _$ResetNavigationImpl _value,
+    $Res Function(_$ResetNavigationImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of LoginEvent
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$ResetNavigationImpl implements ResetNavigation {
+  const _$ResetNavigationImpl();
+
+  @override
+  String toString() {
+    return 'LoginEvent.resetNavigation()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$ResetNavigationImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(String phoneNo, bool isResend) numbnerLogin,
+    required TResult Function(String otp) otpVerification,
+    required TResult Function() loginInfo,
+    required TResult Function() logout,
+    required TResult Function() resetNavigation,
+  }) {
+    return resetNavigation();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(String phoneNo, bool isResend)? numbnerLogin,
+    TResult? Function(String otp)? otpVerification,
+    TResult? Function()? loginInfo,
+    TResult? Function()? logout,
+    TResult? Function()? resetNavigation,
+  }) {
+    return resetNavigation?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(String phoneNo, bool isResend)? numbnerLogin,
+    TResult Function(String otp)? otpVerification,
+    TResult Function()? loginInfo,
+    TResult Function()? logout,
+    TResult Function()? resetNavigation,
+    required TResult orElse(),
+  }) {
+    if (resetNavigation != null) {
+      return resetNavigation();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(NumbnerLogin value) numbnerLogin,
+    required TResult Function(OtpVerification value) otpVerification,
+    required TResult Function(LoginInfo value) loginInfo,
+    required TResult Function(Logout value) logout,
+    required TResult Function(ResetNavigation value) resetNavigation,
+  }) {
+    return resetNavigation(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(NumbnerLogin value)? numbnerLogin,
+    TResult? Function(OtpVerification value)? otpVerification,
+    TResult? Function(LoginInfo value)? loginInfo,
+    TResult? Function(Logout value)? logout,
+    TResult? Function(ResetNavigation value)? resetNavigation,
+  }) {
+    return resetNavigation?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(NumbnerLogin value)? numbnerLogin,
+    TResult Function(OtpVerification value)? otpVerification,
+    TResult Function(LoginInfo value)? loginInfo,
+    TResult Function(Logout value)? logout,
+    TResult Function(ResetNavigation value)? resetNavigation,
+    required TResult orElse(),
+  }) {
+    if (resetNavigation != null) {
+      return resetNavigation(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class ResetNavigation implements LoginEvent {
+  const factory ResetNavigation() = _$ResetNavigationImpl;
+}
+
+/// @nodoc
 mixin _$LoginState {
   bool get isLoading => throw _privateConstructorUsedError;
   bool? get isLoggedIn => throw _privateConstructorUsedError;
@@ -644,6 +811,7 @@ mixin _$LoginState {
   String? get phoneNumber => throw _privateConstructorUsedError;
   int? get userRegVerificationId => throw _privateConstructorUsedError;
   String? get userId => throw _privateConstructorUsedError;
+  bool? get navigateToOtp => throw _privateConstructorUsedError;
 
   /// Create a copy of LoginState
   /// with the given fields replaced by the non-null parameter values.
@@ -666,6 +834,7 @@ abstract class $LoginStateCopyWith<$Res> {
     String? phoneNumber,
     int? userRegVerificationId,
     String? userId,
+    bool? navigateToOtp,
   });
 }
 
@@ -690,6 +859,7 @@ class _$LoginStateCopyWithImpl<$Res, $Val extends LoginState>
     Object? phoneNumber = freezed,
     Object? userRegVerificationId = freezed,
     Object? userId = freezed,
+    Object? navigateToOtp = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -717,6 +887,10 @@ class _$LoginStateCopyWithImpl<$Res, $Val extends LoginState>
                 ? _value.userId
                 : userId // ignore: cast_nullable_to_non_nullable
                       as String?,
+            navigateToOtp: freezed == navigateToOtp
+                ? _value.navigateToOtp
+                : navigateToOtp // ignore: cast_nullable_to_non_nullable
+                      as bool?,
           )
           as $Val,
     );
@@ -739,6 +913,7 @@ abstract class _$$LoginStateImplCopyWith<$Res>
     String? phoneNumber,
     int? userRegVerificationId,
     String? userId,
+    bool? navigateToOtp,
   });
 }
 
@@ -762,6 +937,7 @@ class __$$LoginStateImplCopyWithImpl<$Res>
     Object? phoneNumber = freezed,
     Object? userRegVerificationId = freezed,
     Object? userId = freezed,
+    Object? navigateToOtp = freezed,
   }) {
     return _then(
       _$LoginStateImpl(
@@ -789,6 +965,10 @@ class __$$LoginStateImplCopyWithImpl<$Res>
             ? _value.userId
             : userId // ignore: cast_nullable_to_non_nullable
                   as String?,
+        navigateToOtp: freezed == navigateToOtp
+            ? _value.navigateToOtp
+            : navigateToOtp // ignore: cast_nullable_to_non_nullable
+                  as bool?,
       ),
     );
   }
@@ -804,6 +984,7 @@ class _$LoginStateImpl implements _LoginState {
     this.phoneNumber,
     this.userRegVerificationId,
     this.userId,
+    this.navigateToOtp,
   });
 
   @override
@@ -818,10 +999,12 @@ class _$LoginStateImpl implements _LoginState {
   final int? userRegVerificationId;
   @override
   final String? userId;
+  @override
+  final bool? navigateToOtp;
 
   @override
   String toString() {
-    return 'LoginState(isLoading: $isLoading, isLoggedIn: $isLoggedIn, errorMessage: $errorMessage, phoneNumber: $phoneNumber, userRegVerificationId: $userRegVerificationId, userId: $userId)';
+    return 'LoginState(isLoading: $isLoading, isLoggedIn: $isLoggedIn, errorMessage: $errorMessage, phoneNumber: $phoneNumber, userRegVerificationId: $userRegVerificationId, userId: $userId, navigateToOtp: $navigateToOtp)';
   }
 
   @override
@@ -839,7 +1022,9 @@ class _$LoginStateImpl implements _LoginState {
                 other.phoneNumber == phoneNumber) &&
             (identical(other.userRegVerificationId, userRegVerificationId) ||
                 other.userRegVerificationId == userRegVerificationId) &&
-            (identical(other.userId, userId) || other.userId == userId));
+            (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.navigateToOtp, navigateToOtp) ||
+                other.navigateToOtp == navigateToOtp));
   }
 
   @override
@@ -851,6 +1036,7 @@ class _$LoginStateImpl implements _LoginState {
     phoneNumber,
     userRegVerificationId,
     userId,
+    navigateToOtp,
   );
 
   /// Create a copy of LoginState
@@ -870,6 +1056,7 @@ abstract class _LoginState implements LoginState {
     final String? phoneNumber,
     final int? userRegVerificationId,
     final String? userId,
+    final bool? navigateToOtp,
   }) = _$LoginStateImpl;
 
   @override
@@ -884,6 +1071,8 @@ abstract class _LoginState implements LoginState {
   int? get userRegVerificationId;
   @override
   String? get userId;
+  @override
+  bool? get navigateToOtp;
 
   /// Create a copy of LoginState
   /// with the given fields replaced by the non-null parameter values.

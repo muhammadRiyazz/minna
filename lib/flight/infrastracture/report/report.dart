@@ -40,4 +40,45 @@ class ReportApiService {
       throw Exception('Failed to load reports: $e');
     }
   }
+
+  Future<Map<String, dynamic>> cancelFlightBooking({
+    required String bookingId,
+    required String cancelReason,
+  }) async {
+    try {
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      final userId = preferences.getString('userId') ?? '';
+
+      final response = await http.post(
+        Uri.parse('${baseUrl}cancel-flight-booking-mobi'),
+        body: {
+          'userId': userId,
+          'booking_id': bookingId,
+          'cancel_reason': cancelReason,
+        },
+      );
+
+      log('Cancel Request Body: ${{
+        'userId': userId,
+        'booking_id': bookingId,
+        'cancel_reason': cancelReason,
+      }}');
+      log('Cancel Response Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        return {
+          'status': false,
+          'message': 'Server error: ${response.statusCode}',
+        };
+      }
+    } catch (e) {
+      log('Cancel API Error: $e');
+      return {
+        'status': false,
+        'message': 'Connection error: $e',
+      };
+    }
+  }
 }

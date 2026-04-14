@@ -17,15 +17,6 @@ class MyAccountPage extends StatefulWidget {
 }
 
 class _MyAccountPageState extends State<MyAccountPage> {
-  // Theme Variables
-  final Color _primaryColor = maincolor1;
-  final Color _secondaryColor = secondaryColor;
-  final Color _backgroundColor = backgroundColor;
-  final Color _cardColor = cardColor;
-  final Color _textPrimary = textPrimary;
-  final Color _textSecondary = textSecondary;
-  final Color _textLight = textLight;
-
   @override
   void initState() {
     super.initState();
@@ -35,155 +26,232 @@ class _MyAccountPageState extends State<MyAccountPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _backgroundColor,
+      backgroundColor: backgroundColor,
       body: BlocBuilder<LoginBloc, LoginState>(
         builder: (context, state) {
           final isLoggedIn = state.isLoggedIn ?? false;
           return CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
-              // Premium Sliver App Bar
+              // 1. Premium Immersive Header
               SliverAppBar(
-                expandedHeight: 140.0,
+                expandedHeight: isLoggedIn ? 260.0 : 180.0,
                 floating: false,
                 pinned: true,
-                backgroundColor: _primaryColor,
+                backgroundColor: maincolor1,
                 elevation: 0,
-                centerTitle: true,
+                leading: const SizedBox.shrink(),
                 flexibleSpace: FlexibleSpaceBar(
+                  expandedTitleScale: 1.2,
                   centerTitle: true,
-                  title: const Text(
-                    'My Account',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                  background: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [_primaryColor, _primaryColor.withOpacity(0.8)],
-                      ),
-                    ),
-                    child: Stack(
-                      children: [
-                        Positioned(
-                          right: -20,
-                          top: -20,
-                          child: Icon(
-                            Iconsax.user,
-                            size: 150,
-                            color: Colors.white.withOpacity(0.05),
+                  title: !isLoggedIn
+                      ? const Text(
+                          'MY ACCOUNT',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 2,
+                          ),
+                        )
+                      : null,
+                  background: Stack(
+                    children: [
+                      // Atmospheric Background
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [maincolor1, maincolor1.withOpacity(0.85)],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      // Decorative Elements
+                      Positioned(
+                        top: -50,
+                        right: -50,
+                        child: Container(
+                          width: 200,
+                          height: 200,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.03),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        left: -20,
+                        child: Icon(
+                          Iconsax.user_square,
+                          size: 180,
+                          color: Colors.white.withOpacity(0.04),
+                        ),
+                      ),
+                      // Profile Info (Only when logged in)
+                      if (isLoggedIn)
+                        Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const SizedBox(height: 40),
+                              _buildModernAvatar(state),
+                              const SizedBox(height: 16),
+                              Text(
+                                state.isLoggedIn == true
+                                    ? 'Verified Member'
+                                    : 'Explorer',
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.6),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 1,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                state.phoneNumber ?? 'Unknown User',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
                   ),
                 ),
               ),
 
-              // Main Content
-              SliverList(
-                delegate: SliverChildListDelegate([
-                  if (!isLoggedIn) ...[
-                    _buildLoginSection(context),
-                  ] else ...[
-                    _buildUserProfileSection(state),
-                  ],
+              // 2. Main Menu Sections
+              SliverToBoxAdapter(
+                child: Transform.translate(
+                  offset: const Offset(0, -20),
+                  child: Container(
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      color: backgroundColor,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 20,
+                      ),
+                      child: Column(
+                        children: [
+                          if (!isLoggedIn) ...[
+                            const SizedBox(height: 15),
 
-                  // Account Management Section
-                  if (isLoggedIn) _buildSectionHeader('Account Management'),
-                  if (isLoggedIn)
-                    _buildAccountOption(
-                      Iconsax.user_edit,
-                      'Profile Information',
-                      'Update your personal details',
-                      () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const ProfilePage(),
+                            _buildLoginBanner(context),
+                            // const SizedBox(height: 5),
+                          ],
+
+                          // Group 1: Account Settings
+                          if (isLoggedIn)
+                            _buildMenuCard(
+                              title: 'ACCOUNT SETTINGS',
+                              items: [
+                                _buildMenuTile(
+                                  icon: Iconsax.user_edit,
+                                  color: Colors.blue,
+                                  title: 'Profile Information',
+                                  subtitle: 'Update your personal details',
+                                  onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const ProfilePage(),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                          // Group 2: Support & Info
+                          _buildMenuCard(
+                            title: 'SUPPORT & INFORMATION',
+                            items: [
+                              _buildMenuTile(
+                                icon: Iconsax.sms,
+                                color: Colors.indigo,
+                                title: 'Contact Us',
+                                subtitle: 'Reach out to our support team',
+                                onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const ContactUsPage(),
+                                  ),
+                                ),
+                              ),
+                              _buildMenuTile(
+                                icon: Iconsax.info_circle,
+                                color: Colors.teal,
+                                title: 'About MT Trip',
+                                subtitle: 'Learn more about our mission',
+                                onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const AboutUsPage(),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        );
-                      },
+
+                          // Group 3: Legal
+                          _buildMenuCard(
+                            title: 'LEGAL & POLICY',
+                            items: [
+                              _buildMenuTile(
+                                icon: Iconsax.security_safe,
+                                color: Colors.purple,
+                                title: 'Privacy Policy',
+                                subtitle: 'How we protect your data',
+                                onTap: () => _launchURL(
+                                  'https://mttrip.in/privacy-policy',
+                                ),
+                              ),
+                              _buildMenuTile(
+                                icon: Iconsax.document_text,
+                                color: Colors.orange,
+                                title: 'Terms of Service',
+                                subtitle: 'Our usage terms and conditions',
+                                onTap: () => _launchURL(
+                                  'https://mttrip.in/terms-and-conditions',
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          // Group 4: App Actions
+                          if (isLoggedIn)
+                            _buildMenuCard(
+                              title: 'APP ACTIONS',
+                              items: [
+                                _buildMenuTile(
+                                  icon: Iconsax.logout,
+                                  color: Colors.red,
+                                  title: 'Logout',
+                                  subtitle: 'Safely sign out of your account',
+                                  onTap: () => _showLogoutConfirmation(context),
+                                  isDestructive: true,
+                                ),
+                              ],
+                            ),
+
+                          const SizedBox(height: 20),
+                        ],
+                      ),
                     ),
-
-                  // Support & Information Section
-                  _buildSectionHeader('Support & Information'),
-                  _buildAccountOption(
-                    Iconsax.sms,
-                    'Contact Us',
-                    'Reach out to our support team',
-                    () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ContactUsPage(),
-                        ),
-                      );
-                    },
                   ),
-                  _buildAccountOption(
-                    Iconsax.info_circle,
-                    'About Us',
-                    'Learn more about MT Trip',
-                    () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AboutUsPage(),
-                        ),
-                      );
-                    },
-                  ),
-
-                  // Legal Section
-                  _buildSectionHeader('Legal'),
-                  _buildAccountOption(
-                    Iconsax.security_safe,
-                    'Privacy Policy',
-                    'How we protect your data',
-                    () async {
-                      final Uri url = Uri.parse(
-                        'https://mttrip.in/privacy-policy',
-                      );
-                      if (!await launchUrl(url)) {
-                        debugPrint('Could not launch $url');
-                      }
-                    },
-                  ),
-                  _buildAccountOption(
-                    Iconsax.document_text,
-                    'Terms of Service',
-                    'Our terms and conditions',
-                    () async {
-                      final Uri url = Uri.parse(
-                        'https://mttrip.in/terms-and-conditions',
-                      );
-                      if (!await launchUrl(url)) {
-                        debugPrint('Could not launch $url');
-                      }
-                    },
-                  ),
-
-                  // Account Actions Section
-                  if (isLoggedIn) ...[
-                    _buildSectionHeader('Account Actions'),
-                    _buildAccountOption(
-                      Iconsax.logout,
-                      'Logout',
-                      'Sign out from your account',
-                      () => _showLogoutConfirmation(context),
-                      isDestructive: true,
-                    ),
-                  ],
-
-                  const SizedBox(height: 40),
-                ]),
+                ),
               ),
             ],
           );
@@ -192,69 +260,60 @@ class _MyAccountPageState extends State<MyAccountPage> {
     );
   }
 
-  Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
-      child: Text(
-        title.toUpperCase(),
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w800,
-          color: _textSecondary.withOpacity(0.7),
-          letterSpacing: 1.2,
-        ),
+  Widget _buildModernAvatar(LoginState state) {
+    return Container(
+      width: 90,
+      height: 90,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white.withOpacity(0.1),
+        border: Border.all(color: Colors.white.withOpacity(0.3), width: 4),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: const Center(
+        child: Icon(Iconsax.user, color: Colors.white, size: 40),
       ),
     );
   }
 
-  Widget _buildAccountOption(
-    IconData icon,
-    String title,
-    String subtitle,
-    VoidCallback onTap, {
-    bool isDestructive = false,
-  }) {
+  Widget _buildLoginBanner(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      width: double.infinity,
       decoration: BoxDecoration(
-        color: _cardColor,
-        borderRadius: BorderRadius.circular(20),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(32),
+        border: Border.all(color: borderSoft, width: 1.5),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            blurRadius: 25,
+            offset: const Offset(0, 8),
           ),
         ],
-        border: Border.all(
-          color: isDestructive
-              ? Colors.red.withOpacity(0.1)
-              : _secondaryColor.withOpacity(0.05),
-          width: 1,
-        ),
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(20),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          // 1. Header Section with Badge
+          Padding(
+            padding: const EdgeInsets.fromLTRB(25, 25, 25, 20),
             child: Row(
               children: [
                 Container(
-                  width: 48,
-                  height: 48,
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: isDestructive
-                        ? Colors.red.withOpacity(0.1)
-                        : _secondaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(14),
+                    color: secondaryColor.withOpacity(0.1),
+                    shape: BoxShape.circle,
                   ),
-                  child: Icon(
-                    icon,
-                    color: isDestructive ? Colors.red : _secondaryColor,
-                    size: 22,
+                  child: const Icon(
+                    Iconsax.user_tag,
+                    color: secondaryColor,
+                    size: 24,
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -262,215 +321,229 @@ class _MyAccountPageState extends State<MyAccountPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        title,
+                      const Text(
+                        'Join MT Trip',
                         style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w800,
-                          color: isDestructive ? Colors.red : _textPrimary,
+                          color: textPrimary,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -0.5,
                         ),
                       ),
-                      const SizedBox(height: 2),
                       Text(
-                        subtitle,
+                        'Unlock a world of travel privileges',
                         style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: _textSecondary,
+                          color: textSecondary,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
                   ),
                 ),
-                Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  color: _textLight.withOpacity(0.5),
-                  size: 14,
-                ),
               ],
             ),
           ),
-        ),
+
+          // 3. CTA Button
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25),
+            child: SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton(
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => const LoginBottomSheet(login: 0),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: maincolor1,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Iconsax.login_1, size: 20),
+                    SizedBox(width: 12),
+                    Text(
+                      'LOG IN / SIGN UP',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 15,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 15),
+        ],
       ),
     );
   }
 
-  Widget _buildLoginSection(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [_primaryColor, _primaryColor.withOpacity(0.8)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: _primaryColor.withOpacity(0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+  Widget _buildBenefitItem(IconData icon, String text) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: maincolor1.withOpacity(0.05),
+            shape: BoxShape.circle,
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+          child: Icon(icon, size: 14, color: maincolor1.withOpacity(0.6)),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: textPrimary.withOpacity(0.8),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMenuCard({required String title, required List<Widget> items}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 12, top: 24),
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w900,
+              color: textLight.withOpacity(0.8),
+              letterSpacing: 1.5,
+            ),
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: borderSoft),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.02),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Column(
+            children: items.asMap().entries.map((entry) {
+              final idx = entry.key;
+              final widget = entry.value;
+              return Column(
+                children: [
+                  widget,
+                  if (idx != items.length - 1)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Divider(color: borderSoft, height: 1),
+                    ),
+                ],
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMenuTile({
+    required IconData icon,
+    required Color color,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+    bool isDestructive = false,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(24),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
-                  color: _secondaryColor.withOpacity(0.2),
-                  shape: BoxShape.circle,
+                  color: isDestructive
+                      ? Colors.red.withOpacity(0.1)
+                      : color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                child: Icon(Iconsax.user_add, color: _secondaryColor, size: 28),
+                child: Center(
+                  child: Icon(
+                    icon,
+                    color: isDestructive ? Colors.red : color,
+                    size: 24,
+                  ),
+                ),
               ),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Join MT Trip',
+                    Text(
+                      title,
                       style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w900,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: isDestructive ? Colors.red : textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
-                      'Unlock exclusive travel benefits',
+                      subtitle,
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.8),
-                        fontSize: 14,
+                        fontSize: 12,
                         fontWeight: FontWeight.w500,
+                        color: textLight,
                       ),
                     ),
                   ],
                 ),
               ),
+              Icon(
+                Iconsax.arrow_right_3,
+                size: 16,
+                color: textLight.withOpacity(0.4),
+              ),
             ],
           ),
-          const SizedBox(height: 24),
-          SizedBox(
-            height: 54,
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (context) => LoginBottomSheet(login: 0),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _secondaryColor,
-                foregroundColor: _primaryColor,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Icon(Iconsax.login_1, size: 20),
-                  SizedBox(width: 10),
-                  Text(
-                    'Login / Sign Up',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildUserProfileSection(LoginState state) {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [_primaryColor, _primaryColor.withOpacity(0.9)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: _primaryColor.withOpacity(0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 64,
-            height: 64,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [_secondaryColor, _secondaryColor.withOpacity(0.7)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.2),
-                width: 2,
-              ),
-            ),
-            child: const Icon(Iconsax.user, color: Colors.white, size: 30),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  state.isLoggedIn == true ? 'User Profile' : 'Explorer',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  state.phoneNumber ?? '',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // Container(
-          //   padding: const EdgeInsets.all(10),
-          //   decoration: BoxDecoration(
-          //     color: Colors.white.withOpacity(0.1),
-          //     borderRadius: BorderRadius.circular(12),
-          //   ),
-          //   child: const Icon(
-          //     Iconsax.arrow_right_3,
-          //     color: Colors.white,
-          //     size: 14,
-          //   ),
-          // ),
-        ],
-      ),
-    );
+  Future<void> _launchURL(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    if (!await launchUrl(url)) {
+      debugPrint('Could not launch $url');
+    }
   }
 
   void _showLogoutConfirmation(BuildContext context) {
@@ -481,8 +554,8 @@ class _MyAccountPageState extends State<MyAccountPage> {
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: _cardColor,
-            borderRadius: BorderRadius.circular(28),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(30),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.1),
@@ -503,21 +576,21 @@ class _MyAccountPageState extends State<MyAccountPage> {
                 child: const Icon(Iconsax.logout, color: Colors.red, size: 32),
               ),
               const SizedBox(height: 20),
-              Text(
-                'Logout?',
+              const Text(
+                'LOGOUT?',
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 18,
                   fontWeight: FontWeight.w900,
-                  color: _textPrimary,
+                  letterSpacing: 1,
                 ),
               ),
               const SizedBox(height: 10),
               Text(
-                'Are you sure you want to sign out?',
+                'Are you sure you want to sign out from your account?',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: _textSecondary,
-                  fontSize: 14,
+                  color: textLight,
+                  fontSize: 13,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -534,9 +607,9 @@ class _MyAccountPageState extends State<MyAccountPage> {
                         ),
                       ),
                       child: Text(
-                        'Cancel',
+                        'CANCEL',
                         style: TextStyle(
-                          color: _textSecondary,
+                          color: textLight,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
@@ -561,7 +634,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
                         ),
                       ),
                       child: const Text(
-                        'Logout',
+                        'LOGOUT',
                         style: TextStyle(fontWeight: FontWeight.w900),
                       ),
                     ),
@@ -578,56 +651,65 @@ class _MyAccountPageState extends State<MyAccountPage> {
   void _showComingSoonBottomSheet(BuildContext context, String service) {
     showModalBottomSheet(
       context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
       ),
       builder: (context) {
         return Container(
-          padding: EdgeInsets.all(25),
+          padding: const EdgeInsets.all(30),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: _secondaryColor.withOpacity(0.1),
+                  color: secondaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  Icons.construction_rounded,
-                  color: _secondaryColor,
+                child: const Icon(
+                  Iconsax.status_up,
+                  color: secondaryColor,
                   size: 40,
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 20),
               Text(
                 '$service Coming Soon!',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: _textPrimary,
+                  fontWeight: FontWeight.w900,
+                  color: textPrimary,
                 ),
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Text(
                 'We\'re working hard to bring you the best $service experience. Stay tuned for updates!',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: _textSecondary),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: textLight,
+                ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 30),
               SizedBox(
                 width: double.infinity,
+                height: 54,
                 child: ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _primaryColor,
+                    backgroundColor: maincolor1,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    padding: EdgeInsets.symmetric(vertical: 14),
+                    elevation: 0,
                   ),
-                  child: Text(
+                  child: const Text(
                     'Got It!',
                     style: TextStyle(fontWeight: FontWeight.w600),
                   ),

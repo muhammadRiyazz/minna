@@ -48,6 +48,9 @@ class ReportData {
   final String amount;
   final String totalAmount;
   final String commission;
+  final PaymentInfo? payment;
+  final CancelInfo? cancel;
+  final RefundInfo? refund;
   final ResponseData? response;
 
   ReportData({
@@ -60,12 +63,15 @@ class ReportData {
     required this.amount,
     required this.totalAmount,
     required this.commission,
+    this.payment,
+    this.cancel,
+    this.refund,
     this.response,
   });
 
   factory ReportData.fromJson(Map<String, dynamic> json) {
-    // Parse the flight_response field if it's a string
-    dynamic responseData = json['flight_response'];
+    // Parse the flight_response or flight field if it's a string or Map
+    dynamic responseData = json['flight_response'] ?? json['flight'];
     ResponseData? parsedResponse;
 
     if (responseData != null &&
@@ -86,12 +92,22 @@ class ReportData {
       bookingId: json['booking_id']?.toString() ?? '',
       pnr: json['pnr']?.toString(),
       bookingStatus: json['booking_status']?.toString() ?? '',
-      paymentStatus: json['payment_status']?.toString() ?? '',
-      paymentId: json['payment_id']?.toString(),
-      orderId: json['order_id']?.toString(),
+      // Support both nested and flat payment fields
+      paymentStatus: json['payment'] != null
+          ? (json['payment']['status']?.toString() ?? '')
+          : (json['payment_status']?.toString() ?? ''),
+      paymentId: json['payment'] != null
+          ? json['payment']['payment_id']?.toString()
+          : json['payment_id']?.toString(),
+      orderId: json['payment'] != null
+          ? json['payment']['order_id']?.toString()
+          : json['order_id']?.toString(),
       amount: json['amount']?.toString() ?? '',
       totalAmount: json['total_amount']?.toString() ?? '',
       commission: json['commission']?.toString() ?? '',
+      payment: json['payment'] != null ? PaymentInfo.fromJson(json['payment']) : null,
+      cancel: json['cancel'] != null ? CancelInfo.fromJson(json['cancel']) : null,
+      refund: json['refund'] != null ? RefundInfo.fromJson(json['refund']) : null,
       response: parsedResponse,
     );
   }
@@ -483,6 +499,59 @@ class ReportSeat {
       legKey: json['LegKey']?.toString(),
       fare: json['Fare']?.toString(),
       currency: json['Currency'],
+    );
+  }
+}
+
+class PaymentInfo {
+  final String status;
+  final String? paymentId;
+  final String? orderId;
+
+  PaymentInfo({required this.status, this.paymentId, this.orderId});
+
+  factory PaymentInfo.fromJson(Map<String, dynamic> json) {
+    return PaymentInfo(
+      status: json['status']?.toString() ?? '',
+      paymentId: json['payment_id']?.toString(),
+      orderId: json['order_id']?.toString(),
+    );
+  }
+}
+
+class CancelInfo {
+  final String status;
+  final String? reason;
+
+  CancelInfo({required this.status, this.reason});
+
+  factory CancelInfo.fromJson(Map<String, dynamic> json) {
+    return CancelInfo(
+      status: json['status']?.toString() ?? 'NONE',
+      reason: json['reason']?.toString(),
+    );
+  }
+}
+
+class RefundInfo {
+  final String status;
+  final String? refundId;
+  final double refundedAmount;
+  final String? refundedAt;
+
+  RefundInfo({
+    required this.status,
+    this.refundId,
+    required this.refundedAmount,
+    this.refundedAt,
+  });
+
+  factory RefundInfo.fromJson(Map<String, dynamic> json) {
+    return RefundInfo(
+      status: json['status']?.toString() ?? 'NOT_REFUNDED',
+      refundId: json['refund_id']?.toString(),
+      refundedAmount: (json['refunded_amount'] ?? 0).toDouble(),
+      refundedAt: json['refunded_at']?.toString(),
     );
   }
 }

@@ -16,17 +16,6 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  // Theme Variables
-  final Color _primaryColor = maincolor1;
-  final Color _secondaryColor = secondaryColor;
-  final Color _backgroundColor = backgroundColor;
-  final Color _cardColor = cardColor;
-  final Color _textPrimary = textPrimary;
-  final Color _textLight = textLight;
-  final Color _errorColor = errorColor;
-  final Color _successColor = const Color(0xFF0D9488);
-  final Color _warningColor = const Color(0xFFD97706);
-
   bool isLoading = true;
   bool isButtonEnabled = false;
   bool isUpdating = false;
@@ -42,7 +31,6 @@ class _ProfilePageState extends State<ProfilePage> {
   final emailController = TextEditingController();
   final addressController = TextEditingController();
 
-  // Validation patterns
   final RegExp _nameRegExp = RegExp(r'^[a-zA-Z\s]{2,50}$');
   final RegExp _emailRegExp = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
 
@@ -69,7 +57,6 @@ class _ProfilePageState extends State<ProfilePage> {
         Uri.parse('${baseUrl}mobiprofile'),
         body: {'userId': userId},
       );
-      log(response.body.toString());
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['status'] == 'SUCCESS') {
@@ -84,25 +71,17 @@ class _ProfilePageState extends State<ProfilePage> {
             emailController.text = email;
             addressController.text = address;
           });
-        } else {
-          _showErrorSnackBar(data['statusDesc'] ?? 'Failed to load profile');
         }
-      } else {
-        _showErrorSnackBar('Server error: ${response.statusCode}');
       }
     } catch (e) {
       debugPrint('Fetch error: $e');
-      _showErrorSnackBar('Network error: Please check your connection');
     } finally {
       setState(() => isLoading = false);
     }
   }
 
   Future<void> updateProfile() async {
-    if (!_formKey.currentState!.validate()) {
-      _showWarningSnackBar('Please fix the errors before submitting');
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
     setState(() {
       isUpdating = true;
@@ -132,22 +111,11 @@ class _ProfilePageState extends State<ProfilePage> {
             address = addressController.text.trim();
           });
         } else {
-          _showErrorSnackBar(
-            data['statusDesc'] ?? 'Update failed. Please try again.',
-          );
+          _showErrorSnackBar(data['statusDesc'] ?? 'Update failed');
         }
-      } else {
-        _showErrorSnackBar('Server error: ${response.statusCode}');
       }
     } catch (e) {
-      debugPrint('Update error: $e');
-      if (e is http.ClientException) {
-        _showErrorSnackBar(
-          'Network error: Please check your internet connection',
-        );
-      } else {
-        _showErrorSnackBar('Update failed. Please try again.');
-      }
+      _showErrorSnackBar('Update failed. Please try again.');
     } finally {
       setState(() {
         isUpdating = false;
@@ -163,19 +131,13 @@ class _ProfilePageState extends State<ProfilePage> {
           children: [
             const Icon(Iconsax.tick_circle, color: Colors.white, size: 20),
             const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                message,
-                style: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-            ),
+            Text(message, style: const TextStyle(fontWeight: FontWeight.w600)),
           ],
         ),
-        backgroundColor: _successColor,
+        backgroundColor: Colors.green,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        duration: const Duration(seconds: 3),
+        margin: const EdgeInsets.all(20),
       ),
     );
   }
@@ -187,43 +149,13 @@ class _ProfilePageState extends State<ProfilePage> {
           children: [
             const Icon(Iconsax.danger, color: Colors.white, size: 20),
             const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                message,
-                style: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-            ),
+            Text(message, style: const TextStyle(fontWeight: FontWeight.w600)),
           ],
         ),
-        backgroundColor: _errorColor,
+        backgroundColor: errorColor,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        duration: const Duration(seconds: 4),
-      ),
-    );
-  }
-
-  void _showWarningSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Iconsax.warning_2, color: Colors.white, size: 20),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                message,
-                style: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-            ),
-          ],
-        ),
-        backgroundColor: _warningColor,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        duration: const Duration(seconds: 3),
+        margin: const EdgeInsets.all(20),
       ),
     );
   }
@@ -233,30 +165,9 @@ class _ProfilePageState extends State<ProfilePage> {
         nameController.text.trim() != name ||
         emailController.text.trim() != email ||
         addressController.text.trim() != address;
-
     setState(() {
       isButtonEnabled = hasChanged && !isUpdating;
     });
-  }
-
-  String? _validateName(String? value) {
-    if (value == null || value.trim().isEmpty) return 'Full name is required';
-    if (value.trim().length < 2) return 'Name must be at least 2 characters';
-    if (!_nameRegExp.hasMatch(value.trim())) return 'Letters and spaces only';
-    return null;
-  }
-
-  String? _validateEmail(String? value) {
-    if (value == null || value.trim().isEmpty)
-      return 'Email address is required';
-    if (!_emailRegExp.hasMatch(value.trim())) return 'Enter a valid email';
-    return null;
-  }
-
-  String? _validateAddress(String? value) {
-    if (value == null || value.trim().isEmpty) return 'Address is required';
-    if (value.trim().length < 10) return 'Min. 10 characters required';
-    return null;
   }
 
   @override
@@ -270,268 +181,267 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _backgroundColor,
-      appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.white),
-        title: const Text(
-          'My Profile',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 0.5,
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: _primaryColor,
-        elevation: 0,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
-        ),
-        actions: [
-          if (!isLoading)
-            IconButton(
-              icon: const Icon(Iconsax.refresh, color: Colors.white),
-              onPressed: fetchProfile,
-              tooltip: 'Refresh Profile',
-            ),
-        ],
-      ),
+      backgroundColor: backgroundColor,
       body: isLoading
           ? _buildShimmerLoader()
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
               physics: const BouncingScrollPhysics(),
-              child: Form(
-                key: _formKey,
-                onChanged: checkForChanges,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: _cardColor,
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.04),
-                        blurRadius: 20,
-                        offset: const Offset(0, 8),
+              child: Stack(
+                children: [
+                  // 1. Immersive Header
+                  _buildImmersiveHeader(),
+
+                  // 2. Profile Content
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: 180,
+                      left: 20,
+                      right: 20,
+                      bottom: 40,
+                    ),
+                    child: Column(children: [_buildProfileCard()]),
+                  ),
+
+                  // Back Button
+                  Positioned(
+                    top: MediaQuery.of(context).padding.top + 10,
+                    left: 10,
+                    child: IconButton(
+                      icon: const Icon(
+                        Iconsax.arrow_left_2,
+                        color: Colors.white,
                       ),
-                    ],
-                    border: Border.all(
-                      color: _secondaryColor.withOpacity(0.05),
-                      width: 1,
+                      onPressed: () => Navigator.pop(context),
                     ),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Center(
-                          child: Stack(
-                            children: [
-                              Container(
-                                width: 110,
-                                height: 110,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      _secondaryColor.withOpacity(0.1),
-                                      _secondaryColor.withOpacity(0.05),
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                  border: Border.all(
-                                    color: _secondaryColor.withOpacity(0.2),
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: _cardColor,
-                                    ),
-                                    child: Icon(
-                                      Iconsax.user,
-                                      size: 44,
-                                      color: _secondaryColor,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: _secondaryColor,
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: _cardColor,
-                                      width: 3,
-                                    ),
-                                  ),
-                                  child: const Icon(
-                                    Iconsax.camera,
-                                    size: 14,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 32),
-                        _buildLabel('Phone Number'),
-                        const SizedBox(height: 10),
-                        _buildReadOnlyField('+91 $phone', Iconsax.call),
-                        const SizedBox(height: 24),
-                        _buildLabel('Full Name *'),
-                        const SizedBox(height: 10),
-                        _buildEditableField(
-                          controller: nameController,
-                          hint: 'Enter your full name',
-                          icon: Iconsax.user,
-                          validator: _validateName,
-                          maxLength: 50,
-                        ),
-                        const SizedBox(height: 24),
-                        _buildLabel('Email Address *'),
-                        const SizedBox(height: 10),
-                        _buildEditableField(
-                          controller: emailController,
-                          hint: 'Enter your email address',
-                          icon: Iconsax.sms,
-                          validator: _validateEmail,
-                          keyboardType: TextInputType.emailAddress,
-                          maxLength: 100,
-                        ),
-                        const SizedBox(height: 24),
-                        _buildLabel('Delivery Address *'),
-                        const SizedBox(height: 10),
-                        _buildEditableField(
-                          controller: addressController,
-                          hint: 'Enter your complete address',
-                          icon: Iconsax.location,
-                          validator: _validateAddress,
-                          maxLines: 3,
-                          maxLength: 200,
-                        ),
-                        const SizedBox(height: 32),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: isButtonEnabled && !isUpdating
-                                ? updateProfile
-                                : null,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: _secondaryColor,
-                              foregroundColor: Colors.white,
-                              disabledBackgroundColor: _secondaryColor
-                                  .withOpacity(0.4),
-                              padding: const EdgeInsets.symmetric(vertical: 18),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              elevation: 0,
-                            ),
-                            child: isUpdating
-                                ? const SizedBox(
-                                    height: 22,
-                                    width: 22,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2.5,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: const [
-                                      Icon(Iconsax.document_upload, size: 20),
-                                      SizedBox(width: 10),
-                                      Text(
-                                        'Update Profile',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w900,
-                                          fontSize: 16,
-                                          letterSpacing: 0.5,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Center(
-                          child: Text(
-                            '* Required internal information',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: _textLight.withOpacity(0.7),
-                              fontWeight: FontWeight.w500,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                ],
               ),
             ),
     );
   }
 
-  Widget _buildLabel(String text) {
-    return Text(
-      text,
-      style: TextStyle(
-        fontWeight: FontWeight.w800,
-        fontSize: 13,
-        color: _textPrimary.withOpacity(0.8),
-        letterSpacing: 0.2,
+  Widget _buildImmersiveHeader() {
+    return Container(
+      height: 260,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [maincolor1, maincolor1.withOpacity(0.8)],
+        ),
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            top: -50,
+            right: -50,
+            child: Container(
+              width: 200,
+              height: 200,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.03),
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 40,
+            right: 20,
+            child: Icon(
+              Iconsax.user,
+              size: 150,
+              color: Colors.white.withOpacity(0.04),
+            ),
+          ),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 20),
+                const Text(
+                  'PROFILE',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 3,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Container(
+                  width: 40,
+                  height: 3,
+                  decoration: BoxDecoration(
+                    color: secondaryColor,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildReadOnlyField(String value, IconData icon) {
+  Widget _buildProfileCard() {
     return Container(
       decoration: BoxDecoration(
-        color: _backgroundColor.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _secondaryColor.withOpacity(0.05)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(35),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 30,
+            offset: const Offset(0, 15),
+          ),
+        ],
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        child: Row(
-          children: [
-            Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 30),
+        child: Form(
+          key: _formKey,
+          onChanged: checkForChanges,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildModernAvatar(),
+              const SizedBox(height: 40),
+
+              _buildSectionTitle('CONTACT DETAILS'),
+              const SizedBox(height: 16),
+              _buildReadOnlyField('+91 $phone', Iconsax.call, 'Phone'),
+              const SizedBox(height: 20),
+
+              _buildSectionTitle('PERSONAL INFORMATION'),
+              const SizedBox(height: 16),
+              _buildEditableField(
+                controller: nameController,
+                hint: 'Full Name',
+                icon: Iconsax.user,
+                validator: (v) => v!.isEmpty ? 'Name required' : null,
+              ),
+              const SizedBox(height: 16),
+              _buildEditableField(
+                controller: emailController,
+                hint: 'Email Address',
+                icon: Iconsax.sms,
+                validator: (v) =>
+                    !_emailRegExp.hasMatch(v!) ? 'Invalid email' : null,
+              ),
+              const SizedBox(height: 16),
+              _buildEditableField(
+                controller: addressController,
+                hint: 'Complete Address',
+                icon: Iconsax.location,
+                maxLines: 3,
+                validator: (v) => v!.length < 5 ? 'Address too short' : null,
+              ),
+
+              const SizedBox(height: 40),
+              _buildUpdateButton(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildModernAvatar() {
+    return Center(
+      child: Stack(
+        children: [
+          Container(
+            width: 110,
+            height: 110,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white,
+              border: Border.all(color: Colors.white, width: 4),
+              boxShadow: [
+                BoxShadow(
+                  color: maincolor1.withOpacity(0.1),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(100),
+              child: Container(
+                color: maincolor1.withOpacity(0.05),
+                child: const Icon(Iconsax.user, size: 45, color: maincolor1),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: _secondaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
+                color: maincolor1,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white, width: 3),
               ),
-              child: Icon(icon, color: _secondaryColor, size: 18),
+              child: const Icon(Iconsax.camera, size: 14, color: Colors.white),
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                value.isNotEmpty ? value : 'Not provided',
-                style: TextStyle(
-                  color: value.isNotEmpty ? _textPrimary : _textLight,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: TextStyle(
+        fontSize: 11,
+        fontWeight: FontWeight.w900,
+        color: textLight.withOpacity(0.8),
+        letterSpacing: 1.5,
+      ),
+    );
+  }
+
+  Widget _buildReadOnlyField(String value, IconData icon, String label) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: borderSoft),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: maincolor1, size: 20),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label.toUpperCase(),
+                  style: TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w800,
+                    color: textLight,
+                  ),
                 ),
-              ),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: textPrimary,
+                  ),
+                ),
+              ],
             ),
-            Icon(Iconsax.lock, size: 16, color: _textLight.withOpacity(0.5)),
-          ],
-        ),
+          ),
+          Icon(Iconsax.lock, size: 16, color: textLight.withOpacity(0.4)),
+        ],
       ),
     );
   }
@@ -540,137 +450,126 @@ class _ProfilePageState extends State<ProfilePage> {
     required TextEditingController controller,
     required String hint,
     required IconData icon,
-    required String? Function(String?) validator,
-    TextInputType keyboardType = TextInputType.text,
     int maxLines = 1,
-    int? maxLength,
+    required String? Function(String?) validator,
   }) {
     return TextFormField(
       controller: controller,
       maxLines: maxLines,
-      maxLength: maxLength,
-      keyboardType: keyboardType,
       validator: validator,
-      style: TextStyle(
-        color: _textPrimary,
-        fontSize: 14,
+      style: const TextStyle(
+        fontSize: 15,
         fontWeight: FontWeight.w700,
+        color: textPrimary,
       ),
       decoration: InputDecoration(
-        prefixIcon: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: _secondaryColor.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: _secondaryColor, size: 18),
-          ),
-        ),
         hintText: hint,
-        hintStyle: TextStyle(color: _textLight, fontWeight: FontWeight.w500),
+        hintStyle: TextStyle(
+          fontSize: 15,
+          color: textLight.withOpacity(0.6),
+          fontWeight: FontWeight.w500,
+        ),
+        prefixIcon: Icon(icon, color: maincolor1, size: 20),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: backgroundColor,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: _secondaryColor.withOpacity(0.1)),
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: _secondaryColor.withOpacity(0.1)),
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: _secondaryColor, width: 1.5),
+          borderRadius: BorderRadius.circular(20),
+          borderSide: const BorderSide(color: maincolor1, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: _errorColor),
+          borderRadius: BorderRadius.circular(20),
+          borderSide: const BorderSide(color: Colors.red, width: 1),
         ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: _errorColor, width: 1.5),
+        contentPadding: const EdgeInsets.all(20),
+      ),
+    );
+  }
+
+  Widget _buildUpdateButton() {
+    return SizedBox(
+      width: double.infinity,
+      height: 60,
+      child: ElevatedButton(
+        onPressed: isButtonEnabled && !isUpdating ? updateProfile : null,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: maincolor1,
+          foregroundColor: Colors.white,
+          disabledBackgroundColor: maincolor1.withOpacity(0.4),
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
         ),
-        contentPadding: EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: maxLines > 1 ? 16 : 12,
-        ),
-        counterText: '',
+        child: isUpdating
+            ? const SizedBox(
+                height: 24,
+                width: 24,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            : const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Iconsax.tick_circle),
+                  const SizedBox(width: 12),
+                  Text(
+                    'SAVE CHANGES',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 15,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }
 
   Widget _buildShimmerLoader() {
     return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: _cardColor,
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
+      padding: const EdgeInsets.all(20),
+      child: Shimmer.fromColors(
+        baseColor: Colors.grey[300]!,
+        highlightColor: Colors.grey[100]!,
         child: Column(
           children: [
-            Shimmer.fromColors(
-              baseColor: Colors.grey.shade300,
-              highlightColor: Colors.grey.shade100,
-              child: Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: _cardColor,
+            const SizedBox(height: 40),
+            Container(
+              width: 110,
+              height: 110,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(height: 40),
+            ...List.generate(
+              4,
+              (index) => Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Container(
+                  width: double.infinity,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                 ),
               ),
             ),
-            const SizedBox(height: 30),
-            ...List.generate(4, (index) => _buildShimmerField()),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildShimmerField() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Shimmer.fromColors(
-            baseColor: Colors.grey.shade300,
-            highlightColor: Colors.grey.shade100,
-            child: Container(
-              width: 100,
-              height: 14,
-              decoration: BoxDecoration(
-                color: _cardColor,
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Shimmer.fromColors(
-            baseColor: Colors.grey.shade300,
-            highlightColor: Colors.grey.shade100,
-            child: Container(
-              height: 48,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: _cardColor,
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

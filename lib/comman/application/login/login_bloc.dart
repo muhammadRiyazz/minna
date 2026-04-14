@@ -23,17 +23,23 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       await prefs.remove('userId');
       emit(state.copyWith(isLoggedIn: false, userId: null));
     });
+
+    on<ResetNavigation>((event, emit) {
+      emit(state.copyWith(navigateToOtp: false));
+    });
   }
 
   Future<void> _onNumberLogin(
     NumbnerLogin event,
     Emitter<LoginState> emit,
   ) async {
-    emit(state.copyWith(
-      isLoading: true,
-      errorMessage: null, // 🔁 Clear error
-      isLoggedIn: false,  // 🔁 Reset success
-    ));
+    emit(
+      state.copyWith(
+        isLoading: true,
+        errorMessage: null, // 🔁 Clear error
+        isLoggedIn: false, // 🔁 Reset success
+      ),
+    );
     try {
       final response = await http.post(
         Uri.parse('${baseUrl}user-registration-otp'),
@@ -42,22 +48,31 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       log(response.body);
       final data = json.decode(response.body);
       if (data['status'] == 'SUCCESS') {
-        emit(state.copyWith(
-          isLoading: false,
-          userRegVerificationId: data['data']['userRegVarificationId'],
-          phoneNumber: event.phoneNo,
-        ));
+        emit(
+          state.copyWith(
+            isLoading: false,
+            userRegVerificationId: data['data']['userRegVarificationId'],
+            phoneNumber: event.phoneNo,
+            navigateToOtp: !event.isResend, // 🚀 Trigger navigation only if NOT a resend
+          ),
+        );
       } else {
-        emit(state.copyWith(
-          isLoading: false,
-          errorMessage: data['statusDesc'],
-        ));
+        emit(
+          state.copyWith(
+            isLoading: false,
+            errorMessage: data['statusDesc'],
+            navigateToOtp: false,
+          ),
+        );
       }
     } catch (e) {
-      emit(state.copyWith(
-        isLoading: false,
-        errorMessage: 'Network error occurred. Please try again.',
-      ));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMessage: 'Network error occurred. Please try again.',
+          navigateToOtp: false,
+        ),
+      );
     }
   }
 
@@ -65,11 +80,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     OtpVerification event,
     Emitter<LoginState> emit,
   ) async {
-    emit(state.copyWith(
-      isLoading: true,
-      errorMessage: null, // 🔁 Clear error
-      isLoggedIn: false,  // 🔁 Reset flag
-    ));
+    emit(
+      state.copyWith(
+        isLoading: true,
+        errorMessage: null, // 🔁 Clear error
+        isLoggedIn: false, // 🔁 Reset flag
+      ),
+    );
     try {
       final response = await http.post(
         Uri.parse('${baseUrl}user-registration-varification'),
@@ -88,22 +105,21 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         await prefs.setBool('isLoggedIn', true);
         await prefs.setString('phoneNo', state.phoneNumber ?? '');
 
-        emit(state.copyWith(
-          isLoading: false,
-          isLoggedIn: true,
-          userId: userId,
-        ));
+        emit(
+          state.copyWith(isLoading: false, isLoggedIn: true, userId: userId),
+        );
       } else {
-        emit(state.copyWith(
-          isLoading: false,
-          errorMessage: data['statusDesc'],
-        ));
+        emit(
+          state.copyWith(isLoading: false, errorMessage: data['statusDesc']),
+        );
       }
     } catch (e) {
-      emit(state.copyWith(
-        isLoading: false,
-        errorMessage: 'Network error occurred. Please try again.',
-      ));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMessage: 'Network error occurred. Please try again.',
+        ),
+      );
     }
   }
 
@@ -113,10 +129,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     final userId = prefs.getString('userId') ?? '';
     final phoneNo = prefs.getString('phoneNo') ?? '';
 
-    emit(state.copyWith(
-      isLoggedIn: isLoggedIn,
-      userId: userId,
-      phoneNumber: phoneNo,
-    ));
+    emit(
+      state.copyWith(
+        isLoggedIn: isLoggedIn,
+        userId: userId,
+        phoneNumber: phoneNo,
+      ),
+    );
   }
 }

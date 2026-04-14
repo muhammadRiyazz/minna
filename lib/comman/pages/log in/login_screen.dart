@@ -7,6 +7,8 @@ import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/functions/storage_utils.dart';
 import 'package:minna/comman/pages/log%20in/otp_screen.dart';
 import 'package:minna/comman/pages/main%20home/home.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/gestures.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -62,7 +64,8 @@ class _LoginScreenState extends State<LoginScreen> {
       listener: (context, state) {
         setState(() => _isLoading = state.isLoading);
 
-        if (state.userRegVerificationId != null) {
+        if (state.navigateToOtp == true) {
+          context.read<LoginBloc>().add(const LoginEvent.resetNavigation());
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -349,11 +352,45 @@ class _LoginScreenState extends State<LoginScreen> {
                                               'By continuing, you agree to our ',
                                         ),
                                         TextSpan(
-                                          text: 'Terms & Privacy Policy',
+                                          text: 'Terms of Service',
                                           style: TextStyle(
                                             color: maincolor1,
                                             fontWeight: FontWeight.w800,
+                                            decoration:
+                                                TextDecoration.underline,
                                           ),
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () async {
+                                              final Uri url = Uri.parse(
+                                                'https://mttrip.in/terms-and-conditions',
+                                              );
+                                              if (!await launchUrl(url)) {
+                                                debugPrint(
+                                                  'Could not launch $url',
+                                                );
+                                              }
+                                            },
+                                        ),
+                                        const TextSpan(text: ' & '),
+                                        TextSpan(
+                                          text: 'Privacy Policy',
+                                          style: TextStyle(
+                                            color: maincolor1,
+                                            fontWeight: FontWeight.w800,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () async {
+                                              final Uri url = Uri.parse(
+                                                'https://mttrip.in/privacy-policy',
+                                              );
+                                              if (!await launchUrl(url)) {
+                                                debugPrint(
+                                                  'Could not launch $url',
+                                                );
+                                              }
+                                            },
                                         ),
                                       ],
                                     ),

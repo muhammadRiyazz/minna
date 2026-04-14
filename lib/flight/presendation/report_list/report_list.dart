@@ -356,21 +356,42 @@ class _ReportListScreenState extends State<ReportListScreen> {
                         ],
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: _secondaryColor.withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(100),
-                        border: Border.all(color: _secondaryColor.withOpacity(0.2)),
-                      ),
-                      child: Text(
-                        '₹${report.totalAmount}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: _secondaryColor,
-                          fontWeight: FontWeight.w900,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: _getStatusColor(report.bookingStatus).withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            report.bookingStatus.toUpperCase(),
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: _getStatusColor(report.bookingStatus),
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: _secondaryColor.withOpacity(0.12),
+                            borderRadius: BorderRadius.circular(100),
+                            border: Border.all(color: _secondaryColor.withOpacity(0.2)),
+                          ),
+                          child: Text(
+                            '₹${report.totalAmount}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: _secondaryColor,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -511,6 +532,19 @@ class _ReportListScreenState extends State<ReportListScreen> {
       return DateFormat('dd MMM yyyy').format(parsedDate);
     } catch (e) {
       return date;
+    }
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toUpperCase()) {
+      case 'CONFIRMED':
+        return Colors.green;
+      case 'CANCELLED':
+        return _errorColor;
+      case 'PENDING':
+        return _warningColor;
+      default:
+        return _secondaryColor;
     }
   }
 }

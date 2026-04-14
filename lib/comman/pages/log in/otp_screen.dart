@@ -306,6 +306,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                       context.read<LoginBloc>().add(
                                         LoginEvent.numbnerLogin(
                                           phoneNo: widget.phoneNumber,
+                                          isResend: true,
                                         ),
                                       );
                                     },

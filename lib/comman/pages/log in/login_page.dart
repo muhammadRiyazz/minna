@@ -67,7 +67,8 @@ class _LoginBottomSheetState extends State<LoginBottomSheet> {
           setState(() => _isLoading = false);
         }
 
-        if (state.userRegVerificationId != null) {
+        if (state.navigateToOtp == true) {
+          context.read<LoginBloc>().add(const LoginEvent.resetNavigation());
           Navigator.pop(context); // Close the login bottom sheet
           showModalBottomSheet(
             context: context,

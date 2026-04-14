@@ -1,9 +1,12 @@
 // screens/report_detail_screen.dart
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:minna/flight/domain/report/report_model.dart';
 import 'package:minna/comman/const/const.dart';
+import 'package:minna/flight/infrastracture/report/report.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 // Add this class definition at the top of your file
@@ -14,16 +17,32 @@ class AdditionalCharge {
   AdditionalCharge(this.label, this.amount);
 }
 
-class ReportDetailScreen extends StatelessWidget {
+class ReportDetailScreen extends StatefulWidget {
   final ReportData report;
 
   const ReportDetailScreen({super.key, required this.report});
+
+  @override
+  State<ReportDetailScreen> createState() => _ReportDetailScreenState();
+}
+
+class _ReportDetailScreenState extends State<ReportDetailScreen> {
+  bool _isCancelling = false;
+  late ReportData _currentReport;
+  final ReportApiService _apiService = ReportApiService();
+
+  @override
+  void initState() {
+    super.initState();
+    _currentReport = widget.report;
+  }
 
   // Updated color scheme matching your cab booking details
   static final Color _accentColor = secondaryColor; // Gold
 
   @override
   Widget build(BuildContext context) {
+    final report = _currentReport;
     final response = report.response;
 
     if (response == null) {
@@ -124,30 +143,37 @@ class ReportDetailScreen extends StatelessWidget {
                             ],
                           ),
                           Container(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                               horizontal: 16,
                               vertical: 8,
                             ),
                             decoration: BoxDecoration(
-                              color: successColor.withOpacity(0.2),
+                              color: _getStatusColor(
+                                report.bookingStatus,
+                              ).withOpacity(0.2),
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: successColor, width: 1),
+                              border: Border.all(
+                                color: _getStatusColor(report.bookingStatus),
+                                width: 1,
+                              ),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(
-                                  Iconsax.tick_circle,
+                                  _getStatusIcon(report.bookingStatus),
                                   size: 12,
-                                  color: successColor,
+                                  color: _getStatusColor(report.bookingStatus),
                                 ),
-                                SizedBox(width: 6),
+                                const SizedBox(width: 6),
                                 Text(
-                                  'Confirmed',
+                                  report.bookingStatus.toUpperCase(),
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
-                                    color: successColor,
+                                    color: _getStatusColor(
+                                      report.bookingStatus,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -171,6 +197,27 @@ class ReportDetailScreen extends StatelessWidget {
                 child: _buildSummaryCard(),
               ),
 
+              // Cancellation Info Card
+              if (report.cancel != null && report.cancel!.status != 'NONE')
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
+                  ),
+                  child: _buildCancellationCard(),
+                ),
+
+              // Refund Info Card
+              if (report.refund != null &&
+                  report.refund!.status != 'NOT_REFUNDED')
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
+                  ),
+                  child: _buildRefundCard(),
+                ),
+
               // Flight Details Card
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -193,52 +240,80 @@ class ReportDetailScreen extends StatelessWidget {
                 child: _buildFareBreakdownCard(response),
               ),
 
-              // Cancel Button (Conditional)
-              if (_shouldShowCancelButton(response))
-                Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: errorColor.withOpacity(0.1),
+              const SizedBox(height: 60),
+            ]),
+          ),
+        ],
+      ),
+      bottomNavigationBar: _shouldShowCancelButton(response)
+          ? SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: errorColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: errorColor.withOpacity(0.3)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, -5),
+                      ),
+                    ],
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: _isCancelling
+                          ? null
+                          : () {
+                              _showCancelReasonDialog(context);
+                            },
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: errorColor.withOpacity(0.3)),
-                    ),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: () {
-                          _showCancelInstructions(context);
-                        },
-                        borderRadius: BorderRadius.circular(16),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Iconsax.undo, color: errorColor, size: 20),
-                              SizedBox(width: 12),
-                              Text(
-                                'Request Cancellation',
-                                style: TextStyle(
-                                  color: errorColor,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Iconsax.undo, color: errorColor, size: 20),
+                            const SizedBox(width: 12),
+                            Text(
+                              _isCancelling
+                                  ? 'Processing...'
+                                  : 'Request Cancellation',
+                              style: TextStyle(
+                                color: _isCancelling
+                                    ? errorColor.withOpacity(0.5)
+                                    : errorColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            if (_isCancelling)
+                              Padding(
+                                padding: const EdgeInsets.only(left: 12),
+                                child: SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      errorColor.withOpacity(0.5),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ],
-                          ),
+                          ],
                         ),
                       ),
                     ),
                   ),
                 ),
-
-              SizedBox(height: 60),
-            ]),
-          ),
-        ],
-      ),
+              ),
+            )
+          : null,
     );
   }
 
@@ -278,7 +353,7 @@ class ReportDetailScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  report.bookingStatus,
+                  _currentReport.bookingStatus,
                   style: TextStyle(
                     color: secondaryColor,
                     fontSize: 14,
@@ -291,19 +366,27 @@ class ReportDetailScreen extends StatelessWidget {
           SizedBox(height: 20),
           _buildSummaryItem(
             'PNR Number',
-            report.pnr ?? 'N/A',
+            _currentReport.pnr ?? 'N/A',
             Iconsax.airplane,
           ),
           _buildSummaryItem(
             'Trip Type',
-            (report.response?.tripMode ?? '') == 'O' ? 'One Way' : 'Round Trip',
+            (_currentReport.response?.tripMode ?? '') == 'O'
+                ? 'One Way'
+                : 'Round Trip',
             Icons.flight,
           ),
           _buildSummaryItem(
             'Booking Date',
-            report.response?.journey.flightOption.flightLegs.isNotEmpty ?? false
+            _currentReport
+                        .response
+                        ?.journey
+                        .flightOption
+                        .flightLegs
+                        .isNotEmpty ??
+                    false
                 ? _formatDate(
-                    report
+                    _currentReport
                         .response!
                         .journey
                         .flightOption
@@ -311,12 +394,12 @@ class ReportDetailScreen extends StatelessWidget {
                         .first
                         .departureTime,
                   )
-                : 'ID: ${report.bookingId}',
+                : 'ID: ${_currentReport.bookingId}',
             Icons.calendar_today,
           ),
           _buildSummaryItem(
             'Currency',
-            report.response?.currency ?? 'INR',
+            _currentReport.response?.currency ?? 'INR',
             Icons.currency_rupee,
           ),
         ],
@@ -1031,10 +1114,13 @@ class ReportDetailScreen extends StatelessWidget {
 
                 Divider(height: 16, color: Colors.grey.shade400),
 
-                _buildSummaryRow('Amount', double.tryParse(report.amount) ?? 0),
+                _buildSummaryRow(
+                  'Amount',
+                  double.tryParse(_currentReport.amount) ?? 0,
+                ),
                 _buildSummaryRow(
                   'Service Charge',
-                  double.tryParse(report.commission) ?? 0,
+                  double.tryParse(_currentReport.commission) ?? 0,
                   isCommission: true,
                 ),
 
@@ -1042,7 +1128,7 @@ class ReportDetailScreen extends StatelessWidget {
 
                 _buildSummaryRow(
                   'Total Amount',
-                  double.tryParse(report.totalAmount) ?? 0,
+                  double.tryParse(_currentReport.totalAmount) ?? 0,
                   isTotal: true,
                 ),
               ],
@@ -1217,8 +1303,18 @@ class ReportDetailScreen extends StatelessWidget {
   }
 
   bool _shouldShowCancelButton(ResponseData response) {
+    log(_currentReport.bookingStatus.toUpperCase());
+    log(_currentReport.cancel!.status.toString().toUpperCase());
+    // Don't show if already cancelled or pending cancel
+    if (_currentReport.bookingStatus.toUpperCase() == 'CANCELLED' ||
+        _currentReport.cancel?.status.toUpperCase() == 'CANCELLED' ||
+        _currentReport.cancel?.status.toUpperCase() == 'PENDING') {
+      return false;
+    }
+
     if (response.journey.flightOption.flightLegs.isEmpty) return false;
     try {
+      log(response.journey.flightOption.flightLegs.first.departureTime);
       final firstLeg = response.journey.flightOption.flightLegs.first;
       final departureTime = DateTime.parse(firstLeg.departureTime);
       // Show button if travel is in the future
@@ -1228,46 +1324,271 @@ class ReportDetailScreen extends StatelessWidget {
     }
   }
 
-  void _showCancelInstructions(BuildContext context) {
+  void _showCancelReasonDialog(BuildContext context) {
+    final TextEditingController reasonController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
-            Icon(Icons.info_outline, color: secondaryColor),
+            Icon(Iconsax.info_circle, color: errorColor),
             SizedBox(width: 10),
-            Text('Cancellation Request'),
+            Text('Cancel Booking'),
           ],
         ),
-        content: Text(
-          'To cancel this flight booking, please contact our support team with your PNR: ${report.pnr ?? 'ID: ' + report.bookingId}.\n\nFlight cancellation policies vary by airline.',
-          style: TextStyle(fontSize: 14),
+        content: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Please provide a reason for cancelling this booking.',
+                style: TextStyle(fontSize: 14, color: textSecondary),
+              ),
+              SizedBox(height: 16),
+              TextFormField(
+                controller: reasonController,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  hintText: 'Enter cancellation reason...',
+                  hintStyle: TextStyle(fontSize: 13, color: textLight),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: secondaryColor, width: 2),
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Please enter a reason';
+                  }
+                  return null;
+                },
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Close', style: TextStyle(color: maincolor1)),
+            child: Text('Close', style: TextStyle(color: textSecondary)),
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.pop(context);
-              final Uri whatsappUri = Uri.parse("https://wa.me/917511100557");
-              launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
+              if (formKey.currentState!.validate()) {
+                Navigator.pop(context);
+                _handleCancelRequest(reasonController.text.trim());
+              }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: secondaryColor,
+              backgroundColor: errorColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
             child: Text(
-              'Contact Support',
+              'Confirm Cancel',
               style: TextStyle(color: Colors.white),
             ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildCancellationCard() {
+    final cancel = _currentReport.cancel!;
+    return Container(
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+        border: Border.all(color: errorColor.withOpacity(0.3)),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: errorColor.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Iconsax.info_circle, color: errorColor, size: 16),
+              ),
+              const SizedBox(width: 12),
+              const Text(
+                'CANCELLATION INFORMATION',
+                style: TextStyle(
+                  color: textSecondary,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 1.0,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildSummaryItem(
+            'Cancel Status',
+            cancel.status,
+            Iconsax.close_circle,
+          ),
+          if (cancel.reason != null && cancel.reason!.isNotEmpty)
+            _buildSummaryItem('Reason', cancel.reason!, Iconsax.note),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRefundCard() {
+    final refund = _currentReport.refund!;
+    return Container(
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+        border: Border.all(color: successColor.withOpacity(0.3)),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: successColor.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Iconsax.money_tick, color: successColor, size: 16),
+              ),
+              const SizedBox(width: 12),
+              const Text(
+                'REFUND INFORMATION',
+                style: TextStyle(
+                  color: textSecondary,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 1.0,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildSummaryItem('Refund Status', refund.status, Iconsax.verify),
+          _buildSummaryItem(
+            'Refunded Amount',
+            '₹${refund.refundedAmount.toStringAsFixed(2)}',
+            Iconsax.wallet_2,
+          ),
+          if (refund.refundId != null)
+            _buildSummaryItem('Refund ID', refund.refundId!, Iconsax.code),
+          if (refund.refundedAt != null)
+            _buildSummaryItem(
+              'Refunded Date',
+              _formatDate(refund.refundedAt!),
+              Iconsax.calendar,
+            ),
+        ],
+      ),
+    );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toUpperCase()) {
+      case 'CONFIRMED':
+        return successColor;
+      case 'CANCELLED':
+        return errorColor;
+      case 'PENDING':
+        return const Color(0xFFD97706);
+      default:
+        return secondaryColor;
+    }
+  }
+
+  IconData _getStatusIcon(String status) {
+    switch (status.toUpperCase()) {
+      case 'CONFIRMED':
+        return Iconsax.tick_circle;
+      case 'CANCELLED':
+        return Iconsax.close_circle;
+      case 'PENDING':
+        return Iconsax.timer_1;
+      default:
+        return Iconsax.info_circle;
+    }
+  }
+
+  Future<void> _handleCancelRequest(String reason) async {
+    setState(() {
+      _isCancelling = true;
+    });
+
+    try {
+      final result = await _apiService.cancelFlightBooking(
+        bookingId: _currentReport.bookingId,
+        cancelReason: reason,
+      );
+
+      if (mounted) {
+        if (result['status'] == true) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(result['message'] ?? 'Cancellation request sent'),
+              backgroundColor: successColor,
+            ),
+          );
+          // Optional: You might want to refresh the report data here or pop back
+          // Navigator.pop(context, true);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                result['message'] ?? 'Failed to send cancellation request',
+              ),
+              backgroundColor: errorColor,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('An error occurred. Please try again later.'),
+            backgroundColor: errorColor,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isCancelling = false;
+        });
+      }
+    }
   }
 }

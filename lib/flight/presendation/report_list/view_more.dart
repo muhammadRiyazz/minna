@@ -586,38 +586,38 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
                   const SizedBox(width: 8),
                   _buildFooterBadge(Iconsax.clock, '${flightLegs.length} LEGS'),
                   const Spacer(),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 5,
-                    ),
-                    decoration: BoxDecoration(
-                      color: _successColor.withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 5,
-                          height: 5,
-                          decoration: BoxDecoration(
-                            color: _successColor,
-                            shape: BoxShape.circle,
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _getStatusColor(report.bookingStatus).withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 5,
+                            height: 5,
+                            decoration: BoxDecoration(
+                              color: _getStatusColor(report.bookingStatus),
+                              shape: BoxShape.circle,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          'CONFIRMED',
-                          style: TextStyle(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w900,
-                            color: _successColor,
-                            letterSpacing: 0.5,
+                          const SizedBox(width: 6),
+                          Text(
+                            report.bookingStatus.toUpperCase(),
+                            style: TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w900,
+                              color: _getStatusColor(report.bookingStatus),
+                              letterSpacing: 0.5,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
                 ],
               ),
             ],
@@ -764,6 +764,19 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
       return DateFormat('dd MMM yyyy').format(parsedDate);
     } catch (e) {
       return date;
+    }
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toUpperCase()) {
+      case 'CONFIRMED':
+        return _successColor;
+      case 'CANCELLED':
+        return _errorColor;
+      case 'PENDING':
+        return const Color(0xFFD97706);
+      default:
+        return _secondaryColor;
     }
   }
 }

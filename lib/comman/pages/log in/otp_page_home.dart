@@ -114,9 +114,7 @@ class _OtpBottomSheetState extends State<OtpBottomSheet> {
         child: Container(
           decoration: BoxDecoration(
             color: _cardColor,
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(32),
-            ),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.15),
@@ -152,7 +150,8 @@ class _OtpBottomSheetState extends State<OtpBottomSheet> {
                           icon: Iconsax.verify,
                           color: _successColor,
                           title: 'Verification Done',
-                          subtitle: 'Your profile has been authenticated securely.',
+                          subtitle:
+                              'Your profile has been authenticated securely.',
                           buttonText: 'CONTINUE',
                           onButtonPressed: () => Navigator.pop(context),
                         )
@@ -161,7 +160,9 @@ class _OtpBottomSheetState extends State<OtpBottomSheet> {
                           icon: Iconsax.danger,
                           color: _errorColor,
                           title: 'Access Denied',
-                          subtitle: _errorMessage ?? "The OTP you entered is incorrect.",
+                          subtitle:
+                              _errorMessage ??
+                              "The OTP you entered is incorrect.",
                           buttonText: 'TRY AGAIN',
                           onButtonPressed: _resetOtpFields,
                         )
@@ -232,26 +233,39 @@ class _OtpBottomSheetState extends State<OtpBottomSheet> {
                                   shape: BoxShape.circle,
                                   border: Border.all(color: _borderColor),
                                 ),
-                                child: Icon(Iconsax.close_circle, color: _textSecondary, size: 20),
+                                child: Icon(
+                                  Iconsax.close_circle,
+                                  color: _textSecondary,
+                                  size: 20,
+                                ),
                               ),
                             ),
                           ],
                         ),
-                        
+
                         const SizedBox(height: 32),
 
                         // Animated Target Number
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
                           decoration: BoxDecoration(
                             color: _primaryColor.withOpacity(0.04),
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: _primaryColor.withOpacity(0.06)),
+                            border: Border.all(
+                              color: _primaryColor.withOpacity(0.06),
+                            ),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Iconsax.mobile, size: 16, color: _primaryColor),
+                              Icon(
+                                Iconsax.mobile,
+                                size: 16,
+                                color: _primaryColor,
+                              ),
                               const SizedBox(width: 10),
                               Text(
                                 '+91 ${widget.phoneNumber}',
@@ -281,13 +295,22 @@ class _OtpBottomSheetState extends State<OtpBottomSheet> {
                                   color: _otpFocusNodes[index].hasFocus
                                       ? _secondaryColor
                                       : _borderColor,
-                                  width: _otpFocusNodes[index].hasFocus ? 2.5 : 1,
+                                  width: _otpFocusNodes[index].hasFocus
+                                      ? 2.5
+                                      : 1,
                                 ),
-                                color: _otpFocusNodes[index].hasFocus 
-                                    ? Colors.white 
+                                color: _otpFocusNodes[index].hasFocus
+                                    ? Colors.white
                                     : _backgroundColor,
                                 boxShadow: _otpFocusNodes[index].hasFocus
-                                    ? [BoxShadow(color: _secondaryColor.withOpacity(0.1), blurRadius: 10)]
+                                    ? [
+                                        BoxShadow(
+                                          color: _secondaryColor.withOpacity(
+                                            0.1,
+                                          ),
+                                          blurRadius: 10,
+                                        ),
+                                      ]
                                     : [],
                               ),
                               child: Center(
@@ -309,10 +332,15 @@ class _OtpBottomSheetState extends State<OtpBottomSheet> {
                                   ),
                                   onChanged: (value) {
                                     if (value.length == 1 && index < 3) {
-                                      FocusScope.of(context).requestFocus(_otpFocusNodes[index + 1]);
+                                      FocusScope.of(
+                                        context,
+                                      ).requestFocus(_otpFocusNodes[index + 1]);
                                     } else if (value.isEmpty && index > 0) {
-                                      FocusScope.of(context).requestFocus(_otpFocusNodes[index - 1]);
-                                    } else if (value.length == 1 && index == 3) {
+                                      FocusScope.of(
+                                        context,
+                                      ).requestFocus(_otpFocusNodes[index - 1]);
+                                    } else if (value.length == 1 &&
+                                        index == 3) {
                                       _verifyOtp();
                                     }
                                   },
@@ -321,7 +349,7 @@ class _OtpBottomSheetState extends State<OtpBottomSheet> {
                             );
                           }),
                         ),
-                        
+
                         const SizedBox(height: 40),
 
                         // VERIFY Button
@@ -333,7 +361,9 @@ class _OtpBottomSheetState extends State<OtpBottomSheet> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: _secondaryColor,
                               foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
                               elevation: 8,
                               shadowColor: _secondaryColor.withOpacity(0.4),
                             ),
@@ -354,7 +384,7 @@ class _OtpBottomSheetState extends State<OtpBottomSheet> {
                             ),
                           ),
                         ),
-                        
+
                         const SizedBox(height: 24),
 
                         // Resend Section
@@ -378,14 +408,24 @@ class _OtpBottomSheetState extends State<OtpBottomSheet> {
                                   });
                                   _resetOtpFields();
                                   context.read<LoginBloc>().add(
-                                    LoginEvent.numbnerLogin(phoneNo: widget.phoneNumber),
+                                    LoginEvent.numbnerLogin(
+                                      phoneNo: widget.phoneNumber,
+                                      isResend: true,
+                                    ),
                                   );
                                 },
                                 style: TextButton.styleFrom(
                                   foregroundColor: _secondaryColor,
-                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                  backgroundColor: _secondaryColor.withOpacity(0.05),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 10,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  backgroundColor: _secondaryColor.withOpacity(
+                                    0.05,
+                                  ),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
@@ -474,7 +514,9 @@ class _OtpBottomSheetState extends State<OtpBottomSheet> {
             style: ElevatedButton.styleFrom(
               backgroundColor: color,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
               elevation: 4,
               shadowColor: color.withOpacity(0.3),
             ),

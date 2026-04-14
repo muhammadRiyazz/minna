@@ -791,6 +791,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
 
   Widget _buildSearchResultsOverlay(bool isSmallScreen) {
     final results = _filteredServices;
+    final topPadding = MediaQuery.of(context).padding.top + 80; // Approximate offset to clear search bar
 
     return Positioned.fill(
       child: GestureDetector(
@@ -802,91 +803,103 @@ class _HomeContentPageState extends State<HomeContentPage> {
           color: Colors.black.withOpacity(0.3),
           child: Column(
             children: [
-              Container(
-                width: double.infinity,
-                margin: const EdgeInsets.all(16),
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
-                ),
-                child: results.isEmpty
-                    ? Padding(
-                        padding: const EdgeInsets.all(24.0),
-                        child: Column(
-                          children: [
-                            Icon(
-                              Iconsax.search_status,
-                              color: textLight,
-                              size: 40,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'No services found for "$_searchText"',
-                              style: TextStyle(
-                                color: textSecondary,
-                                fontSize: 14,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      )
-                    : Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: results.map((service) {
-                          return ListTile(
-                            leading: Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: (service['color'] as Color).withOpacity(
-                                  0.1,
-                                ),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                service['icon'] as IconData,
-                                color: service['color'] as Color,
-                                size: 20,
-                              ),
-                            ),
-                            title: Text(
-                              service['label'] as String,
-                              style: TextStyle(
-                                color: textPrimary,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                            subtitle: Text(
-                              _getServiceCategory(service['label'] as String),
-                              style: TextStyle(color: textLight, fontSize: 12),
-                            ),
-                            trailing: Icon(
-                              Iconsax.arrow_right_3,
-                              color: textLight,
-                              size: 16,
-                            ),
-                            onTap: () {
-                              setState(() {
-                                _searchController.clear();
-                                _searchText = '';
-                              });
-                              (service['onTap'] as Function(BuildContext))(
-                                context,
-                              );
-                            },
-                          );
-                        }).toList(),
+              SizedBox(height: topPadding),
+              Flexible(
+                child: Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
                       ),
+                    ],
+                  ),
+                  child: SingleChildScrollView(
+                    child: results.isEmpty
+                        ? Padding(
+                            padding: const EdgeInsets.all(24.0),
+                            child: Column(
+                              children: [
+                                Icon(
+                                  Iconsax.search_status,
+                                  color: textLight,
+                                  size: 40,
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  'No services found for "$_searchText"',
+                                  style: TextStyle(
+                                    color: textSecondary,
+                                    fontSize: 14,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          )
+                        : Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: results.map((service) {
+                              return ListTile(
+                                leading: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: (service['color'] as Color)
+                                        .withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    service['icon'] as IconData,
+                                    color: service['color'] as Color,
+                                    size: 20,
+                                  ),
+                                ),
+                                title: Text(
+                                  service['label'] as String,
+                                  style: TextStyle(
+                                    color: textPrimary,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                subtitle: Text(
+                                  _getServiceCategory(
+                                    service['label'] as String,
+                                  ),
+                                  style: TextStyle(
+                                    color: textLight,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                trailing: Icon(
+                                  Iconsax.arrow_right_3,
+                                  color: textLight,
+                                  size: 16,
+                                ),
+                                onTap: () {
+                                  setState(() {
+                                    _searchController.clear();
+                                    _searchText = '';
+                                  });
+                                  if (service['onTap'] != null) {
+                                    (service['onTap'] as Function(
+                                      BuildContext,
+                                    ))(context);
+                                  }
+                                },
+                              );
+                            }).toList(),
+                          ),
+                  ),
+                ),
               ),
+              const SizedBox(height: 20), // Bottom margin
             ],
           ),
         ),

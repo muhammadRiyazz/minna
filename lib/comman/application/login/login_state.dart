@@ -9,6 +9,7 @@ class LoginState with _$LoginState {
     String? phoneNumber,
     int? userRegVerificationId,
     String? userId,
+    bool? navigateToOtp,
   }) = _LoginState;
 
   factory LoginState.initial() {
@@ -19,5 +20,7 @@ class LoginState with _$LoginState {
       phoneNumber: null,
       userRegVerificationId: null,
       userId: null,
+      navigateToOtp: false,
     );
-  }}
+  }
+}

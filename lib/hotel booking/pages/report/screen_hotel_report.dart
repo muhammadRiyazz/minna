@@ -162,18 +162,53 @@ class _ScreenHotelReportState extends State<ScreenHotelReport> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Iconsax.house_2,
-            size: 80,
-            color: secondaryColor.withOpacity(0.3),
+          Container(
+            padding: const EdgeInsets.all(30),
+            decoration: BoxDecoration(
+              color: secondaryColor.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Iconsax.house_2, size: 48, color: secondaryColor),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           Text(
             "No Hotel Bookings Found",
             style: TextStyle(
               fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: maincolor1.withOpacity(0.5),
+              fontWeight: FontWeight.w800,
+              color: textPrimary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            child: Text(
+              "We couldn't find any hotel bookings in your history.",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                color: textSecondary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          const SizedBox(height: 32),
+          ElevatedButton.icon(
+            onPressed: () =>
+                context.read<HotelReportBloc>().add(FetchHotelReports()),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: maincolor1,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 0,
+            ),
+            icon: const Icon(Iconsax.refresh, size: 18),
+            label: const Text(
+              "Refresh",
+              style: TextStyle(fontWeight: FontWeight.w700),
             ),
           ),
         ],
@@ -182,33 +217,7 @@ class _ScreenHotelReportState extends State<ScreenHotelReport> {
   }
 
   Widget _buildErrorState(String message) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Iconsax.danger, size: 60, color: Colors.redAccent),
-            const SizedBox(height: 16),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Colors.redAccent,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () =>
-                  context.read<HotelReportBloc>().add(FetchHotelReports()),
-              style: ElevatedButton.styleFrom(backgroundColor: maincolor1),
-              child: const Text("Retry", style: TextStyle(color: Colors.white)),
-            ),
-          ],
-        ),
-      ),
-    );
+    return _buildEmptyState();
   }
 
   Widget _buildReportList(List<HotelBookingRecord> reports) {
