@@ -136,7 +136,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                                 report.pnr ?? 'ID: ${report.bookingId}',
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 20,
+                                  fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -358,7 +358,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                   _currentReport.bookingStatus,
                   style: TextStyle(
                     color: secondaryColor,
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -568,7 +568,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                     Text(
                       leg.origin,
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 15,
                         fontWeight: FontWeight.w700,
                       ),
                       overflow: TextOverflow.ellipsis,
@@ -646,7 +646,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                     Text(
                       leg.destination,
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 15,
                         fontWeight: FontWeight.w700,
                       ),
                       textAlign: TextAlign.end,
@@ -1068,7 +1068,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
               child: Text(
                 'Additional Services',
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: maincolor1,
                 ),

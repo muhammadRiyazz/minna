@@ -156,7 +156,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                             Text(
                               'Select Vehicle',
                               style: TextStyle(
-                                fontSize: 20,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w900,
                                 color: maincolor1,
                                 letterSpacing: -0.5,
@@ -452,7 +452,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                           child: Text(
                             _getLocationFieldTitle(fieldType, multiCityIndex),
                             style: TextStyle(
-                              fontSize: 20,
+                              fontSize: 18,
                               fontWeight: FontWeight.w900,
                               color: maincolor1,
                               letterSpacing: -0.5,

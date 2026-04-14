@@ -55,7 +55,7 @@ class _ScreenBdDpDetailsState extends State<ScreenBdDpDetails> {
               const Text(
                 'Boarding & Dropping',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 15,
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
                 ),
@@ -334,7 +334,7 @@ class _ScreenBdDpDetailsState extends State<ScreenBdDpDetails> {
                           Text(
                             point.bpName,
                             style: TextStyle(
-                              fontSize: 15,
+                              fontSize: 14,
                               fontWeight: FontWeight.w700,
                               color: textPrimary,
                             ),

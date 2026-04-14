@@ -586,7 +586,7 @@ class _HotelDetailsPageState extends State<HotelDetailsPage> {
                         Text(
                           hotelDetails.hotelName,
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: textPrimary,
                             height: 1.2,

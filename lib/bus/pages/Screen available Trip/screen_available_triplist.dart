@@ -76,7 +76,7 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
                             ? 'Searching buses...'
                             : '${state.availableTrips?.length ?? 0} Buses Available',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 13,
                           color: textPrimary,
                           fontWeight: FontWeight.w800,
                           letterSpacing: -0.2,
@@ -138,7 +138,7 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
                           selectedData.from?.name ?? '--',
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 14,
+                            fontSize: 13,
                             fontWeight: FontWeight.w800,
                           ),
                           maxLines: 1,
@@ -183,7 +183,7 @@ class _ScreenAvailableTripsState extends State<ScreenAvailableTrips> {
                           selectedData.to?.name ?? '--',
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 14,
+                            fontSize: 13,
                             fontWeight: FontWeight.w800,
                           ),
                           maxLines: 1,

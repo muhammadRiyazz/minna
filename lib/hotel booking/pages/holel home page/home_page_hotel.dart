@@ -323,7 +323,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
                             "EXCEPTIONAL STAYS",
                             style: TextStyle(
                               color: secondaryColor,
-                              fontSize: 12,
+                              fontSize: 11,
                               fontWeight: FontWeight.w900,
                               letterSpacing: 2,
                             ),
@@ -334,7 +334,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 25,
+                              fontSize: 20,
                               fontWeight: FontWeight.w900,
                               height: 1.2,
                               shadows: [

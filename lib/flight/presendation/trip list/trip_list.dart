@@ -42,7 +42,7 @@ class FlightSearchPage extends StatelessWidget {
                 Text(
                   searchState.from?.code ?? '---',
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.w900,
                     color: Colors.white,
                     letterSpacing: 1,
@@ -59,7 +59,7 @@ class FlightSearchPage extends StatelessWidget {
                 Text(
                   searchState.to?.code ?? '---',
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.w900,
                     color: Colors.white,
                     letterSpacing: 1,
@@ -134,7 +134,7 @@ class FlightSearchPage extends StatelessWidget {
               Text(
                 '${flights.length} Flights Found',
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: textPrimary,
                 ),
@@ -209,7 +209,7 @@ class FlightSearchPage extends StatelessWidget {
           Text(
             'No Flights Found',
             style: TextStyle(
-              fontSize: 24,
+              fontSize: 20,
               fontWeight: FontWeight.w900,
               color: maincolor1,
               letterSpacing: -0.5,
@@ -674,7 +674,7 @@ class FlightCard extends StatelessWidget {
                       Text(
                         flightOption.flightName ?? '---',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 13,
                           fontWeight: FontWeight.bold,
                           color: textPrimary,
                         ),

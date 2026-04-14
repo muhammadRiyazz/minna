@@ -579,7 +579,7 @@ class _CabsListPageState extends State<CabsListPage> {
                                 Text(
                                   "₹${amount.toStringAsFixed(0)}",
                                   style: TextStyle(
-                                    fontSize: 20,
+                                    fontSize: 18,
                                     fontWeight: FontWeight.w900,
                                     color: maincolor1,
                                     letterSpacing: -1,

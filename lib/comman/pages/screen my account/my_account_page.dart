@@ -99,26 +99,26 @@ class _MyAccountPageState extends State<MyAccountPage> {
                               _buildModernAvatar(state),
                               const SizedBox(height: 16),
                               Text(
-                                state.isLoggedIn == true
-                                    ? 'Verified Member'
-                                    : 'Explorer',
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.6),
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
+                                'TRAVELER',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w900,
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                state.phoneNumber ?? 'Unknown User',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: -0.5,
+                              if (state.phoneNumber != null) ...[
+                                const SizedBox(height: 0),
+                                Text(
+                                  state.phoneNumber!,
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.7),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: 0.5,
+                                  ),
                                 ),
-                              ),
+                              ],
                             ],
                           ),
                         ),

@@ -74,7 +74,7 @@ class BusHomeTab extends StatelessWidget {
                                 "RELIABLE BUS TRAVEL",
                                 style: TextStyle(
                                   color: secondaryColor,
-                                  fontSize: 12,
+                                  fontSize: 11,
                                   fontWeight: FontWeight.w900,
                                   letterSpacing: 2,
                                 ),
@@ -85,7 +85,7 @@ class BusHomeTab extends StatelessWidget {
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 25,
+                                  fontSize: 20,
                                   fontWeight: FontWeight.w900,
                                   height: 1.2,
                                   shadows: [
@@ -407,7 +407,7 @@ class BusHomeTab extends StatelessWidget {
                   Text(
                     DateFormat('dd MMM yyyy').format(state.dateOfJourney),
                     style: TextStyle(
-                      fontSize: 15,
+                      fontSize: 14,
                       fontWeight: FontWeight.w900,
                       color: maincolor1,
                     ),
@@ -544,7 +544,7 @@ class BusHomeTab extends StatelessWidget {
             const Text(
               "Search Buses",
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 15,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 0.5,
               ),

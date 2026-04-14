@@ -185,7 +185,7 @@ class _ProfilePageState extends State<ProfilePage> {
       body: isLoading
           ? _buildShimmerLoader()
           : SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
+              // physics: const BouncingScrollPhysics(),
               child: Stack(
                 children: [
                   // 1. Immersive Header
@@ -375,19 +375,19 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
           ),
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: maincolor1,
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 3),
-              ),
-              child: const Icon(Iconsax.camera, size: 14, color: Colors.white),
-            ),
-          ),
+          // Positioned(
+          //   bottom: 0,
+          //   right: 0,
+          //   child: Container(
+          //     padding: const EdgeInsets.all(8),
+          //     decoration: BoxDecoration(
+          //       color: maincolor1,
+          //       shape: BoxShape.circle,
+          //       border: Border.all(color: Colors.white, width: 3),
+          //     ),
+          //     child: const Icon(Iconsax.camera, size: 14, color: Colors.white),
+          //   ),
+          // ),
         ],
       ),
     );

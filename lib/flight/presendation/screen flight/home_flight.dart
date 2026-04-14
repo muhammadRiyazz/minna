@@ -106,12 +106,13 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
                               "Find Your Perfect Flight",
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w900,
+                                height: 1.2,
                                 shadows: [
                                   Shadow(
-                                    color: Colors.black.withOpacity(0.4),
-                                    offset: Offset(0, 2),
+                                    color: Colors.black.withOpacity(0.3),
+                                    offset: const Offset(0, 2),
                                     blurRadius: 4,
                                   ),
                                 ],
@@ -528,10 +529,10 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
               children: [
                 if (date != null)
                   Text(
-                    DateFormat('dd').format(date),
+                    DateFormat('dd MMM').format(date),
                     style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w900,
                       color: maincolor1,
                     ),
                   ),
@@ -543,7 +544,7 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
                     children: [
                       Text(
                         date != null
-                            ? DateFormat('MMM yyyy').format(date)
+                            ? DateFormat('yyyy').format(date)
                             : "Select",
                         style: TextStyle(
                           fontSize: 11,

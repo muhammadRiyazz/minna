@@ -306,15 +306,15 @@ class _HomeContentPageState extends State<HomeContentPage> {
         ? 28
         : 24;
     final double titleFontSize = isSmallScreen
-        ? 16
+        ? 15
         : isTablet
-        ? 24
-        : 20;
+        ? 22
+        : 18;
     final double headingFontSize = isSmallScreen
-        ? 14
+        ? 13
         : isTablet
-        ? 16
-        : 15;
+        ? 15
+        : 14;
     final double bodyFontSize = isSmallScreen
         ? 12
         : isTablet
@@ -456,7 +456,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                 'MT TRIP',
                 style: TextStyle(
                   color: maincolor1,
-                  fontSize: 20,
+                  fontSize: 18,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 1.2,
                 ),
@@ -617,7 +617,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                                 'Where to next?',
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: titleFontSize + 4,
+                                  fontSize: titleFontSize + 2,
                                   fontWeight: FontWeight.w900,
                                   letterSpacing: 0.5,
                                 ),
@@ -791,7 +791,9 @@ class _HomeContentPageState extends State<HomeContentPage> {
 
   Widget _buildSearchResultsOverlay(bool isSmallScreen) {
     final results = _filteredServices;
-    final topPadding = MediaQuery.of(context).padding.top + 80; // Approximate offset to clear search bar
+    final topPadding =
+        MediaQuery.of(context).padding.top +
+        80; // Approximate offset to clear search bar
 
     return Positioned.fill(
       child: GestureDetector(
@@ -888,9 +890,8 @@ class _HomeContentPageState extends State<HomeContentPage> {
                                     _searchText = '';
                                   });
                                   if (service['onTap'] != null) {
-                                    (service['onTap'] as Function(
-                                      BuildContext,
-                                    ))(context);
+                                    (service['onTap']
+                                        as Function(BuildContext))(context);
                                   }
                                 },
                               );
@@ -2448,10 +2449,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     // Show different set or same set but in restricted view
     // For "Where 2 Go", we show them in a more attractive vertical/grid fashion
     return Padding(
-      padding: EdgeInsets.symmetric(
-        vertical: 20,
-        horizontal: isSmallScreen ? 16 : 24,
-      ),
+      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -2573,7 +2571,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
       child: Container(
         height: height,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(25),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.12),
@@ -2583,7 +2581,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(25),
+          borderRadius: BorderRadius.circular(20),
           child: Stack(
             fit: StackFit.expand,
             children: [

@@ -265,7 +265,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                   'Trip Report',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.w900,
                     letterSpacing: -0.5,
                   ),
