@@ -185,7 +185,6 @@ class _CabBookingListState extends State<CabBookingList> {
   }
 
   Widget _buildCabBookingCard(CabBooking booking) {
-    final bloc = context.read<BookedInfoBloc>();
     final statusColor = _getStatusColor(booking.status);
 
     return Container(
@@ -195,285 +194,201 @@ class _CabBookingListState extends State<CabBookingList> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
           ),
         ],
-        border: Border.all(color: _borderColor),
+        border: Border.all(color: _borderColor, width: 1),
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => BookingDetailsPage(
-                  tableID: booking.id,
-                  bookingId: booking.bookingId,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BookingDetailsPage(
+                    tableID: booking.id,
+                    bookingId: booking.bookingId,
+                  ),
                 ),
-              ),
-            );
-          },
-          borderRadius: BorderRadius.circular(24),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
+              );
+            },
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header with ID and Status
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'BOOKING ID',
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: textLight,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 1.2,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            booking.bookingId,
-                            style: TextStyle(
-                              color: textPrimary,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w800,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: statusColor.withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(100),
-                        border: Border.all(color: statusColor.withOpacity(0.2)),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 6,
-                            height: 6,
-                            decoration: BoxDecoration(
-                              color: statusColor,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            booking.status.toUpperCase(),
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: statusColor,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-
-                // Trip Overview Container
+                // Top Header Section
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: backgroundColor,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.grey.shade100),
+                    color: maincolor1.withOpacity(0.03),
+                    border: Border(bottom: BorderSide(color: _borderColor)),
                   ),
                   child: Row(
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'PASSENGER',
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: textSecondary,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 1.0,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              "${booking.firstName} ${booking.lastName}",
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w800,
-                                color: textPrimary,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 6),
-                            Row(
-                              children: [
-                                Icon(
-                                  Iconsax.call,
-                                  size: 12,
-                                  color: secondaryColor,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  booking.priContact,
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: textSecondary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
                       Container(
-                        width: 1,
-                        height: 50,
-                        color: Colors.grey.withOpacity(0.2),
-                        margin: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: maincolor1.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(Iconsax.car, size: 20, color: maincolor1),
                       ),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              'TRIP TYPE',
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: textSecondary,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 1.0,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              booking.tripType,
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w800,
-                                color: textPrimary,
-                              ),
-                              textAlign: TextAlign.end,
-                            ),
-                            const SizedBox(height: 6),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Icon(
-                                  Iconsax.calendar_1,
-                                  size: 12,
-                                  color: secondaryColor,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  _formatDate(booking.date),
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: textSecondary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // Footer with Car Details and Price
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: secondaryColor.withOpacity(0.1),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Iconsax.car,
-                            color: secondaryColor,
-                            size: 14,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               booking.cabType,
                               style: TextStyle(
-                                fontSize: 12,
-                                color: textPrimary,
-                                fontWeight: FontWeight.w800,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w900,
+                                color: maincolor1,
+                                letterSpacing: -0.5,
                               ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                             Text(
-                              bloc.formatTimeTo12Hour(booking.time),
+                              "Booking ID: ${booking.bookingId}",
                               style: TextStyle(
-                                fontSize: 10,
-                                color: textSecondary,
+                                fontSize: 11,
                                 fontWeight: FontWeight.w600,
+                                color: textSecondary,
                               ),
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          'TOTAL FARE',
-                          style: TextStyle(
-                            fontSize: 9,
-                            color: textLight,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 0.5,
+                      ),
+                      _buildStatusBadge(booking.status),
+                    ],
+                  ),
+                ),
+
+                // Content Section
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildInfoItem(
+                            label: "Pickup Date",
+                            value: _formatDate(booking.date),
+                            icon: Iconsax.calendar_1,
                           ),
-                        ),
-                        Text(
-                          '₹${booking.total}',
-                          style: TextStyle(
-                            color: secondaryColor,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w900,
+                          Container(height: 30, width: 1, color: _borderColor),
+                          _buildInfoItem(
+                            label: "Passenger",
+                            value: "${booking.firstName} ${booking.lastName}",
+                            icon: Iconsax.user,
+                            crossAxisAlignment: CrossAxisAlignment.end,
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Divider(color: _borderColor, height: 1),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Iconsax.routing,
+                                size: 14,
+                                color: secondaryColor,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                booking.tripType,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: textPrimary,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Text(
+                            "₹${booking.total}",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w900,
+                              color: maincolor1,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildStatusBadge(String status) {
+    Color color = _getStatusColor(status);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: Text(
+        status.toUpperCase(),
+        style: TextStyle(
+          fontSize: 10,
+          color: color,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 0.5,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoItem({
+    required String label,
+    required String value,
+    required IconData icon,
+    CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.start,
+  }) {
+    return Column(
+      crossAxisAlignment: crossAxisAlignment,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 12, color: textSecondary),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                color: textSecondary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w800,
+            color: maincolor1,
+          ),
+        ),
+      ],
     );
   }
 

@@ -336,9 +336,7 @@ class _ScreenReportState extends State<ScreenReport> {
 
   Widget _buildBusTripCard(BusTicketReport item) {
     final statusColor = _getStatusColor(item.status);
-    final formattedDate = DateFormat(
-      'EEE, d MMM yyyy',
-    ).format(DateTime.parse(item.date));
+    final formattedDate = DateFormat('EEE, d MMM yyyy').format(DateTime.parse(item.date));
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -347,294 +345,203 @@ class _ScreenReportState extends State<ScreenReport> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
           ),
         ],
-        border: Border.all(color: _borderColor),
+        border: Border.all(color: _borderColor, width: 1),
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => TicketDetails(
-                  count: item.seatDetails.length,
-                  tin: item.ticketNo,
-                  blocid: item.slNo,
-                  transactionId: item.transactionId,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TicketDetails(
+                    count: item.seatDetails.length,
+                    tin: item.ticketNo,
+                    blocid: item.slNo,
+                    transactionId: item.transactionId,
+                  ),
                 ),
-              ),
-            );
-          },
-          borderRadius: BorderRadius.circular(24),
-          child: Column(
-            children: [
-              // Header Section
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'TICKET NO',
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: _textLight,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 1.2,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            item.ticketNo,
-                            style: TextStyle(
-                              color: _textPrimary,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w800,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
+              );
+            },
+            child: Column(
+              children: [
+                // Top Header Section
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: _primaryColor.withOpacity(0.03),
+                    border: Border(bottom: BorderSide(color: _borderColor)),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: _primaryColor.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(Iconsax.bus, size: 20, color: _primaryColor),
                       ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: statusColor.withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(100),
-                        border: Border.all(color: statusColor.withOpacity(0.2)),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 6,
-                            height: 6,
-                            decoration: BoxDecoration(
-                              color: statusColor,
-                              shape: BoxShape.circle,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "${item.source} to ${item.destination}",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w900,
+                                color: _primaryColor,
+                                letterSpacing: -0.5,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            item.status.toUpperCase(),
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: statusColor,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 0.5,
+                            Text(
+                              "Ticket: ${item.ticketNo}",
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: _textSecondary,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                      _buildStatusBadge(item.status),
+                    ],
+                  ),
                 ),
-              ),
 
-              // Route & Date Section
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: _backgroundColor,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.grey.shade100),
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                item.source,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w800,
-                                  color: _textPrimary,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                'Source',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: _textSecondary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
+                // Content Section
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildInfoItem(
+                            label: "Travel Date",
+                            value: formattedDate,
+                            icon: Iconsax.calendar_1,
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: _secondaryColor.withOpacity(0.1),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Iconsax.arrow_right_1,
-                              color: _secondaryColor,
-                              size: 14,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Column(
+                          Container(height: 30, width: 1, color: _borderColor),
+                          _buildInfoItem(
+                            label: "Booking",
+                            value: "${item.seatDetails.length} Seat(s)",
+                            icon: Iconsax.user,
                             crossAxisAlignment: CrossAxisAlignment.end,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Divider(color: _borderColor, height: 1),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
                             children: [
-                              Text(
-                                item.destination,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w800,
-                                  color: _textPrimary,
-                                ),
-                                textAlign: TextAlign.end,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                              Icon(
+                                Iconsax.info_circle,
+                                size: 14,
+                                color: _secondaryColor,
                               ),
-                              const SizedBox(height: 2),
+                              const SizedBox(width: 6),
                               Text(
-                                'Destination',
+                                "Trip Document",
                                 style: TextStyle(
-                                  fontSize: 10,
-                                  color: _textSecondary,
-                                  fontWeight: FontWeight.w600,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: _textPrimary,
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                      ],
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      child: Divider(height: 1),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Iconsax.calendar_1,
-                              size: 14,
-                              color: _secondaryColor,
+                          Text(
+                            "₹${item.totalFare}",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w900,
+                              color: _primaryColor,
                             ),
-                            const SizedBox(width: 8),
-                            Text(
-                              formattedDate,
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: _textSecondary,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Icon(
-                              Iconsax.user,
-                              size: 14,
-                              color: _secondaryColor,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              '${item.seatDetails.length} Seat${item.seatDetails.length > 1 ? 's' : ''}',
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: _textSecondary,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-
-              // Footer Section
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: _secondaryColor.withOpacity(0.1),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Iconsax.bus,
-                            color: _secondaryColor,
-                            size: 14,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          'Trip Document',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: _textPrimary,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          'TOTAL FARE',
-                          style: TextStyle(
-                            fontSize: 9,
-                            color: _textLight,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                        Text(
-                          '₹${item.totalFare}',
-                          style: TextStyle(
-                            color: _secondaryColor,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildStatusBadge(String status) {
+    Color color = _getStatusColor(status);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: Text(
+        status.toUpperCase(),
+        style: TextStyle(
+          fontSize: 10,
+          color: color,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 0.5,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoItem({
+    required String label,
+    required String value,
+    required IconData icon,
+    CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.start,
+  }) {
+    return Column(
+      crossAxisAlignment: crossAxisAlignment,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 12, color: _textSecondary),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                color: _textSecondary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w800,
+            color: _primaryColor,
+          ),
+        ),
+      ],
     );
   }
 

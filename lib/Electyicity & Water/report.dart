@@ -122,120 +122,190 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
           ),
         ],
-        border: Border.all(color: borderSoft),
+        border: Border.all(color: borderSoft, width: 1),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
         child: Column(
           children: [
-            // Header Row
-            Row(
-              children: [
-                // Status Icon with background
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.1),
-                    shape: BoxShape.circle,
+            // Top Header Section
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: maincolor1.withOpacity(0.03),
+                border: Border(bottom: BorderSide(color: borderSoft)),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: maincolor1.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      widget.title.contains('Electricity') ? Iconsax.flash_1 : Iconsax.drop,
+                      size: 20,
+                      color: maincolor1,
+                    ),
                   ),
-                  child: Icon(
-                    isSuccess ? Iconsax.tick_circle : Iconsax.close_circle,
-                    color: statusColor,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 16),
-
-                // Biller Info
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        transaction.billerCategory,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          color: textPrimary,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          transaction.billerCategory,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                            color: maincolor1,
+                            letterSpacing: -0.5,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
+                        Text(
+                          "Consumer ID: ${transaction.txtConsumer}",
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  _buildStatusBadge(transaction.displayStatus, statusColor),
+                ],
+              ),
+            ),
+
+            // Content Section
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildInfoItem(
+                        label: "Payment Date",
+                        value: transaction.formattedDate,
+                        icon: Iconsax.calendar_1,
                       ),
-                      const SizedBox(height: 4),
+                      Container(height: 30, width: 1, color: borderSoft),
+                      _buildInfoItem(
+                        label: "Status",
+                        value: transaction.billStatus.toUpperCase(),
+                        icon: isSuccess ? Iconsax.verify : Iconsax.info_circle,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        valueColor: statusColor,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Divider(color: borderSoft, height: 1),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Iconsax.mobile,
+                            size: 14,
+                            color: secondaryColor,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            transaction.mobile,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: textPrimary,
+                            ),
+                          ),
+                        ],
+                      ),
                       Text(
-                        'Consumer ID: ${transaction.txtConsumer}',
+                        "₹${transaction.txtAmount}",
                         style: TextStyle(
-                          fontSize: 12,
-                          color: textSecondary,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                          color: maincolor1,
                         ),
                       ),
                     ],
                   ),
-                ),
-
-                // Amount
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      '₹${transaction.txtAmount}',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w900,
-                        color: secondaryColor,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: statusColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(100),
-                        border: Border.all(color: statusColor.withOpacity(0.2)),
-                      ),
-                      child: Text(
-                        transaction.displayStatus.toUpperCase(),
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: statusColor,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 16),
-              child: Divider(height: 1),
-            ),
-
-            // Details Row
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildDetailItem('Mobile', transaction.mobile, Iconsax.mobile),
-                _buildDetailItem(
-                  'Date',
-                  transaction.formattedDate,
-                  Iconsax.calendar_1,
-                ),
-                _buildPaymentBadge(transaction),
-              ],
+                ],
+              ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildStatusBadge(String status, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: Text(
+        status.toUpperCase(),
+        style: TextStyle(
+          fontSize: 10,
+          color: color,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 0.5,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoItem({
+    required String label,
+    required String value,
+    required IconData icon,
+    CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.start,
+    Color? valueColor,
+  }) {
+    return Column(
+      crossAxisAlignment: crossAxisAlignment,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 12, color: textSecondary),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                color: textSecondary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w800,
+            color: valueColor ?? maincolor1,
+          ),
+        ),
+      ],
     );
   }
 

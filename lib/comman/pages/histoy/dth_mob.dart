@@ -130,60 +130,125 @@ class _BaseTransactionReportPageState extends State<BaseTransactionReportPage> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
           ),
         ],
-        border: Border.all(color: _borderColor),
+        border: Border.all(color: _borderColor, width: 1),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Row(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Column(
           children: [
-            // Status Icon with background
+            // Top Header Section
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: statusColor.withOpacity(0.1),
-                shape: BoxShape.circle,
+                color: _primaryColor.withOpacity(0.03),
+                border: Border(bottom: BorderSide(color: _borderColor)),
               ),
-              child: Icon(
-                isSuccess ? Iconsax.tick_circle : Iconsax.close_circle,
-                color: statusColor,
-                size: 24,
-              ),
-            ),
-            const SizedBox(width: 16),
-
-            // Transaction Details
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
                 children: [
-                  Text(
-                    widget.billerType == 'Mobile Recharge'
-                        ? (transaction.mobile.isNotEmpty
-                              ? transaction.mobile
-                              : 'Mobile Recharge')
-                        : (transaction.dthnumber ?? 'DTH Recharge'),
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: _textPrimary,
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: _primaryColor.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      widget.billerType == 'Mobile Recharge' ? Iconsax.mobile : Iconsax.monitor_mobbile,
+                      size: 20,
+                      color: _primaryColor,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.billerType == 'Mobile Recharge'
+                              ? (transaction.mobile.isNotEmpty ? transaction.mobile : 'Mobile Recharge')
+                              : (transaction.dthnumber ?? 'DTH Recharge'),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                            color: _primaryColor,
+                            letterSpacing: -0.5,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          widget.billerType,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: _textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  _buildStatusBadge(transaction.paidStatus, statusColor),
+                ],
+              ),
+            ),
+
+            // Content Section
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Icon(Iconsax.calendar_1, size: 12, color: _textSecondary),
-                      const SizedBox(width: 4),
+                      _buildInfoItem(
+                        label: "Transaction Date",
+                        value: transaction.formattedDate,
+                        icon: Iconsax.calendar_1,
+                      ),
+                      Container(height: 30, width: 1, color: _borderColor),
+                      _buildInfoItem(
+                        label: "Payment Status",
+                        value: transaction.paidStatus.toUpperCase(),
+                        icon: isSuccess ? Iconsax.verify : Iconsax.info_circle,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        valueColor: statusColor,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Divider(color: _borderColor, height: 1),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Iconsax.wallet_2,
+                            size: 14,
+                            color: _secondaryColor,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            "Standard Plan",
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: _textPrimary,
+                            ),
+                          ),
+                        ],
+                      ),
                       Text(
-                        transaction.formattedDate,
+                        "₹${transaction.amount}",
                         style: TextStyle(
-                          fontSize: 12,
-                          color: _textSecondary,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                          color: _primaryColor,
                         ),
                       ),
                     ],
@@ -191,45 +256,66 @@ class _BaseTransactionReportPageState extends State<BaseTransactionReportPage> {
                 ],
               ),
             ),
-
-            // Amount and Status Badge
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  '₹${transaction.amount}',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900,
-                    color: _secondaryColor,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(100),
-                    border: Border.all(color: statusColor.withOpacity(0.2)),
-                  ),
-                  child: Text(
-                    transaction.paidStatus.toUpperCase(),
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: statusColor,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildStatusBadge(String status, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: Text(
+        status.toUpperCase(),
+        style: TextStyle(
+          fontSize: 10,
+          color: color,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 0.5,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoItem({
+    required String label,
+    required String value,
+    required IconData icon,
+    CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.start,
+    Color? valueColor,
+  }) {
+    return Column(
+      crossAxisAlignment: crossAxisAlignment,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 12, color: _textSecondary),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                color: _textSecondary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w800,
+            color: valueColor ?? _primaryColor,
+          ),
+        ),
+      ],
     );
   }
 

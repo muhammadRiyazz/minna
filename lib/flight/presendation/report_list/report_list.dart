@@ -295,6 +295,10 @@ class _ReportListScreenState extends State<ReportListScreen> {
     final firstLeg = flightLegs.isNotEmpty ? flightLegs.first : null;
     final lastLeg = flightLegs.isNotEmpty ? flightLegs.last : null;
 
+    final pnr = report.pnr ?? 'ID: ${report.bookingId}';
+    final origin = firstLeg?.origin ?? 'N/A';
+    final destination = lastLeg?.destination ?? 'N/A';
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -302,227 +306,198 @@ class _ReportListScreenState extends State<ReportListScreen> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
           ),
         ],
-        border: Border.all(color: _borderColor),
+        border: Border.all(color: _borderColor, width: 1),
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ReportDetailScreen(report: report),
-              ),
-            );
-          },
-          borderRadius: BorderRadius.circular(24),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ReportDetailScreen(report: report),
+                ),
+              );
+            },
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header Row
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                // Top Header Section
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: _primaryColor.withOpacity(0.03),
+                    border: Border(bottom: BorderSide(color: _borderColor)),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: _primaryColor.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(Iconsax.airplane, size: 20, color: _primaryColor),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '$origin to $destination',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w900,
+                                color: _primaryColor,
+                                letterSpacing: -0.5,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              "PNR: $pnr",
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: _textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      _buildStatusBadge(report.bookingStatus),
+                    ],
+                  ),
+                ),
+
+                // Content Section
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'PNR / BOOKING ID',
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: _textLight,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 1.2,
-                            ),
+                          _buildInfoItem(
+                            label: "Departure",
+                            value: firstLeg != null ? _formatDate(firstLeg.departureTime) : "N/A",
+                            icon: Iconsax.calendar_1,
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            report.pnr ?? 'ID: ${report.bookingId}',
-                            style: TextStyle(
-                              color: _textPrimary,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w800,
-                            ),
-                            overflow: TextOverflow.ellipsis,
+                          Container(height: 30, width: 1, color: _borderColor),
+                          _buildInfoItem(
+                            label: "Travelers",
+                            value: "${response.passengers.length} Pax",
+                            icon: Iconsax.user,
+                            crossAxisAlignment: CrossAxisAlignment.end,
                           ),
                         ],
                       ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: _getStatusColor(report.bookingStatus).withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            report.bookingStatus.toUpperCase(),
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: _getStatusColor(report.bookingStatus),
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: _secondaryColor.withOpacity(0.12),
-                            borderRadius: BorderRadius.circular(100),
-                            border: Border.all(color: _secondaryColor.withOpacity(0.2)),
-                          ),
-                          child: Text(
-                            '₹${report.totalAmount}',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: _secondaryColor,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-
-                // Route Section
-                if (firstLeg != null && lastLeg != null)
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: _backgroundColor,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.grey.shade100),
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    firstLeg.origin,
-                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: _textPrimary),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text('Origin', style: TextStyle(fontSize: 10, color: _textSecondary, fontWeight: FontWeight.w600)),
-                                ],
+                      const SizedBox(height: 20),
+                      Divider(color: _borderColor, height: 1),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Iconsax.info_circle,
+                                size: 14,
+                                color: _secondaryColor,
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 12),
-                              child: Container(
-                                padding: const EdgeInsets.all(6),
-                                decoration: BoxDecoration(color: _secondaryColor.withOpacity(0.1), shape: BoxShape.circle),
-                                child: Icon(Iconsax.airplane, color: _secondaryColor, size: 14),
-                              ),
-                            ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    lastLeg.destination,
-                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: _textPrimary),
-                                    textAlign: TextAlign.end,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text('Destination', style: TextStyle(fontSize: 10, color: _textSecondary, fontWeight: FontWeight.w600)),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Padding(padding: EdgeInsets.symmetric(vertical: 12), child: Divider(height: 1)),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(Iconsax.calendar_1, size: 14, color: _secondaryColor),
-                                const SizedBox(width: 8),
-                                Text(
-                                  _formatDate(firstLeg.departureTime),
-                                  style: TextStyle(fontSize: 11, color: _textSecondary, fontWeight: FontWeight.w700),
+                              const SizedBox(width: 6),
+                              Text(
+                                "${flightLegs.length} Flight Segment(s)",
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: _textPrimary,
                                 ),
-                              ],
+                              ),
+                            ],
+                          ),
+                          Text(
+                            "₹${report.totalAmount}",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w900,
+                              color: _primaryColor,
                             ),
-                            Row(
-                              children: [
-                                Icon(Iconsax.user, size: 14, color: _secondaryColor),
-                                const SizedBox(width: 8),
-                                Text(
-                                  '${response.passengers.length} Pax',
-                                  style: TextStyle(fontSize: 11, color: _textSecondary, fontWeight: FontWeight.w700),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  )
-                else
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(color: _backgroundColor, borderRadius: BorderRadius.circular(16)),
-                    child: Center(child: Text('Route details unavailable', style: TextStyle(color: _textSecondary, fontSize: 12))),
-                  ),
-                const SizedBox(height: 20),
-
-                // Footer Row
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(color: _secondaryColor.withOpacity(0.1), shape: BoxShape.circle),
-                          child: Icon(Iconsax.info_circle, color: _secondaryColor, size: 14),
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          '${flightLegs.length} Flight${flightLegs.length > 1 ? 's' : ''}',
-                          style: TextStyle(fontSize: 12, color: _textPrimary, fontWeight: FontWeight.w800),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      'DETAILS',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: _secondaryColor,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 1.0,
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildStatusBadge(String status) {
+    Color color = _getStatusColor(status);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: Text(
+        status.toUpperCase(),
+        style: TextStyle(
+          fontSize: 10,
+          color: color,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 0.5,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoItem({
+    required String label,
+    required String value,
+    required IconData icon,
+    CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.start,
+  }) {
+    return Column(
+      crossAxisAlignment: crossAxisAlignment,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 12, color: _textSecondary),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                color: _textSecondary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w800,
+            color: _primaryColor,
+          ),
+        ),
+      ],
     );
   }
 
