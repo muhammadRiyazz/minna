@@ -52,19 +52,26 @@ class _ContactUsPageState extends State<ContactUsPage> {
       Future.delayed(const Duration(seconds: 2), () {
         if (!mounted) return;
         setState(() => _isSubmitting = false);
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(
               children: [
                 const Icon(Iconsax.tick_circle, color: Colors.white, size: 20),
                 const SizedBox(width: 10),
-                const Expanded(child: Text("Message sent successfully!", style: TextStyle(fontWeight: FontWeight.w600))),
+                const Expanded(
+                  child: Text(
+                    "Message sent successfully!",
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ),
               ],
             ),
             backgroundColor: _successColor,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             duration: const Duration(seconds: 3),
           ),
@@ -152,7 +159,10 @@ class _ContactUsPageState extends State<ContactUsPage> {
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.1),
                             shape: BoxShape.circle,
-                            border: Border.all(color: _secondaryColor.withOpacity(0.3), width: 1),
+                            border: Border.all(
+                              color: _secondaryColor.withOpacity(0.3),
+                              width: 1,
+                            ),
                           ),
                           child: Icon(
                             Iconsax.message_question,
@@ -258,12 +268,17 @@ class _ContactUsPageState extends State<ContactUsPage> {
                             "+91 7511100557",
                             _secondaryColor,
                             onTap: () {
-                              final Uri whatsappUri = Uri.parse("https://wa.me/917511100557");
-                              launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
+                              final Uri whatsappUri = Uri.parse(
+                                "https://wa.me/917511100557",
+                              );
+                              launchUrl(
+                                whatsappUri,
+                                mode: LaunchMode.externalApplication,
+                              );
                             },
                           ),
                           const SizedBox(height: 16),
-                           _buildContactItem(
+                          _buildContactItem(
                             Iconsax.clock,
                             "Business Hours",
                             "9:00 AM - 9:00 PM",
@@ -285,7 +300,13 @@ class _ContactUsPageState extends State<ContactUsPage> {
     );
   }
 
-  Widget _buildContactItem(IconData icon, String title, String subtitle, Color color, {VoidCallback? onTap}) {
+  Widget _buildContactItem(
+    IconData icon,
+    String title,
+    String subtitle,
+    Color color, {
+    VoidCallback? onTap,
+  }) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
@@ -383,7 +404,10 @@ class _ContactUsPageState extends State<ContactUsPage> {
               ),
             ),
             hintText: hint,
-            hintStyle: TextStyle(color: _textLight, fontWeight: FontWeight.w500),
+            hintStyle: TextStyle(
+              color: _textLight,
+              fontWeight: FontWeight.w500,
+            ),
             filled: true,
             fillColor: Colors.white,
             border: OutlineInputBorder(

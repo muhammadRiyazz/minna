@@ -314,9 +314,21 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
       for (int i = 0; i < firstNameControllers.length; i++) {
         final legKey = flightOption.flightLegs!.first.key;
 
+        final paxType = i < searchData.travellers['adults']!
+            ? 'ADT'
+            : i <
+                  searchData.travellers['adults']! +
+                      searchData.travellers['children']!
+            ? 'CHD'
+            : 'INF';
+
+        final pInfo = state.respo!.passengerInfo!.firstWhere(
+            (info) => info.ptc == paxType,
+            orElse: () => state.respo!.passengerInfo!.first);
+
         passengerDataList.add({
-          'paxNo': state.respo!.passengerInfo![i].paxNo,
-          'paxKey': state.respo!.passengerInfo![i].paxKey,
+          'paxNo': pInfo.paxNo,
+          'paxKey': pInfo.paxKey,
           'email': emailController.text,
           'contact': contactNumberController.text,
           'title': selectedTitles[i]!.trim(),
@@ -334,13 +346,7 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
           'pincode': sameAsFirstPassenger[i] && i > 0
               ? pincodeControllers[0].text
               : pincodeControllers[i].text,
-          'passengerType': i < searchData.travellers['adults']!
-              ? 'ADT'
-              : i <
-                    searchData.travellers['adults']! +
-                        searchData.travellers['children']!
-              ? 'CHD'
-              : 'INF',
+          'passengerType': paxType,
           'meal': selectedMeals[i] != null
               ? {
                   'code': selectedMeals[i]!.code,

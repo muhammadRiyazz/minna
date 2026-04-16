@@ -9,7 +9,7 @@ const String baseUrl = baseUrltest1;
 
 const String cabLiveUrl = "https://api.gozocabs.com/";
 const String cabStageUrl = "http://gozotech2.ddns.net:5192/";
-final String cabBaseUrl = cabLiveUrl;
+final String cabBaseUrl = cabStageUrl;
 
 final String locationapiKey = 'AIzaSyAKzoBF1Zdc_xuKr2xy-mHm-fP0Oi9G3Io';
 String cabauth = 'Basic NzUzNjQ1ODYzMDBlMzQ3MWRjNGYwNTJkNTIxYTM5MzM=';

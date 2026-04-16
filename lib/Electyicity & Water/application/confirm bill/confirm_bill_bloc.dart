@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:minna/Electyicity%20&%20Water/application/fetch%20bill/fetch_bill_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:minna/comman/core/api.dart';
+import 'package:minna/comman/core/wallet_service.dart';
 
 part 'confirm_bill_event.dart';
 part 'confirm_bill_state.dart';
@@ -31,8 +32,8 @@ class ConfirmBillBloc extends Bloc<ConfirmBillEvent, ConfirmBillState> {
 
     try {
       // Step 0: Check Wallet Balance
-      final walletCheckResult = await _checkWalletBalance(
-        event.bill.billAmount,
+      final walletCheckResult = await WalletService.checkWalletBalance(
+        event.bill.billAmount.toString(),
       );
 
       if (!walletCheckResult['success']) {
@@ -107,51 +108,6 @@ class ConfirmBillBloc extends Bloc<ConfirmBillEvent, ConfirmBillState> {
   }
 
   // API Helper Methods
-
-  Future<Map<String, dynamic>> _checkWalletBalance(String billAmount) async {
-    log("_checkWalletBalance ---");
-
-    final SharedPreferences preferences = await SharedPreferences.getInstance();
-    final userId = preferences.getString('userId') ?? '';
-
-    final url = Uri.parse('${baseUrl}wallet-balance');
-
-    try {
-      final response = await http.post(url);
-
-      log("Wallet balance response: ${response.body}");
-      final responseData = json.decode(response.body);
-
-      if (responseData['status'] == 'SUCCESS') {
-        final walletBalanceStr = responseData['data']['walletBalance']
-            .toString();
-        final walletBalance = double.tryParse(walletBalanceStr) ?? 0.0;
-        final amountRequired = double.tryParse(billAmount) ?? 0.0;
-
-        if (walletBalance >= amountRequired) {
-          return {'success': true};
-        } else {
-          return {
-            'success': false,
-            'message':
-                'Insufficient wallet balance. Available: ₹$walletBalanceStr, Required: ₹$billAmount',
-          };
-        }
-      } else {
-        return {
-          'success': false,
-          'message':
-              responseData['statusDesc'] ?? 'Failed to fetch wallet balance',
-        };
-      }
-    } catch (e) {
-      log(e.toString());
-      return {
-        'success': false,
-        'message': 'Network error while checking wallet balance: $e',
-      };
-    }
-  }
 
   Future<Map<String, dynamic>> _createRazorpayOrder(
     InitiatePayment event,

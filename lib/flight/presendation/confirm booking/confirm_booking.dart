@@ -17,6 +17,8 @@ import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:minna/comman/application/login/login_bloc.dart';
 import 'package:minna/comman/pages/log%20in/login_page.dart';
 import 'package:minna/comman/const/const.dart';
+import 'package:minna/flight/presendation/confirm booking/flight_ticket_pdf.dart';
+import 'package:minna/comman/core/wallet_service.dart';
 
 class BookingConfirmationScreen extends StatefulWidget {
   const BookingConfirmationScreen({
@@ -140,15 +142,18 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
     log("External Wallet: ${response.walletName}");
   }
 
-  Future<String?> _createFlightOrder(BookingState state) async {
+  Future<String> _createFlightOrder(BookingState state) async {
     try {
-      log('Creating flight order with body: ${state.bookingdata!.toJson()}');
+      if (state.bookingdata == null) {
+        throw Exception("Booking details are effectively missing.");
+      }
+      log('Creating flight order with body: ${state.bookingdata?.toJson()}');
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final String? userId = prefs.getString('userId');
 
       final Map<String, String> body = {
         'userId': userId ?? '',
-        'bookingPayload': jsonEncode(state.bookingdata!.toJson()),
+        'bookingPayload': jsonEncode(state.bookingdata?.toJson() ?? {}),
         'commission': state.totalCommission.toString(),
         'totalFare':
             ((state.totalAmountWithCommission ?? 0) -
@@ -168,20 +173,32 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['status'] == true) {
-          return data['order_id'];
+          final orderId = data['order_id'];
+          if (orderId == null || orderId.toString().isEmpty) {
+            throw Exception('Invalid order ID received from the server.');
+          }
+          return orderId.toString();
         } else {
-          log(
-            'Error from create-razorpay-order-for-flight: ${data['message']}',
-          );
-          return null;
+          final msg =
+              data['message'] ??
+              'We are unable to process your booking at the moment. Please try again after some time or contact support.';
+          log('Error from create-razorpay-order-for-flight: $msg');
+          throw Exception(msg);
         }
       } else {
         log('HTTP Error in _createFlightOrder: ${response.statusCode}');
-        return null;
+        throw Exception(
+          'We are unable to process your booking at the moment. Please try again after some time or contact support.',
+        );
       }
     } catch (e) {
       log('Exception in _createFlightOrder: $e');
-      return null;
+      if (e is FormatException) {
+        throw Exception(
+          'We are unable to process your booking at the moment. Please try again after some time or contact support.',
+        );
+      }
+      rethrow;
     }
   }
 
@@ -214,6 +231,16 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
     try {
       // Use total amount with commission for payment
       final amount = state.totalAmountWithCommission ?? 0;
+
+      // Checking Wallet Balance before proceeding
+      final walletCheckResult = await WalletService.checkWalletBalance(
+        amount.toString(),
+      );
+      if (walletCheckResult['success'] != true) {
+        log('Wallet check failed: ${walletCheckResult['message']}');
+        throw Exception('Wallet check failed.');
+      }
+
       final orderId = await _createFlightOrder(state);
 
       final bookingData = state.bookingdata;
@@ -247,7 +274,77 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
       setState(() {
         _isPaymentButtonLoading = false;
       });
+      _showBookingErrorBottomSheet(
+        "Sorry, we are unable to process your booking now. Please try again after some time or contact support.",
+      );
     }
+  }
+
+  void _showBookingErrorBottomSheet(String message) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: errorColor.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Iconsax.danger, color: errorColor, size: 40),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Booking Error',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                  color: maincolor1,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey.shade700,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: maincolor1,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size.fromHeight(56),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                onPressed: () => Navigator.pop(context),
+                child: const Text(
+                  'Close',
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                ),
+              ),
+              SizedBox(height: MediaQuery.of(context).padding.bottom + 16),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -272,10 +369,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
             );
             return false;
           }
-          await _showBottomSheetbooking(
-            context: context,
-            state: state,
-          );
+          await _showBottomSheetbooking(context: context, state: state);
           return false;
         },
         child: Scaffold(
@@ -767,13 +861,14 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
 
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 0),
             child: Column(
               children: [
                 const SizedBox(height: 32),
 
                 // Success Message Card
                 Container(
+                  margin: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
                     color: successColor.withOpacity(0.05),
@@ -848,7 +943,8 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                   const SizedBox(height: 16),
                   _buildEnhancedFareBreakdownWithCommission(state),
                 ],
-                const SizedBox(height: 40),
+
+                // const SizedBox(height: 40),
               ],
             ),
           ),
@@ -861,6 +957,40 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: maincolor1,
+                    minimumSize: const Size.fromHeight(56),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      side: BorderSide(color: maincolor1, width: 2),
+                    ),
+                    elevation: 0,
+                  ),
+                  onPressed: () =>
+                      downloadFlightTicketPdf(context: context, state: state),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Iconsax.document_download,
+                        size: 20,
+                        color: maincolor1,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Download E-Ticket',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: maincolor1,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: maincolor1,
@@ -1074,7 +1204,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
 
   Widget _buildPassengerExpansionSection(List<RePassenger> passengers) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      margin: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(16),
@@ -1357,7 +1487,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
     double finalTotal = subtotal + serviceCharge - totalDiscount;
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(16),
