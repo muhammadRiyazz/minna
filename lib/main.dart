@@ -7,23 +7,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
-
-
-
 // Common
 import 'package:minna/comman/application/login/login_bloc.dart';
 import 'package:minna/comman/application/home_data/home_data_bloc.dart';
 import 'package:minna/comman/pages/screen%20splash/splash_page.dart';
 import 'package:minna/comman/functions/update_manager.dart';
 
-
-
 // Bus
 import 'package:minna/bus/application/busListfetch/bus_list_fetch_bloc.dart';
 import 'package:minna/bus/application/change%20location/location_bloc.dart';
 import 'package:minna/bus/application/location%20fetch/bus_location_fetch_bloc.dart';
-
-
 
 // Cab
 import 'package:minna/cab/application/booked%20info%20list/booked_info_bloc.dart';

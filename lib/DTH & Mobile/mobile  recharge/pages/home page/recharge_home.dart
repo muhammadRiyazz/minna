@@ -45,16 +45,16 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
   String _getOperatorImageURL(String operatorName) {
     switch (operatorName.toUpperCase()) {
       case 'AIRTEL':
-        return 'https://1000logos.net/wp-content/uploads/2023/06/Airtel-logo.png';
+        return 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Airtel_logo.svg/1024px-Airtel_logo.svg.png';
       case 'JIO':
       case 'RELIANCE JIO':
-        return 'https://indianexpress.com/wp-content/uploads/2016/07/reliancejio_newlogo_1.jpg';
+        return 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Reliance_Jio_Logo.svg/1024px-Reliance_Jio_Logo.svg.png';
       case 'VI':
       case 'VODAFONE':
       case 'IDEA':
-        return 'https://www.logoshape.com/wp-content/uploads/2024/08/vi-vodafone-idea-vector-logo_logoshape.com_.png';
+        return 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Vi_logo.svg/1024px-Vi_logo.svg.png';
       case 'BSNL':
-        return 'https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/bsnl-logo-icon.png';
+        return 'https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/BSNL_logo.svg/1024px-BSNL_logo.svg.png';
       case 'MTNL':
         return 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/MTNL_logo.svg/1024px-MTNL_logo.svg.png';
       default:
@@ -64,14 +64,14 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
 
   Widget _buildTextFallback(String opName) {
     return Container(
-      color: _getOperatorColor(opName).withOpacity(0.1),
+      color: _getOperatorColor(opName).withOpacity(0.08),
       child: Center(
         child: Text(
           opName.isNotEmpty ? opName[0].toUpperCase() : '?',
           style: TextStyle(
             color: _getOperatorColor(opName),
             fontWeight: FontWeight.w900,
-            fontSize: 22,
+            fontSize: 16, // Refined size
           ),
         ),
       ),
@@ -428,6 +428,28 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                                                           opName,
                                                         ),
                                                         fit: BoxFit.contain,
+                                                        frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+                                                          if (wasSynchronouslyLoaded) return child;
+                                                          return AnimatedOpacity(
+                                                            opacity: frame == null ? 0 : 1,
+                                                            duration: const Duration(milliseconds: 500),
+                                                            curve: Curves.easeOut,
+                                                            child: child,
+                                                          );
+                                                        },
+                                                        loadingBuilder: (context, child, loadingProgress) {
+                                                          if (loadingProgress == null) return child;
+                                                          return Center(
+                                                            child: SizedBox(
+                                                              width: 12,
+                                                              height: 12,
+                                                              child: CircularProgressIndicator(
+                                                                strokeWidth: 2,
+                                                                valueColor: AlwaysStoppedAnimation<Color>(secondaryColor.withOpacity(0.3)),
+                                                              ),
+                                                            ),
+                                                          );
+                                                        },
                                                         errorBuilder: (c, e, s) =>
                                                             _buildTextFallback(
                                                               opName,
