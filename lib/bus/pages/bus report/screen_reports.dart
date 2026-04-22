@@ -163,12 +163,16 @@ class _ScreenReportState extends State<ScreenReport> {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
-            'We couldn\'t find any trips in your booking history.',
-            style: TextStyle(
-              color: _textSecondary,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              'We couldn\'t find any trips in your booking history.',
+              style: TextStyle(
+                color: _textSecondary,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
             ),
           ),
           const SizedBox(height: 32),
@@ -440,11 +444,7 @@ class _ScreenReportState extends State<ScreenReport> {
                             value: formattedDate,
                             icon: Iconsax.calendar_1,
                           ),
-                          Container(
-                            height: 30,
-                            width: 1,
-                            color: _borderColor,
-                          ),
+                          Container(height: 30, width: 1, color: _borderColor),
                           _buildInfoItem(
                             label: "Booking",
                             value: "${item.seatDetails.length} Seat(s)",

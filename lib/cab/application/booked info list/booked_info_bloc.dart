@@ -20,56 +20,33 @@ class BookedInfoBloc extends Bloc<BookedInfoEvent, BookedInfoState> {
     on<_DateFilterChanged>(_onDateFilterChanged);
     on<_StatusFilterChanged>(_onStatusFilterChanged);
   }
-Future<void> _onFetchList(
-  _FetchList event,
-  Emitter<BookedInfoState> emit,
-) async {
-  emit(const BookedInfoState.loading());
+  Future<void> _onFetchList(
+    _FetchList event,
+    Emitter<BookedInfoState> emit,
+  ) async {
+    emit(const BookedInfoState.loading());
 
-  try {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    final userId = preferences.getString('userId') ?? '';
+    try {
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      final userId = preferences.getString('userId') ?? '';
 
-    /// Step 1: Call HO
-    final response = await http.post(
-      Uri.parse('${baseUrl}cab-report'),
-      body: {
-        'user_id': userId,
-        if (event.fromDate != null) 'from': event.fromDate!,
-        if (event.toDate != null) 'to': event.toDate!,
-      },
-    );
-log(response.body.toString());
-    if (response.statusCode == 200) {
-      final jsonResponse = json.decode(response.body);
-      final cabResponse = CabBookingResponse.fromJson(jsonResponse);
+      /// Step 1: Call HO
+      final response = await http.post(
+        Uri.parse('${baseUrl}cab-report'),
+        body: {
+          'user_id': userId,
+          if (event.fromDate != null) 'from': event.fromDate!,
+          if (event.toDate != null) 'to': event.toDate!,
+        },
+      );
+      log(response.body.toString());
+      if (response.statusCode == 200) {
+        final jsonResponse = json.decode(response.body);
+        final cabResponse = CabBookingResponse.fromJson(jsonResponse);
 
-      if (cabResponse.status == 'success') {
-        // ✅ Update bookingId based on status & tripType
-        final updatedBookings = cabResponse.bookings.map((booking) {
-          // if (booking.status.toLowerCase() == "confirmed") {
-            String prefix = "QT"; // default fallback
-            switch (booking.tripType.toUpperCase()) {
-              case "ONE WAY":
-                prefix = "OW";
-                break;
-              case "ROUND TRIP":
-                prefix = "RT";
-                break;
-              case "AIRPORT TRANSFER":
-                prefix = "AP";
-                break;
-              case "MULTI CITY":
-                prefix = "MW";
-                break;
-            }
-
-            // bookingId already has QTxxxxx → replace first 2 chars
-            String newBookingId = booking.bookingId;
-            if (newBookingId.length > 2) {
-              newBookingId = prefix + newBookingId.substring(2);
-            }
-
+        if (cabResponse.status == 'success') {
+          // ✅ Update bookingId based on status & tripType
+          final updatedBookings = cabResponse.bookings.map((booking) {
             return CabBooking(
               id: booking.id,
               tripType: booking.tripType,
@@ -83,51 +60,67 @@ log(response.body.toString());
               referenceId: booking.referenceId,
               date: booking.date,
               time: booking.time,
-              bookingId: newBookingId,
+              bookingId: booking.bookingId,
               paymentId: booking.paymentId,
               orderId: booking.orderId,
               status: booking.status,
               paidStatus: booking.paidStatus,
             );
-          // } else {
-          //   return booking;
-          // }
-        }).toList();
+            // } else {
+            //   return booking;
+            // }
+          }).toList();
 
-        emit(BookedInfoState.success(
-          allBookings: updatedBookings.reversed.toList(),
-          filteredBookings: updatedBookings.reversed.toList(),
-          searchQuery: '',
-          selectedDate: null,
-          statusFilter: null,
-        ));
+          emit(
+            BookedInfoState.success(
+              allBookings: updatedBookings.reversed.toList(),
+              filteredBookings: updatedBookings.reversed.toList(),
+              searchQuery: '',
+              selectedDate: null,
+              statusFilter: null,
+            ),
+          );
+        } else {
+          emit(
+            BookedInfoState.error(cabResponse.errorMessage ?? 'Unknown error'),
+          );
+        }
       } else {
-        emit(BookedInfoState.error(cabResponse.errorMessage ?? 'Unknown error'));
+        emit(
+          BookedInfoState.error('Failed to load data: ${response.statusCode}'),
+        );
       }
-    } else {
-      emit(BookedInfoState.error('Failed to load data: ${response.statusCode}'));
+    } catch (e) {
+      emit(BookedInfoState.error('Error: $e'));
     }
-  } catch (e) {
-    emit(BookedInfoState.error('Error: $e'));
   }
-}
 
-
-  void _onSearchChanged(
-    _SearchChanged event,
-    Emitter<BookedInfoState> emit,
-  ) {
+  void _onSearchChanged(_SearchChanged event, Emitter<BookedInfoState> emit) {
     state.maybeWhen(
-      success: (allBookings, filteredBookings, searchQuery, selectedDate, statusFilter) {
-        final filtered = _applyFilters(allBookings, event.query, selectedDate, statusFilter);
-        emit(BookedInfoState.success(
-          allBookings: allBookings,
-          filteredBookings: filtered,
-          searchQuery: event.query,
-          selectedDate: selectedDate,
-          statusFilter: statusFilter,
-        ));
-      },
+      success:
+          (
+            allBookings,
+            filteredBookings,
+            searchQuery,
+            selectedDate,
+            statusFilter,
+          ) {
+            final filtered = _applyFilters(
+              allBookings,
+              event.query,
+              selectedDate,
+              statusFilter,
+            );
+            emit(
+              BookedInfoState.success(
+                allBookings: allBookings,
+                filteredBookings: filtered,
+                searchQuery: event.query,
+                selectedDate: selectedDate,
+                statusFilter: statusFilter,
+              ),
+            );
+          },
       orElse: () {},
     );
   }
@@ -137,16 +130,30 @@ log(response.body.toString());
     Emitter<BookedInfoState> emit,
   ) {
     state.maybeWhen(
-      success: (allBookings, filteredBookings, searchQuery, selectedDate, statusFilter) {
-        final filtered = _applyFilters(allBookings, searchQuery, event.date, statusFilter);
-        emit(BookedInfoState.success(
-          allBookings: allBookings,
-          filteredBookings: filtered,
-          searchQuery: searchQuery,
-          selectedDate: event.date,
-          statusFilter: statusFilter,
-        ));
-      },
+      success:
+          (
+            allBookings,
+            filteredBookings,
+            searchQuery,
+            selectedDate,
+            statusFilter,
+          ) {
+            final filtered = _applyFilters(
+              allBookings,
+              searchQuery,
+              event.date,
+              statusFilter,
+            );
+            emit(
+              BookedInfoState.success(
+                allBookings: allBookings,
+                filteredBookings: filtered,
+                searchQuery: searchQuery,
+                selectedDate: event.date,
+                statusFilter: statusFilter,
+              ),
+            );
+          },
       orElse: () {},
     );
   }
@@ -156,16 +163,30 @@ log(response.body.toString());
     Emitter<BookedInfoState> emit,
   ) {
     state.maybeWhen(
-      success: (allBookings, filteredBookings, searchQuery, selectedDate, statusFilter) {
-        final filtered = _applyFilters(allBookings, searchQuery, selectedDate, event.status);
-        emit(BookedInfoState.success(
-          allBookings: allBookings,
-          filteredBookings: filtered,
-          searchQuery: searchQuery,
-          selectedDate: selectedDate,
-          statusFilter: event.status,
-        ));
-      },
+      success:
+          (
+            allBookings,
+            filteredBookings,
+            searchQuery,
+            selectedDate,
+            statusFilter,
+          ) {
+            final filtered = _applyFilters(
+              allBookings,
+              searchQuery,
+              selectedDate,
+              event.status,
+            );
+            emit(
+              BookedInfoState.success(
+                allBookings: allBookings,
+                filteredBookings: filtered,
+                searchQuery: searchQuery,
+                selectedDate: selectedDate,
+                statusFilter: event.status,
+              ),
+            );
+          },
       orElse: () {},
     );
   }
@@ -177,14 +198,17 @@ log(response.body.toString());
     String? statusFilter,
   ) {
     return bookings.where((booking) {
-      final matchesSearch = searchQuery.isEmpty ||
+      final matchesSearch =
+          searchQuery.isEmpty ||
           booking.firstName.toLowerCase().contains(searchQuery.toLowerCase()) ||
           booking.bookingId.toLowerCase().contains(searchQuery.toLowerCase());
 
-      final matchesDate = selectedDate == null ||
+      final matchesDate =
+          selectedDate == null ||
           booking.date == DateFormat("yyyy-MM-dd").format(selectedDate);
 
-      final matchesStatus = statusFilter == null ||
+      final matchesStatus =
+          statusFilter == null ||
           statusFilter == "All" ||
           booking.status.toLowerCase() == statusFilter.toLowerCase();
 
@@ -199,11 +223,11 @@ log(response.body.toString());
       if (timeParts.length >= 2) {
         int hour = int.parse(timeParts[0]);
         int minute = int.parse(timeParts[1]);
-        
+
         String period = hour >= 12 ? 'PM' : 'AM';
         hour = hour % 12;
         hour = hour == 0 ? 12 : hour;
-        
+
         return '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')} $period';
       }
       return time24;

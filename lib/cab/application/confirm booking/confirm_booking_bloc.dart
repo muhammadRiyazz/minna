@@ -106,24 +106,35 @@ class ConfirmBookingBloc
           "✅ confirmBookingResponse.success = ${confirmBookingResponse.success}",
         );
 
-        if (confirmBookingResponse.success && confirmBookingResponse.data != null) {
+        if (confirmBookingResponse.success &&
+            confirmBookingResponse.data != null) {
           log('✅ Booking confirmation successful. Emitting success state.');
-          
+
           // Emit success state immediately so UI can navigate to success screen
-          emit(ConfirmBookingSuccess(data: confirmBookingResponse.data!.copyWith(paidAmount: event.amount)));
+          emit(
+            ConfirmBookingSuccess(
+              data: confirmBookingResponse.data!.copyWith(
+                paidAmount: event.amount,
+              ),
+            ),
+          );
 
           // Try to save cab-status in the background, but don't let it block or change the state anymore
           try {
             log('🔹 Attempting background cab-status update...');
-            final saveResponse = await http.post(
-              Uri.parse('${baseUrl}cab-status'),
-              body: {
-                "booking_id": event.tableid.toString(),
-                "type": "confirm",
-                "request": jsonEncode({"bookingId": event.bookingid}),
-                "response": jsonEncode(jsonData),
-              },
-            ).timeout(const Duration(seconds: 10));
+            final saveResponse = await http
+                .post(
+                  Uri.parse('${baseUrl}cab-status'),
+                  body: {
+                    "booking_id": event.tableid.toString(),
+                    "type": "confirm",
+                    "request": jsonEncode({"bookingId": event.bookingid}),
+                    "response": jsonEncode(jsonData),
+                  },
+                )
+                .timeout(const Duration(seconds: 10));
+
+            log(saveResponse.body.toString());
 
             log("📩 cab-status Response code: ${saveResponse.statusCode}");
             final saveJson = jsonDecode(saveResponse.body);
@@ -212,7 +223,7 @@ class ConfirmBookingBloc
           }
         }
       } catch (e) {
-        await http.post(
+        final respo = await http.post(
           Uri.parse('${baseUrl}cab-status'),
           body: {
             "booking_id": event.tableid.toString(),
@@ -222,6 +233,7 @@ class ConfirmBookingBloc
           },
         );
 
+        log(respo.body.toString());
         log("💥 Outer try-catch Error: $e");
         emit(
           ConfirmBookingError(

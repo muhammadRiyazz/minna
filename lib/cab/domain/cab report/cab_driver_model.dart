@@ -12,13 +12,15 @@ class CabDriverResponse {
   });
 
   factory CabDriverResponse.fromJson(Map<String, dynamic> json) {
+    final rawData = json['data'];
     return CabDriverResponse(
       success: json['status'] == 'success',
       message: json['message'],
-      data: (json['data'] as List<dynamic>?)
-              ?.map((item) => CabDriverDataItem.fromJson(item))
-              .toList() ??
-          [],
+      data: (rawData is List)
+          ? rawData
+              .map((item) => CabDriverDataItem.fromJson(item))
+              .toList()
+          : [],
     );
   }
 

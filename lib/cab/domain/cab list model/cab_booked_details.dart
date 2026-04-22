@@ -9,6 +9,7 @@ class BookingDetails {
   final String pickupTime;
   final String bookingDate;
   final String bookingTime;
+  final String otp;
   final List<BookedRoute> routes;
   final BookedTraveller traveller;
   final BookedCabRate cabRate;
@@ -23,6 +24,7 @@ class BookingDetails {
     required this.pickupTime,
     required this.bookingDate,
     required this.bookingTime,
+    required this.otp,
     required this.routes,
     required this.traveller,
     required this.cabRate,
@@ -39,6 +41,7 @@ class BookingDetails {
       pickupTime: json['pickupTime'] ?? '',
       bookingDate: json['bookingDate'] ?? '',
       bookingTime: json['bookingTime'] ?? '',
+      otp: (json['otp'] ?? '').toString(),
       routes:
           (json['routes'] as List<dynamic>?)
               ?.map((route) => BookedRoute.fromJson(route))

@@ -28,6 +28,7 @@ class BookedDetailsBloc extends Bloc<BookedDetailsEvent, BookedDetailsState> {
       // 🔹 Log request details
       log('➡️ PROXY API REQUEST');
       log('URL: ${baseUrl}Cabapi');
+      
 
       final response = await http.post(
         Uri.parse('${baseUrl}Cabapi'),
@@ -36,13 +37,11 @@ class BookedDetailsBloc extends Bloc<BookedDetailsEvent, BookedDetailsState> {
           "data": jsonEncode({"bookingId": event.bookingId}),
         },
       );
-
-      // 🔹 Log response details
-      log('⬅️ PROXY API RESPONSE');
+      log("get details request --- ${event.bookingId}");
+      log("get details response --- ${response.body.toString()}");
       log('Status Code: ${response.statusCode}');
-      log('Body: ${response.body}');
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         final jsonResponse = json.decode(response.body);
         var actualData = jsonResponse['message'] ?? jsonResponse;
 
@@ -66,9 +65,10 @@ class BookedDetailsBloc extends Bloc<BookedDetailsEvent, BookedDetailsState> {
               Uri.parse('${baseUrl}cab_driver'),
               body: {"bookingid": event.bookingId},
             );
-
+            log("driver response --- ${driverResponse.body.toString()}");
             log('⬅️ DRIVER INFO API RESPONSE: ${driverResponse.statusCode}');
-            if (driverResponse.statusCode == 200) {
+            if (driverResponse.statusCode == 200 ||
+                driverResponse.statusCode == 201) {
               final driverJson = json.decode(driverResponse.body);
               driverInfo = CabDriverResponse.fromJson(driverJson);
             }
