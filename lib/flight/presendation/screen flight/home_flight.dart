@@ -885,7 +885,7 @@ class _FlightBookingTabState extends State<FlightBookingTab> {
                     _buildPassengerType(
                       context,
                       "Children",
-                      "2-12 years",
+                      "2-11 years",
                       state.travellers['children']!,
                       (value) => context.read<SearchDataBloc>().add(
                         SearchDataEvent.passengers(

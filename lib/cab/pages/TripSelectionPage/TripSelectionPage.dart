@@ -518,7 +518,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                           'USE CURRENT LOCATION',
                                           style: TextStyle(
                                             fontSize: 8,
-                                            fontWeight: FontWeight.w900,
+                                            fontWeight: FontWeight.w600,
                                             color: secondaryColor,
                                             letterSpacing: 1,
                                           ),
@@ -577,7 +577,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                   'OR SEARCH PLACE',
                                   style: TextStyle(
                                     color: textLight,
-                                    fontWeight: FontWeight.w800,
+                                    fontWeight: FontWeight.w600,
                                     fontSize: 10,
                                     letterSpacing: 1.5,
                                   ),
@@ -612,7 +612,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                               controller: _searchController,
                               style: TextStyle(
                                 color: textPrimary,
-                                fontWeight: FontWeight.w700,
+                                fontWeight: FontWeight.w500,
                                 fontSize: 16,
                               ),
                               decoration: InputDecoration(
@@ -758,7 +758,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                       title: Text(
                                         place['description'] ?? '',
                                         style: TextStyle(
-                                          fontWeight: FontWeight.w800,
+                                          fontWeight: FontWeight.w500,
                                           color: maincolor1,
                                           fontSize: 12,
                                         ),
@@ -778,7 +778,7 @@ class _TripSelectionPageState extends State<TripSelectionPage> {
                                                   color: textSecondary
                                                       .withOpacity(0.7),
                                                   fontSize: 10,
-                                                  fontWeight: FontWeight.w600,
+                                                  fontWeight: FontWeight.w400,
                                                 ),
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,

@@ -6,6 +6,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:minna/hotel booking/application/report/hotel_report_bloc.dart';
 import 'package:minna/hotel booking/domain/report/hotel_report_model.dart';
 import 'package:minna/hotel booking/pages/report/screen_hotel_report_detail.dart';
+import 'package:minna/hotel booking/pages/report/hotel_view_more.dart';
 import 'package:minna/comman/const/const.dart';
 
 class ScreenHotelReport extends StatefulWidget {
@@ -221,17 +222,73 @@ class _ScreenHotelReportState extends State<ScreenHotelReport> {
   }
 
   Widget _buildReportList(List<HotelBookingRecord> reports) {
+    // Sort and take the latest 4 for the preview
+    final displayReports = reports.take(4).toList();
+    final totalBookings = reports.length;
+
     return RefreshIndicator(
       onRefresh: () async {
         context.read<HotelReportBloc>().add(FetchHotelReports());
       },
-      child: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-        itemCount: reports.length,
-        itemBuilder: (context, index) {
-          final record = reports[index];
-          return _buildBookingCard(record);
-        },
+      child: ListView(
+        padding: const EdgeInsets.symmetric(vertical: 24),
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'MANAGE BOOKINGS',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: textLight,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                if (totalBookings > 0)
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              HotelAllReportsPage(allReports: reports),
+                        ),
+                      );
+                    },
+                    style: TextButton.styleFrom(
+                      foregroundColor: secondaryColor,
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                    ),
+                    child: Row(
+                      children: [
+                        const Text(
+                          'View All',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 12,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        const Icon(Icons.arrow_forward_rounded, size: 14),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              children: displayReports
+                  .map((record) => _buildBookingCard(record))
+                  .toList(),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -293,18 +350,18 @@ class _ScreenHotelReportState extends State<ScreenHotelReport> {
                             Text(
                               booking.hotelName,
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 13,
                                 fontWeight: FontWeight.w900,
                                 color: maincolor1,
-                                letterSpacing: -0.5,
+                                letterSpacing: -0.2,
                               ),
-                              maxLines: 1,
+                              maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
                               "Order ID: ${booking.bookingId ?? booking.id}",
                               style: TextStyle(
-                                fontSize: 11,
+                                fontSize: 10,
                                 fontWeight: FontWeight.w600,
                                 color: textSecondary,
                               ),
@@ -312,13 +369,14 @@ class _ScreenHotelReportState extends State<ScreenHotelReport> {
                           ],
                         ),
                       ),
+                      _buildStatusBadge(record.booking.bookingStatus ?? ""),
                     ],
                   ),
                 ),
 
                 // Content Section
                 Padding(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(15),
                   child: Column(
                     children: [
                       Row(
@@ -329,7 +387,11 @@ class _ScreenHotelReportState extends State<ScreenHotelReport> {
                             value: _formatDate(booking.checkIn),
                             icon: Iconsax.calendar_1,
                           ),
-                          Container(height: 30, width: 1, color: borderSoft),
+                          Container(
+                            height: 30,
+                            width: 1,
+                            color: borderSoft,
+                          ),
                           _buildInfoItem(
                             label: "Check-Out",
                             value: _formatDate(booking.checkOut),
@@ -338,9 +400,9 @@ class _ScreenHotelReportState extends State<ScreenHotelReport> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 15),
                       Divider(color: borderSoft, height: 1),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -348,14 +410,14 @@ class _ScreenHotelReportState extends State<ScreenHotelReport> {
                             children: [
                               Icon(
                                 Iconsax.user,
-                                size: 14,
+                                size: 12,
                                 color: secondaryColor,
                               ),
                               const SizedBox(width: 6),
                               Text(
                                 "${booking.guests} Guest(s)",
                                 style: TextStyle(
-                                  fontSize: 13,
+                                  fontSize: 11,
                                   fontWeight: FontWeight.w700,
                                   color: textPrimary,
                                 ),
@@ -365,7 +427,7 @@ class _ScreenHotelReportState extends State<ScreenHotelReport> {
                           Text(
                             "${booking.currency} ${booking.netAmount}",
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 13,
                               fontWeight: FontWeight.w900,
                               color: maincolor1,
                             ),
@@ -384,35 +446,37 @@ class _ScreenHotelReportState extends State<ScreenHotelReport> {
   }
 
   Widget _buildStatusBadge(String status) {
-    bool isConfirmed = status.toUpperCase() == "CONFIRMED";
-    bool isPending =
-        status.toUpperCase() == "INITIATED" ||
-        status.toUpperCase() == "PENDING";
-
+    Color color = _getStatusColor(status);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: isConfirmed
-            ? Colors.green.withOpacity(0.1)
-            : isPending
-            ? Colors.orange.withOpacity(0.1)
-            : Colors.red.withOpacity(0.1),
+        color: color.withOpacity(0.12),
         borderRadius: BorderRadius.circular(100),
       ),
       child: Text(
         status.toUpperCase(),
         style: TextStyle(
-          color: isConfirmed
-              ? Colors.green
-              : isPending
-              ? Colors.orange[800]
-              : Colors.red,
-          fontSize: 10,
-          fontWeight: FontWeight.w800,
+          fontSize: 8,
+          color: color,
+          fontWeight: FontWeight.w900,
           letterSpacing: 0.5,
         ),
       ),
     );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toUpperCase()) {
+      case 'CONFIRMED':
+        return const Color(0xFF0D9488);
+      case 'CANCELLED':
+        return errorColor;
+      case 'INITIATED':
+      case 'PENDING':
+        return const Color(0xFFD97706);
+      default:
+        return secondaryColor;
+    }
   }
 
   Widget _buildInfoItem({
@@ -427,12 +491,12 @@ class _ScreenHotelReportState extends State<ScreenHotelReport> {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 12, color: textSecondary),
+            Icon(icon, size: 10, color: textSecondary),
             const SizedBox(width: 4),
             Text(
               label,
               style: TextStyle(
-                fontSize: 11,
+                fontSize: 10,
                 color: textSecondary,
                 fontWeight: FontWeight.w600,
               ),
@@ -443,7 +507,7 @@ class _ScreenHotelReportState extends State<ScreenHotelReport> {
         Text(
           value,
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 13,
             fontWeight: FontWeight.w800,
             color: maincolor1,
           ),

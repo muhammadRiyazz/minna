@@ -1,10 +1,12 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:minna/bus/domain/report%20modal/report_Modal.dart';
 import 'package:minna/bus/pages/Screen%20Ticket%20Details/TicketDetails.dart';
+import 'package:minna/comman/const/const.dart';
 
 // Add these imports for your API calls
 // import 'package:minna/bus/domain/api_services.dart'; // Your API service file
@@ -20,18 +22,19 @@ class BusAllBookingsPage extends StatefulWidget {
 }
 
 class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
-  // Theme Colors
-  final Color _primaryColor = Colors.black;
-  final Color _secondaryColor = Color(0xFFD4AF37);
-  final Color _accentColor = Color(0xFFC19B3C);
-  final Color _backgroundColor = Color(0xFFF8F9FA);
-  final Color _cardColor = Colors.white;
-  final Color _textPrimary = Colors.black;
-  final Color _textSecondary = Color(0xFF666666);
-  final Color _textLight = Color(0xFF999999);
-  final Color _errorColor = Color(0xFFE53935);
-  final Color _successColor = Color(0xFF4CAF50);
-  final Color _warningColor = Color(0xFFFF9800);
+  // Theme Constants
+  final Color _primaryColor = maincolor1;
+  final Color _secondaryColor = secondaryColor;
+  final Color _accentColor = accentColor;
+  final Color _backgroundColor = backgroundColor;
+  final Color _cardColor = cardColor;
+  final Color _textPrimary = textPrimary;
+  final Color _textSecondary = textSecondary;
+  final Color _textLight = textLight;
+  final Color _errorColor = errorColor;
+  final Color _successColor = successColor;
+  final Color _warningColor = warningColor;
+  final Color _borderColor = borderSoft;
 
   final TextEditingController _searchController = TextEditingController();
   String _startDate = '';
@@ -200,7 +203,7 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
                 child: Row(
                   children: [
                     Icon(
-                      Icons.calendar_month_rounded,
+                      Iconsax.calendar_tick,
                       color: _secondaryColor,
                       size: 24,
                     ),
@@ -371,11 +374,7 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.calendar_today_rounded,
-              size: 12,
-              color: _secondaryColor,
-            ),
+            Icon(Iconsax.calendar_1, size: 12, color: _secondaryColor),
             const SizedBox(width: 8),
             Text(
               '${DateFormat('MMM dd, yyyy').format(DateTime.parse(_startDate))}  -  '
@@ -396,7 +395,11 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
                     color: _errorColor.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.close, size: 12, color: _errorColor),
+                  child: Icon(
+                    Iconsax.close_circle,
+                    size: 12,
+                    color: _errorColor,
+                  ),
                 ),
               ),
             ],
@@ -446,7 +449,7 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  isClearAll ? Icons.clear_all : Icons.close,
+                  isClearAll ? Iconsax.refresh : Iconsax.close_circle,
                   size: 12,
                   color: Colors.white,
                 ),
@@ -622,542 +625,438 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _backgroundColor,
-      body: RefreshIndicator(
-        color: _secondaryColor,
-        backgroundColor: _cardColor,
-        onRefresh: () async {
-          await _fetchReportsByDate(_startDate, _endDate);
-        },
-        child: SafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              // Search and Filter Section
-              Container(
-                margin: EdgeInsets.all(12),
-                padding: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: _cardColor,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 20,
-                      offset: Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    // Search Bar with Clear Button
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: _backgroundColor,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: TextField(
-                              controller: _searchController,
-                              onChanged: _onSearchChanged,
-                              decoration: InputDecoration(
-                                hintText:
-                                    'Search by Ticket, Route, or Status...',
-                                hintStyle: TextStyle(
-                                  color: _textLight,
-                                  fontSize: 14,
-                                ),
-                                prefixIcon: Icon(
-                                  Icons.search_rounded,
-                                  color: _secondaryColor,
-                                  size: 20,
-                                ),
-                                suffixIcon: _searchController.text.isNotEmpty
-                                    ? IconButton(
-                                        icon: Icon(
-                                          Icons.clear_rounded,
-                                          color: _textLight,
-                                          size: 18,
-                                        ),
-                                        onPressed: _clearSearch,
-                                      )
-                                    : null,
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 14,
-                                ),
-                              ),
-                              style: TextStyle(
-                                color: _textPrimary,
-                                fontSize: 14,
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildHeader(),
+            Expanded(
+              child: RefreshIndicator(
+                color: _secondaryColor,
+                backgroundColor: _cardColor,
+                onRefresh: () async {
+                  await _fetchReportsByDate(_startDate, _endDate);
+                },
+                child: CustomScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  slivers: [
+                    SliverToBoxAdapter(child: _buildSearchAndFilter()),
+                    _filteredBookings.isEmpty
+                        ? SliverFillRemaining(child: _buildEmptyState())
+                        : SliverPadding(
+                            padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+                            sliver: SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) =>
+                                    _buildBusTripCard(_filteredBookings[index]),
+                                childCount: _filteredBookings.length,
                               ),
                             ),
                           ),
-                        ),
-                        SizedBox(width: 5),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: _secondaryColor,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: IconButton(
-                            onPressed: _isLoading
-                                ? null
-                                : _showDatePickerDialog,
-                            icon: _isLoading
-                                ? SizedBox(
-                                    width: 16,
-                                    height: 16,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        _cardColor,
-                                      ),
-                                    ),
-                                  )
-                                : Icon(
-                                    Icons.calendar_today_rounded,
-                                    size: 20,
-                                    color: _cardColor,
-                                  ),
-                            tooltip: 'Select Date Range',
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    _buildDateRangeText(),
                   ],
                 ),
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-              // Results Count
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      color: Colors.white,
+      child: Row(
+        children: [
+          IconButton(
+            icon: const Icon(Iconsax.arrow_left_2, size: 20),
+            onPressed: () => Navigator.pop(context),
+            color: _primaryColor,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'Bus Bookings',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: _textPrimary,
+              letterSpacing: -0.5,
+            ),
+          ),
+          const Spacer(),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: _secondaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(100),
+            ),
+            child: Text(
+              '${_filteredBookings.length} TOTAL',
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w900,
+                color: _secondaryColor,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchAndFilter() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
+      child: Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: _cardColor,
+              borderRadius: BorderRadius.circular(22),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.06),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+              border: Border.all(color: Colors.grey.shade100),
+            ),
+            child: Column(
+              children: [
+                Row(
                   children: [
-                    Text(
-                      'All Bookings',
-                      style: TextStyle(
-                        color: _textPrimary,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
+                    Expanded(
+                      child: TextField(
+                        controller: _searchController,
+                        onChanged: _onSearchChanged,
+                        decoration: InputDecoration(
+                          hintText: 'Search Ticket, Route, Status...',
+                          hintStyle: TextStyle(
+                            color: _textLight,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          prefixIcon: Icon(
+                            Iconsax.search_normal_1,
+                            color: _secondaryColor,
+                            size: 18,
+                          ),
+                          suffixIcon: _searchController.text.isNotEmpty
+                              ? IconButton(
+                                  icon: Icon(
+                                    Iconsax.close_circle,
+                                    color: _textLight,
+                                    size: 16,
+                                  ),
+                                  onPressed: _clearSearch,
+                                )
+                              : null,
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 15,
+                          ),
+                        ),
+                        style: TextStyle(
+                          color: _textPrimary,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
-                    Container(
-                      padding: EdgeInsets.symmetric(
+                    IconButton(
+                      onPressed: _showDatePickerDialog,
+                      icon: Icon(
+                        Iconsax.calendar_tick,
+                        size: 20,
+                        color: _secondaryColor,
+                      ),
+                    ),
+                  ],
+                ),
+                if (_isDateFilterActive)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
                         horizontal: 12,
-                        vertical: 6,
+                        vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: _backgroundColor,
+                        color: _secondaryColor.withOpacity(0.05),
                         borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: _secondaryColor.withOpacity(0.1),
+                        ),
                       ),
                       child: Row(
-                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            Icons.confirmation_number_rounded,
-                            size: 12,
+                            Iconsax.calendar,
+                            size: 14,
                             color: _secondaryColor,
                           ),
-                          SizedBox(width: 6),
-                          Text(
-                            '${_filteredBookings.length} ${_filteredBookings.length == 1 ? 'booking' : 'bookings'}',
-                            style: TextStyle(
-                              color: _secondaryColor,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              '${DateFormat('dd MMM').format(DateTime.parse(_startDate))} - ${DateFormat('dd MMM').format(DateTime.parse(_endDate))}',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: _textPrimary,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: _clearDateFilter,
+                            child: Icon(
+                              Iconsax.close_circle,
+                              size: 14,
+                              color: _errorColor,
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 10),
-
-              // Bookings List
-              Expanded(
-                child: _isLoading
-                    ? ListView.builder(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        itemCount: 6, // Show 6 shimmer cards
-                        itemBuilder: (context, index) => _buildShimmerCard(),
-                      )
-                    : _filteredBookings.isEmpty
-                    ? _buildEmptyState()
-                    : KeyboardDismisser(
-                        child: ListView.builder(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          itemCount: _filteredBookings.length,
-                          itemBuilder: (context, index) {
-                            final item = _filteredBookings[index];
-                            return _buildBusTripCard(item);
-                          },
-                        ),
-                      ),
-              ),
-            ],
+                  ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
 
   Widget _buildBusTripCard(BusTicketReport item) {
-    final statusColor = _getStatusColor(item.status);
+    Color statusColor = _getStatusColor(item.status);
     String formattedDate = 'N/A';
-    String formattedTime = 'N/A';
-
     try {
       final dateTime = DateTime.parse(item.date);
-      formattedDate = DateFormat('MMM dd, yyyy').format(dateTime);
-      formattedTime = DateFormat('hh:mm a').format(dateTime);
-    } catch (e) {
-      print('Error parsing date: ${item.date}');
-    }
+      formattedDate = DateFormat('dd MMM yyyy').format(dateTime);
+    } catch (e) {}
 
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: _cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withOpacity(0.06),
             blurRadius: 20,
-            offset: Offset(0, 8),
+            offset: const Offset(0, 8),
           ),
         ],
+        border: Border.all(color: Colors.grey.shade100),
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => TicketDetails(
-                  count: item.seatDetails.length,
-                  tin: item.ticketNo,
-                  blocid: item.slNo,
-                  transactionId: item.transactionId,
-                ),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => TicketDetails(
+                count: item.seatDetails.length,
+                tin: item.ticketNo,
+                blocid: item.slNo,
+                transactionId: item.transactionId,
               ),
-            );
-          },
-          borderRadius: BorderRadius.circular(20),
-          child: Padding(
-            padding: EdgeInsets.all(15.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header Row with Ticket ID and Date
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'TICKET REFERENCE',
-                            style: TextStyle(
-                              fontSize: 8,
-                              color: _textSecondary,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 1.0,
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            item.ticketNo ?? 'N/A',
-                            style: TextStyle(
-                              color: _textPrimary,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
+            ),
+          );
+        },
+        borderRadius: BorderRadius.circular(24),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: _primaryColor.withOpacity(0.03),
+                border: Border(bottom: BorderSide(color: Colors.grey.shade100)),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: _primaryColor.withOpacity(0.1),
+                      shape: BoxShape.circle,
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                    child: Icon(Iconsax.bus, size: 20, color: _primaryColor),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 8,
+                        Text(
+                          '${item.source} → ${item.destination}',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w900,
+                            color: _primaryColor,
+                            letterSpacing: -0.2,
                           ),
-                          decoration: BoxDecoration(
-                            color: _secondaryColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            formattedDate,
-                            style: TextStyle(
-                              color: _secondaryColor,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w700,
-                            ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        
+                        Text(
+                          "PNR: ${item.ticketNo}",
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: _textSecondary,
                           ),
                         ),
                       ],
                     ),
-                  ],
-                ),
-                SizedBox(height: 16),
-
-                // Route Information Card
-                Container(
-                  padding: EdgeInsets.all(13),
-                  decoration: BoxDecoration(
-                    color: _backgroundColor,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.grey.shade200),
                   ),
-                  child: Row(
+                  _buildStatusBadge(item.status, _getStatusColor(item.status)),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(15),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'FROM',
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: _textSecondary,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 1.0,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              item.source ?? 'N/A',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
-                        ),
+                      _buildInfoItem(
+                        "Trip Date",
+                        formattedDate,
+                        Iconsax.calendar_1,
                       ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8),
-                        child: Column(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: _secondaryColor.withOpacity(0.1),
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: _secondaryColor.withOpacity(0.3),
-                                  width: 2,
-                                ),
-                              ),
-                              child: Icon(
-                                Icons.arrow_forward_rounded,
-                                color: _secondaryColor,
-                                size: 16,
-                              ),
-                            ),
-                          ],
-                        ),
+                      Container(height: 30, width: 1, color: _borderColor),
+                      _buildInfoItem(
+                        "Passenger",
+                        '${item.seatDetails.length} Seat(s)',
+                        Iconsax.user,
+                        crossAxisAlignment: CrossAxisAlignment.end,
                       ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              'TO',
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: _textSecondary,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 1.0,
-                              ),
+                    ],
+                  ),
+                  const SizedBox(height: 15),
+                  const Divider(height: 1),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Iconsax.ticket,
+                            size: 12,
+                            color: _secondaryColor,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            item.ticketNo ?? '---',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: _textPrimary,
                             ),
-                            SizedBox(height: 4),
-                            Text(
-                              item.destination ?? 'N/A',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                              ),
-                              textAlign: TextAlign.end,
-                            ),
-                          ],
+                          ),
+                        ],
+                      ),
+                      Text(
+                        "₹${item.totalFare}",
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w900,
+                          color: _primaryColor,
                         ),
                       ),
                     ],
                   ),
-                ),
-                SizedBox(height: 16),
-
-                // Footer Information
-                Row(
-                  children: [
-                    // Seats Info
-                    Row(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: _secondaryColor.withOpacity(0.1),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.event_seat_rounded,
-                            color: _secondaryColor,
-                            size: 12,
-                          ),
-                        ),
-                        SizedBox(width: 6),
-                        Text(
-                          '${item.seatDetails.length} seat${item.seatDetails.length > 1 ? 's' : ''}',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: _textSecondary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Spacer(),
-                    // Status Badge
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: statusColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: statusColor.withOpacity(0.3)),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 6,
-                            height: 6,
-                            decoration: BoxDecoration(
-                              color: statusColor,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          SizedBox(width: 6),
-                          Text(
-                            (item.status ?? 'Unknown').toUpperCase(),
-                            style: TextStyle(
-                              fontSize: 8,
-                              color: statusColor,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
   }
 
+  Widget _buildStatusBadge(String status, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: Text(
+        status.toUpperCase(),
+        style: TextStyle(
+          color: color,
+          fontSize: 9,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 0.5,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoItem(
+    String label,
+    String value,
+    IconData icon, {
+    CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.start,
+  }) {
+    return Column(
+      crossAxisAlignment: crossAxisAlignment,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 10, color: _textSecondary),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                color: _textSecondary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w800,
+            color: _primaryColor,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildEmptyState() {
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(20),
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: EdgeInsets.all(24),
+            padding: const EdgeInsets.all(30),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  _secondaryColor.withOpacity(0.1),
-                  _accentColor.withOpacity(0.1),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: _secondaryColor.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              Icons.directions_bus_rounded,
-              color: _secondaryColor,
-              size: 64,
-            ),
+            child: Icon(Iconsax.bus, color: _secondaryColor, size: 48),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 24),
           Text(
-            _isFilterActive ? 'No Matching Bookings' : 'No Bookings Found',
+            _isSearchActive ? 'No Matches Found' : 'No Bookings Found',
             style: TextStyle(
               color: _textPrimary,
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
             ),
-            textAlign: TextAlign.center,
           ),
-          SizedBox(height: 12),
-          Text(
-            _isFilterActive
-                ? 'No bookings match your current filters.\nTry adjusting your search criteria.'
-                : 'You don\'t have any bus bookings yet.\nStart by booking your first trip!',
-            style: TextStyle(color: _textSecondary, fontSize: 14),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 20),
-          if (_isFilterActive)
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [_secondaryColor, _accentColor],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: _secondaryColor.withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
-                ),
-                onPressed: _clearAllFilters,
-                child: Text(
-                  'Clear All Filters',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
         ],
       ),
     );
@@ -1165,14 +1064,12 @@ class _BusAllBookingsPageState extends State<BusAllBookingsPage> {
 
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'confirmed':
+      case "confirmed":
         return _successColor;
-      case 'cancelled':
+      case "cancelled":
         return _errorColor;
-      case 'pending':
-        return _warningColor;
       default:
-        return _secondaryColor;
+        return _warningColor;
     }
   }
 }

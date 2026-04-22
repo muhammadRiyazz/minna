@@ -120,10 +120,11 @@ void showAirportBottomSheet(BuildContext context, {required bool isFrom}) {
                 controller: searchController,
                 focusNode: searchFocusNode,
                 autofocus: true,
+                textCapitalization: TextCapitalization.characters,
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 18,
                   color: textPrimary,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w500,
                 ),
                 decoration: InputDecoration(
                   hintText: 'Search city or airport...',
@@ -181,7 +182,7 @@ void showAirportBottomSheet(BuildContext context, {required bool isFrom}) {
                 ),
                 onChanged: (value) {
                   context.read<SearchDataBloc>().add(
-                    SearchDataEvent.getAirports(searchKey: value),
+                    SearchDataEvent.getAirports(searchKey: value.toUpperCase()),
                   );
                 },
               ),

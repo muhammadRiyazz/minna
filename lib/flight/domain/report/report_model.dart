@@ -538,12 +538,14 @@ class RefundInfo {
   final String? refundId;
   final double refundedAmount;
   final String? refundedAt;
+  final String? reason;
 
   RefundInfo({
     required this.status,
     this.refundId,
     required this.refundedAmount,
     this.refundedAt,
+    this.reason,
   });
 
   factory RefundInfo.fromJson(Map<String, dynamic> json) {
@@ -552,6 +554,7 @@ class RefundInfo {
       refundId: json['refund_id']?.toString(),
       refundedAmount: (json['refunded_amount'] ?? 0).toDouble(),
       refundedAt: json['refunded_at']?.toString(),
+      reason: json['reason']?.toString() ?? json['note']?.toString(),
     );
   }
 }

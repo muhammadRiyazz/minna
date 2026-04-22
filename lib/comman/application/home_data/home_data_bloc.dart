@@ -29,6 +29,8 @@ class HomeDataBloc extends Bloc<HomeDataEvent, HomeDataState> {
         final List<DestinationModel> destinations = (body['data'] as List)
             .map((e) => DestinationModel.fromJson(e as Map<String, dynamic>))
             .toList();
+
+            
         emit(
           state.copyWith(
             isDestinationsLoading: false,

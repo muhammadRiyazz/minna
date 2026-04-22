@@ -242,7 +242,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                totalBookings > 4 ? 'RECENT TRIPS' : 'YOUR TRIPS',
+                'MANAGE BOOKINGS',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
@@ -250,7 +250,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
                   letterSpacing: 1.2,
                 ),
               ),
-              if (totalBookings > 4)
+              if (totalBookings > 0)
                 TextButton(
                   onPressed: () {
                     Navigator.push(
@@ -353,18 +353,18 @@ class _ReportListScreenState extends State<ReportListScreen> {
                             Text(
                               '$origin to $destination',
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 13,
                                 fontWeight: FontWeight.w900,
                                 color: _primaryColor,
-                                letterSpacing: -0.5,
+                                letterSpacing: -0.2,
                               ),
-                              maxLines: 1,
+                              maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
                               "PNR: $pnr",
                               style: TextStyle(
-                                fontSize: 11,
+                                fontSize: 10,
                                 fontWeight: FontWeight.w600,
                                 color: _textSecondary,
                               ),
@@ -379,7 +379,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
 
                 // Content Section
                 Padding(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(15),
                   child: Column(
                     children: [
                       Row(
@@ -387,10 +387,16 @@ class _ReportListScreenState extends State<ReportListScreen> {
                         children: [
                           _buildInfoItem(
                             label: "Departure",
-                            value: firstLeg != null ? _formatDate(firstLeg.departureTime) : "N/A",
+                            value: firstLeg != null
+                                ? _formatDate(firstLeg.departureTime)
+                                : "N/A",
                             icon: Iconsax.calendar_1,
                           ),
-                          Container(height: 30, width: 1, color: _borderColor),
+                          Container(
+                            height: 30,
+                            width: 1,
+                            color: _borderColor,
+                          ),
                           _buildInfoItem(
                             label: "Travelers",
                             value: "${response.passengers.length} Pax",
@@ -399,9 +405,9 @@ class _ReportListScreenState extends State<ReportListScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 15),
                       Divider(color: _borderColor, height: 1),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -409,14 +415,14 @@ class _ReportListScreenState extends State<ReportListScreen> {
                             children: [
                               Icon(
                                 Iconsax.info_circle,
-                                size: 14,
+                                size: 12,
                                 color: _secondaryColor,
                               ),
                               const SizedBox(width: 6),
                               Text(
                                 "${flightLegs.length} Flight Segment(s)",
                                 style: TextStyle(
-                                  fontSize: 13,
+                                  fontSize: 11,
                                   fontWeight: FontWeight.w700,
                                   color: _textPrimary,
                                 ),
@@ -426,7 +432,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
                           Text(
                             "₹${report.totalAmount}",
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 13,
                               fontWeight: FontWeight.w900,
                               color: _primaryColor,
                             ),
@@ -455,7 +461,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
       child: Text(
         status.toUpperCase(),
         style: TextStyle(
-          fontSize: 10,
+          fontSize: 8,
           color: color,
           fontWeight: FontWeight.w900,
           letterSpacing: 0.5,
@@ -476,12 +482,12 @@ class _ReportListScreenState extends State<ReportListScreen> {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 12, color: _textSecondary),
+            Icon(icon, size: 10, color: _textSecondary),
             const SizedBox(width: 4),
             Text(
               label,
               style: TextStyle(
-                fontSize: 11,
+                fontSize: 10,
                 color: _textSecondary,
                 fontWeight: FontWeight.w600,
               ),
@@ -492,7 +498,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
         Text(
           value,
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 13,
             fontWeight: FontWeight.w800,
             color: _primaryColor,
           ),

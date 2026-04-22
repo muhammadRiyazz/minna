@@ -82,7 +82,7 @@ class _CabBookingListState extends State<CabBookingList> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "RECENT TRIPS",
+                "MANAGE BOOKINGS",
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
@@ -90,7 +90,7 @@ class _CabBookingListState extends State<CabBookingList> {
                   letterSpacing: 1.2,
                 ),
               ),
-              if (totalBookings > 4)
+              if (totalBookings > 0)
                 TextButton(
                   onPressed: () {
                     Navigator.push(
@@ -244,18 +244,18 @@ class _CabBookingListState extends State<CabBookingList> {
                             Text(
                               booking.cabType,
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 13,
                                 fontWeight: FontWeight.w900,
                                 color: maincolor1,
-                                letterSpacing: -0.5,
+                                letterSpacing: -0.2,
                               ),
-                              maxLines: 1,
+                              maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
                               "Booking ID: ${booking.bookingId}",
                               style: TextStyle(
-                                fontSize: 11,
+                                fontSize: 10,
                                 fontWeight: FontWeight.w600,
                                 color: textSecondary,
                               ),
@@ -270,7 +270,7 @@ class _CabBookingListState extends State<CabBookingList> {
 
                 // Content Section
                 Padding(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(15),
                   child: Column(
                     children: [
                       Row(
@@ -281,7 +281,11 @@ class _CabBookingListState extends State<CabBookingList> {
                             value: _formatDate(booking.date),
                             icon: Iconsax.calendar_1,
                           ),
-                          Container(height: 30, width: 1, color: _borderColor),
+                          Container(
+                            height: 30,
+                            width: 1,
+                            color: _borderColor,
+                          ),
                           _buildInfoItem(
                             label: "Passenger",
                             value: "${booking.firstName} ${booking.lastName}",
@@ -290,9 +294,9 @@ class _CabBookingListState extends State<CabBookingList> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 15),
                       Divider(color: _borderColor, height: 1),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -300,14 +304,14 @@ class _CabBookingListState extends State<CabBookingList> {
                             children: [
                               Icon(
                                 Iconsax.routing,
-                                size: 14,
+                                size: 12,
                                 color: secondaryColor,
                               ),
                               const SizedBox(width: 6),
                               Text(
                                 booking.tripType,
                                 style: TextStyle(
-                                  fontSize: 13,
+                                  fontSize: 11,
                                   fontWeight: FontWeight.w700,
                                   color: textPrimary,
                                 ),
@@ -317,7 +321,7 @@ class _CabBookingListState extends State<CabBookingList> {
                           Text(
                             "₹${booking.total}",
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 13,
                               fontWeight: FontWeight.w900,
                               color: maincolor1,
                             ),
@@ -346,7 +350,7 @@ class _CabBookingListState extends State<CabBookingList> {
       child: Text(
         status.toUpperCase(),
         style: TextStyle(
-          fontSize: 10,
+          fontSize: 8,
           color: color,
           fontWeight: FontWeight.w900,
           letterSpacing: 0.5,
@@ -367,12 +371,12 @@ class _CabBookingListState extends State<CabBookingList> {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 12, color: textSecondary),
+            Icon(icon, size: 10, color: textSecondary),
             const SizedBox(width: 4),
             Text(
               label,
               style: TextStyle(
-                fontSize: 11,
+                fontSize: 10,
                 color: textSecondary,
                 fontWeight: FontWeight.w600,
               ),
@@ -383,7 +387,7 @@ class _CabBookingListState extends State<CabBookingList> {
         Text(
           value,
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 13,
             fontWeight: FontWeight.w800,
             color: maincolor1,
           ),

@@ -42,21 +42,21 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
     }
   }
 
-  String _getOperatorImageURL(String operatorName) {
+  String _getOperatorAssetPath(String operatorName) {
     switch (operatorName.toUpperCase()) {
       case 'AIRTEL':
-        return 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Airtel_logo.svg/1024px-Airtel_logo.svg.png';
+        return 'asset/operators/airtel.jpg';
       case 'JIO':
       case 'RELIANCE JIO':
-        return 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Reliance_Jio_Logo.svg/1024px-Reliance_Jio_Logo.svg.png';
+        return 'asset/operators/jio.png';
       case 'VI':
       case 'VODAFONE':
       case 'IDEA':
-        return 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Vi_logo.svg/1024px-Vi_logo.svg.png';
+        return 'asset/operators/vi.jpeg';
       case 'BSNL':
-        return 'https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/BSNL_logo.svg/1024px-BSNL_logo.svg.png';
+        return 'asset/operators/bsnl.png';
       case 'MTNL':
-        return 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/MTNL_logo.svg/1024px-MTNL_logo.svg.png';
+        return 'asset/operators/bsnl.png'; // Using BSNL as fallback for MTNL if same
       default:
         return '';
     }
@@ -385,18 +385,18 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                                             color: isSelected
                                                 ? secondaryColor
                                                 : borderSoft,
-                                            width: isSelected ? 2 : 1,
+                                            width: 1,
                                           ),
-                                          boxShadow: isSelected
-                                              ? [
-                                                  BoxShadow(
-                                                    color: secondaryColor
-                                                        .withOpacity(0.15),
-                                                    blurRadius: 10,
-                                                    offset: const Offset(0, 4),
-                                                  ),
-                                                ]
-                                              : [],
+                                          // boxShadow: isSelected
+                                          //     ? [
+                                          //         BoxShadow(
+                                          //           color: secondaryColor
+                                          //               .withOpacity(0.15),
+                                          //           blurRadius: 10,
+                                          //           offset: const Offset(0, 4),
+                                          //         ),
+                                          //       ]
+                                          //     : [],
                                         ),
                                         padding: const EdgeInsets.symmetric(
                                           horizontal: 12,
@@ -420,36 +420,14 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                                                 borderRadius:
                                                     BorderRadius.circular(8),
                                                 child:
-                                                    _getOperatorImageURL(
+                                                    _getOperatorAssetPath(
                                                       opName,
                                                     ).isNotEmpty
-                                                    ? Image.network(
-                                                        _getOperatorImageURL(
+                                                    ? Image.asset(
+                                                        _getOperatorAssetPath(
                                                           opName,
                                                         ),
                                                         fit: BoxFit.contain,
-                                                        frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                                                          if (wasSynchronouslyLoaded) return child;
-                                                          return AnimatedOpacity(
-                                                            opacity: frame == null ? 0 : 1,
-                                                            duration: const Duration(milliseconds: 500),
-                                                            curve: Curves.easeOut,
-                                                            child: child,
-                                                          );
-                                                        },
-                                                        loadingBuilder: (context, child, loadingProgress) {
-                                                          if (loadingProgress == null) return child;
-                                                          return Center(
-                                                            child: SizedBox(
-                                                              width: 12,
-                                                              height: 12,
-                                                              child: CircularProgressIndicator(
-                                                                strokeWidth: 2,
-                                                                valueColor: AlwaysStoppedAnimation<Color>(secondaryColor.withOpacity(0.3)),
-                                                              ),
-                                                            ),
-                                                          );
-                                                        },
                                                         errorBuilder: (c, e, s) =>
                                                             _buildTextFallback(
                                                               opName,
@@ -489,7 +467,7 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                             },
                           ),
 
-                          const SizedBox(height: 48),
+                          const SizedBox(height: 38),
 
                           // Action Button
                           SizedBox(
@@ -539,7 +517,7 @@ class _MobileRechargeInputPageState extends State<MobileRechargeInputPage> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 10),
                         ],
                       ),
                     ),

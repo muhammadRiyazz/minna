@@ -80,173 +80,53 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
 
     return Scaffold(
       backgroundColor: backgroundColor,
-      // appBar: AppBar(
-      //   title: Text(
-      //     'Flight Details',
-      //     style: TextStyle(
-      //       color: Colors.white,
-      //       fontSize: 18,
-      //       fontWeight: FontWeight.w600,
-      //     ),
-      //   ),
-      //   backgroundColor: maincolor1,
-      //   iconTheme: IconThemeData(color: Colors.white),
-      //   centerTitle: true,
-      //   elevation: 0,
-      // ),
-      body: CustomScrollView(
-        slivers: [
-          // Header Section
-          SliverAppBar(
-            backgroundColor: maincolor1,
-            expandedHeight: 160.0,
-            pinned: false,
-            floating: false,
-            elevation: 0,
-            iconTheme: IconThemeData(color: Colors.white),
-            flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [maincolor1, maincolor1.withOpacity(0.8)],
-                  ),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Booking Reference',
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.8),
-                                  fontSize: 12,
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                report.pnr ?? 'ID: ${report.bookingId}',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _getStatusColor(
-                                report.bookingStatus,
-                              ).withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: _getStatusColor(report.bookingStatus),
-                                width: 1,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  _getStatusIcon(report.bookingStatus),
-                                  size: 12,
-                                  color: _getStatusColor(report.bookingStatus),
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  report.bookingStatus.toUpperCase(),
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: _getStatusColor(
-                                      report.bookingStatus,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+      appBar: AppBar(
+        backgroundColor: maincolor1,
+        elevation: 0,
+        centerTitle: true,
+        title: const Text(
+          "Flight Details",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w900,
+            letterSpacing: -0.5,
+          ),
+        ),
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Iconsax.arrow_left, color: Colors.white),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            _buildPremiumHeader(report),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  _buildSummaryCard(),
+                  const SizedBox(height: 16),
+                  _buildFlightDetailsCard(response),
+                  const SizedBox(height: 16),
+                  _buildPassengerDetailsCard(response),
+                  const SizedBox(height: 16),
+                  _buildFareBreakdownCard(response),
+                  const SizedBox(height: 16),
+                  if (report.cancel != null && report.cancel!.status != 'NONE')
+                    _buildCancellationCard(),
+                  if (report.refund != null &&
+                      report.refund!.status != 'NOT_REFUNDED')
+                    _buildRefundCard(),
+                  const SizedBox(height: 32),
+                ],
               ),
             ),
-          ),
-
-          // Content Sections
-          SliverList(
-            delegate: SliverChildListDelegate([
-              // Booking Summary Card
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: _buildSummaryCard(),
-              ),
-
-              // Flight Details Card
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: _buildFlightDetailsCard(response),
-              ),
-
-              SizedBox(height: 16),
-
-              // Passenger Details Card
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: _buildPassengerDetailsCard(response),
-              ),
-
-              SizedBox(height: 16),
-
-              // Fare Breakdown Card
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: _buildFareBreakdownCard(response),
-              ),
-
-              const SizedBox(height: 16),
-
-              // Cancellation Info Card
-              if (report.cancel != null && report.cancel!.status != 'NONE')
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 8.0,
-                  ),
-                  child: _buildCancellationCard(),
-                ),
-
-              // Refund Info Card
-              if (report.refund != null &&
-                  report.refund!.status != 'NOT_REFUNDED')
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 8.0,
-                  ),
-                  child: _buildRefundCard(),
-                ),
-
-              const SizedBox(height: 60),
-            ]),
-          ),
-        ],
+          ],
+        ),
       ),
+
       bottomNavigationBar: _shouldShowCancelButton(response)
           ? SafeArea(
               child: Padding(
@@ -319,64 +199,110 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
     );
   }
 
+  Widget _buildPremiumHeader(ReportData report) {
+    final statusColor = _getStatusColor(report.bookingStatus);
+    final statusIcon = _getStatusIcon(report.bookingStatus);
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: maincolor1,
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(32)),
+      ),
+      padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Iconsax.airplane, size: 40, color: Colors.white),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            report.pnr ?? 'ID: ${report.bookingId}',
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+              letterSpacing: -0.5,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: statusColor.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(100),
+              border: Border.all(color: statusColor.withOpacity(0.3)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  statusIcon,
+                  size: 14,
+                  color: statusColor == Colors.green
+                      ? Colors.greenAccent
+                      : statusColor,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  report.bookingStatus.toUpperCase(),
+                  style: TextStyle(
+                    color: statusColor == Colors.green
+                        ? Colors.greenAccent
+                        : statusColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildSummaryCard() {
     return Container(
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: borderSoft),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 20,
-            offset: Offset(0, 8),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'BOOKING SUMMARY',
-                style: TextStyle(
-                  color: textSecondary,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 1.0,
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: secondaryColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  _currentReport.bookingStatus,
-                  style: TextStyle(
-                    color: secondaryColor,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
+          const Text(
+            'BOOKING SUMMARY',
+            style: TextStyle(
+              color: textLight,
+              fontSize: 11,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 1.2,
+            ),
           ),
-          SizedBox(height: 20),
-          _buildSummaryItem(
-            'PNR Number',
-            _currentReport.pnr ?? 'N/A',
-            Iconsax.airplane,
-          ),
+          const SizedBox(height: 20),
           _buildSummaryItem(
             'Trip Type',
             (_currentReport.response?.tripMode ?? '') == 'O'
                 ? 'One Way'
                 : 'Round Trip',
-            Icons.flight,
+            Iconsax.airplane5,
           ),
           _buildSummaryItem(
             'Booking Date',
@@ -397,12 +323,12 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                         .departureTime,
                   )
                 : 'ID: ${_currentReport.bookingId}',
-            Icons.calendar_today,
+            Iconsax.calendar_1,
           ),
           _buildSummaryItem(
             'Currency',
             _currentReport.response?.currency ?? 'INR',
-            Icons.currency_rupee,
+            Iconsax.money_send,
           ),
         ],
       ),
@@ -411,18 +337,18 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
 
   Widget _buildSummaryItem(String label, String value, IconData icon) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(8),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: secondaryColor.withOpacity(0.1),
+              color: maincolor1.withOpacity(0.05),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, size: 16, color: secondaryColor),
+            child: Icon(icon, size: 18, color: maincolor1),
           ),
-          SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -430,15 +356,19 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                 Text(
                   label,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 11,
                     color: textSecondary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                SizedBox(height: 2),
+                const SizedBox(height: 2),
                 Text(
                   value,
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                    color: maincolor1,
+                  ),
                 ),
               ],
             ),
@@ -454,84 +384,95 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
     return Container(
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
+        // border: Border.all(color: borderSoft),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 20,
-            offset: Offset(0, 8),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Container(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: secondaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  Icons.flight_takeoff,
-                  color: secondaryColor,
-                  size: 16,
-                ),
+                child: Icon(Iconsax.airplane, color: secondaryColor, size: 18),
               ),
-              SizedBox(width: 12),
-              Text(
+              const SizedBox(width: 12),
+              const Text(
                 'FLIGHT DETAILS',
                 style: TextStyle(
-                  fontSize: 13,
-                  color: textSecondary,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 11,
+                  color: textLight,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.2,
                 ),
               ),
-              Spacer(),
+              const Spacer(),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: backgroundColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  '${flightLegs.length}',
+                  '${flightLegs.length} Leg(s)',
                   style: TextStyle(
-                    fontSize: 14,
-                    color: secondaryColor,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 12,
+                    color: maincolor1,
+                    fontWeight: FontWeight.w900,
                   ),
                 ),
               ),
             ],
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 24),
           if (flightLegs.isEmpty)
-            Container(
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: backgroundColor,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                children: [
-                  Icon(Icons.flight, size: 40, color: textLight),
-                  SizedBox(height: 8),
-                  Text(
-                    'No flight details available',
-                    style: TextStyle(
-                      color: textSecondary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            )
+            _buildEmptyDetails('No flight details available')
           else
             ...flightLegs.map((leg) => _buildFlightLeg(leg)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyDetails(String message) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(30),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            Iconsax.info_circle,
+            size: 40,
+            color: textLight.withOpacity(0.5),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            message,
+            style: TextStyle(
+              color: textSecondary,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
@@ -743,71 +684,64 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
     return Container(
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: borderSoft),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 20,
-            offset: Offset(0, 8),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(15),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Container(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: secondaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  Icons.people_rounded,
-                  color: secondaryColor,
-                  size: 16,
-                ),
+                child: Icon(Iconsax.user, color: secondaryColor, size: 18),
               ),
-              SizedBox(width: 12),
-              Text(
+              const SizedBox(width: 12),
+              const Text(
                 'PASSENGER INFORMATION',
                 style: TextStyle(
-                  fontSize: 13,
-                  color: textSecondary,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 11,
+                  color: textLight,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.2,
                 ),
               ),
-              Spacer(),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: backgroundColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  '${passengers.length}',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: secondaryColor,
-                    fontWeight: FontWeight.w700,
-                  ),
+              const Spacer(),
+              Text(
+                '${passengers.length} Total',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: maincolor1,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
             ],
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 15),
           ...passengers.asMap().entries.map((entry) {
             final index = entry.key;
             final passenger = entry.value;
             return Container(
-              margin: EdgeInsets.only(bottom: 12),
-              padding: EdgeInsets.all(16),
+              margin: EdgeInsets.only(
+                bottom: index == passengers.length - 1 ? 0 : 16,
+              ),
+              padding: const EdgeInsets.all(15),
               decoration: BoxDecoration(
                 color: backgroundColor,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.grey.shade200),
+                borderRadius: BorderRadius.circular(20),
+                // border: Border.all(color: Colors.grey.shade200),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -815,32 +749,36 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                   Row(
                     children: [
                       Container(
-                        padding: EdgeInsets.all(8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
-                          color: secondaryColor.withOpacity(0.1),
-                          shape: BoxShape.circle,
+                          color: maincolor1.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          '${index + 1}',
+                          (index + 1).toString().padLeft(2, '0'),
                           style: TextStyle(
                             fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: secondaryColor,
+                            fontWeight: FontWeight.w900,
+                            color: maincolor1,
                           ),
                         ),
                       ),
-                      SizedBox(width: 12),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           '${passenger.title} ${passenger.firstName} ${passenger.lastName}',
                           style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w900,
+                            color: maincolor1,
                           ),
                         ),
                       ),
                       Container(
-                        padding: EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                           horizontal: 8,
                           vertical: 4,
                         ),
@@ -851,15 +789,15 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                         child: Text(
                           passenger.paxType,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 10,
                             color: secondaryColor,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   _buildPassengerDetailRow('Ticket Number', passenger.ticketNo),
                   _buildPassengerDetailRow('Passport', passenger.passportNo),
                   _buildPassengerDetailRow('Email', passenger.email),
@@ -878,27 +816,33 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
   }
 
   Widget _buildPassengerDetailRow(String label, String value) {
+    if (value == null || value.isEmpty || value == 'null')
+      return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 120,
+            width: 100,
             child: Text(
               label,
               style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: textSecondary,
-                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: textSecondary.withOpacity(0.7),
+                fontSize: 12,
               ),
             ),
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Expanded(
             child: Text(
               value,
-              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 12,
+                color: textPrimary,
+              ),
             ),
           ),
         ],
@@ -909,9 +853,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
   Widget _buildFareBreakdownCard(ResponseData response) {
     final flightFares = response.journey.flightOption.flightFares;
 
-    if (flightFares.isEmpty) {
-      return Container();
-    }
+    if (flightFares.isEmpty) return const SizedBox.shrink();
 
     final firstFare = flightFares.first;
 
@@ -1001,45 +943,43 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
     return Container(
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: borderSoft),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 20,
-            offset: Offset(0, 8),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Container(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: secondaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  Icons.currency_rupee_rounded,
-                  color: secondaryColor,
-                  size: 16,
-                ),
+                child: Icon(Iconsax.receipt_2, color: secondaryColor, size: 18),
               ),
-              SizedBox(width: 12),
-              Text(
+              const SizedBox(width: 12),
+              const Text(
                 'FARE BREAKDOWN',
                 style: TextStyle(
-                  fontSize: 13,
-                  color: textSecondary,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 11,
+                  color: textLight,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.2,
                 ),
               ),
             ],
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 24),
 
           // Base Fare and Taxes
           ...firstFare.fares.expand(
@@ -1052,28 +992,23 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                 '${_getPassengerTypeName(fare.ptc)} Tax',
                 '₹${fare.tax.toStringAsFixed(2)}',
               ),
-              // if (fare.discount > 0)
-              //   _buildFareItem('${_getPassengerTypeName(fare.ptc)} Discount', '-₹${fare.discount.toStringAsFixed(2)}'),
             ],
           ),
 
           // Additional Services Section
           if (additionalChargesList.isNotEmpty) ...[
-            SizedBox(height: 16),
-            Divider(height: 1),
-            SizedBox(height: 16),
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.only(bottom: 12),
-              child: Text(
-                'Additional Services',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: maincolor1,
-                ),
+            const SizedBox(height: 16),
+            const Divider(height: 1),
+            const SizedBox(height: 16),
+            const Text(
+              'Additional Services',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+                color: maincolor1,
               ),
             ),
+            const SizedBox(height: 12),
             ...additionalChargesList.asMap().entries.map((entry) {
               final index = entry.key;
               final charge = entry.value;
@@ -1085,37 +1020,33 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
             }),
           ],
 
-          SizedBox(height: 16),
-          Divider(height: 1),
-          SizedBox(height: 16),
-
-          // Summary Section
+          const SizedBox(height: 20),
           Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: backgroundColor,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.grey.shade100),
             ),
             child: Column(
               children: [
                 _buildSummaryRow('Total Base Fare', totalBaseFare),
                 _buildSummaryRow('Total Taxes', totalTax),
-
                 if (totalAdditionalCharges > 0)
                   _buildSummaryRow(
                     'Additional Services',
                     totalAdditionalCharges,
                   ),
-
                 if (totalDiscount > 0)
                   _buildSummaryRow(
                     'Discount',
                     -totalDiscount,
                     isDiscount: true,
                   ),
-
-                Divider(height: 16, color: Colors.grey.shade400),
-
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: Divider(height: 1),
+                ),
                 _buildSummaryRow(
                   'Amount',
                   double.tryParse(_currentReport.amount) ?? 0,
@@ -1125,9 +1056,10 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                   double.tryParse(_currentReport.commission) ?? 0,
                   isCommission: true,
                 ),
-
-                Divider(height: 16, color: Colors.grey.shade400),
-
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: Divider(height: 1, thickness: 1),
+                ),
                 _buildSummaryRow(
                   'Total Amount',
                   double.tryParse(_currentReport.totalAmount) ?? 0,
@@ -1370,8 +1302,10 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                 // Premium Header
                 Container(
                   width: double.infinity,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 24,
+                  ),
                   child: Row(
                     children: [
                       Container(
@@ -1564,17 +1498,17 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
     return Container(
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: errorColor.withOpacity(0.2)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
           ),
         ],
-        border: Border.all(color: errorColor.withOpacity(0.3)),
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1586,28 +1520,38 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                   color: errorColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Iconsax.info_circle, color: errorColor, size: 16),
+                child: const Icon(
+                  Iconsax.info_circle,
+                  color: errorColor,
+                  size: 18,
+                ),
               ),
               const SizedBox(width: 12),
               const Text(
                 'CANCELLATION INFORMATION',
                 style: TextStyle(
-                  color: textSecondary,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 1.0,
+                  fontSize: 11,
+                  color: textLight,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.2,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          _buildSummaryItem(
-            'Cancel Status',
+          const SizedBox(height: 20),
+          _buildDetailRow(
+            'Status',
             cancel.status,
-            Iconsax.close_circle,
+            Iconsax.info_circle,
+            color: errorColor,
           ),
           if (cancel.reason != null && cancel.reason!.isNotEmpty)
-            _buildSummaryItem('Reason', cancel.reason!, Iconsax.note),
+            _buildDetailRow(
+              'Reason',
+              cancel.reason!,
+              Iconsax.note,
+              color: textSecondary,
+            ),
         ],
       ),
     );
@@ -1618,17 +1562,17 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
     return Container(
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: successColor.withOpacity(0.2)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
           ),
         ],
-        border: Border.all(color: successColor.withOpacity(0.3)),
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1640,34 +1584,43 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                   color: successColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Iconsax.money_tick, color: successColor, size: 16),
+                child: const Icon(
+                  Iconsax.wallet_money,
+                  color: successColor,
+                  size: 18,
+                ),
               ),
               const SizedBox(width: 12),
               const Text(
                 'REFUND INFORMATION',
                 style: TextStyle(
-                  color: textSecondary,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 1.0,
+                  fontSize: 11,
+                  color: textLight,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.2,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          _buildSummaryItem('Refund Status', refund.status, Iconsax.verify),
-          _buildSummaryItem(
-            'Refunded Amount',
-            '₹${refund.refundedAmount.toStringAsFixed(2)}',
-            Iconsax.wallet_2,
+          const SizedBox(height: 20),
+          _buildDetailRow(
+            'Refund Status',
+            refund.status,
+            Iconsax.info_circle,
+            color: successColor,
           ),
-          if (refund.refundId != null)
-            _buildSummaryItem('Refund ID', refund.refundId!, Iconsax.code),
-          if (refund.refundedAt != null)
-            _buildSummaryItem(
-              'Refunded Date',
-              _formatDate(refund.refundedAt!),
-              Iconsax.calendar,
+          _buildDetailRow(
+            'Amount',
+            '₹${refund.refundedAmount}',
+            Iconsax.money_3,
+            color: successColor,
+          ),
+          if (refund.reason != null && refund.reason!.isNotEmpty)
+            _buildDetailRow(
+              'Note',
+              refund.reason!,
+              Iconsax.note,
+              color: textSecondary,
             ),
         ],
       ),
@@ -1748,5 +1701,48 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
         });
       }
     }
+  }
+
+  Widget _buildDetailRow(
+    String label,
+    String value,
+    IconData icon, {
+    Color? color,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: color ?? textSecondary),
+          const SizedBox(width: 12),
+          Text(
+            '$label:',
+            style: TextStyle(
+              fontSize: 12,
+              color: textSecondary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: 12,
+                color: color ?? textPrimary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showError(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: errorColor),
+    );
   }
 }

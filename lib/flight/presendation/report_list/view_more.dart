@@ -263,163 +263,159 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
     return KeyboardDismisser(
       child: Scaffold(
         backgroundColor: _backgroundColor,
-        body: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            // Header-less Spacing
-            const SliverToBoxAdapter(
-              child: SizedBox(height: 10),
-            ),
-
-            // Search and Filter Section
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
-                child: Column(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: _cardColor,
-                        borderRadius: BorderRadius.circular(22),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.06),
-                            blurRadius: 20,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                        border: Border.all(color: _borderColor),
-                      ),
-                      child: Column(
-                        children: [
-                          // Search Bar
-                          Row(
-                            children: [
-                              Expanded(
-                                child: TextField(
-                                  controller: _searchController,
-                                  onChanged: _onSearchChanged,
-                                  decoration: InputDecoration(
-                                    hintText: 'Search PNR, Route, Passenger...',
-                                    hintStyle: TextStyle(
-                                      color: _textLight,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                    prefixIcon: Icon(
-                                      Iconsax.search_normal_1,
-                                      color: _secondaryColor,
-                                      size: 18,
-                                    ),
-                                    suffixIcon:
-                                        _searchController.text.isNotEmpty
-                                        ? IconButton(
-                                            icon: Icon(
-                                              Iconsax.close_circle,
-                                              color: _textLight,
-                                              size: 16,
-                                            ),
-                                            onPressed: _clearSearch,
-                                          )
-                                        : null,
-                                    border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 15,
-                                    ),
-                                  ),
-                                  style: TextStyle(
-                                    color: _textPrimary,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
+        body: SafeArea(
+          child: Column(
+            children: [
+              _buildHeader(),
+              Expanded(
+                child: CustomScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  slivers: [
+                    SliverToBoxAdapter(child: _buildSearchAndFilter()),
+                    _filteredReports.isEmpty
+                        ? SliverFillRemaining(child: _buildEmptyState())
+                        : SliverPadding(
+                            padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+                            sliver: SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) =>
+                                    _buildReportCard(_filteredReports[index]),
+                                childCount: _filteredReports.length,
                               ),
-                              Container(
-                                margin: const EdgeInsets.only(right: 8),
-                                padding: const EdgeInsets.all(2),
-                                decoration: BoxDecoration(
-                                  color: _secondaryColor.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: IconButton(
-                                  onPressed: _showDatePickerDialog,
-                                  icon: Icon(
-                                    Iconsax.calendar_tick,
-                                    size: 20,
-                                    color: _secondaryColor,
-                                  ),
-                                  constraints: const BoxConstraints(),
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          if (_isDateFilterActive)
-                            Container(
-                              padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                              child: _buildDateRangeBadge(),
-                            ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Results Count
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'SEARCH RESULTS',
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w900,
-                            color: _textLight,
-                            letterSpacing: 1.2,
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: _secondaryColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(100),
-                          ),
-                          child: Text(
-                            '${_filteredReports.length} ${_filteredReports.length == 1 ? 'REPORT' : 'REPORTS'}',
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w900,
-                              color: _secondaryColor,
-                              letterSpacing: 0.5,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
                   ],
                 ),
               ),
-            ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
-            // Reports List
-            _filteredReports.isEmpty
-                ? SliverFillRemaining(child: _buildEmptyState())
-                : SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) =>
-                            _buildReportCard(_filteredReports[index]),
-                        childCount: _filteredReports.length,
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      color: Colors.white,
+      child: Row(
+        children: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+            onPressed: () => Navigator.pop(context),
+            color: _primaryColor,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'Flight History',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w900,
+              color: _primaryColor,
+              letterSpacing: -0.5,
+            ),
+          ),
+          const Spacer(),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: _secondaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(100),
+            ),
+            child: Text(
+              '${_filteredReports.length} ${_filteredReports.length == 1 ? 'REPORT' : 'REPORTS'}',
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w900,
+                color: _secondaryColor,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchAndFilter() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
+      child: Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: _cardColor,
+              borderRadius: BorderRadius.circular(22),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.06),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+              border: Border.all(color: _borderColor),
+            ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _searchController,
+                        onChanged: _onSearchChanged,
+                        decoration: InputDecoration(
+                          hintText: 'Search PNR, Route, Passenger...',
+                          hintStyle: TextStyle(
+                            color: _textLight,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          prefixIcon: Icon(
+                            Iconsax.search_normal_1,
+                            color: _secondaryColor,
+                            size: 18,
+                          ),
+                          suffixIcon: _searchController.text.isNotEmpty
+                              ? IconButton(
+                                  icon: Icon(
+                                    Iconsax.close_circle,
+                                    color: _textLight,
+                                    size: 16,
+                                  ),
+                                  onPressed: _clearSearch,
+                                )
+                              : null,
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 15,
+                          ),
+                        ),
+                        style: TextStyle(
+                          color: _textPrimary,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
+                    IconButton(
+                      onPressed: _showDatePickerDialog,
+                      icon: Icon(
+                        Iconsax.calendar_tick,
+                        size: 20,
+                        color: _secondaryColor,
+                      ),
+                    ),
+                  ],
+                ),
+                if (_isDateFilterActive)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                    child: _buildDateRangeBadge(),
                   ),
-          ],
-        ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -485,143 +481,160 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
           );
         },
         borderRadius: BorderRadius.circular(24),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header Row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: _primaryColor.withOpacity(0.03),
+                border: Border(bottom: BorderSide(color: _borderColor)),
+              ),
+              child: Row(
                 children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: _primaryColor.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Iconsax.airplane, size: 20, color: _primaryColor),
+                  ),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'PNR / BOOKING ID',
-                          style: TextStyle(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w900,
-                            color: _textLight,
-                            letterSpacing: 0.8,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
                           report.pnr ?? report.bookingId,
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 13,
                             fontWeight: FontWeight.w900,
-                            color: _textPrimary,
+                            color: _primaryColor,
+                            letterSpacing: -0.2,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          "Booking ID: ${report.bookingId}",
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: _textSecondary,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                  _buildStatusBadge(report.bookingStatus),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(15),
+              child: Column(
+                children: [
+                  Row(
                     children: [
-                      Text(
-                        '₹${report.amount}',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w900,
-                          color: _secondaryColor,
+                      _buildCityInfo(firstLeg?.origin ?? '---', 'ORIGIN', true),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            const Icon(
+                              Iconsax.airplane,
+                              size: 12,
+                              color: Colors.grey,
+                            ),
+                            const SizedBox(height: 4),
+                            Container(height: 1, width: 30, color: _borderColor),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      _buildCityInfo(
+                        lastLeg?.destination ?? '---',
+                        'DESTINATION',
+                        false,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 15),
+                  const Divider(height: 1),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          _buildMiniBadge(
+                            Iconsax.user,
+                            '${response.passengers.length} PAX',
+                          ),
+                          const SizedBox(width: 8),
+                          _buildMiniBadge(
+                            Iconsax.clock,
+                            '${flightLegs.length} LEGS',
+                          ),
+                        ],
+                      ),
                       Text(
-                        _formatDate(firstLeg?.departureTime ?? ''),
+                        "₹${report.amount}",
                         style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: _textLight,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w900,
+                          color: _primaryColor,
                         ),
                       ),
                     ],
                   ),
                 ],
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 20),
-                child: Divider(height: 1),
-              ),
-
-              // Route Section
-              Row(
-                children: [
-                  _buildCityInfo(firstLeg?.origin ?? '---', 'ORIGIN', true),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        const Icon(
-                          Iconsax.airplane,
-                          size: 16,
-                          color: Colors.grey,
-                        ),
-                        const SizedBox(height: 4),
-                        Container(height: 1, width: 40, color: _borderColor),
-                      ],
-                    ),
-                  ),
-                  _buildCityInfo(
-                    lastLeg?.destination ?? '---',
-                    'DESTINATION',
-                    false,
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 24),
-
-              // Footer Badges
-              Row(
-                children: [
-                  _buildFooterBadge(
-                    Iconsax.user,
-                    '${response.passengers.length} PAX',
-                  ),
-                  const SizedBox(width: 8),
-                  _buildFooterBadge(Iconsax.clock, '${flightLegs.length} LEGS'),
-                  const Spacer(),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _getStatusColor(report.bookingStatus).withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 5,
-                            height: 5,
-                            decoration: BoxDecoration(
-                              color: _getStatusColor(report.bookingStatus),
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            report.bookingStatus.toUpperCase(),
-                            style: TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w900,
-                              color: _getStatusColor(report.bookingStatus),
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                ],
-              ),
-            ],
+  Widget _buildMiniBadge(IconData icon, String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: _backgroundColor,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: _borderColor),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 8, color: _textSecondary),
+          const SizedBox(width: 4),
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 9,
+              fontWeight: FontWeight.w800,
+              color: _textSecondary,
+            ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatusBadge(String status) {
+    Color color = _getStatusColor(status);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: Text(
+        status.toUpperCase(),
+        style: TextStyle(
+          color: color,
+          fontSize: 9,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 0.5,
         ),
       ),
     );
@@ -631,9 +644,8 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
     return Expanded(
       flex: 2,
       child: Column(
-        crossAxisAlignment: isStart
-            ? CrossAxisAlignment.start
-            : CrossAxisAlignment.end,
+        crossAxisAlignment:
+            isStart ? CrossAxisAlignment.start : CrossAxisAlignment.end,
         children: [
           Text(
             label,
@@ -644,54 +656,27 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
               letterSpacing: 0.8,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           Text(
             city.length > 3
                 ? city.substring(0, 3).toUpperCase()
                 : city.toUpperCase(),
             style: TextStyle(
-              fontSize: 22,
+              fontSize: 16,
               fontWeight: FontWeight.w900,
-              color: _textPrimary,
-              letterSpacing: 1,
+              color: _primaryColor,
+              letterSpacing: 0.5,
             ),
           ),
-          const SizedBox(height: 2),
           Text(
             city,
             style: TextStyle(
-              fontSize: 11,
+              fontSize: 10,
               fontWeight: FontWeight.w600,
               color: _textSecondary,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFooterBadge(IconData icon, String text) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: _backgroundColor,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: _borderColor),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 12, color: _textSecondary),
-          const SizedBox(width: 6),
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w800,
-              color: _textSecondary,
-            ),
           ),
         ],
       ),
@@ -709,50 +694,17 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
               color: _secondaryColor.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(Iconsax.ticket, color: _secondaryColor, size: 48),
+            child: Icon(Iconsax.airplane, color: _secondaryColor, size: 48),
           ),
           const SizedBox(height: 24),
           Text(
-            _isFilterActive ? 'No Matches Found' : 'No Reports Found',
+            _isSearchActive ? 'No Matches Found' : 'No Reports Found',
             style: TextStyle(
               color: _textPrimary,
               fontSize: 18,
               fontWeight: FontWeight.w800,
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            _isFilterActive
-                ? 'Try adjusting your filters'
-                : 'You haven\'t made any bookings yet',
-            style: TextStyle(
-              color: _textSecondary,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          if (_isFilterActive) ...[
-            const SizedBox(height: 32),
-            ElevatedButton.icon(
-              onPressed: _clearAllFilters,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _primaryColor,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-              icon: const Icon(Iconsax.refresh, size: 18),
-              label: const Text(
-                'Clear Filters',
-                style: TextStyle(fontWeight: FontWeight.w700),
-              ),
-            ),
-          ],
         ],
       ),
     );
@@ -770,7 +722,7 @@ class _FlightAllReportsPageState extends State<FlightAllReportsPage> {
   Color _getStatusColor(String status) {
     switch (status.toUpperCase()) {
       case 'CONFIRMED':
-        return _successColor;
+        return const Color(0xFF0D9488);
       case 'CANCELLED':
         return _errorColor;
       case 'PENDING':

@@ -635,7 +635,7 @@ class Passenger {
   final String lastName;
   final String dob;
   final String contact;
-  final int? countryCode;
+  final String? countryCode;
   final String email;
   final String? address;
   final String nationality;

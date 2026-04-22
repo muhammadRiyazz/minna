@@ -226,7 +226,7 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
         style: TextStyle(
           fontSize: 14,
           color: textPrimary,
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w500,
         ),
         decoration: InputDecoration(
           hintText: 'Search city or station...',
@@ -404,7 +404,7 @@ class _LocationSearchPageState extends State<LocationSearchPage> {
                         location.name,
                         style: TextStyle(
                           fontSize: 11,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w500,
                           color: maincolor1,
                           letterSpacing: -0.3,
                         ),

@@ -21,11 +21,10 @@ part 'booking_bloc.freezed.dart';
 class BookingBloc extends Bloc<BookingEvent, BookingState> {
   BookingBloc() : super(BookingState.initial()) {
     on<_GetRePrice>(_onGetRePrice);
-    
+
     on<_VerifyFlightPayment>(_onVerifyPayment);
 
     on<_ResetBooking>(_onResetBooking);
-
   }
 
   Future<void> _onGetRePrice(
@@ -191,10 +190,14 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
             final baggage = passengerData['baggage'];
             baggageInfoList.add(
               PBaggageInfo(
+                tripMode: baggage['tripMode']?.toString(),
+                baggageKey: baggage['baggageKey']?.toString(),
                 baggages: [
                   PBaggage(
+                    ptc: baggage['ptc']?.toString(),
                     code: baggage['code']?.toString() ?? '',
                     name: baggage['name']?.toString() ?? '',
+                    weight: baggage['weight']?.toString(),
                     amount: safeToDouble(baggage['amount']),
                     currency: baggage['currency']?.toString() ?? 'INR',
                     legKey: baggage['legKey']?.toString() ?? '',
@@ -210,7 +213,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
             paxType: passengerData['passengerType']?.toString() ?? '',
             title: passengerData['title']?.toString() ?? '',
             firstName: passengerData['firstName']?.toString() ?? '',
-            countryCode: safeToInt(passengerData['CountryCode']),
+            countryCode: passengerData['CountryCode']?.toString(),
             lastName: passengerData['lastName']?.toString() ?? '',
             dob: formatDateForApi(passengerData['dob']),
             contact: passengerData['contact']?.toString() ?? '',
@@ -265,9 +268,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
         if (rflightLegs != null) {
           for (var element in rflightLegs) {
             bbflightLegs.add(
-
               BBFlightLeg(
-
                 arrivalTerminal: element.arrivalTerminal ?? '',
                 departureTerminal: element.departureTerminal ?? '',
                 freeBaggages: element.freeBaggages ?? [],
@@ -296,7 +297,6 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
                 flightNo: element.flightNo ?? '',
 
                 airlineCode: element.airlineCode ?? '',
-
               ),
             );
           }
@@ -653,11 +653,11 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     if (dateString == null || dateString.isEmpty) return '0001-01-01';
     try {
       final parsedDate = DateFormat('yyyy-MM-dd').parse(dateString);
-      return DateFormat('yyyy-MM-dd').format(parsedDate);
+      return "${DateFormat('yyyy-MM-dd').format(parsedDate)}T00:00:00";
     } catch (e) {
       try {
         final parsedDate = DateFormat('dd-MM-yyyy').parse(dateString);
-        return DateFormat('yyyy-MM-dd').format(parsedDate);
+        return "${DateFormat('yyyy-MM-dd').format(parsedDate)}T00:00:00";
       } catch (e) {
         return '0001-01-01';
       }

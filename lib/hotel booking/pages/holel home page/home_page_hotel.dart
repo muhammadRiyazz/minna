@@ -534,7 +534,7 @@ class _HotelBookingHomeState extends State<HotelBookingHome> {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 12,
-                        fontWeight: isBold ? FontWeight.w900 : FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                         color: isDisabled ? Colors.grey[400] : maincolor1,
                       ),
                     ),
@@ -826,7 +826,7 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
                 cursorColor: secondaryColor,
                 style: TextStyle(
                   fontSize: 14,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                   color: maincolor1,
                 ),
                 decoration: InputDecoration(
@@ -929,7 +929,7 @@ class _CityBottomSheetState extends State<CityBottomSheet> {
                                             fontSize: 12,
                                             fontWeight: isSelected
                                                 ? FontWeight.w900
-                                                : FontWeight.w600,
+                                                : FontWeight.w500,
                                             color: isSelected
                                                 ? maincolor1
                                                 : Colors.grey[800],
@@ -2005,7 +2005,7 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
                 cursorColor: secondaryColor,
                 style: TextStyle(
                   fontSize: 14,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                   color: maincolor1,
                 ),
                 decoration: InputDecoration(
@@ -2107,7 +2107,7 @@ class _CountryBottomSheetState extends State<CountryBottomSheet> {
                                             fontSize: 12,
                                             fontWeight: isSelected
                                                 ? FontWeight.w900
-                                                : FontWeight.w600,
+                                                : FontWeight.w500,
                                             color: isSelected
                                                 ? maincolor1
                                                 : Colors.grey[800],

@@ -281,7 +281,7 @@ class _ScreenReportState extends State<ScreenReport> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                totalBookings > 5 ? 'RECENT TRIPS' : 'YOUR TRIPS',
+                'MANAGE BOOKINGS',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
@@ -289,7 +289,7 @@ class _ScreenReportState extends State<ScreenReport> {
                   letterSpacing: 1.2,
                 ),
               ),
-              if (totalBookings > 5)
+              if (totalBookings > 0)
                 TextButton(
                   onPressed: () {
                     Navigator.push(
@@ -336,7 +336,9 @@ class _ScreenReportState extends State<ScreenReport> {
 
   Widget _buildBusTripCard(BusTicketReport item) {
     final statusColor = _getStatusColor(item.status);
-    final formattedDate = DateFormat('EEE, d MMM yyyy').format(DateTime.parse(item.date));
+    final formattedDate = DateFormat(
+      'EEE, d MMM yyyy',
+    ).format(DateTime.parse(item.date));
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -387,7 +389,11 @@ class _ScreenReportState extends State<ScreenReport> {
                           color: _primaryColor.withOpacity(0.1),
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(Iconsax.bus, size: 20, color: _primaryColor),
+                        child: Icon(
+                          Iconsax.bus,
+                          size: 20,
+                          color: _primaryColor,
+                        ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -397,18 +403,18 @@ class _ScreenReportState extends State<ScreenReport> {
                             Text(
                               "${item.source} to ${item.destination}",
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 13,
                                 fontWeight: FontWeight.w900,
                                 color: _primaryColor,
-                                letterSpacing: -0.5,
+                                letterSpacing: -0.2,
                               ),
-                              maxLines: 1,
+                              maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
                               "Ticket: ${item.ticketNo}",
                               style: TextStyle(
-                                fontSize: 11,
+                                fontSize: 10,
                                 fontWeight: FontWeight.w600,
                                 color: _textSecondary,
                               ),
@@ -423,7 +429,7 @@ class _ScreenReportState extends State<ScreenReport> {
 
                 // Content Section
                 Padding(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(15),
                   child: Column(
                     children: [
                       Row(
@@ -434,7 +440,11 @@ class _ScreenReportState extends State<ScreenReport> {
                             value: formattedDate,
                             icon: Iconsax.calendar_1,
                           ),
-                          Container(height: 30, width: 1, color: _borderColor),
+                          Container(
+                            height: 30,
+                            width: 1,
+                            color: _borderColor,
+                          ),
                           _buildInfoItem(
                             label: "Booking",
                             value: "${item.seatDetails.length} Seat(s)",
@@ -443,9 +453,9 @@ class _ScreenReportState extends State<ScreenReport> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 15),
                       Divider(color: _borderColor, height: 1),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -453,14 +463,14 @@ class _ScreenReportState extends State<ScreenReport> {
                             children: [
                               Icon(
                                 Iconsax.info_circle,
-                                size: 14,
+                                size: 12,
                                 color: _secondaryColor,
                               ),
                               const SizedBox(width: 6),
                               Text(
                                 "Trip Document",
                                 style: TextStyle(
-                                  fontSize: 13,
+                                  fontSize: 11,
                                   fontWeight: FontWeight.w700,
                                   color: _textPrimary,
                                 ),
@@ -470,7 +480,7 @@ class _ScreenReportState extends State<ScreenReport> {
                           Text(
                             "₹${item.totalFare}",
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 13,
                               fontWeight: FontWeight.w900,
                               color: _primaryColor,
                             ),
@@ -499,7 +509,7 @@ class _ScreenReportState extends State<ScreenReport> {
       child: Text(
         status.toUpperCase(),
         style: TextStyle(
-          fontSize: 10,
+          fontSize: 8,
           color: color,
           fontWeight: FontWeight.w900,
           letterSpacing: 0.5,
@@ -520,12 +530,12 @@ class _ScreenReportState extends State<ScreenReport> {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 12, color: _textSecondary),
+            Icon(icon, size: 10, color: _textSecondary),
             const SizedBox(width: 4),
             Text(
               label,
               style: TextStyle(
-                fontSize: 11,
+                fontSize: 10,
                 color: _textSecondary,
                 fontWeight: FontWeight.w600,
               ),
@@ -536,7 +546,7 @@ class _ScreenReportState extends State<ScreenReport> {
         Text(
           value,
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 13,
             fontWeight: FontWeight.w800,
             color: _primaryColor,
           ),

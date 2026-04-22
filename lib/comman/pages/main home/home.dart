@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:minna/DTH%20&%20Mobile/DTH/pages/dth%20home%20inputs/dht_input_page.dart';
+import 'package:minna/comman/pages/screen%20my%20account/about%20us.dart';
 import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/application/oparator/operators_bloc.dart';
 import 'package:minna/DTH%20&%20Mobile/mobile%20%20recharge/pages/home%20page/recharge_home.dart';
 import 'package:minna/Electyicity%20&%20Water/kseb/kseb%20home/electricity_home.dart';
@@ -28,6 +29,7 @@ import 'package:minna/flight/presendation/screen%20flight/home_flight.dart';
 
 import 'package:minna/visa/pages/visa_page.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'all_destinations_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -402,13 +404,8 @@ class _HomeContentPageState extends State<HomeContentPage> {
                       );
                     },
                   ),
-                  SizedBox(
-                    height: isSmallScreen
-                        ? 20
-                        : isTablet
-                        ? 40
-                        : 30,
-                  ),
+                  // const SizedBox(height: 32),
+                  _buildFooter(isSmallScreen),
                 ],
               ),
             ),
@@ -2371,9 +2368,9 @@ class _HomeContentPageState extends State<HomeContentPage> {
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 4,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 24,
-              childAspectRatio: 0.72,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 16,
+              childAspectRatio: .79,
             ),
             itemCount: allServices.length,
             itemBuilder: (context, index) {
@@ -2421,11 +2418,11 @@ class _HomeContentPageState extends State<HomeContentPage> {
               size: isSmallScreen ? 20 : 24,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           Text(
             service['label'],
             style: TextStyle(
-              fontSize: 9,
+              fontSize: 10,
               fontWeight: FontWeight.w600,
               color: maincolor1,
               letterSpacing: 0.2,
@@ -2511,47 +2508,38 @@ class _HomeContentPageState extends State<HomeContentPage> {
             ],
           ),
           const SizedBox(height: 24),
-          // Staggered (Unaligned) 2-Column Grid showing all destinations
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Left Column
-              Expanded(
-                child: Column(
-                  children: [
-                    for (int i = 0; i < destinations.length; i += 2) ...[
-                      if (i > 0) const SizedBox(height: 10),
-                      _buildWhere2GoCard(
-                        destinations[i],
-                        isSmallScreen,
-                        height: i % 4 == 0 ? 280 : 240,
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              const SizedBox(width: 10),
-              // Right Column (with offset)
-              Expanded(
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 32,
-                    ), // Initial offset for staggered look
-                    for (int i = 1; i < destinations.length; i += 2) ...[
-                      if (i > 1) const SizedBox(height: 10),
-                      _buildWhere2GoCard(
-                        destinations[i],
-                        isSmallScreen,
-                        height: (i - 1) % 4 == 0 ? 240 : 300,
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ],
+          // Dynamic Masonry Layout using flutter_staggered_grid_view
+          MasonryGridView.count(
+            crossAxisCount: 2,
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 16,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            // Only show an even number of items to keep the bottom perfectly flushed
+            itemCount: (destinations.length ~/ 2) * 2,
+            itemBuilder: (context, index) {
+              // Pattern to ensure perfectly flush bottom alignment with no big gaps.
+              // Sequence: 220, 280, 280, 220 ensures each pair of rows totals 500 in per column.
+              double cardHeight;
+
+              // If we land on a remainder of 2 (e.g. 2, 6 items), make the final row symmetrical
+              // to ensure the bottoms perfectly align and close the loop.
+              if (destinations.length % 4 == 2 &&
+                  index >= destinations.length - 2) {
+                cardHeight = 250.0;
+              } else {
+                final heights = [220.0, 280.0, 280.0, 220.0];
+                cardHeight = heights[index % 4];
+              }
+
+              return _buildWhere2GoCard(
+                destinations[index],
+                isSmallScreen,
+                height: cardHeight,
+              );
+            },
           ),
-          const SizedBox(height: 40),
+          // const SizedBox(height: 40),
         ],
       ),
     );
@@ -2571,20 +2559,21 @@ class _HomeContentPageState extends State<HomeContentPage> {
       child: Container(
         height: height,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(25),
+          borderRadius: BorderRadius.circular(28),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.12),
-              blurRadius: 25,
+              color: maincolor1.withOpacity(0.15),
+              blurRadius: 20,
               offset: const Offset(0, 10),
             ),
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(28),
           child: Stack(
             fit: StackFit.expand,
             children: [
+              // Image with Hero-like feel
               Image.network(
                 destination.image,
                 fit: BoxFit.cover,
@@ -2593,30 +2582,64 @@ class _HomeContentPageState extends State<HomeContentPage> {
                   child: Icon(Iconsax.image, color: Colors.grey[400]),
                 ),
               ),
-              // Gradient Overlay
+
+              // Multi-layered Gradient Overlay for Premium Look
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Colors.transparent,
-                      Colors.black.withOpacity(0.1),
-                      Colors.black.withOpacity(0.8),
+                      Colors.black.withOpacity(0.0),
+                      Colors.black.withOpacity(0.2),
+                      Colors.black.withOpacity(0.9),
                     ],
-                    stops: const [0.4, 0.6, 1.0],
+                    stops: const [0.4, 0.7, 1.0],
                   ),
                 ),
               ),
-              // Rating Badge
 
-              // Gallery Icon (Top Right)
+              // Rating Badge (Top Left)
+              Positioned(
+                top: 12,
+                left: 12,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.4),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.white.withOpacity(0.2)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.star_rounded,
+                        color: secondaryColor,
+                        size: 14,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        rating,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
 
               // Title and Location (Bottom)
               Positioned(
-                left: 12,
-                right: 12,
-                bottom: 12,
+                left: 16,
+                right: 16,
+                bottom: 16,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -2626,33 +2649,64 @@ class _HomeContentPageState extends State<HomeContentPage> {
                           : destination.title,
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        height: 1,
-                        letterSpacing: -0.5,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        height: 1.1,
+                        letterSpacing: -0.2,
                       ),
-                      maxLines: 3,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-
-                    const SizedBox(height: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: secondaryColor,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        "₹ ${destination.priceToShow}",
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  secondaryColor,
+                                  secondaryColor.withOpacity(0.8),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: secondaryColor.withOpacity(0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Text(
+                              "₹ ${destination.priceToShow}",
+                              style: const TextStyle(
+                                color: maincolor1,
+                                fontSize: 8,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                        // Explore Button Icon
+                        Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Iconsax.arrow_right_1,
+                            color: Colors.white,
+                            size: 14,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -2795,5 +2849,224 @@ class _HomeContentPageState extends State<HomeContentPage> {
         );
       },
     );
+  }
+
+  Widget _buildFooter(bool isSmallScreen) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(top: 60),
+      padding: const EdgeInsets.fromLTRB(24, 48, 24, 32),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
+        border: const Border(top: BorderSide(color: maincolor1, width: 4)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 30,
+            offset: const Offset(0, -10),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 1. BRAND & SUPPORT HEADER
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'MT TRIP',
+                    style: TextStyle(
+                      color: maincolor1,
+                      fontSize: 28,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Your Premium Travel Experience',
+                    style: TextStyle(
+                      color: textSecondary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 56),
+
+          // 2. CATEGORIZED VERTICAL LISTS
+          const SizedBox(width: 24),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildFooterCategoryTitle('REACH OUT TO US'),
+              const SizedBox(height: 16),
+              _buildCorporateContactButton(
+                icon: Iconsax.direct_right,
+                label: 'Email Support',
+                value: 'mttrip2025@gmail.com',
+                onTap: () => _launchURL('mailto:mttrip2025@gmail.com'),
+              ),
+              const SizedBox(height: 12),
+              _buildCorporateContactButton(
+                icon: Iconsax.call,
+                label: 'Call Us Now',
+                value: '+91 7511100557',
+                onTap: () => _launchURL('tel:+917511100557'),
+              ),
+              const SizedBox(height: 12),
+              _buildCorporateContactButton(
+                icon: FontAwesomeIcons.whatsapp,
+                label: 'Official WhatsApp',
+                value: 'Instant Chat',
+                onTap: () => _launchURL('https://wa.me/917511100557'),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 26),
+          const Divider(color: borderSoft, thickness: 1.5),
+          const SizedBox(height: 12),
+
+          // 3. BOTTOM CREDITS
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text(
+                  '© 2026 MT TRIP. ALL RIGHTS RESERVED.',
+                  style: TextStyle(
+                    color: textLight,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                Text(
+                  'MT TRIP TRAVELS',
+                  style: TextStyle(
+                    color: maincolor1.withOpacity(0.2),
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFooterCategoryTitle(String title) {
+    return Text(
+      title,
+      style: const TextStyle(
+        color: maincolor1,
+        fontSize: 11,
+        fontWeight: FontWeight.w900,
+        letterSpacing: 1.5,
+      ),
+    );
+  }
+
+  Widget _buildCorporateFooterLink(String label, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: [
+            const Icon(Icons.chevron_right, color: secondaryColor, size: 14),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: const TextStyle(
+                color: textSecondary,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCorporateContactButton({
+    required IconData icon,
+    required String label,
+    required String value,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        decoration: BoxDecoration(
+          color: maincolor1.withOpacity(0.04),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: borderSoft),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: secondaryColor, size: 16),
+            ),
+            const SizedBox(width: 16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                    color: textLight,
+                    fontSize: 8,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    color: maincolor1,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ],
+            ),
+            const Spacer(),
+            Icon(
+              Icons.arrow_forward_ios,
+              color: maincolor1.withOpacity(0.1),
+              size: 12,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _launchURL(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      debugPrint('Could not launch $url');
+    }
   }
 }

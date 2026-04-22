@@ -18,7 +18,6 @@ import 'package:minna/bus/application/busListfetch/bus_list_fetch_bloc.dart';
 import 'package:minna/bus/application/change%20location/location_bloc.dart';
 import 'package:minna/bus/application/location%20fetch/bus_location_fetch_bloc.dart';
 
-
 // Cab
 import 'package:minna/cab/application/booked%20info%20list/booked_info_bloc.dart';
 import 'package:minna/cab/application/confirm%20booking/confirm_booking_bloc.dart';

@@ -835,10 +835,11 @@ class FlightbookingCard extends StatelessWidget {
           Text(
             'Layover: ${hours}h ${minutes}m at ${currentLeg.destinationName}',
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 10,
               fontWeight: FontWeight.w500,
               color: secondaryColor,
             ),
+            maxLines: 2,
           ),
         ],
       ),

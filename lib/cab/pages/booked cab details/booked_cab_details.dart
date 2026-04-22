@@ -107,77 +107,66 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
   }
 
   Widget _buildShimmerLoading() {
-    return CustomScrollView(
-      slivers: [
-        SliverAppBar(
-          backgroundColor: maincolor1,
-          expandedHeight: 200.0,
-          pinned: true,
-          floating: true,
-          elevation: 0,
-          flexibleSpace: FlexibleSpaceBar(
-            background: Shimmer.fromColors(
-              baseColor: Colors.grey[300]!,
-              highlightColor: Colors.grey[100]!,
-              child: Container(color: maincolor1),
+    return Column(
+      children: [
+        // Rounded Header Shimmer
+        Shimmer.fromColors(
+          baseColor: maincolor1,
+          highlightColor: maincolor1.withOpacity(0.8),
+          child: Container(
+            height: 180,
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              color: maincolor1,
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(32)),
             ),
           ),
         ),
-        SliverList(
-          delegate: SliverChildListDelegate([
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: _buildShimmerCard(
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildShimmerBox(width: 40, height: 14),
-                              const SizedBox(height: 12),
-                              _buildShimmerBox(
-                                width: double.infinity,
-                                height: 20,
-                              ),
-                              const SizedBox(height: 8),
-                              _buildShimmerBox(width: 200, height: 16),
-                            ],
-                          ),
-                        ),
-                        Column(
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                _buildShimmerCard(
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildShimmerBox(width: 80, height: 40),
+                          _buildShimmerBox(width: 40, height: 40, isCircle: true),
+                          _buildShimmerBox(width: 80, height: 40),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      _buildShimmerBox(width: double.infinity, height: 60),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _buildShimmerCard(
+                  child: Row(
+                    children: [
+                      _buildShimmerBox(width: 50, height: 50, isCircle: true),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildShimmerBox(
-                              width: 40,
-                              height: 40,
-                              isCircle: true,
-                            ),
+                            _buildShimmerBox(width: 100, height: 12),
+                            const SizedBox(height: 8),
+                            _buildShimmerBox(width: 150, height: 16),
                           ],
                         ),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              _buildShimmerBox(width: 40, height: 14),
-                              const SizedBox(height: 12),
-                              _buildShimmerBox(
-                                width: double.infinity,
-                                height: 20,
-                              ),
-                              const SizedBox(height: 8),
-                              _buildShimmerBox(width: 200, height: 16),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                const SizedBox(height: 16),
+                _buildShimmerCard(child: _buildShimmerBox(width: double.infinity, height: 100)),
+              ],
             ),
-          ]),
+          ),
         ),
       ],
     );
@@ -220,198 +209,133 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     BookingDetails details,
     CabDriverResponse? driverInfo,
   ) {
-    // Check multiple ways the status might indicate cancellation
     final statusLower = details.statusDesc.toLowerCase();
-    final isCancelled =
-        statusLower.contains('cancel') ||
-        statusLower.contains('cancelled') ||
-        statusLower == 'cancel';
+    final isCancelled = statusLower.contains('cancel');
 
-    log(
-      '📊 Building success state - Status: ${details.statusDesc}, isCancelled: $isCancelled',
-    );
-
-    return Stack(
-      children: [
-        CustomScrollView(
-          slivers: [
-            // Sliver App Bar
-            SliverAppBar(
-              expandedHeight: 160.0,
-              floating: false,
-              pinned: true,
-              backgroundColor: maincolor1,
-              elevation: 0,
-              leading: Center(
-                child: GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Iconsax.arrow_left_2,
-                      color: Colors.white,
-                      size: 18,
-                    ),
-                  ),
-                ),
-              ),
-              flexibleSpace: FlexibleSpaceBar(
-                centerTitle: true,
-                title: const Text(
-                  'Trip Report',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: -0.5,
-                  ),
-                ),
-                background: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [maincolor1, maincolor1.withOpacity(0.8)],
-                        ),
-                      ),
-                    ),
-                    // Status Badge
-                    Positioned(
-                      bottom: 25,
-                      right: 20,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isCancelled
-                              ? errorColor.withOpacity(0.2)
-                              : secondaryColor.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(
-                            color: isCancelled
-                                ? errorColor.withOpacity(0.5)
-                                : secondaryColor.withOpacity(0.5),
-                            width: 1,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: isCancelled
-                                    ? errorColor
-                                    : secondaryColor,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color:
-                                        (isCancelled
-                                                ? errorColor
-                                                : secondaryColor)
-                                            .withOpacity(0.4),
-                                    blurRadius: 4,
-                                    spreadRadius: 1,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              details.statusDesc.toUpperCase(),
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w900,
-                                color: isCancelled
-                                    ? errorColor
-                                    : secondaryColor,
-                                letterSpacing: 1.2,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // Booking Content
-            SliverList(
-              delegate: SliverChildListDelegate([
-                // Journey Details Card
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: _buildJourneyCard(details),
-                ),
-
-                // Driver & Vehicle Details (New Section)
-                if (driverInfo != null && driverInfo.driverUpdate != null)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: _buildDriverInfoCard(driverInfo.driverUpdate!),
-                  ),
-
-                if (driverInfo != null && driverInfo.driverUpdate != null)
-                  const SizedBox(height: 16),
-
-                // Trip Information Card
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: _buildTripInfoCard(details),
-                ),
-
-                const SizedBox(height: 16),
-
-                // Routes Information
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: _buildRoutesCard(details),
-                ),
-
-                const SizedBox(height: 16),
-
-                // Traveller Information
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: _buildTravellerCard(details.traveller),
-                ),
-
-                const SizedBox(height: 16),
-
-                // Cab & Fare Information
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: _buildCabFareCard(details.cabRate, isCancelled),
-                ),
-
-                const SizedBox(height: 100),
-              ]),
-            ),
-          ],
-        ),
-
-        // Cancel Button positioned at bottom
-        if (!isCancelled)
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: _buildCancelButton(details),
+    return Scaffold(
+      backgroundColor: backgroundColor,
+      appBar: AppBar(
+        backgroundColor: maincolor1,
+        elevation: 0,
+        centerTitle: true,
+        title: const Text(
+          "Trip Report",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w900,
+            letterSpacing: -0.5,
           ),
-      ],
+        ),
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Iconsax.arrow_left, color: Colors.white),
+        ),
+      ),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                _buildPremiumHeader(details, isCancelled),
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      _buildJourneyCard(details),
+                      const SizedBox(height: 16),
+                      if (driverInfo != null && driverInfo.driverUpdate != null) ...[
+                        _buildDriverInfoCard(driverInfo.driverUpdate!),
+                        const SizedBox(height: 16),
+                      ],
+                      _buildTripInfoCard(details),
+                      const SizedBox(height: 16),
+                      _buildRoutesCard(details),
+                      const SizedBox(height: 16),
+                      _buildTravellerCard(details.traveller),
+                      const SizedBox(height: 16),
+                      _buildCabFareCard(details.cabRate, isCancelled),
+                      const SizedBox(height: 120), // Space for button
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (!isCancelled)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: _buildCancelButton(details),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPremiumHeader(BookingDetails details, bool isCancelled) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: maincolor1,
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(32)),
+      ),
+      padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Iconsax.car, size: 40, color: Colors.white),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            details.bookingId,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+              letterSpacing: -0.5,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: (isCancelled ? errorColor : successColor).withOpacity(0.2),
+              borderRadius: BorderRadius.circular(100),
+              border: Border.all(
+                color: (isCancelled ? errorColor : successColor).withOpacity(0.3),
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  isCancelled ? Iconsax.close_circle : Iconsax.tick_circle,
+                  size: 14,
+                  color: isCancelled ? errorColor : Colors.greenAccent,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  details.statusDesc.toUpperCase(),
+                  style: TextStyle(
+                    color: isCancelled ? errorColor : Colors.greenAccent,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -420,224 +344,165 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: borderSoft),
         boxShadow: [
           BoxShadow(
-            color: secondaryColor.withOpacity(0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
           ),
         ],
-        border: Border.all(color: secondaryColor.withOpacity(0.1)),
       ),
+      padding: const EdgeInsets.all(24),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header: Driver Title & Status
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            decoration: BoxDecoration(
-              color: secondaryColor.withOpacity(0.05),
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(24),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: secondaryColor.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Iconsax.personalcard, color: secondaryColor, size: 18),
               ),
-            ),
-            child: Row(
-              children: [
-                Icon(Iconsax.personalcard, color: secondaryColor, size: 20),
-                const SizedBox(width: 10),
-                Text(
-                  'CAB DRIVER DETAILS',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w800,
-                    color: secondaryColor,
-                    letterSpacing: 1.2,
+              const SizedBox(width: 12),
+              const Text(
+                'DRIVER INFORMATION',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: textLight,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: successColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  update.statusDesc.toUpperCase(),
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                    color: successColor,
                   ),
                 ),
-                const Spacer(),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: successColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    update.statusDesc.toUpperCase(),
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: successColor,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                // Vehicle Details
-                Row(
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: backgroundColor,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Icon(Iconsax.car, color: maincolor1, size: 24),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: backgroundColor,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Icon(
-                        Icons.drive_eta_rounded,
-                        color: textPrimary,
-                        size: 24,
+                    Text(
+                      update.car.model.toUpperCase(),
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w900,
+                        color: maincolor1,
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            update.car.model,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            update.car.number,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: textSecondary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // OTP Badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [maincolor1, maincolor1.withOpacity(0.8)],
-                        ),
-                        borderRadius: BorderRadius.circular(14),
-                        boxShadow: [
-                          BoxShadow(
-                            color: maincolor1.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          const Text(
-                            'OTP',
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          Text(
-                            update.otp,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 1.5,
-                            ),
-                          ),
-                        ],
+                    const SizedBox(height: 4),
+                    Text(
+                      update.car.number.toUpperCase(),
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: textSecondary,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                   ],
                 ),
-
-                const SizedBox(height: 24),
-                Divider(color: Colors.grey.shade200, height: 1),
-                const SizedBox(height: 20),
-
-                // Driver Contact
-                Row(
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: maincolor1,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Column(
                   children: [
-                    CircleAvatar(
-                      radius: 24,
-                      backgroundColor: secondaryColor.withOpacity(0.1),
-                      child: Text(
-                        update.driver.name[0],
-                        style: TextStyle(
-                          color: secondaryColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        ),
-                      ),
+                    const Text(
+                      'OTP',
+                      style: TextStyle(color: Colors.white70, fontSize: 9, fontWeight: FontWeight.w800),
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            update.driver.name,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.star_rounded,
-                                color: Colors.orange,
-                                size: 16,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${update.driver.rating}',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: textSecondary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Call Button
-                    GestureDetector(
-                      onTap: () => launchUrl(
-                        Uri.parse('tel:${update.driver.contact.fullNumber}'),
-                      ),
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: successColor.withOpacity(0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.phone_in_talk_rounded,
-                          color: successColor,
-                          size: 22,
-                        ),
+                    Text(
+                      update.otp,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.5,
                       ),
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+            ],
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 20),
+            child: Divider(height: 1),
+          ),
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 24,
+                backgroundColor: secondaryColor.withOpacity(0.1),
+                child: Text(
+                  update.driver.name[0],
+                  style: const TextStyle(color: secondaryColor, fontWeight: FontWeight.w900, fontSize: 20),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      update.driver.name.toUpperCase(),
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: maincolor1),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(Icons.star_rounded, color: Colors.orange, size: 16),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${update.driver.rating}',
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: textSecondary),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: () => launchUrl(Uri.parse('tel:${update.driver.contact.fullNumber}')),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(color: successColor.withOpacity(0.1), shape: BoxShape.circle),
+                  child: const Icon(Iconsax.call, color: successColor, size: 20),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -652,60 +517,56 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: borderSoft),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
           ),
         ],
-        border: Border.all(color: Colors.grey.shade100),
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(24),
       child: Column(
         children: [
-          // Route Information
           Row(
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'FROM',
                       style: TextStyle(
                         fontSize: 10,
-                        color: textSecondary,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 1.0,
+                        color: textLight,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.2,
                       ),
                     ),
-                    const SizedBox(height: 5),
+                    const SizedBox(height: 8),
                     Text(
                       firstRoute.source.address,
                       style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w900,
+                        color: maincolor1,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 8),
                     Row(
                       children: [
-                        Icon(
-                          Icons.access_time,
-                          size: 12,
-                          color: secondaryColor,
-                        ),
-                        const SizedBox(width: 6),
+                        const Icon(Iconsax.clock, size: 14, color: secondaryColor),
+                        const SizedBox(width: 8),
                         Flexible(
                           child: Text(
                             '${_formatDate(firstRoute.startDate)} • ${_formatTimeTo12Hour(firstRoute.startTime)}',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 12,
                               color: textSecondary,
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w700,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -725,6 +586,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                       decoration: BoxDecoration(
                         color: secondaryColor.withOpacity(0.1),
                         shape: BoxShape.circle,
+                        border: Border.all(color: secondaryColor.withOpacity(0.3), width: 2),
                       ),
                       child: Icon(
                         Icons.local_taxi_rounded,
@@ -734,16 +596,13 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                     ),
                     const SizedBox(height: 8),
                     Container(
-                      width: 1,
-                      height: 40,
+                      width: 2,
+                      height: 50,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
-                          colors: [
-                            secondaryColor.withOpacity(0.5),
-                            Colors.transparent,
-                          ],
+                          colors: [secondaryColor.withOpacity(0.5), Colors.transparent],
                         ),
                       ),
                     ),
@@ -754,43 +613,40 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(
+                    const Text(
                       'TO',
                       style: TextStyle(
                         fontSize: 10,
-                        color: textSecondary,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 1.0,
+                        color: textLight,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.2,
                       ),
                     ),
-                    const SizedBox(height: 5),
+                    const SizedBox(height: 8),
                     Text(
                       lastRoute.destination.address,
                       style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w900,
+                        color: maincolor1,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.end,
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Icon(
-                          Icons.access_time,
-                          size: 12,
-                          color: secondaryColor,
-                        ),
-                        const SizedBox(width: 6),
+                        const Icon(Iconsax.clock, size: 14, color: secondaryColor),
+                        const SizedBox(width: 8),
                         Flexible(
                           child: Text(
                             '${_formatDate(lastRoute.startDate)} • ${_formatTimeTo12Hour(lastRoute.startTime)}',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 12,
                               color: textSecondary,
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w700,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -804,52 +660,21 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
               ),
             ],
           ),
-          const SizedBox(height: 20),
-
-          // Trip Information - Grid layout for better space management
+          const SizedBox(height: 24),
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: backgroundColor,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
             ),
-            child: Column(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                // First row
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: _buildCompactTripInfoItem(
-                        'Distance',
-                        '${details.tripDistance} km',
-                      ),
-                    ),
-                    Container(
-                      width: 1,
-                      height: 40,
-                      color: textLight.withOpacity(0.3),
-                    ),
-                    Expanded(
-                      child: _buildCompactTripInfoItem(
-                        'Trip Type',
-                        details.tripTypeName,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  width: double.infinity,
-                  height: 1,
-                  color: textLight.withOpacity(0.3),
-                ),
-                const SizedBox(height: 12),
-                // Second row - centered single item
-                _buildCompactTripInfoItem(
-                  'Booked On',
-                  _formatDate(details.bookingDate),
-                ),
+                _buildCompactTripInfoItem('Distance', '${details.tripDistance} KM'),
+                Container(width: 1, height: 30, color: Colors.grey.shade300),
+                _buildCompactTripInfoItem('Trip Type', details.tripTypeName.toUpperCase()),
+                Container(width: 1, height: 30, color: Colors.grey.shade300),
+                _buildCompactTripInfoItem('Booked On', _formatDate(details.bookingDate)),
               ],
             ),
           ),
@@ -864,18 +689,14 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          title,
-          style: TextStyle(
-            fontSize: 10,
-            color: textSecondary,
-            fontWeight: FontWeight.w600,
-          ),
+          title.toUpperCase(),
+          style: const TextStyle(fontSize: 9, color: textLight, fontWeight: FontWeight.w800, letterSpacing: 1),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 6),
         Text(
           value,
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900, color: maincolor1),
           textAlign: TextAlign.center,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
@@ -888,73 +709,57 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     return Container(
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: borderSoft),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: secondaryColor.withOpacity(0.1),
               shape: BoxShape.circle,
-              border: Border.all(
-                color: secondaryColor.withOpacity(0.3),
-                width: 2,
-              ),
             ),
-            child: Icon(
-              Icons.calendar_today_rounded,
-              color: secondaryColor,
-              size: 20,
-            ),
+            child: const Icon(Iconsax.calendar_1, color: secondaryColor, size: 24),
           ),
-          const SizedBox(width: 20),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Pickup Schedule',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
+                const Text(
+                  'PICKUP SCHEDULE',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: textLight,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.2,
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
                 Text(
                   '${_formatDate(details.pickupDate)} • ${_formatTimeTo12Hour(details.pickupTime)}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: textSecondary,
-                    fontWeight: FontWeight.w500,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                    color: maincolor1,
                   ),
                 ),
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: secondaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    'Confirmed Schedule',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: secondaryColor,
-                      fontWeight: FontWeight.w600,
-                    ),
+                const SizedBox(height: 4),
+                const Text(
+                  'Confirmed Schedule',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: successColor,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ],
@@ -969,16 +774,17 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     return Container(
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: borderSoft),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -990,103 +796,77 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                   color: secondaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  Icons.route_rounded,
-                  color: secondaryColor,
-                  size: 12,
-                ),
+                child: const Icon(Iconsax.route_square, color: secondaryColor, size: 18),
               ),
               const SizedBox(width: 12),
               Text(
                 details.isMultiCity ? 'ROUTES' : 'ROUTE',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: textSecondary,
-                  fontWeight: FontWeight.w600,
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: textLight,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.2,
                 ),
               ),
               const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: backgroundColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  '${details.routes.length}',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: secondaryColor,
-                    fontWeight: FontWeight.w700,
-                  ),
+              Text(
+                '${details.routes.length} Stops',
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: maincolor1,
+                  fontWeight: FontWeight.w900,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
           ...details.routes.asMap().entries.map((entry) {
             final index = entry.key;
             final route = entry.value;
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: Container(
-                padding: const EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  color: backgroundColor,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.grey.shade200),
-                ),
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: backgroundColor,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.grey.shade200),
+              ),
+              child: IntrinsicHeight(
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Column(
                       children: [
-                        Icon(
-                          Icons.location_on,
-                          color: secondaryColor,
-                          size: 16,
-                        ),
+                        const Icon(Iconsax.location, color: secondaryColor, size: 16),
                         if (index < details.routes.length - 1)
-                          Container(
-                            width: 2,
-                            height: 40,
-                            color: secondaryColor.withOpacity(0.3),
+                          Expanded(
+                            child: Container(
+                              width: 1.5,
+                              margin: const EdgeInsets.symmetric(vertical: 4),
+                              color: secondaryColor.withOpacity(0.3),
+                            ),
                           ),
                         if (index == details.routes.length - 1)
-                          Icon(Icons.flag, color: Colors.green, size: 16),
+                          const Icon(Iconsax.flag, color: Colors.green, size: 16),
                       ],
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'From: ${route.source.address}',
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900, color: maincolor1),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 4),
                           Text(
                             'To: ${route.destination.address}',
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900, color: maincolor1),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             '${_formatDate(route.startDate)} • ${_formatTimeTo12Hour(route.startTime)}',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: textSecondary,
-                              fontWeight: FontWeight.w500,
-                            ),
+                            style: const TextStyle(fontSize: 11, color: textSecondary, fontWeight: FontWeight.w700),
                           ),
                         ],
                       ),
@@ -1105,16 +885,17 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     return Container(
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: borderSoft),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1126,35 +907,26 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                   color: secondaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  Icons.person_rounded,
-                  color: secondaryColor,
-                  size: 12,
-                ),
+                child: const Icon(Iconsax.user, color: secondaryColor, size: 18),
               ),
               const SizedBox(width: 12),
-              Text(
+              const Text(
                 'TRAVELLER INFORMATION',
                 style: TextStyle(
-                  fontSize: 13,
-                  color: textSecondary,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 11,
+                  color: textLight,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.2,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
-          _buildTravellerInfoItem('Full Name', traveller.fullName),
-          _buildTravellerInfoItem('Email', traveller.email),
-          _buildTravellerInfoItem(
-            'Primary Contact',
-            traveller.primaryContact.fullNumber,
-          ),
+          const SizedBox(height: 24),
+          _buildTravellerInfoItem('Full Name', traveller.fullName.toUpperCase()),
+          _buildTravellerInfoItem('Email Address', traveller.email),
+          _buildTravellerInfoItem('Primary Contact', traveller.primaryContact.fullNumber),
           if (traveller.alternateContact.number.isNotEmpty)
-            _buildTravellerInfoItem(
-              'Alternate Contact',
-              traveller.alternateContact.fullNumber,
-            ),
+            _buildTravellerInfoItem('Alternate Contact', traveller.alternateContact.fullNumber),
         ],
       ),
     );
@@ -1170,18 +942,14 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
             width: 120,
             child: Text(
               label,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: textSecondary,
-                fontSize: 13,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w800, color: textLight, fontSize: 11, letterSpacing: 0.5),
             ),
           ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
+              style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: maincolor1),
             ),
           ),
         ],
@@ -1193,16 +961,17 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     return Container(
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: borderSoft),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1214,68 +983,50 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                   color: secondaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  Icons.directions_car_rounded,
-                  color: secondaryColor,
-                  size: 12,
-                ),
+                child: const Icon(Iconsax.car, color: secondaryColor, size: 18),
               ),
               const SizedBox(width: 12),
-              Text(
+              const Text(
                 'CAB & FARE DETAILS',
                 style: TextStyle(
-                  fontSize: 13,
-                  color: textSecondary,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 11,
+                  color: textLight,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.2,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
-          // Cab Details
+          const SizedBox(height: 24),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: secondaryColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  color: backgroundColor,
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                child: Icon(
-                  Icons.directions_car_filled,
-                  color: secondaryColor,
-                  size: 24,
-                ),
+                child: const Icon(Iconsax.car, color: maincolor1, size: 24),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      cabRate.cab.type,
+                      cabRate.cab.type.toUpperCase(),
                       style: const TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w900,
+                        color: maincolor1,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 4),
                     Row(
                       children: [
-                        _buildCabSpecItem(
-                          Icons.people,
-                          '${cabRate.cab.seatingCapacity} Seats',
-                        ),
+                        _buildCabSpecItem(Iconsax.user, '${cabRate.cab.seatingCapacity} SEATS'),
                         const SizedBox(width: 12),
-                        _buildCabSpecItem(
-                          Icons.luggage,
-                          '${cabRate.cab.bagCapacity} Bags',
-                        ),
-                        if (cabRate.cab.isAssured) ...[
-                          const SizedBox(width: 12),
-                          _buildCabSpecItem(Icons.verified, 'Assured'),
-                        ],
+                        _buildCabSpecItem(Iconsax.bag, '${cabRate.cab.bagCapacity} BAGS'),
                       ],
                     ),
                   ],
@@ -1283,63 +1034,50 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
               ),
             ],
           ),
-          const SizedBox(height: 20),
-          // Fare Breakdown
-          Text(
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 24),
+            child: Divider(height: 1),
+          ),
+          const Text(
             'FARE BREAKUP',
             style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: textSecondary,
+              fontSize: 11,
+              color: textLight,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 1.2,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           _buildFareItem('Base Fare', cabRate.fare.baseFare.toString()),
-          _buildFareItem(
-            'Driver Allowance',
-            cabRate.fare.driverAllowance.toString(),
-          ),
+          _buildFareItem('Driver Allowance', cabRate.fare.driverAllowance.toString()),
           _buildFareItem('GST', cabRate.fare.gst.toString()),
-          if (cabRate.fare.tollTax > 0)
-            _buildFareItem('Toll Tax', cabRate.fare.tollTax.toString()),
-          if (cabRate.fare.stateTax > 0)
-            _buildFareItem('State Tax', cabRate.fare.stateTax.toString()),
-          if (cabRate.fare.airportFee > 0)
-            _buildFareItem('Airport Fee', cabRate.fare.airportFee.toString()),
+          if (cabRate.fare.tollTax > 0) _buildFareItem('Toll Tax', cabRate.fare.tollTax.toString()),
+          if (cabRate.fare.stateTax > 0) _buildFareItem('State Tax', cabRate.fare.stateTax.toString()),
+          if (cabRate.fare.airportFee > 0) _buildFareItem('Airport Fee', cabRate.fare.airportFee.toString()),
           if (cabRate.fare.additionalCharge > 0)
-            _buildFareItem(
-              'Additional Charges',
-              cabRate.fare.additionalCharge.toString(),
-            ),
+            _buildFareItem('Additional Charges', cabRate.fare.additionalCharge.toString()),
 
           FutureBuilder<double>(
-            future: commissionProvider.calculateAmountWithCommission(
-              cabRate.fare.totalAmount,
-            ),
+            future: commissionProvider.calculateAmountWithCommission(cabRate.fare.totalAmount),
             builder: (context, snapshot) {
-              if (commissionProvider.isLoading ||
-                  snapshot.connectionState == ConnectionState.waiting) {
-                return SizedBox();
+              if (commissionProvider.isLoading || snapshot.connectionState == ConnectionState.waiting) {
+                return const SizedBox();
               }
 
-              final amountWithCommission =
-                  snapshot.data ?? cabRate.fare.totalAmount;
-              final hasCommission =
-                  amountWithCommission > cabRate.fare.totalAmount;
+              final amountWithCommission = snapshot.data ?? cabRate.fare.totalAmount;
+              final hasCommission = amountWithCommission > cabRate.fare.totalAmount;
 
               return Column(
                 children: [
                   if (hasCommission)
                     _buildFareItem(
                       "Service Charges & Other",
-                      (amountWithCommission - cabRate.fare.totalAmount)
-                          .toStringAsFixed(0),
+                      (amountWithCommission - cabRate.fare.totalAmount).toStringAsFixed(0),
                     ),
-
-                  const SizedBox(height: 8),
-                  const Divider(height: 1),
-                  const SizedBox(height: 8),
-
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: Divider(height: 1),
+                  ),
                   _buildFareItem(
                     'Total Amount',
                     amountWithCommission.toStringAsFixed(0),
@@ -1357,15 +1095,18 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
   Widget _buildCabSpecItem(IconData icon, String text) {
     return Row(
       children: [
-        Icon(icon, size: 14, color: textSecondary),
+        Icon(icon, size: 12, color: textSecondary),
         const SizedBox(width: 4),
-        Text(text, style: TextStyle(fontSize: 12, color: textSecondary)),
+        Text(
+          text,
+          style: const TextStyle(fontSize: 10, color: textSecondary, fontWeight: FontWeight.w700),
+        ),
       ],
     );
   }
 
   Widget _buildFareItem(String label, String amount, {bool isTotal = false}) {
-    return Container(
+    return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1373,17 +1114,17 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
           Text(
             label,
             style: TextStyle(
-              fontSize: 14,
-              color: isTotal ? textPrimary : textSecondary,
-              fontWeight: isTotal ? FontWeight.w600 : FontWeight.normal,
+              fontSize: isTotal ? 15 : 14,
+              color: isTotal ? maincolor1 : textSecondary,
+              fontWeight: isTotal ? FontWeight.w900 : FontWeight.w600,
             ),
           ),
           Text(
             '₹$amount',
             style: TextStyle(
-              fontSize: 14,
-              color: isTotal ? secondaryColor : textPrimary,
-              fontWeight: isTotal ? FontWeight.w700 : FontWeight.normal,
+              fontSize: isTotal ? 16 : 14,
+              color: isTotal ? secondaryColor : maincolor1,
+              fontWeight: FontWeight.w900,
             ),
           ),
         ],
@@ -1393,16 +1134,13 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
 
   Widget _buildCancelButton(BookingDetails details) {
     return Container(
-      padding: const EdgeInsets.only(bottom: 12, right: 10, left: 10),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
       decoration: BoxDecoration(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        color: cardColor,
+        color: Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withOpacity(0.08),
             blurRadius: 20,
             offset: const Offset(0, -5),
           ),
@@ -1413,20 +1151,17 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
           width: double.infinity,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: _isCancelling ? warningColor : maincolor1,
+              backgroundColor: maincolor1,
               foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 18),
+              padding: const EdgeInsets.symmetric(vertical: 20),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
-              elevation: 4,
-              shadowColor: maincolor1.withOpacity(0.3),
+              elevation: 0,
             ),
-            onPressed: _isCancelling
-                ? null
-                : () => _onCancelPressed(details.bookingId),
+            onPressed: _isCancelling ? null : () => _onCancelPressed(details.bookingId),
             child: _isCancelling
-                ? SizedBox(
+                ? const SizedBox(
                     height: 24,
                     width: 24,
                     child: CircularProgressIndicator(
@@ -1434,17 +1169,17 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                       strokeWidth: 2,
                     ),
                   )
-                : Row(
+                : const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.cancel_rounded, size: 20),
+                      Icon(Iconsax.close_circle, size: 20),
                       const SizedBox(width: 12),
                       Text(
                         'CANCEL BOOKING',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.5,
                         ),
                       ),
                     ],

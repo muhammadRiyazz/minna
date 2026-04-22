@@ -1264,7 +1264,7 @@ class FlightCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected ? maincolor1 : Colors.grey.shade100,
-            width: isSelected ? 2 : 1.5,
+            width: .5,
           ),
           boxShadow: isSelected
               ? [
@@ -1281,29 +1281,38 @@ class FlightCard extends StatelessWidget {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Icon(
-                      isSelected ? Iconsax.tick_circle5 : Iconsax.record,
-                      color: isSelected ? maincolor1 : Colors.grey.shade300,
-                      size: 22,
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      fare?.fareName ?? 'Standard',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w900,
-                        color: maincolor1,
+                Expanded(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        isSelected ? Iconsax.tick_circle5 : Iconsax.record,
+                        color: isSelected ? maincolor1 : Colors.grey.shade300,
+                        size: 22,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          fare?.fareName ?? 'Standard',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w900,
+                            color: maincolor1,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+                const SizedBox(width: 12),
                 Text(
                   '₹${totalWithCommission.toStringAsFixed(0)}',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 12,
                     fontWeight: FontWeight.w900,
                     color: maincolor1,
                   ),
@@ -1866,12 +1875,16 @@ class FlightDetailsBottomSheet extends StatelessWidget {
         children: [
           Icon(icon, size: 14, color: color),
           const SizedBox(width: 6),
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: color,
+          Flexible(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: color,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

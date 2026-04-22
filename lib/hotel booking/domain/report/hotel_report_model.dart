@@ -60,6 +60,7 @@ class BookingInfo {
   final String? refundStatus;
   final String? refundId;
   final String? refundCreatedAt;
+  final String rooms;
 
   BookingInfo({
     required this.id,
@@ -82,6 +83,7 @@ class BookingInfo {
     this.refundStatus,
     this.refundId,
     this.refundCreatedAt,
+    required this.rooms,
   });
 
   factory BookingInfo.fromJson(Map<String, dynamic> json) {
@@ -106,6 +108,7 @@ class BookingInfo {
       refundStatus: json['refund_status']?.toString(),
       refundId: json['refund_id']?.toString(),
       refundCreatedAt: json['refund_created_at']?.toString(),
+      rooms: json['rooms']?.toString() ?? '1',
     );
   }
 

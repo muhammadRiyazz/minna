@@ -280,6 +280,7 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
     FFlightOption flightOption,
     SearchDataState searchState,
   ) async {
+    final flightResponse = state.respo!;
     if (_formKey.currentState!.validate()) {
       final isLoggedIn = context.read<LoginBloc>().state.isLoggedIn ?? false;
 
@@ -313,6 +314,7 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
 
       for (int i = 0; i < firstNameControllers.length; i++) {
         final legKey = flightOption.flightLegs!.first.key;
+        final tripMode = searchData.oneWay ? 'O' : 'S';
 
         final paxType = i < searchData.travellers['adults']!
             ? 'ADT'
@@ -323,8 +325,9 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
             : 'INF';
 
         final pInfo = state.respo!.passengerInfo!.firstWhere(
-            (info) => info.ptc == paxType,
-            orElse: () => state.respo!.passengerInfo!.first);
+          (info) => info.ptc == paxType,
+          orElse: () => state.respo!.passengerInfo!.first,
+        );
 
         passengerDataList.add({
           'paxNo': pInfo.paxNo,
@@ -338,7 +341,7 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
           'nationality': selectedNationalities[i]?.countryCode,
           'passportNumber': passportControllers[i].text,
           'passportExpiry': expiryControllers[i].text,
-          "CountryCode": 91,
+          'CountryCode': "91", // String type required
           'countryOfIssue': selectedCountriesOfIssue[i]?.countryCode,
           'address': sameAsFirstPassenger[i] && i > 0
               ? addressControllers[0].text
@@ -354,6 +357,10 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
                   'amount': selectedMeals[i]!.amount,
                   'currency': selectedMeals[i]!.currency,
                   'legKey': legKey,
+                  'mealKey':
+                      flightResponse.ssrAvailability?.mealInfo?.first.mealKey,
+                  'ptc': paxType,
+                  'tripMode': tripMode,
                 }
               : null,
           'baggage': selectedBaggages[i] != null
@@ -363,6 +370,15 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
                   'amount': selectedBaggages[i]!.amount,
                   'currency': selectedBaggages[i]!.currency,
                   'legKey': legKey,
+                  'baggageKey': flightResponse
+                      .ssrAvailability
+                      ?.baggageInfo
+                      ?.first
+                      .baggageKey,
+                  'ptc': paxType,
+                  'weight': selectedBaggages[i]!
+                      .name, // Successful case uses name as weight
+                  'tripMode': tripMode,
                 }
               : null,
         });
@@ -419,6 +435,10 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
                   searchState.travellers['adults']! +
                   searchState.travellers['children']! +
                   searchState.travellers['infants']!;
+
+              final isInternational =
+                  searchState.from?.countryCode != 'IN' ||
+                  searchState.to?.countryCode != 'IN';
 
               if (firstNameControllers.length != travellers) {
                 _initializePassengerData(travellers);
@@ -635,23 +655,56 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
                               key: _formKey,
                               child: Column(
                                 children: [
-                                  _buildModernTextField(
-                                    label: 'Phone Number',
-                                    controller: contactNumberController,
-                                    icon: Iconsax.mobile,
-                                    hint: 'e.g. 9876543210',
-                                    keyboardType: TextInputType.phone,
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Required field';
-                                      }
-                                      if (!RegExp(
-                                        r'^[0-9]{10,15}$',
-                                      ).hasMatch(value)) {
-                                        return 'Invalid number';
-                                      }
-                                      return null;
-                                    },
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        flex: 2,
+                                        child: _buildModernTextField(
+                                          label: 'ISD',
+                                          controller: countryCodeController,
+                                          icon: Iconsax.global,
+                                          hint: '+91',
+                                          keyboardType: TextInputType.phone,
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Required';
+                                            }
+                                            if (!RegExp(
+                                              r'^\+?[0-9]{1,4}$',
+                                            ).hasMatch(value)) {
+                                              return 'Invalid';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        flex: 5,
+                                        child: _buildModernTextField(
+                                          label: 'Phone Number',
+                                          controller: contactNumberController,
+                                          icon: Iconsax.mobile,
+                                          hint: '9876543210',
+                                          keyboardType: TextInputType.phone,
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Required';
+                                            }
+                                            if (!RegExp(
+                                              r'^[0-9]{7,12}$',
+                                            ).hasMatch(value)) {
+                                              return 'Invalid number';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                   const SizedBox(height: 20),
                                   _buildModernTextField(
@@ -817,6 +870,7 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
                                 isFirstPassenger: isFirstPassenger,
                                 hasMeals: hasMealOptions,
                                 hasBaggage: hasBaggageOptions,
+                                isInternational: isInternational,
                                 flightResponse: flightResponse,
                               );
                             }),
@@ -941,6 +995,7 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
     required bool isFirstPassenger,
     required bool hasMeals,
     required bool hasBaggage,
+    required bool isInternational,
     required FFlightResponse flightResponse,
   }) {
     return StatefulBuilder(
@@ -1037,6 +1092,12 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
                                 onChanged: (value) => setState(
                                   () => selectedTitles[index] = value,
                                 ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Title required';
+                                  }
+                                  return null;
+                                },
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -1067,6 +1128,7 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
                           validator: (value) {
                             if (value == null || value.isEmpty)
                               return 'Required';
+                            if (value.length < 2) return 'Min 2 characters';
                             if (!RegExp(r'^[a-zA-Z ]+$').hasMatch(value))
                               return 'Alpha only';
                             return null;
@@ -1090,21 +1152,61 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
                                   color: maincolor1.withOpacity(0.4),
                                 ),
                                 onTap: () async {
+                                  final now = DateTime.now();
+                                  DateTime first, last, initial;
+
+                                  if (isInfant) {
+                                    // 0-2 years
+                                    first = DateTime(
+                                      now.year - 2,
+                                      now.month,
+                                      now.day,
+                                    );
+                                    last = now;
+                                    initial = now.subtract(
+                                      const Duration(days: 365),
+                                    );
+                                  } else if (isChild) {
+                                    // 2-11 years
+                                    first = DateTime(
+                                      now.year - 12,
+                                      now.month,
+                                      now.day + 1,
+                                    );
+                                    last = DateTime(
+                                      now.year - 2,
+                                      now.month,
+                                      now.day,
+                                    );
+                                    initial = DateTime(
+                                      now.year - 5,
+                                      now.month,
+                                      now.day,
+                                    );
+                                  } else {
+                                    // 12+ years
+                                    first = DateTime(1900);
+                                    last = DateTime(
+                                      now.year - 12,
+                                      now.month,
+                                      now.day,
+                                    );
+                                    initial = DateTime(
+                                      now.year - 25,
+                                      now.month,
+                                      now.day,
+                                    );
+                                  }
+
                                   DateTime? pickedDate = await showDatePicker(
                                     context: context,
-                                    initialDate: isInfant
-                                        ? DateTime.now().subtract(
-                                            const Duration(days: 365),
-                                          )
-                                        : isChild
-                                        ? DateTime.now().subtract(
-                                            const Duration(days: 365 * 5),
-                                          )
-                                        : DateTime.now().subtract(
-                                            const Duration(days: 365 * 25),
-                                          ),
-                                    firstDate: DateTime(1900),
-                                    lastDate: DateTime.now(),
+                                    initialDate: initial.isAfter(last)
+                                        ? last
+                                        : (initial.isBefore(first)
+                                              ? first
+                                              : initial),
+                                    firstDate: first,
+                                    lastDate: last,
                                   );
                                   if (pickedDate != null) {
                                     setState(() {
@@ -1113,6 +1215,12 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
                                       ).format(pickedDate);
                                     });
                                   }
+                                },
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'DOB required';
+                                  }
+                                  return null;
                                 },
                               ),
                             ),
@@ -1153,6 +1261,99 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
                             icon: Iconsax.mask,
                             hint: 'Enter pin code',
                             keyboardType: TextInputType.number,
+                          ),
+                        ],
+
+                        if (isInternational) ...[
+                          const SizedBox(height: 24),
+                          // Passport Details Header
+                          Row(
+                            children: [
+                              Icon(
+                                Iconsax.card_pos,
+                                size: 16,
+                                color: secondaryColor,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Passport Details',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: maincolor1,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          _buildModernTextField(
+                            label: 'Passport Number',
+                            controller: passportControllers[index],
+                            icon: Iconsax.card_pos,
+                            hint: 'Enter passport number',
+                            validator: (value) {
+                              if (isInternational &&
+                                  (value == null || value.isEmpty)) {
+                                return 'Required';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          _buildModernDropdown<Country>(
+                            label: 'Country of Issue',
+                            value: selectedCountriesOfIssue[index],
+                            icon: Iconsax.global_edit,
+                            hint: 'Select Country',
+                            items: state.nationalitList.map((country) {
+                              return DropdownMenuItem(
+                                value: country,
+                                child: Text(
+                                  country.countryName,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (newValue) => setState(
+                              () => selectedCountriesOfIssue[index] = newValue,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          _buildModernTextField(
+                            label: 'Passport Expiry Date',
+                            controller: expiryControllers[index],
+                            icon: Iconsax.calendar_tick,
+                            hint: 'YYYY-MM-DD',
+                            readOnly: true,
+                            suffixIcon: Icon(
+                              Iconsax.calendar_2,
+                              size: 18,
+                              color: maincolor1.withOpacity(0.4),
+                            ),
+                            onTap: () async {
+                              DateTime? pickedDate = await showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now().add(
+                                  const Duration(days: 180),
+                                ),
+                                firstDate: DateTime.now(),
+                                lastDate: DateTime(2050),
+                              );
+                              if (pickedDate != null) {
+                                setState(() {
+                                  expiryControllers[index].text = DateFormat(
+                                    'yyyy-MM-dd',
+                                  ).format(pickedDate);
+                                });
+                              }
+                            },
+                            validator: (value) {
+                              if (isInternational &&
+                                  (value == null || value.isEmpty)) {
+                                return 'Required';
+                              }
+                              return null;
+                            },
                           ),
                         ],
 
@@ -1360,6 +1561,7 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
     required void Function(T?)? onChanged,
     required IconData icon,
     String? hint,
+    String? Function(T?)? validator,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1380,6 +1582,7 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
           value: value,
           items: items,
           onChanged: onChanged,
+          validator: validator,
           icon: Icon(
             Iconsax.arrow_down_1,
             color: maincolor1.withOpacity(0.4),
