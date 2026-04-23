@@ -832,14 +832,18 @@ class FlightbookingCard extends StatelessWidget {
         children: [
           Icon(Icons.schedule_rounded, size: 14, color: secondaryColor),
           SizedBox(width: 8),
-          Text(
-            'Layover: ${hours}h ${minutes}m at ${currentLeg.destinationName}',
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w500,
-              color: secondaryColor,
+          Expanded(
+            child: Text(
+              'Layover: ${hours}h ${minutes}m at ${currentLeg.destinationName}',
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w500,
+                color: secondaryColor,
+              ),
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
             ),
-            maxLines: 2,
           ),
         ],
       ),

@@ -9,6 +9,7 @@ import 'package:minna/comman/pages/log%20in/otp_screen.dart';
 import 'package:minna/comman/pages/main%20home/home.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/gestures.dart';
+import 'package:upgrader/upgrader.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -75,8 +76,18 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         }
       },
-      child: Scaffold(
-        backgroundColor: backgroundColor,
+      child: UpgradeAlert(
+        upgrader: Upgrader(durationUntilAlertAgain: Duration.zero),
+        showIgnore: false,
+        showLater: true,
+        showReleaseNotes: false,
+        barrierDismissible: false,
+        onLater: () {
+          // Navigator.pop(context); // Upgrader handles the pop if you return true
+          return false;
+        },
+        child: Scaffold(
+          backgroundColor: backgroundColor,
         body: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
@@ -409,6 +420,7 @@ class _LoginScreenState extends State<LoginScreen> {
           },
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

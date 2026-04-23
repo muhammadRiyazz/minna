@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:upgrader/upgrader.dart';
 import 'package:minna/Electyicity%20&%20Water/water%20bill/water%20bill%20home/water_input.dart';
 import 'package:minna/hotel%20booking/pages/holel%20home%20page/home_page_hotel.dart';
 import 'package:shimmer/shimmer.dart';
@@ -57,10 +58,18 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: _pages[_currentIndex],
-      bottomNavigationBar: _buildBottomNavigationBar(),
+    return UpgradeAlert(
+      upgrader: Upgrader(durationUntilAlertAgain: Duration.zero),
+      showIgnore: false,
+      showLater: true,
+      showReleaseNotes: false,
+      barrierDismissible: false,
+      onLater: () => false,
+      child: Scaffold(
+        backgroundColor: Colors.grey[50],
+        body: _pages[_currentIndex],
+        bottomNavigationBar: _buildBottomNavigationBar(),
+      ),
     );
   }
 

@@ -63,40 +63,82 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
         final baggageInfoList = <ReBaggageInfo>[];
         final seatInfoList = <ReSeatInfo>[];
 
-        // Handle meal data with safe type conversion
-        final mealData = passengerData['meal'];
-        if (mealData != null && mealData is Map) {
-          mealInfoList.add(
-            ReMealInfo(
-              meals: [
-                ReMeal(
-                  code: mealData['code']?.toString() ?? '',
-                  name: mealData['name']?.toString() ?? '',
-                  amount: safeToDouble(mealData['amount']),
-                  currency: mealData['currency']?.toString() ?? 'INR',
-                  legKey: mealData['legKey']?.toString() ?? '',
+        // Handle meal data (supports both single 'meal' and list 'meals' for multiple legs)
+        final mealsData = passengerData['meals'] as List?;
+        if (mealsData != null && mealsData.isNotEmpty) {
+          for (var mealData in mealsData) {
+            if (mealData != null && mealData is Map) {
+              mealInfoList.add(
+                ReMealInfo(
+                  meals: [
+                    ReMeal(
+                      code: mealData['code']?.toString() ?? '',
+                      name: mealData['name']?.toString() ?? '',
+                      amount: safeToDouble(mealData['amount']),
+                      currency: mealData['currency']?.toString() ?? 'INR',
+                      legKey: mealData['legKey']?.toString() ?? '',
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          );
+              );
+            }
+          }
+        } else {
+          final mealData = passengerData['meal'];
+          if (mealData != null && mealData is Map) {
+            mealInfoList.add(
+              ReMealInfo(
+                meals: [
+                  ReMeal(
+                    code: mealData['code']?.toString() ?? '',
+                    name: mealData['name']?.toString() ?? '',
+                    amount: safeToDouble(mealData['amount']),
+                    currency: mealData['currency']?.toString() ?? 'INR',
+                    legKey: mealData['legKey']?.toString() ?? '',
+                  ),
+                ],
+              ),
+            );
+          }
         }
 
-        // Handle baggage data with safe type conversion
-        final baggageData = passengerData['baggage'];
-        if (baggageData != null && baggageData is Map) {
-          baggageInfoList.add(
-            ReBaggageInfo(
-              baggages: [
-                ReBaggage(
-                  code: baggageData['code']?.toString() ?? '',
-                  name: baggageData['name']?.toString() ?? '',
-                  amount: safeToDouble(baggageData['amount']),
-                  currency: baggageData['currency']?.toString() ?? 'INR',
-                  legKey: baggageData['legKey']?.toString() ?? '',
+        // Handle baggage data (supports both single 'baggage' and list 'baggages' for multiple legs)
+        final baggagesData = passengerData['baggages'] as List?;
+        if (baggagesData != null && baggagesData.isNotEmpty) {
+          for (var baggageData in baggagesData) {
+            if (baggageData != null && baggageData is Map) {
+              baggageInfoList.add(
+                ReBaggageInfo(
+                  baggages: [
+                    ReBaggage(
+                      code: baggageData['code']?.toString() ?? '',
+                      name: baggageData['name']?.toString() ?? '',
+                      amount: safeToDouble(baggageData['amount']),
+                      currency: baggageData['currency']?.toString() ?? 'INR',
+                      legKey: baggageData['legKey']?.toString() ?? '',
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          );
+              );
+            }
+          }
+        } else {
+          final baggageData = passengerData['baggage'];
+          if (baggageData != null && baggageData is Map) {
+            baggageInfoList.add(
+              ReBaggageInfo(
+                baggages: [
+                  ReBaggage(
+                    code: baggageData['code']?.toString() ?? '',
+                    name: baggageData['name']?.toString() ?? '',
+                    amount: safeToDouble(baggageData['amount']),
+                    currency: baggageData['currency']?.toString() ?? 'INR',
+                    legKey: baggageData['legKey']?.toString() ?? '',
+                  ),
+                ],
+              ),
+            );
+          }
         }
 
         return RePassenger(
@@ -112,7 +154,9 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
           lastName: passengerData['lastName']?.toString() ?? '',
           dob: formatDateForApi(passengerData['dob']),
           contact: passengerData['contact']?.toString() ?? '',
-          email: passengerData['email']?.toString() ?? '',
+          email:             'it.maaxus@gmail.com',
+
+          // passengerData['email']?.toString() ?? '',
           address: passengerData['address']?.toString() ?? '',
           nationality: passengerData['nationality']?.toString() ?? '',
           passportNo: passengerData['passportNumber']?.toString(),
@@ -166,8 +210,28 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
           final baggageInfoList = <PBaggageInfo>[];
           final seatInfoList = <PSeatInfo>[];
 
-          // Handle meal data with safe type conversion
-          if (passengerData['meal'] != null && passengerData['meal'] is Map) {
+          // Handle meal data for reprice (supports list 'meals' or single 'meal')
+          final pMealsData = passengerData['meals'] as List?;
+          if (pMealsData != null && pMealsData.isNotEmpty) {
+            for (var meal in pMealsData) {
+              if (meal != null && meal is Map) {
+                mealInfoList.add(
+                  PMealInfo(
+                    meals: [
+                      PMeal(
+                        code: meal['code']?.toString() ?? '',
+                        name: meal['name']?.toString() ?? '',
+                        amount: safeToDouble(meal['amount']),
+                        currency: meal['currency']?.toString() ?? 'INR',
+                        legKey: meal['legKey']?.toString() ?? '',
+                      ),
+                    ],
+                  ),
+                );
+              }
+            }
+          } else if (passengerData['meal'] != null &&
+              passengerData['meal'] is Map) {
             final meal = passengerData['meal'];
             mealInfoList.add(
               PMealInfo(
@@ -184,8 +248,31 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
             );
           }
 
-          // Handle baggage data with safe type conversion
-          if (passengerData['baggage'] != null &&
+          // Handle baggage data for reprice (supports list 'baggages' or single 'baggage')
+          final pBaggagesData = passengerData['baggages'] as List?;
+          if (pBaggagesData != null && pBaggagesData.isNotEmpty) {
+            for (var baggage in pBaggagesData) {
+              if (baggage != null && baggage is Map) {
+                baggageInfoList.add(
+                  PBaggageInfo(
+                    tripMode: baggage['tripMode']?.toString(),
+                    baggageKey: baggage['baggageKey']?.toString(),
+                    baggages: [
+                      PBaggage(
+                        ptc: baggage['ptc']?.toString(),
+                        code: baggage['code']?.toString() ?? '',
+                        name: baggage['name']?.toString() ?? '',
+                        weight: baggage['weight']?.toString(),
+                        amount: safeToDouble(baggage['amount']),
+                        currency: baggage['currency']?.toString() ?? 'INR',
+                        legKey: baggage['legKey']?.toString() ?? '',
+                      ),
+                    ],
+                  ),
+                );
+              }
+            }
+          } else if (passengerData['baggage'] != null &&
               passengerData['baggage'] is Map) {
             final baggage = passengerData['baggage'];
             baggageInfoList.add(
@@ -217,7 +304,10 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
             lastName: passengerData['lastName']?.toString() ?? '',
             dob: formatDateForApi(passengerData['dob']),
             contact: passengerData['contact']?.toString() ?? '',
-            email: passengerData['email']?.toString() ?? '',
+            email:
+            'it.maaxus@gmail.com',
+
+            //  passengerData['email']?.toString() ?? '',
             address: passengerData['address']?.toString() ?? '',
             nationality: passengerData['nationality']?.toString() ?? '',
             passportNo: passengerData['passportNumber']?.toString(),

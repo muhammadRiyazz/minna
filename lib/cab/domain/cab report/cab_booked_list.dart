@@ -17,6 +17,8 @@ class CabBooking {
   final String orderId;
   final String status;
   final String paidStatus;
+  final String refundAmount;
+  final String refundStatus;
 
   CabBooking({
     required this.id,
@@ -36,6 +38,8 @@ class CabBooking {
     required this.orderId,
     required this.status,
     required this.paidStatus,
+    required this.refundAmount,
+    required this.refundStatus,
   });
 
   factory CabBooking.fromJson(Map<String, dynamic> json) {
@@ -57,6 +61,8 @@ class CabBooking {
       orderId: json['order_id']?.toString() ?? '',
       status: json['status']?.toString() ?? '',
       paidStatus: json['paid_status']?.toString() ?? '',
+      refundAmount: json['refundamount']?.toString() ?? '0',
+      refundStatus: json['refundstatus']?.toString() ?? 'N/A',
     );
   }
 }

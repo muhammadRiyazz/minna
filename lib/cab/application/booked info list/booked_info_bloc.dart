@@ -65,6 +65,8 @@ class BookedInfoBloc extends Bloc<BookedInfoEvent, BookedInfoState> {
               orderId: booking.orderId,
               status: booking.status,
               paidStatus: booking.paidStatus,
+              refundAmount: booking.refundAmount,
+              refundStatus: booking.refundStatus,
             );
             // } else {
             //   return booking;

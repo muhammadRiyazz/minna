@@ -30,8 +30,22 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
   final Color _successColor = Color(0xFF4CAF50);
 
   final TextEditingController contactNumberController = TextEditingController();
-  final TextEditingController countryCodeController = TextEditingController();
+  final TextEditingController countryCodeController = TextEditingController(
+    text: '+91',
+  ); // Default to India
   final TextEditingController emailController = TextEditingController();
+
+  final List<Map<String, String>> countryCodes = [
+    {'name': 'India', 'code': '+91', 'flag': '🇮🇳'},
+    {'name': 'UAE', 'code': '+971', 'flag': '🇦🇪'},
+    {'name': 'Qatar', 'code': '+974', 'flag': '🇶🇦'},
+    {'name': 'Kuwait', 'code': '+965', 'flag': '🇰🇼'},
+    {'name': 'Oman', 'code': '+968', 'flag': '🇴🇲'},
+    {'name': 'Saudi Arabia', 'code': '+966', 'flag': '🇸🇦'},
+    {'name': 'Bahrain', 'code': '+973', 'flag': '🇧🇭'},
+    {'name': 'United Kingdom', 'code': '+44', 'flag': '🇬🇧'},
+    {'name': 'USA', 'code': '+1', 'flag': '🇺🇸'},
+  ];
 
   // Lists to manage multiple passengers
   List<TextEditingController> firstNameControllers = [];
@@ -46,15 +60,22 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
   List<Country?> selectedNationalities = [];
   List<Country?> selectedCountriesOfIssue = [];
   List<bool> sameAsFirstPassenger = [];
-  List<Meal?> selectedMeals = [];
-  List<Baggage?> selectedBaggages = [];
+  List<List<Meal?>> selectedMeals = [];
+  List<List<Baggage?>> selectedBaggages = [];
+
+  String _selectedISD = '+91';
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isSubmitting = false;
+  bool _isInfoExpanded = false;
   bool _waitingForReprice = false;
 
-  void _initializePassengerData(int passengerCount) {
+  void _initializePassengerData(
+    int passengerCount,
+    FFlightOption? flightOption,
+  ) {
     _clearPassengerData();
+    final int legCount = flightOption?.flightLegs?.length ?? 1;
 
     for (int i = 0; i < passengerCount; i++) {
       firstNameControllers.add(TextEditingController());
@@ -69,8 +90,8 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
       selectedNationalities.add(null);
       selectedCountriesOfIssue.add(null);
       sameAsFirstPassenger.add(i == 0 ? false : true);
-      selectedMeals.add(null);
-      selectedBaggages.add(null);
+      selectedMeals.add(List.generate(legCount, (_) => null));
+      selectedBaggages.add(List.generate(legCount, (_) => null));
     }
   }
 
@@ -341,7 +362,7 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
           'nationality': selectedNationalities[i]?.countryCode,
           'passportNumber': passportControllers[i].text,
           'passportExpiry': expiryControllers[i].text,
-          'CountryCode': "91", // String type required
+          'CountryCode': countryCodeController.text.replaceAll('+', ''),
           'countryOfIssue': selectedCountriesOfIssue[i]?.countryCode,
           'address': sameAsFirstPassenger[i] && i > 0
               ? addressControllers[0].text
@@ -349,38 +370,83 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
           'pincode': sameAsFirstPassenger[i] && i > 0
               ? pincodeControllers[0].text
               : pincodeControllers[i].text,
+          'pincode': sameAsFirstPassenger[i] && i > 0
+              ? pincodeControllers[0].text
+              : pincodeControllers[i].text,
           'passengerType': paxType,
-          'meal': selectedMeals[i] != null
-              ? {
-                  'code': selectedMeals[i]!.code,
-                  'name': selectedMeals[i]!.name,
-                  'amount': selectedMeals[i]!.amount,
-                  'currency': selectedMeals[i]!.currency,
+          'meals': selectedMeals[i]
+              .asMap()
+              .entries
+              .where((entry) => entry.value != null)
+              .map((entry) {
+                final legIndex = entry.key;
+                final meal = entry.value!;
+                // Safely get legKey from flightOption
+                final legKey =
+                    (flightOption.flightLegs != null &&
+                        flightOption.flightLegs!.length > legIndex)
+                    ? flightOption.flightLegs![legIndex].key
+                    : flightOption.flightLegs!.first.key;
+
+                return {
+                  'code': meal.code,
+                  'name': meal.name,
+                  'amount': meal.amount,
+                  'currency': meal.currency,
                   'legKey': legKey,
                   'mealKey':
-                      flightResponse.ssrAvailability?.mealInfo?.first.mealKey,
+                      flightResponse.ssrAvailability?.mealInfo != null &&
+                          flightResponse.ssrAvailability!.mealInfo!.length >
+                              legIndex
+                      ? flightResponse
+                            .ssrAvailability!
+                            .mealInfo![legIndex]
+                            .mealKey
+                      : flightResponse.ssrAvailability?.mealInfo?.first.mealKey,
                   'ptc': paxType,
                   'tripMode': tripMode,
-                }
-              : null,
-          'baggage': selectedBaggages[i] != null
-              ? {
-                  'code': selectedBaggages[i]!.code,
-                  'name': selectedBaggages[i]!.name,
-                  'amount': selectedBaggages[i]!.amount,
-                  'currency': selectedBaggages[i]!.currency,
+                };
+              })
+              .toList(),
+          'baggages': selectedBaggages[i]
+              .asMap()
+              .entries
+              .where((entry) => entry.value != null)
+              .map((entry) {
+                final legIndex = entry.key;
+                final baggage = entry.value!;
+                // Safely get legKey from flightOption
+                final legKey =
+                    (flightOption.flightLegs != null &&
+                        flightOption.flightLegs!.length > legIndex)
+                    ? flightOption.flightLegs![legIndex].key
+                    : flightOption.flightLegs!.first.key;
+
+                return {
+                  'code': baggage.code,
+                  'name': baggage.name,
+                  'amount': baggage.amount,
+                  'currency': baggage.currency,
                   'legKey': legKey,
-                  'baggageKey': flightResponse
-                      .ssrAvailability
-                      ?.baggageInfo
-                      ?.first
-                      .baggageKey,
+                  'baggageKey':
+                      flightResponse.ssrAvailability?.baggageInfo != null &&
+                          flightResponse.ssrAvailability!.baggageInfo!.length >
+                              legIndex
+                      ? flightResponse
+                            .ssrAvailability!
+                            .baggageInfo![legIndex]
+                            .baggageKey
+                      : flightResponse
+                            .ssrAvailability
+                            ?.baggageInfo
+                            ?.first
+                            .baggageKey,
                   'ptc': paxType,
-                  'weight': selectedBaggages[i]!
-                      .name, // Successful case uses name as weight
+                  'weight': baggage.name,
                   'tripMode': tripMode,
-                }
-              : null,
+                };
+              })
+              .toList(),
         });
       }
 
@@ -441,7 +507,7 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
                   searchState.to?.countryCode != 'IN';
 
               if (firstNameControllers.length != travellers) {
-                _initializePassengerData(travellers);
+                _initializePassengerData(travellers, flightOption);
               }
 
               final hasSSRAvailability = flightResponse.ssrAvailability != null;
@@ -506,6 +572,9 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
                       ),
                     ),
                   ),
+
+                  // Flight Info Section
+                  _buildFlightInfoSection(flightResponse),
 
                   // SSR Availability Card
                   if (hasSSRAvailability &&
@@ -650,7 +719,7 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
                           ),
                           // Content
                           Padding(
-                            padding: const EdgeInsets.all(20),
+                            padding: const EdgeInsets.all(15),
                             child: Form(
                               key: _formKey,
                               child: Column(
@@ -660,28 +729,46 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Expanded(
-                                        flex: 2,
-                                        child: _buildModernTextField(
-                                          label: 'ISD',
-                                          controller: countryCodeController,
+                                        flex: 3,
+                                        child: _buildModernDropdown<String>(
+                                          label: 'Code',
+                                          value: _selectedISD,
                                           icon: Iconsax.global,
                                           hint: '+91',
-                                          keyboardType: TextInputType.phone,
-                                          validator: (value) {
-                                            if (value == null ||
-                                                value.isEmpty) {
-                                              return 'Required';
-                                            }
-                                            if (!RegExp(
-                                              r'^\+?[0-9]{1,4}$',
-                                            ).hasMatch(value)) {
-                                              return 'Invalid';
-                                            }
-                                            return null;
+                                          items: countryCodes.map((country) {
+                                            return DropdownMenuItem<String>(
+                                              value: country['code'],
+                                              child: Text(
+                                                '${country['flag']} ${country['code']}',
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            );
+                                          }).toList(),
+                                          selectedItemBuilder: (context) {
+                                            return countryCodes.map((country) {
+                                              return Text(
+                                                country['code']!,
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              );
+                                            }).toList();
                                           },
+                                          onChanged: (val) {
+                                            if (val != null) {
+                                              setState(() {
+                                                _selectedISD = val;
+                                                countryCodeController.text =
+                                                    val;
+                                              });
+                                            }
+                                          },
+                                          validator: (value) =>
+                                              value == null ? 'Required' : null,
                                         ),
                                       ),
-                                      const SizedBox(width: 12),
+                                      const SizedBox(width: 8),
                                       Expanded(
                                         flex: 5,
                                         child: _buildModernTextField(
@@ -1034,19 +1121,6 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
                       : isInfant
                       ? 'INF'
                       : 'ADT';
-                  final mealOptions = hasMeals
-                      ? flightResponse.ssrAvailability!.mealInfo![0].meals!
-                            .where((meal) => meal.ptc == ptc)
-                            .toList()
-                      : [];
-                  final baggageOptions = hasBaggage
-                      ? flightResponse
-                            .ssrAvailability!
-                            .baggageInfo![0]
-                            .baggages!
-                            .where((baggage) => baggage.ptc == ptc)
-                            .toList()
-                      : [];
 
                   return Padding(
                     padding: const EdgeInsets.symmetric(
@@ -1383,47 +1457,137 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
                           const SizedBox(height: 16),
 
                           if (hasMeals)
-                            _buildModernDropdown<Meal>(
-                              label: 'Select Meal (Optional)',
-                              value: selectedMeals[index],
-                              icon: Iconsax.coffee,
-                              hint: 'Choose a meal option',
-                              items: mealOptions.cast<Meal>().map((meal) {
-                                return DropdownMenuItem(
-                                  value: meal,
-                                  child: Text(
-                                    '${meal.name} (+${meal.amount} ${meal.currency})',
-                                    overflow: TextOverflow.ellipsis,
+                            ...List.generate(
+                              flightResponse.ssrAvailability!.mealInfo!.length,
+                              (legIndex) {
+                                final options = flightResponse
+                                    .ssrAvailability!
+                                    .mealInfo![legIndex]
+                                    .meals!
+                                    .where((meal) => meal.ptc == ptc)
+                                    .toList();
+                                if (options.isEmpty) return const SizedBox();
+
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child: _buildModernDropdown<Meal>(
+                                    label:
+                                        flightResponse
+                                                .ssrAvailability!
+                                                .mealInfo!
+                                                .length >
+                                            1
+                                        ? (legIndex == 0
+                                              ? 'Select Meal (Going)'
+                                              : 'Select Meal (Return)')
+                                        : 'Select Meal (Optional)',
+                                    value: selectedMeals[index][legIndex],
+                                    icon: Iconsax.coffee,
+                                    hint: 'Choose a meal option',
+                                    items: options.cast<Meal>().map((meal) {
+                                      return DropdownMenuItem(
+                                        value: meal,
+                                        child: Text(
+                                          '${meal.name} (+${meal.amount} ${meal.currency})',
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      );
+                                    }).toList(),
+                                    onChanged: (value) => setState(
+                                      () => selectedMeals[index][legIndex] =
+                                          value,
+                                    ),
                                   ),
                                 );
-                              }).toList(),
-                              onChanged: (value) =>
-                                  setState(() => selectedMeals[index] = value),
+                              },
                             ),
 
-                          if (hasMeals && hasBaggage)
-                            const SizedBox(height: 16),
-
                           if (hasBaggage)
-                            _buildModernDropdown<Baggage>(
-                              label: 'Add Baggage (Optional)',
-                              value: selectedBaggages[index],
-                              icon: Iconsax.bag_2,
-                              hint: 'Choose baggage option',
-                              items: baggageOptions.cast<Baggage>().map((
-                                baggage,
-                              ) {
-                                return DropdownMenuItem(
-                                  value: baggage,
-                                  child: Text(
-                                    '${baggage.name ?? baggage.code} (+${baggage.amount} ${baggage.currency})',
-                                    overflow: TextOverflow.ellipsis,
+                            ...List.generate(
+                              flightResponse
+                                  .ssrAvailability!
+                                  .baggageInfo!
+                                  .length,
+                              (legIndex) {
+                                final options = flightResponse
+                                    .ssrAvailability!
+                                    .baggageInfo![legIndex]
+                                    .baggages!
+                                    .where((baggage) => baggage.ptc == ptc)
+                                    .toList();
+
+                                if (options.isEmpty) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 12),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: maincolor1.withOpacity(0.02),
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: maincolor1.withOpacity(0.05),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Iconsax.info_circle,
+                                            size: 16,
+                                            color: secondaryColor,
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: Text(
+                                              'Standard baggage allowance applies for this leg. No additional selection required.',
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                color: maincolor1.withOpacity(
+                                                  0.6,
+                                                ),
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }
+
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child: _buildModernDropdown<Baggage>(
+                                    label:
+                                        flightResponse
+                                                .ssrAvailability!
+                                                .baggageInfo!
+                                                .length >
+                                            1
+                                        ? (legIndex == 0
+                                              ? 'Add Baggage (Going)'
+                                              : 'Add Baggage (Return)')
+                                        : 'Add Baggage (Optional)',
+                                    value: selectedBaggages[index][legIndex],
+                                    icon: Iconsax.bag_2,
+                                    hint: 'Choose baggage option',
+                                    items: options.cast<Baggage>().map((
+                                      baggage,
+                                    ) {
+                                      return DropdownMenuItem(
+                                        value: baggage,
+                                        child: Text(
+                                          '${baggage.name ?? baggage.code} (+${baggage.amount} ${baggage.currency})',
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      );
+                                    }).toList(),
+                                    onChanged: (value) => setState(
+                                      () => selectedBaggages[index][legIndex] =
+                                          value,
+                                    ),
                                   ),
                                 );
-                              }).toList(),
-                              onChanged: (value) => setState(
-                                () => selectedBaggages[index] = value,
-                              ),
+                              },
                             ),
                           const SizedBox(height: 10),
                         ],
@@ -1562,6 +1726,7 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
     required IconData icon,
     String? hint,
     String? Function(T?)? validator,
+    List<Widget> Function(BuildContext)? selectedItemBuilder,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1578,11 +1743,15 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
           ),
         ),
         DropdownButtonFormField<T>(
+          key: Key(
+            value?.toString() ?? 'dropdown',
+          ), // Force rebuild on value change
           isExpanded: true,
           value: value,
           items: items,
           onChanged: onChanged,
           validator: validator,
+          selectedItemBuilder: selectedItemBuilder,
           icon: Icon(
             Iconsax.arrow_down_1,
             color: maincolor1.withOpacity(0.4),
@@ -1600,11 +1769,11 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
               fontSize: 12,
               fontWeight: FontWeight.w400,
             ),
-            prefixIcon: Icon(
-              icon,
-              color: maincolor1.withOpacity(0.4),
-              size: 20,
-            ),
+            // prefixIcon: Icon(
+            //   icon,
+            //   color: maincolor1.withOpacity(0.4),
+            //   size: 10,
+            // ),
             filled: true,
             fillColor: maincolor1.withOpacity(0.03),
             contentPadding: const EdgeInsets.symmetric(
@@ -1631,6 +1800,388 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
           borderRadius: BorderRadius.circular(16),
         ),
       ],
+    );
+  }
+
+  Widget _buildFlightInfoSection(FFlightResponse response) {
+    final option = response.journey?.flightOption;
+    if (option == null) return const SliverToBoxAdapter(child: SizedBox());
+
+    return SliverToBoxAdapter(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+          border: Border.all(
+            color: _isInfoExpanded
+                ? secondaryColor.withOpacity(0.5)
+                : Colors.transparent,
+            width: 1,
+          ),
+        ),
+        child: Column(
+          children: [
+            InkWell(
+              onTap: () => setState(() => _isInfoExpanded = !_isInfoExpanded),
+              borderRadius: BorderRadius.circular(16),
+              child: _buildCollapsedInfo(option),
+            ),
+            if (_isInfoExpanded) _buildExpandedInfo(option, response),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCollapsedInfo(FFlightOption option) {
+    final firstLeg = option.flightLegs?.first;
+    final lastLeg = option.flightLegs?.last;
+    final fare = option.flightFares?.first;
+
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  if (firstLeg?.flightimg != null)
+                    Image.network(
+                      firstLeg!.flightimg!,
+                      height: 24,
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Icon(Iconsax.airplane, size: 20),
+                    )
+                  else
+                    const Icon(Iconsax.airplane, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${firstLeg?.airlineCode ?? ''} ${firstLeg?.flightNo ?? ''}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: secondaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  '${fare?.currency ?? 'INR'} ${fare?.totalAmount?.toStringAsFixed(2) ?? '0.00'}',
+                  style: TextStyle(
+                    color: maincolor1,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              _buildTimeCity(
+                firstLeg?.departureTime,
+                firstLeg?.origin,
+                CrossAxisAlignment.start,
+              ),
+              Expanded(
+                child: Column(
+                  children: [
+                    Text(
+                      option.flightLegs?.length == 1
+                          ? 'Non-stop'
+                          : '${option.flightLegs!.length - 1} stop(s)',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Expanded(child: Divider(thickness: 1)),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Icon(
+                            Iconsax.airplane,
+                            size: 14,
+                            color: secondaryColor,
+                          ),
+                        ),
+                        const Expanded(child: Divider(thickness: 1)),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              _buildTimeCity(
+                lastLeg?.arrivalTime,
+                lastLeg?.destination,
+                CrossAxisAlignment.end,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                _isInfoExpanded ? 'Hide Details' : 'View Details',
+                style: TextStyle(
+                  color: secondaryColor,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Icon(
+                _isInfoExpanded
+                    ? Icons.keyboard_arrow_up
+                    : Icons.keyboard_arrow_down,
+                color: secondaryColor,
+                size: 18,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimeCity(
+    String? time,
+    String? city,
+    CrossAxisAlignment alignment,
+  ) {
+    String formattedTime = '--:--';
+    if (time != null) {
+      try {
+        final dateTime = DateTime.parse(time);
+        formattedTime = DateFormat('HH:mm').format(dateTime);
+      } catch (e) {
+        formattedTime = time.contains('T')
+            ? time.split('T')[1].substring(0, 5)
+            : time;
+      }
+    }
+
+    return Column(
+      crossAxisAlignment: alignment,
+      children: [
+        Text(
+          formattedTime,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w900,
+            letterSpacing: -0.5,
+          ),
+        ),
+        Text(
+          city ?? '',
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: Colors.grey[700],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildExpandedInfo(FFlightOption option, FFlightResponse response) {
+    final fare = option.flightFares?.first;
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Divider(),
+          const SizedBox(height: 8),
+          const Text(
+            'Flight Details',
+            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
+          ),
+          const SizedBox(height: 12),
+          if (option.flightLegs != null)
+            ...option.flightLegs!.map((leg) => _buildLegDetail(leg)),
+          const SizedBox(height: 16),
+          const Text(
+            'Fare Breakdown',
+            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
+          ),
+          const SizedBox(height: 8),
+          _buildFareRow(
+            'Base Fare',
+            '${fare?.currency ?? 'INR'} ${fare?.aprxTotalBaseFare?.toStringAsFixed(2) ?? '0.00'}',
+          ),
+          _buildFareRow(
+            'Taxes & Fees',
+            '${fare?.currency ?? 'INR'} ${fare?.aprxTotalTax?.toStringAsFixed(2) ?? '0.00'}',
+          ),
+          if (fare?.totalDiscount != null && fare!.totalDiscount! > 0)
+            _buildFareRow(
+              'Discount',
+              '- ${fare.currency ?? 'INR'} ${fare.totalDiscount!.toStringAsFixed(2)}',
+              isDiscount: true,
+            ),
+          const Divider(),
+          _buildFareRow(
+            'Total Amount',
+            '${fare?.currency ?? 'INR'} ${fare?.totalAmount?.toStringAsFixed(2) ?? '0.00'}',
+            isTotal: true,
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Baggage Information',
+            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
+          ),
+          const SizedBox(height: 8),
+          ...option.flightLegs!.map((leg) {
+            final baggage =
+                leg.freeBaggages?.firstOrNull?.adtBaggage ?? 'Not Available';
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Row(
+                children: [
+                  const Icon(Iconsax.bag_2, size: 14, color: Colors.grey),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      '${leg.origin} to ${leg.destination}: $baggage',
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLegDetail(FFlightLeg leg) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Icon(Iconsax.airplane, size: 16, color: maincolor1),
+              const SizedBox(width: 8),
+              Text(
+                '${leg.airlineCode} ${leg.flightNo} • ${leg.rbd ?? ''}',
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Column(
+                children: [
+                  const Icon(Icons.circle, size: 8, color: Colors.grey),
+                  Container(width: 1, height: 20, color: Colors.grey[300]),
+                  const Icon(Icons.location_on, size: 10, color: Colors.grey),
+                ],
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${leg.originName ?? leg.origin} (${leg.origin})',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text(
+                      'Terminal ${leg.departureTerminal ?? 'N/A'}',
+                      style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      '${leg.destinationName ?? leg.destination} (${leg.destination})',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text(
+                      'Terminal ${leg.arrivalTerminal ?? 'N/A'}',
+                      style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFareRow(
+    String label,
+    String value, {
+    bool isTotal = false,
+    bool isDiscount = false,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: isTotal ? 14 : 12,
+              fontWeight: isTotal ? FontWeight.w900 : FontWeight.w500,
+              color: isTotal ? maincolor1 : Colors.grey[700],
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: isTotal ? 14 : 12,
+              fontWeight: isTotal ? FontWeight.w900 : FontWeight.w700,
+              color: isDiscount
+                  ? Colors.green
+                  : (isTotal ? maincolor1 : Colors.black),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

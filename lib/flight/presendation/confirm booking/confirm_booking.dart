@@ -687,6 +687,9 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
           child: _buildPassengerExpansionSection(state.bookingdata!.passengers),
         ),
 
+        // Detailed Add-ons Breakdown
+        SliverToBoxAdapter(child: _buildAddonsBreakdownSection(state)),
+
         // Fare Breakdown with Commission
         SliverToBoxAdapter(
           child: _buildEnhancedFareBreakdownWithCommission(state),
@@ -941,6 +944,8 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                   const SizedBox(height: 16),
                   _buildPassengerExpansionSection(bookingData.passengers),
                   const SizedBox(height: 16),
+                  _buildAddonsBreakdownSection(state),
+                  const SizedBox(height: 16),
                   _buildEnhancedFareBreakdownWithCommission(state),
                 ],
 
@@ -968,8 +973,11 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                     ),
                     elevation: 0,
                   ),
-                  onPressed: () =>
-                      downloadFlightTicketPdf(context: context, state: state),
+                  onPressed: () => downloadFlightTicketPdf(
+                    context: context,
+                    state: state,
+                    searchFlightInfo: widget.flightinfo,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -1429,6 +1437,254 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
     );
   }
 
+  Widget _buildAddonsBreakdownSection(BookingState state) {
+    final bookingData = state.bookingdata;
+    if (bookingData == null) return const SizedBox();
+
+    final legs = widget.flightinfo.flightLegs ?? [];
+    final passengers = bookingData.passengers;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: maincolor1.withOpacity(0.02),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: maincolor1.withOpacity(0.05),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Iconsax.add_square, size: 18, color: maincolor1),
+                ),
+                const SizedBox(width: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Baggage Information',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                        color: maincolor1,
+                      ),
+                    ),
+                    Text(
+                      'Included baggage and service details',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: textSecondary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          // Leg-wise Breakdown
+          ...legs.map((leg) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Sub-header for Route
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: maincolor1.withOpacity(0.03),
+                    border: Border(
+                      bottom: BorderSide(color: Colors.grey.withOpacity(0.1)),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Iconsax.airplane, size: 14, color: secondaryColor),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          '${leg.originName ?? leg.origin}  ----  ${leg.destinationName ?? leg.destination}',
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            color: maincolor1,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Passengers for this leg
+                ...passengers.map((p) {
+                  final ssr = p.ssrAvailability;
+                  final legMeals =
+                      ssr?.mealInfo
+                          ?.expand((m) => m.meals ?? [])
+                          .where((mm) => mm.legKey == leg.key)
+                          .toList() ??
+                      [];
+                  final legBags =
+                      ssr?.baggageInfo
+                          ?.expand((b) => b.baggages ?? [])
+                          .where((bb) => bb.legKey == leg.key)
+                          .toList() ??
+                      [];
+
+                  // Included baggage info
+                  final checkInBaggage =
+                      (leg.freeBaggages != null &&
+                          leg.freeBaggages!.isNotEmpty &&
+                          leg.freeBaggages!.first.adtBaggage != null)
+                      ? leg.freeBaggages!.first.adtBaggage
+                      : '15 KG';
+                  final cabinBaggage =
+                      (leg.freeBaggages != null &&
+                          leg.freeBaggages!.isNotEmpty &&
+                          leg.freeBaggages!.first.adtHandBaggage != null)
+                      ? leg.freeBaggages!.first.adtHandBaggage
+                      : '7 KG';
+
+                  final hasExtras = legMeals.isNotEmpty || legBags.isNotEmpty;
+
+                  return Theme(
+                    data: Theme.of(
+                      context,
+                    ).copyWith(dividerColor: Colors.transparent),
+                    child: ExpansionTile(
+                      dense: true,
+                      visualDensity: VisualDensity.compact,
+                      tilePadding: const EdgeInsets.symmetric(horizontal: 16),
+                      leading: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: maincolor1.withOpacity(0.05),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          p.paxType == 'ADT' ? Iconsax.user : Iconsax.user_tag,
+                          size: 14,
+                          color: maincolor1,
+                        ),
+                      ),
+                      title: Text(
+                        '${p.firstName} ${p.lastName}',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: maincolor1,
+                        ),
+                      ),
+                      subtitle: Text(
+                        'Standard Check-in: $checkInBaggage',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: textSecondary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Included baggage
+                              _buildAddonItem(
+                                Iconsax.bag_2,
+                                'Checked Baggage: $checkInBaggage',
+                              ),
+                              _buildAddonItem(
+                                Iconsax.bag_tick,
+                                'Hand Baggage: $cabinBaggage',
+                              ),
+                              // Meal Status
+                              _buildAddonItem(
+                                Iconsax.coffee,
+                                legMeals.isNotEmpty
+                                    ? 'Meal: ${legMeals.first.name}'
+                                    : 'Meal: Not Selected / Standard',
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+                const SizedBox(height: 8),
+              ],
+            );
+          }).toList(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAddonItem(IconData icon, String label, {bool isExtra = false}) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      decoration: BoxDecoration(
+        color: isExtra ? secondaryColor.withOpacity(0.05) : Colors.transparent,
+        borderRadius: BorderRadius.circular(8),
+        border: isExtra
+            ? Border.all(color: secondaryColor.withOpacity(0.1))
+            : null,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            icon,
+            size: 14,
+            color: isExtra ? secondaryColor : maincolor1.withOpacity(0.6),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                color: textPrimary.withOpacity(0.8),
+                fontWeight: isExtra ? FontWeight.w700 : FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildEnhancedFareBreakdownWithCommission(BookingState bookingstate) {
     final fare =
         bookingstate.bookingdata!.journey.flightOption.flightFares.first;
@@ -1585,34 +1841,53 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
 
                 // Additional Services Section
                 if (additionalChargesList.isNotEmpty) ...[
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.only(bottom: 12),
-                    child: Text(
-                      'Additional Services',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: maincolor1,
+                  Theme(
+                    data: Theme.of(
+                      context,
+                    ).copyWith(dividerColor: Colors.transparent),
+                    child: ExpansionTile(
+                      tilePadding: EdgeInsets.zero,
+                      childrenPadding: EdgeInsets.zero,
+                      iconColor: secondaryColor,
+                      collapsedIconColor: maincolor1,
+                      title: Text(
+                        'Additional Services',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          color: maincolor1,
+                        ),
                       ),
+                      subtitle: Text(
+                        '${additionalChargesList.length} item${additionalChargesList.length > 1 ? 's' : ''} • View Details',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: secondaryColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Column(
+                            children: additionalChargesList.asMap().entries.map(
+                              (entry) {
+                                final index = entry.key;
+                                final charge = entry.value;
+                                return _buildAdditionalChargeRow(
+                                  charge.label,
+                                  charge.amount,
+                                  index: index + 1,
+                                );
+                              },
+                            ).toList(),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
 
-                  Column(
-                    children: additionalChargesList.asMap().entries.map((
-                      entry,
-                    ) {
-                      final index = entry.key;
-                      final charge = entry.value;
-                      return _buildAdditionalChargeRow(
-                        charge.label,
-                        charge.amount,
-                        index: index + 1,
-                      );
-                    }).toList(),
-                  ),
-
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                 ],
 
                 // Summary Section
@@ -1670,6 +1945,19 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
   ) {
     final List<AdditionalCharge> charges = [];
 
+    // Helper to get Going/Return label
+    String getLegContext(String? legKey) {
+      if (legKey == null) return '';
+      final onwardKeys =
+          widget.flightinfo.flightOnwardLegs?.map((l) => l.key).toList() ?? [];
+      final returnKeys =
+          widget.flightinfo.flightRetunLegs?.map((l) => l.key).toList() ?? [];
+
+      if (onwardKeys.contains(legKey)) return '(Going)';
+      if (returnKeys.contains(legKey)) return '(Return)';
+      return '';
+    }
+
     for (final passenger in passengers) {
       final ssr = passenger.ssrAvailability;
       if (ssr != null) {
@@ -1682,9 +1970,10 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
             if (baggageInfo.baggages != null) {
               for (final baggage in baggageInfo.baggages!) {
                 if (baggage.amount != null && baggage.amount! > 0) {
+                  final context = getLegContext(baggage.legKey);
                   charges.add(
                     AdditionalCharge(
-                      'Extra Baggage - $passengerName',
+                      'Extra Baggage $context - $passengerName',
                       baggage.amount!,
                     ),
                   );
@@ -1700,9 +1989,10 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
             if (mealInfo.meals != null) {
               for (final meal in mealInfo.meals!) {
                 if (meal.amount != null && meal.amount! > 0) {
+                  final context = getLegContext(meal.legKey);
                   charges.add(
                     AdditionalCharge(
-                      'Meal - ${meal.name} - $passengerName',
+                      'Meal - ${meal.name} $context - $passengerName',
                       meal.amount!,
                     ),
                   );
@@ -1720,9 +2010,10 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                 if (seat.fare != null && seat.fare!.isNotEmpty) {
                   final seatFare = double.tryParse(seat.fare!);
                   if (seatFare != null && seatFare > 0) {
+                    final context = getLegContext(seat.legKey);
                     charges.add(
                       AdditionalCharge(
-                        'Seat Selection - $passengerName',
+                        'Seat Selection $context - $passengerName',
                         seatFare,
                       ),
                     );
@@ -1856,12 +2147,12 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
               color: secondaryColor,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           Expanded(
             child: Text(
               label,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 12,
                 color: maincolor1.withOpacity(0.8),
                 fontWeight: FontWeight.w500,
               ),

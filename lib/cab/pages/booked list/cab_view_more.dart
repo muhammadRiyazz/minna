@@ -576,6 +576,71 @@ class _CabAllBookingsPageState extends State<CabAllBookingsPage> {
                       ),
                     ],
                   ),
+                  if (booking.status.toLowerCase() == 'cancelled') ...[
+                    const SizedBox(height: 15),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: _errorColor.withOpacity(0.05),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: _errorColor.withOpacity(0.1),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "REFUND STATUS",
+                                style: TextStyle(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w800,
+                                  color: _textLight,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                              Text(
+                                booking.refundStatus,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w900,
+                                  color: booking.refundStatus.toLowerCase() ==
+                                          'success'
+                                      ? _successColor
+                                      : _errorColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                "REFUND AMOUNT",
+                                style: TextStyle(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w800,
+                                  color: _textLight,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                              Text(
+                                "₹${booking.refundAmount}",
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w900,
+                                  color: _primaryColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),

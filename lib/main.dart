@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:upgrader/upgrader.dart';
 
 // Common
 import 'package:minna/comman/application/login/login_bloc.dart';
 import 'package:minna/comman/application/home_data/home_data_bloc.dart';
 import 'package:minna/comman/pages/screen%20splash/splash_page.dart';
-import 'package:minna/comman/functions/update_manager.dart';
 
 // Bus
 import 'package:minna/bus/application/busListfetch/bus_list_fetch_bloc.dart';
@@ -73,7 +73,6 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _initializeConnectivity();
-    UpdateManager.checkForUpdate();
   }
 
   @override

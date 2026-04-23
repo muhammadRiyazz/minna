@@ -34,16 +34,28 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
   bool _isCancelling = false;
   late CommissionProvider commissionProvider;
   BuildContext? _parentContext;
+  late BookedDetailsBloc
+  _bookedDetailsBloc; // Manually managed to avoid context issues
 
   // Theme standardizing: Use global constants directly from const.dart
 
   @override
   void initState() {
     super.initState();
+    // Initialize bloc here so it's accessible to the whole State object
+    _bookedDetailsBloc = BookedDetailsBloc()
+      ..add(BookedDetailsEvent.fetchDetails(widget.bookingId));
+
     commissionProvider = context.read<CommissionProvider>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _preCalculateCommissions();
     });
+  }
+
+  @override
+  void dispose() {
+    _bookedDetailsBloc.close(); // Dispose manually
+    super.dispose();
   }
 
   Future<void> _preCalculateCommissions() async {
@@ -59,10 +71,8 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     // Store parent context before creating local BlocProvider
     _parentContext = context;
 
-    return BlocProvider(
-      create: (context) =>
-          BookedDetailsBloc()
-            ..add(BookedDetailsEvent.fetchDetails(widget.bookingId)),
+    return BlocProvider.value(
+      value: _bookedDetailsBloc,
       child: WillPopScope(
         onWillPop: () async {
           // Refresh booking list when navigating back
@@ -265,6 +275,10 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                       _buildTravellerCard(details.traveller),
                       const SizedBox(height: 16),
                       _buildCabFareCard(details.cabRate, isCancelled),
+                      if (isCancelled) ...[
+                        const SizedBox(height: 16),
+                        _buildRefundSection(details),
+                      ],
                       const SizedBox(height: 120), // Space for button
                     ],
                   ),
@@ -1423,6 +1437,100 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     );
   }
 
+  Widget _buildRefundSection(BookingDetails details) {
+    return Container(
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: errorColor.withOpacity(0.2)),
+        boxShadow: [
+          BoxShadow(
+            color: errorColor.withOpacity(0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: errorColor.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Iconsax.receipt_item,
+                  color: errorColor,
+                  size: 18,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Text(
+                'REFUND INFORMATION',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: textLight,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          _buildRefundInfoItem(
+            'Refund Status',
+            details.refundStatus,
+            valueColor: details.refundStatus.toLowerCase() == 'success'
+                ? successColor
+                : errorColor,
+          ),
+          _buildRefundInfoItem(
+            'Refund Amount',
+            '₹${details.refundAmount}',
+            isPrice: true,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRefundInfoItem(
+    String label,
+    String value, {
+    Color? valueColor,
+    bool isPrice = false,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontWeight: FontWeight.w800,
+              color: textLight,
+              fontSize: 12,
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontWeight: FontWeight.w900,
+              fontSize: isPrice ? 16 : 13,
+              color: valueColor ?? maincolor1,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildCabSpecItem(IconData icon, String text) {
     return Row(
       children: [
@@ -1548,7 +1656,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
           )
           .timeout(const Duration(seconds: 20));
       log("cancellation list response --- ${response.body.toString()}");
-      
+
       final fullDecoded = jsonDecode(response.body);
       final decoded = fullDecoded['message'] ?? fullDecoded;
 
@@ -1825,6 +1933,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
           final double baseRefundedAmount = double.parse(
             refundedAmount.toString(),
           );
+
           final double totalRefundedAmount =
               (await commissionProvider.calculateAmountWithCommission(
                 baseRefundedAmount,
@@ -1998,7 +2107,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
         log(
           '🔄 Reloading booking details after cancellation - Booking ID: ${widget.bookingId}',
         );
-        context.read<BookedDetailsBloc>().add(
+        _bookedDetailsBloc.add(
           BookedDetailsEvent.fetchDetails(widget.bookingId),
         );
       }
@@ -2242,7 +2351,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
             height: 56,
             child: ElevatedButton(
               onPressed: () {
-                context.read<BookedDetailsBloc>().add(
+                _bookedDetailsBloc.add(
                   BookedDetailsEvent.fetchDetails(widget.bookingId),
                 );
               },

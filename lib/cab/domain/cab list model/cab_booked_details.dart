@@ -13,6 +13,8 @@ class BookingDetails {
   final List<BookedRoute> routes;
   final BookedTraveller traveller;
   final BookedCabRate cabRate;
+  final String refundAmount;
+  final String refundStatus;
 
   BookingDetails({
     required this.bookingId,
@@ -28,6 +30,8 @@ class BookingDetails {
     required this.routes,
     required this.traveller,
     required this.cabRate,
+    required this.refundAmount,
+    required this.refundStatus,
   });
 
   factory BookingDetails.fromJson(Map<String, dynamic> json) {
@@ -49,6 +53,8 @@ class BookingDetails {
           [],
       traveller: BookedTraveller.fromJson(json['traveller'] ?? {}),
       cabRate: BookedCabRate.fromJson(json['cabRate'] ?? {}),
+      refundAmount: json['refundamount']?.toString() ?? '0',
+      refundStatus: json['refundstatus']?.toString() ?? 'N/A',
     );
   }
 

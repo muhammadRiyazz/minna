@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:minna/flight/domain/fare%20request%20and%20respo/fare_respo.dart';
 import 'package:open_file/open_file.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -14,6 +15,7 @@ import 'package:minna/flight/application/booking/booking_bloc.dart';
 Future<void> downloadFlightTicketPdf({
   required BuildContext context,
   required BookingState state,
+  required FFlightOption searchFlightInfo,
 }) async {
   if (state.bookingdata == null) {
     Fluttertoast.showToast(msg: 'No booking data found context');
@@ -31,6 +33,7 @@ Future<void> downloadFlightTicketPdf({
     final passengers = bookingData.passengers;
     final pnr = state.alhindPnr ?? '';
     final bookingId = state.tableID ?? '';
+    final legs = searchFlightInfo.flightLegs ?? [];
     
     // Calculate Add-ons
     double totalMealAmount = 0;
@@ -496,16 +499,6 @@ Future<void> downloadFlightTicketPdf({
                             ),
                           ),
                         ),
-                        pw.Expanded(
-                          flex: 2,
-                          child: pw.Text(
-                            'Add-ons',
-                            style: pw.TextStyle(
-                              fontWeight: pw.FontWeight.bold,
-                              fontSize: 11,
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   ),
@@ -576,16 +569,6 @@ Future<void> downloadFlightTicketPdf({
                                   style: const pw.TextStyle(fontSize: 10),
                                 ),
                               ),
-                              pw.Expanded(
-                                flex: 2,
-                                child: pw.Text(
-                                  extras,
-                                  style: const pw.TextStyle(
-                                    fontSize: 9,
-                                    color: PdfColors.deepOrange600,
-                                  ),
-                                ),
-                              ),
                             ],
                           ),
                         );
@@ -595,7 +578,8 @@ Future<void> downloadFlightTicketPdf({
                 ],
               ),
             ),
-            pw.SizedBox(height: 20),
+            pw.SizedBox(height: 15),
+
 
             // Payment / Fare Summary
             pw.Container(

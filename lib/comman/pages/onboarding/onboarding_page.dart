@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:upgrader/upgrader.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/pages/log%20in/login_screen.dart';
@@ -43,8 +44,15 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: backgroundColor,
+    return UpgradeAlert(
+      upgrader: Upgrader(durationUntilAlertAgain: Duration.zero),
+      showIgnore: false,
+      showLater: true,
+      showReleaseNotes: false,
+      barrierDismissible: false,
+      onLater: () => false,
+      child: Scaffold(
+        backgroundColor: backgroundColor,
       body: Stack(
         children: [
           // Background PageView
@@ -153,8 +161,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildPage(OnboardingData data) {
     return Column(
