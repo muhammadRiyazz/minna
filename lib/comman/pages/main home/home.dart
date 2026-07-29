@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:upgrader/upgrader.dart';
 import 'package:minna/Electyicity%20&%20Water/water%20bill/water%20bill%20home/water_input.dart';
 import 'package:minna/hotel%20booking/pages/holel%20home%20page/home_page_hotel.dart';
@@ -32,6 +33,7 @@ import 'package:minna/visa/pages/visa_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'all_destinations_page.dart';
+import 'package:minna/hotel%20booking/pages/popular%20hotels/popular_hotels_section.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -157,7 +159,8 @@ class _HomeContentPageState extends State<HomeContentPage> {
     {
       'label': 'Flights',
       'icon': Iconsax.airplane,
-      'color': Color(0xFF003875), // Gold
+      'asset': 'asset/servise/flight.png',
+      'color': Color(0xFF003875),
       'onTap': (BuildContext context) {
         Navigator.push(
           context,
@@ -168,7 +171,8 @@ class _HomeContentPageState extends State<HomeContentPage> {
     {
       'label': 'Hotels',
       'icon': Iconsax.building,
-      'color': Color(0xFF003875), // Gold
+      'asset': 'asset/servise/hotel.png',
+      'color': Color(0xFF003875),
       'onTap': (BuildContext context) {
         Navigator.push(
           context,
@@ -179,7 +183,8 @@ class _HomeContentPageState extends State<HomeContentPage> {
     {
       'label': 'Bus',
       'icon': Iconsax.bus,
-      'color': Color(0xFF003875), // Gold
+      'asset': 'asset/servise/bus.png',
+      'color': Color(0xFF003875),
       'onTap': (BuildContext context) {
         context.read<BusLocationFetchBloc>().add(const GetData());
 
@@ -192,7 +197,8 @@ class _HomeContentPageState extends State<HomeContentPage> {
     {
       'label': 'Cabs',
       'icon': Iconsax.car,
-      'color': Color(0xFF003875), // Gold
+      'asset': 'asset/servise/cab.png',
+      'color': Color(0xFF003875),
       'onTap': (BuildContext context) {
         Navigator.push(
           context,
@@ -203,7 +209,8 @@ class _HomeContentPageState extends State<HomeContentPage> {
     {
       'label': 'Visa',
       'icon': Iconsax.global,
-      'color': Color(0xFF003875), // Gold
+      'asset': 'asset/servise/visa.png',
+      'color': Color(0xFF003875),
       'onTap': (BuildContext context) {
         Navigator.push(
           context,
@@ -214,7 +221,8 @@ class _HomeContentPageState extends State<HomeContentPage> {
     // {
     //   'label': 'Airport Cabs',
     //   'icon': Iconsax.car,
-    //   'color': Color(0xFF003875), // Gold
+    //   'asset': 'asset/servise/cab.png',
+    //   'color': Color(0xFF003875),
     //   'onTap': (BuildContext context) {
     //     Navigator.push(
     //       context,
@@ -225,7 +233,8 @@ class _HomeContentPageState extends State<HomeContentPage> {
     {
       'label': 'Train',
       'icon': Iconsax.bus,
-      'color': Color(0xFF003875), // Gold
+      'asset': 'asset/servise/train.png',
+      'color': Color(0xFF003875),
       'onTap': (BuildContext context) {
         _showComingSoonBottomSheet(context, "Train");
       },
@@ -233,9 +242,19 @@ class _HomeContentPageState extends State<HomeContentPage> {
     {
       'label': 'Cruise',
       'icon': Iconsax.ship,
-      'color': Color(0xFF003875), // Gold
+      'asset': 'asset/servise/cruis.png',
+      'color': Color(0xFF003875),
       'onTap': (BuildContext context) {
         _showComingSoonBottomSheet(context, "Cruise");
+      },
+    },
+    {
+      'label': 'FASTag',
+      'icon': Iconsax.car,
+      'asset': 'asset/servise/fastag.png',
+      'color': Color(0xFF003875),
+      'onTap': (BuildContext context) {
+        _showComingSoonBottomSheet(context, "FASTag");
       },
     },
   ];
@@ -245,7 +264,8 @@ class _HomeContentPageState extends State<HomeContentPage> {
     {
       'icon': Iconsax.mobile,
       'label': 'Mobile',
-      'color': Color(0xFF003875), // Gold
+      'asset': 'asset/servise/mobile.png',
+      'color': Color(0xFF003875),
       'onTap': (BuildContext context) {
         context.read<OperatorsBloc>().add(const OperatorsEvent.getop());
         Navigator.push(
@@ -257,7 +277,8 @@ class _HomeContentPageState extends State<HomeContentPage> {
     {
       'icon': Iconsax.monitor,
       'label': 'DTH',
-      'color': Color(0xFF003875), // Gold
+      'asset': 'asset/servise/dth.png',
+      'color': Color(0xFF003875),
       'onTap': (BuildContext context) {
         context.read<OperatorsBloc>().add(const OperatorsEvent.getDTHop());
         Navigator.push(
@@ -269,7 +290,8 @@ class _HomeContentPageState extends State<HomeContentPage> {
     {
       'icon': Iconsax.flash,
       'label': 'Electricity',
-      'color': Color(0xFF003875), // Gold
+      'asset': 'asset/servise/electricity.png',
+      'color': Color(0xFF003875),
       'onTap': (BuildContext context) {
         Navigator.push(
           context,
@@ -280,6 +302,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     {
       'icon': Icons.water_drop_rounded,
       'label': 'Water',
+      'asset': 'asset/servise/water.png',
       'color': maincolor1,
       'onTap': (BuildContext context) {
         Navigator.push(
@@ -353,20 +376,11 @@ class _HomeContentPageState extends State<HomeContentPage> {
                             titleFontSize,
                             state,
                           ),
-                          Transform.translate(
-                            offset: const Offset(0, -28),
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: isSmallScreen ? 16 : 24,
-                              ),
-                              child: _buildPremiumSearchBar(isSmallScreen),
-                            ),
-                          ),
-                          if (!isLoggedIn)
-                            Transform.translate(
-                              offset: const Offset(0, -14),
-                              child: _buildLoginAlertBanner(isSmallScreen),
-                            ),
+
+                          if (!isLoggedIn) ...[
+                            const SizedBox(height: 12),
+                            _buildLoginAlertBanner(isSmallScreen),
+                          ],
                         ],
                       );
                     },
@@ -399,8 +413,13 @@ class _HomeContentPageState extends State<HomeContentPage> {
                     bodyFontSize,
                   ),
 
+                  // Popular Hotels
+                  const SizedBox(height: 8),
+                  const PopularHotelsSection(),
+                  const SizedBox(height: 16),
+
                   // Promo Banner
-                  _buildPromoBanner(isSmallScreen, isTablet, bodyFontSize),
+                  // _buildPromoBanner(isSmallScreen, isTablet, bodyFontSize),
 
                   // Where 2 Go (Attractive Popular Destinations)
                   BlocBuilder<HomeDataBloc, HomeDataState>(
@@ -458,13 +477,28 @@ class _HomeContentPageState extends State<HomeContentPage> {
                 ),
               ),
               const SizedBox(width: 12),
-              Text(
-                'MT TRIP',
-                style: TextStyle(
-                  color: maincolor1,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1.2,
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'MT',
+                      style: GoogleFonts.outfit(
+                        color: maincolor1,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                    TextSpan(
+                      text: 'TRIP',
+                      style: GoogleFonts.outfit(
+                        color: secondaryColor,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -549,100 +583,131 @@ class _HomeContentPageState extends State<HomeContentPage> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: maincolor1,
-        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(36)),
-        boxShadow: [
-          BoxShadow(
-            color: maincolor1.withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [maincolor1, maincolor1.withOpacity(0.8)],
+        ),
       ),
-      child: ClipRRect(
-        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(36)),
-        child: Stack(
-          children: [
-            // Background Image
-            Positioned.fill(
-              child: Image.network(
-                'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&q=80&w=1000',
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    Container(color: maincolor1),
+      child: Stack(
+        children: [
+          // Decorative large circle
+          Positioned(
+            right: -40,
+            top: -30,
+            child: Container(
+              width: 180,
+              height: 180,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withOpacity(0.05),
               ),
             ),
-            // Gradient Overlay for Readability
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      maincolor1,
-                      maincolor1.withOpacity(0.3),
-                      // maincolor1,
+          ),
+          // Background airplane watermark
+          Positioned(
+            right: -10,
+            bottom: -15,
+            child: Opacity(
+              opacity: 0.08,
+              child: Icon(Iconsax.airplane, size: 130, color: Colors.white),
+            ),
+          ),
+          // Small dot accent
+          Positioned(
+            left: 20,
+            bottom: 30,
+            child: Container(
+              width: 6,
+              height: 6,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: secondaryColor.withOpacity(0.6),
+              ),
+            ),
+          ),
+          SafeArea(
+            bottom: false,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(
+                isSmallScreen ? 16 : 24,
+                isSmallScreen ? 16 : 20,
+                isSmallScreen ? 16 : 24,
+                18,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // TOP BAR
+                  Row(
+                    children: [
+                      _buildProfileAvatar(isLoggedIn),
+                      const SizedBox(width: 12),
+                      // Brand name
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'MT',
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: isSmallScreen ? 18 : 20,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 1,
+                              ),
+                            ),
+                            TextSpan(
+                              text: 'TRIP',
+                              style: GoogleFonts.poppins(
+                                color: secondaryColor,
+                                fontSize: isSmallScreen ? 18 : 20,
+                                fontWeight: FontWeight.w400,
+                                letterSpacing: 1,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Spacer(),
+                      // Service icons
+                      Icon(Iconsax.airplane, color: Colors.white54, size: 20),
+                      const SizedBox(width: 10),
+                      Icon(Iconsax.building, color: Colors.white54, size: 20),
+                      const SizedBox(width: 10),
+                      Icon(Iconsax.bus, color: Colors.white54, size: 20),
                     ],
                   ),
-                ),
-              ),
-            ),
-            // Header Content
-            SafeArea(
-              bottom: false,
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(
-                  isSmallScreen ? 16 : 24,
-                  isSmallScreen ? 16 : 24,
-                  isSmallScreen ? 16 : 24,
-                  24,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                isLoggedIn
-                                    ? 'Welcome back,'
-                                    : 'Hello, Traveler!',
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.8),
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Where to next?',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: titleFontSize + 2,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        _buildProfileAvatar(isLoggedIn),
-                      ],
+                  const SizedBox(height: 24),
+
+                  // TEXT CONTENT (Below top bar)
+                  Text(
+                    'Where to next?',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: titleFontSize + 2,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.5,
                     ),
-                    const SizedBox(
-                      height: 40,
-                    ), // Spacing for searching bar overlap
-                  ],
-                ),
+                  ),
+
+                  const SizedBox(height: 4),
+
+                  const Text(
+                    'PREMIUM TRAVEL EXPERIENCE',
+                    style: TextStyle(
+                      color: secondaryColor,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  _buildPremiumSearchBar(isSmallScreen),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -745,51 +810,39 @@ class _HomeContentPageState extends State<HomeContentPage> {
   }
 
   Widget _buildPremiumSearchBar(bool isSmallScreen) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: TextField(
-        controller: _searchController,
-        onChanged: (value) {
-          setState(() {
-            _searchText = value;
-          });
-        },
-        decoration: InputDecoration(
-          hintText: 'Search for recharge, bill, travel...',
-          hintStyle: TextStyle(
-            color: textLight,
-            fontSize: isSmallScreen ? 14 : 16,
-            fontWeight: FontWeight.w400,
-          ),
-          prefixIcon: Icon(
-            Iconsax.search_normal,
-            color: secondaryColor,
-            size: 22,
-          ),
-          suffixIcon: _searchText.isNotEmpty
-              ? IconButton(
-                  icon: Icon(Iconsax.close_circle, color: textLight, size: 20),
-                  onPressed: () {
-                    _searchController.clear();
-                    setState(() => _searchText = '');
-                  },
-                )
-              : null,
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            vertical: 16,
-            horizontal: 20,
-          ),
+    return TextField(
+      controller: _searchController,
+      onChanged: (value) {
+        setState(() {
+          _searchText = value;
+        });
+      },
+      decoration: InputDecoration(
+        hintText: 'Search for recharge, bill, travel...',
+        hintStyle: TextStyle(
+          color: textLight,
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
+        prefixIcon: Icon(Iconsax.search_normal, color: maincolor1, size: 18),
+        suffixIcon: _searchText.isNotEmpty
+            ? IconButton(
+                icon: Icon(Iconsax.close_circle, color: textLight, size: 16),
+                onPressed: () {
+                  _searchController.clear();
+                  setState(() => _searchText = '');
+                },
+              )
+            : null,
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 12,
+          horizontal: 16,
         ),
       ),
     );
@@ -797,9 +850,54 @@ class _HomeContentPageState extends State<HomeContentPage> {
 
   Widget _buildSearchResultsOverlay(bool isSmallScreen) {
     final results = _filteredServices;
-    final topPadding =
-        MediaQuery.of(context).padding.top +
-        80; // Approximate offset to clear search bar
+    final topPadding = MediaQuery.of(context).padding.top + 80;
+
+    // Separate results
+    final travelResults = results
+        .where((s) => _travelServices.any((ts) => ts['label'] == s['label']))
+        .toList();
+    final quickResults = results
+        .where((s) => _quickServices.any((qs) => qs['label'] == s['label']))
+        .toList();
+
+    Widget buildTile(Map<String, dynamic> service) {
+      return ListTile(
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: (service['color'] as Color).withOpacity(0.1),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            service['icon'] as IconData,
+            color: service['color'] as Color,
+            size: 20,
+          ),
+        ),
+        title: Text(
+          service['label'] as String,
+          style: TextStyle(
+            color: textPrimary,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
+        subtitle: Text(
+          _getServiceCategory(service['label'] as String),
+          style: TextStyle(color: textLight, fontSize: 12),
+        ),
+        trailing: Icon(Iconsax.arrow_right_3, color: textLight, size: 16),
+        onTap: () {
+          setState(() {
+            _searchController.clear();
+            _searchText = '';
+          });
+          if (service['onTap'] != null) {
+            (service['onTap'] as Function(BuildContext))(context);
+          }
+        },
+      );
+    }
 
     return Positioned.fill(
       child: GestureDetector(
@@ -852,61 +950,43 @@ class _HomeContentPageState extends State<HomeContentPage> {
                             ),
                           )
                         : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
-                            children: results.map((service) {
-                              return ListTile(
-                                leading: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: (service['color'] as Color)
-                                        .withOpacity(0.1),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Icon(
-                                    service['icon'] as IconData,
-                                    color: service['color'] as Color,
-                                    size: 20,
+                            children: [
+                              if (travelResults.isNotEmpty) ...[
+                                const Padding(
+                                  padding: EdgeInsets.fromLTRB(16, 12, 16, 4),
+                                  child: Text(
+                                    'Travel Services',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
-                                title: Text(
-                                  service['label'] as String,
-                                  style: TextStyle(
-                                    color: textPrimary,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                                ...travelResults.map((s) => buildTile(s)),
+                              ],
+                              if (quickResults.isNotEmpty) ...[
+                                const Padding(
+                                  padding: EdgeInsets.fromLTRB(16, 12, 16, 4),
+                                  child: Text(
+                                    'Other Services',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
-                                subtitle: Text(
-                                  _getServiceCategory(
-                                    service['label'] as String,
-                                  ),
-                                  style: TextStyle(
-                                    color: textLight,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                trailing: Icon(
-                                  Iconsax.arrow_right_3,
-                                  color: textLight,
-                                  size: 16,
-                                ),
-                                onTap: () {
-                                  setState(() {
-                                    _searchController.clear();
-                                    _searchText = '';
-                                  });
-                                  if (service['onTap'] != null) {
-                                    (service['onTap']
-                                        as Function(BuildContext))(context);
-                                  }
-                                },
-                              );
-                            }).toList(),
+                                ...quickResults.map((s) => buildTile(s)),
+                              ],
+                            ],
                           ),
                   ),
                 ),
               ),
-              const SizedBox(height: 20), // Bottom margin
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -2339,12 +2419,6 @@ class _HomeContentPageState extends State<HomeContentPage> {
     double headingFontSize,
     double bodyFontSize,
   ) {
-    // Combine all services for display
-    final List<Map<String, dynamic>> allServices = [
-      ..._travelServices,
-      ..._quickServices,
-    ];
-
     return Container(
       padding: EdgeInsets.symmetric(horizontal: isSmallScreen ? 16 : 24),
       child: Column(
@@ -2362,7 +2436,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Travel & Essentials',
+            'Travel Services',
             style: TextStyle(
               fontSize: headingFontSize + 2,
               fontWeight: FontWeight.w900,
@@ -2370,20 +2444,52 @@ class _HomeContentPageState extends State<HomeContentPage> {
               letterSpacing: -0.5,
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
           GridView.builder(
             padding: EdgeInsets.zero,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 4,
               crossAxisSpacing: 10,
               mainAxisSpacing: 16,
               childAspectRatio: .79,
             ),
-            itemCount: allServices.length,
+            itemCount: _travelServices.length,
             itemBuilder: (context, index) {
-              final service = allServices[index];
+              final service = _travelServices[index];
+              return _buildPremiumServiceCard(
+                service,
+                isSmallScreen,
+                iconSize,
+                bodyFontSize,
+              );
+            },
+          ),
+          const SizedBox(height: 32),
+          Text(
+            'Quick Services',
+            style: TextStyle(
+              fontSize: headingFontSize + 2,
+              fontWeight: FontWeight.w900,
+              color: maincolor1,
+              letterSpacing: -0.5,
+            ),
+          ),
+          const SizedBox(height: 16),
+          GridView.builder(
+            padding: EdgeInsets.zero,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 4,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 16,
+              childAspectRatio: .79,
+            ),
+            itemCount: _quickServices.length,
+            itemBuilder: (context, index) {
+              final service = _quickServices[index];
               return _buildPremiumServiceCard(
                 service,
                 isSmallScreen,
@@ -2403,29 +2509,44 @@ class _HomeContentPageState extends State<HomeContentPage> {
     double iconSize,
     double bodyFontSize,
   ) {
+    final String? assetPath = service['asset'] as String?;
+    final double containerSize = isSmallScreen ? 52 : 60;
+
     return GestureDetector(
       onTap: () => service['onTap'](context),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: EdgeInsets.all(isSmallScreen ? 14 : 18),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: maincolor1.withOpacity(0.06),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Icon(
-              service['icon'],
-              color: service['color'],
-              size: isSmallScreen ? 20 : 24,
-            ),
+            width: containerSize,
+            height: containerSize,
+            // padding: EdgeInsets.all(8),
+            // decoration: BoxDecoration(
+            //   color: Colors.white,
+            //   borderRadius: BorderRadius.circular(20),
+            //   boxShadow: [
+            //     BoxShadow(
+            //       color: maincolor1.withOpacity(0.06),
+            //       blurRadius: 12,
+            //       offset: const Offset(0, 4),
+            //     ),
+            //   ],
+            // ),
+            child: assetPath != null
+                ? Image.asset(
+                    assetPath,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) => Icon(
+                      service['icon'],
+                      color: service['color'],
+                      size: isSmallScreen ? 20 : 24,
+                    ),
+                  )
+                : Icon(
+                    service['icon'],
+                    color: service['color'],
+                    size: isSmallScreen ? 20 : 24,
+                  ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -2455,7 +2576,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     // Show different set or same set but in restricted view
     // For "Where 2 Go", we show them in a more attractive vertical/grid fashion
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -2519,6 +2640,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
           const SizedBox(height: 24),
           // Dynamic Masonry Layout using flutter_staggered_grid_view
           MasonryGridView.count(
+            padding: EdgeInsets.zero,
             crossAxisCount: 2,
             mainAxisSpacing: 16,
             crossAxisSpacing: 16,
@@ -2750,56 +2872,65 @@ class _HomeContentPageState extends State<HomeContentPage> {
           ),
         ],
       ),
-      child: Stack(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Positioned(
-            right: -10,
-            bottom: -10,
-            child: Opacity(
-              opacity: 0.05,
-              child: Icon(
-                Iconsax.discover,
-                size: isSmallScreen ? 120 : 160,
-                color: Colors.white,
-              ),
+          const Text(
+            'GO BEYOND',
+            style: TextStyle(
+              color: secondaryColor,
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 2.0,
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'GO BEYOND',
-                style: TextStyle(
-                  color: secondaryColor,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 2.0,
-                ),
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                'Travel The World\nWith Confidence',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w900,
-                  height: 1.2,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Unlock exclusive deals on curated flights and premium hotel stays.',
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
-                  fontSize: 14,
-                  height: 1.5,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 16),
-            ],
+          const SizedBox(height: 12),
+          const Text(
+            'Travel The World\nWith Confidence',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+              height: 1.2,
+            ),
           ),
+          const SizedBox(height: 12),
+          Text(
+            'Unlock exclusive deals on curated flights and premium hotel stays.',
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.7),
+              fontSize: 14,
+              height: 1.5,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+              foregroundColor: maincolor1,
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(
+                  30,
+                ), // Pill shaped like in the image
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            ),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Explore Now',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                ),
+                SizedBox(width: 8),
+                Icon(Icons.arrow_forward, size: 16),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
         ],
       ),
     );
@@ -2863,113 +2994,167 @@ class _HomeContentPageState extends State<HomeContentPage> {
   Widget _buildFooter(bool isSmallScreen) {
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.only(top: 60),
-      padding: const EdgeInsets.fromLTRB(24, 48, 24, 32),
+      margin: const EdgeInsets.only(top: 40),
+      padding: const EdgeInsets.fromLTRB(24, 32, 24, 32),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
-        border: const Border(top: BorderSide(color: maincolor1, width: 4)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 30,
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 20,
             offset: const Offset(0, -10),
           ),
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // 1. BRAND & SUPPORT HEADER
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'MT TRIP',
-                    style: TextStyle(
-                      color: maincolor1,
-                      fontSize: 28,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    'Your Premium Travel Experience',
-                    style: TextStyle(
-                      color: textSecondary,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 56),
-
-          // 2. CATEGORIZED VERTICAL LISTS
-          const SizedBox(width: 24),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildFooterCategoryTitle('REACH OUT TO US'),
-              const SizedBox(height: 16),
-              _buildCorporateContactButton(
-                icon: Iconsax.direct_right,
-                label: 'Email Support',
-                value: 'mttrip2025@gmail.com',
-                onTap: () => _launchURL('mailto:mttrip2025@gmail.com'),
-              ),
-              const SizedBox(height: 12),
-              _buildCorporateContactButton(
-                icon: Iconsax.call,
-                label: 'Call Us Now',
-                value: '+91 7511100557',
-                onTap: () => _launchURL('tel:+917511100557'),
-              ),
-              const SizedBox(height: 12),
-              _buildCorporateContactButton(
-                icon: FontAwesomeIcons.whatsapp,
-                label: 'Official WhatsApp',
-                value: 'Instant Chat',
-                onTap: () => _launchURL('https://wa.me/917511100557'),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 26),
-          const Divider(color: borderSoft, thickness: 1.5),
-          const SizedBox(height: 12),
-
-          // 3. BOTTOM CREDITS
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+          // 1. HEADER
+          RichText(
+            text: TextSpan(
               children: [
-                const Text(
-                  '© 2026 MT TRIP. ALL RIGHTS RESERVED.',
-                  style: TextStyle(
-                    color: textLight,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-                Text(
-                  'MT TRIP TRAVELS',
-                  style: TextStyle(
-                    color: maincolor1.withOpacity(0.2),
-                    fontSize: 10,
+                TextSpan(
+                  text: 'MTTRIP',
+                  style: GoogleFonts.poppins(
+                    color: maincolor1,
+                    fontSize: 30,
                     fontWeight: FontWeight.w900,
-                    letterSpacing: 1.5,
+                    letterSpacing: 3,
                   ),
                 ),
               ],
+            ),
+          ),
+          const SizedBox(height: 5),
+          const Text(
+            'LET\'S STAY CONNECTED',
+            style: TextStyle(
+              color: secondaryColor,
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 2.0,
+            ),
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            'How can we help you?',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: maincolor1,
+              letterSpacing: -0.5,
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          // 2. THE HUB CARD
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: Colors.grey.withOpacity(0.2)),
+              boxShadow: [
+                BoxShadow(
+                  color: maincolor1.withOpacity(0.04),
+                  blurRadius: 16,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                // Call
+                Expanded(
+                  child: InkWell(
+                    onTap: () => _launchURL('tel:+917511100557'),
+                    child: const Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Iconsax.call, color: maincolor1, size: 24),
+                        SizedBox(height: 8),
+                        Text(
+                          'Call Us',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: maincolor1,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Container(
+                  width: 1,
+                  height: 30,
+                  color: Colors.grey.withOpacity(0.2),
+                ),
+                // Email
+                Expanded(
+                  child: InkWell(
+                    onTap: () => _launchURL('mailto:mttrip2025@gmail.com'),
+                    child: const Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Iconsax.direct_right, color: maincolor1, size: 24),
+                        SizedBox(height: 8),
+                        Text(
+                          'Email',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: maincolor1,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Container(
+                  width: 1,
+                  height: 30,
+                  color: Colors.grey.withOpacity(0.2),
+                ),
+                // WhatsApp
+                Expanded(
+                  child: InkWell(
+                    onTap: () => _launchURL('https://wa.me/917511100557'),
+                    child:  Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        FaIcon(
+                          FontAwesomeIcons.whatsapp,
+                          color: maincolor1,
+                          size: 24,
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'WhatsApp',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: maincolor1,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 40),
+
+          // 3. CREDITS
+          Text(
+            '© 2026 MTTRIP. ALL RIGHTS RESERVED.',
+            style: TextStyle(
+              color: Colors.grey[400],
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.8,
             ),
           ),
         ],
@@ -2981,7 +3166,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
     return Text(
       title,
       style: const TextStyle(
-        color: maincolor1,
+        color: secondaryColor,
         fontSize: 11,
         fontWeight: FontWeight.w900,
         letterSpacing: 1.5,
@@ -3024,16 +3209,16 @@ class _HomeContentPageState extends State<HomeContentPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         decoration: BoxDecoration(
-          color: maincolor1.withOpacity(0.04),
+          color: Colors.white.withOpacity(0.05),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: borderSoft),
+          border: Border.all(color: Colors.white.withOpacity(0.1)),
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(
-                color: Colors.white,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: secondaryColor, size: 16),
@@ -3044,8 +3229,8 @@ class _HomeContentPageState extends State<HomeContentPage> {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
-                    color: textLight,
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.5),
                     fontSize: 8,
                     fontWeight: FontWeight.w800,
                   ),
@@ -3053,7 +3238,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                 Text(
                   value,
                   style: const TextStyle(
-                    color: maincolor1,
+                    color: Colors.white,
                     fontSize: 11,
                     fontWeight: FontWeight.w900,
                   ),
@@ -3063,8 +3248,65 @@ class _HomeContentPageState extends State<HomeContentPage> {
             const Spacer(),
             Icon(
               Icons.arrow_forward_ios,
-              color: maincolor1.withOpacity(0.1),
+              color: Colors.white.withOpacity(0.2),
               size: 12,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCompactContactButton({
+    required IconData icon,
+    required String label,
+    required String value,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white.withOpacity(0.1)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: secondaryColor, size: 20),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              label,
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.5),
+                fontSize: 9,
+                fontWeight: FontWeight.w800,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              value,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 8,
+                fontWeight: FontWeight.w900,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),

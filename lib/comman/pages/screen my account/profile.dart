@@ -7,6 +7,7 @@ import 'package:minna/comman/const/const.dart';
 import 'package:minna/comman/core/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -341,6 +342,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
               const SizedBox(height: 40),
               _buildUpdateButton(),
+              const SizedBox(height: 24),
+              const Divider(color: borderSoft, height: 1),
+              const SizedBox(height: 20),
+              _buildDeleteAccountButton(),
             ],
           ),
         ),
@@ -534,6 +539,137 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
       ),
     );
+  }
+
+  Widget _buildDeleteAccountButton() {
+    return Center(
+      child: TextButton.icon(
+        onPressed: () => _showDeleteAccountConfirmation(context),
+        icon: const Icon(Iconsax.user_remove, color: Colors.red, size: 20),
+        label: const Text(
+          'Delete Account',
+          style: TextStyle(
+            color: Colors.red,
+            fontWeight: FontWeight.w800,
+            fontSize: 15,
+            letterSpacing: 0.5,
+          ),
+        ),
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showDeleteAccountConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(30),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 30,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.red.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Iconsax.user_remove, color: Colors.red, size: 32),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'DELETE ACCOUNT?',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Are you sure you want to delete your account?',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: textLight,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 32),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: Text(
+                        'CANCEL',
+                        style: TextStyle(
+                          color: textLight,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _launchURL('https://mttrip.in/delete-account');
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: const Text(
+                        'YES, DELETE',
+                        style: TextStyle(fontWeight: FontWeight.w900),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _launchURL(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    if (!await launchUrl(url)) {
+      debugPrint('Could not launch $url');
+    }
   }
 
   Widget _buildShimmerLoader() {

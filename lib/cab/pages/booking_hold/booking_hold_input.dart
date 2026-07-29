@@ -229,9 +229,11 @@ class _BookingPageState extends State<BookingPage> {
 
     return Scaffold(
       backgroundColor: backgroundColor,
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
           // Premium Sliver App Bar
           SliverAppBar(
             expandedHeight: 120.0,
@@ -300,6 +302,7 @@ class _BookingPageState extends State<BookingPage> {
           ),
         ],
       ),
+    ),
     );
   }
 
@@ -906,6 +909,11 @@ class _BookingPageState extends State<BookingPage> {
   }) {
     return TextFormField(
       initialValue: initialValue,
+      keyboardType: keyboardType,
+      maxLines: maxLines,
+      validator: validator,
+      onChanged: onChanged,
+      textInputAction: maxLines > 1 ? TextInputAction.newline : TextInputAction.next,
       decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(
@@ -958,10 +966,6 @@ class _BookingPageState extends State<BookingPage> {
         color: textPrimary,
         fontWeight: FontWeight.bold,
       ),
-      keyboardType: keyboardType,
-      maxLines: maxLines,
-      validator: validator,
-      onChanged: onChanged,
     );
   }
 

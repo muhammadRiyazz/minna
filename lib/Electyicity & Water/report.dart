@@ -26,7 +26,6 @@ class BillPaymentPage extends StatefulWidget {
 class _BillPaymentPageState extends State<BillPaymentPage> {
   // Use standardized theme colors from const.dart
 
-
   @override
   void initState() {
     super.initState();
@@ -42,58 +41,60 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: backgroundColor,
-      child: Column(
-        children: [
-          // Header
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'RECENT TRANSACTIONS',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w800,
-                    color: textLight,
-                    letterSpacing: 1.2,
+    return Scaffold(
+      body: Container(
+        color: backgroundColor,
+        child: Column(
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'RECENT TRANSACTIONS',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: textLight,
+                      letterSpacing: 1.2,
+                    ),
                   ),
-                ),
-                Text(
-                  DateFormat('MMM dd, yyyy').format(DateTime.now()),
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: secondaryColor,
+                  Text(
+                    DateFormat('MMM dd, yyyy').format(DateTime.now()),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: secondaryColor,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
 
-          // Transactions List
-          Expanded(
-            child: BlocBuilder<BillPaymentBloc, BillPaymentState>(
-              builder: (context, state) {
-                if (state is BillPaymentLoading) {
-                  return _buildShimmerLoading();
-                } else if (state is BillPaymentLoaded) {
-                  return _buildTransactionsList(state.transactions);
-                } else if (state is BillPaymentEmpty ||
-                    state is BillPaymentInitial ||
-                    state is BillPaymentError) {
-                  return _buildEmptyState(
-                    'No ${widget.title.toLowerCase()} found',
-                  );
-                } else {
-                  return _buildEmptyState('No data available');
-                }
-              },
+            // Transactions List
+            Expanded(
+              child: BlocBuilder<BillPaymentBloc, BillPaymentState>(
+                builder: (context, state) {
+                  if (state is BillPaymentLoading) {
+                    return _buildShimmerLoading();
+                  } else if (state is BillPaymentLoaded) {
+                    return _buildTransactionsList(state.transactions);
+                  } else if (state is BillPaymentEmpty ||
+                      state is BillPaymentInitial ||
+                      state is BillPaymentError) {
+                    return _buildEmptyState(
+                      'No ${widget.title.toLowerCase()} found',
+                    );
+                  } else {
+                    return _buildEmptyState('No data available');
+                  }
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -149,7 +150,9 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      widget.title.contains('Electricity') ? Iconsax.flash_1 : Iconsax.drop,
+                      widget.title.contains('Electricity')
+                          ? Iconsax.flash_1
+                          : Iconsax.drop,
                       size: 20,
                       color: maincolor1,
                     ),
@@ -217,11 +220,7 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
                     children: [
                       Row(
                         children: [
-                          Icon(
-                            Iconsax.mobile,
-                            size: 14,
-                            color: secondaryColor,
-                          ),
+                          Icon(Iconsax.mobile, size: 14, color: secondaryColor),
                           const SizedBox(width: 6),
                           Text(
                             transaction.mobile,

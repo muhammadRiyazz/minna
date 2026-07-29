@@ -245,84 +245,89 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _backgroundColor,
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverAppBar(
-            backgroundColor: _primaryColor,
-            expandedHeight: 180,
-            floating: false,
-            pinned: true,
-            elevation: 0,
-            leading: Container(
-              margin: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.2),
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_rounded,
-                  color: Colors.white,
-                  size: 20,
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            SliverAppBar(
+              backgroundColor: _primaryColor,
+              expandedHeight: 180,
+              floating: false,
+              pinned: true,
+              elevation: 0,
+              leading: Container(
+                margin: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.2),
+                  shape: BoxShape.circle,
                 ),
-                onPressed: _isSubmitting ? null : () => Navigator.pop(context),
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.arrow_back_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                  onPressed: _isSubmitting
+                      ? null
+                      : () => Navigator.pop(context),
+                ),
               ),
-            ),
-            flexibleSpace: FlexibleSpaceBar(
-              centerTitle: true,
-              title: Text(
-                'Passenger Details',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
-                  shadows: [
-                    Shadow(
-                      color: Colors.black.withOpacity(0.3),
-                      offset: const Offset(0, 2),
-                      blurRadius: 4,
+              flexibleSpace: FlexibleSpaceBar(
+                centerTitle: true,
+                title: Text(
+                  'Passenger Details',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black.withOpacity(0.3),
+                        offset: const Offset(0, 2),
+                        blurRadius: 4,
+                      ),
+                    ],
+                  ),
+                ),
+                background: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image.network(
+                      'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80',
+                      fit: BoxFit.cover,
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.black.withOpacity(0.3),
+                            _primaryColor.withOpacity(0.8),
+                            _primaryColor,
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
-              background: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Image.network(
-                    'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80',
-                    fit: BoxFit.cover,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.black.withOpacity(0.3),
-                          _primaryColor.withOpacity(0.8),
-                          _primaryColor,
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+            ),
+            SliverToBoxAdapter(child: _buildValidationRequirements()),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, roomIndex) => Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                  child: _buildRoomSection(roomIndex),
+                ),
+                childCount: roomPassengers.length,
               ),
             ),
-          ),
-          SliverToBoxAdapter(child: _buildValidationRequirements()),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, roomIndex) => Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-                child: _buildRoomSection(roomIndex),
-              ),
-              childCount: roomPassengers.length,
-            ),
-          ),
-          const SliverPadding(padding: EdgeInsets.only(bottom: 120)),
-        ],
+            const SliverPadding(padding: EdgeInsets.only(bottom: 120)),
+          ],
+        ),
       ),
       bottomNavigationBar: _buildSubmitButton(),
     );
@@ -735,6 +740,7 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
                   labelText: 'First Name',
                   prefixIcon: Iconsax.user,
                 ),
+                textInputAction: TextInputAction.next,
                 validator: (value) => _validateName(value, 'First Name'),
                 onChanged: (value) {
                   setState(() {
@@ -754,6 +760,7 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
                   labelText: 'Last Name',
                   prefixIcon: Iconsax.user,
                 ),
+                textInputAction: TextInputAction.next,
                 validator: (value) => _validateName(value, 'Last Name'),
                 onChanged: (value) {
                   setState(() {
@@ -789,6 +796,7 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
             labelText: 'Email Address',
             prefixIcon: Iconsax.sms,
           ),
+          textInputAction: TextInputAction.next,
           keyboardType: TextInputType.emailAddress,
           validator: (value) {
             if (value == null || value.isEmpty)
@@ -811,6 +819,7 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
             labelText: 'Phone Number',
             prefixIcon: Iconsax.call,
           ),
+          textInputAction: TextInputAction.next,
           keyboardType: TextInputType.phone,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           validator: (value) {
@@ -838,6 +847,12 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
         labelText: isAdult ? 'Age' : 'Child Age',
         prefixIcon: Iconsax.calendar_1,
       ).copyWith(suffixText: 'years'),
+      textInputAction:
+          isAdult &&
+              (_validationInfo.panMandatory ||
+                  _validationInfo.passportMandatory)
+          ? TextInputAction.next
+          : TextInputAction.done,
       keyboardType: TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       validator: (value) {
@@ -879,6 +894,9 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
               labelText: 'PAN Number',
               prefixIcon: Iconsax.card,
             ),
+            textInputAction: _validationInfo.passportMandatory
+                ? TextInputAction.next
+                : TextInputAction.done,
             validator: (value) {
               if (_validationInfo.panMandatory &&
                   (value == null || value.isEmpty))
@@ -901,6 +919,7 @@ class _PassengerInputPageState extends State<PassengerInputPage> {
               labelText: 'Passport Number',
               prefixIcon: Iconsax.ticket,
             ),
+            textInputAction: TextInputAction.done,
             validator: (value) {
               if (_validationInfo.passportMandatory &&
                   (value == null || value.isEmpty))

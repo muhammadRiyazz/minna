@@ -38,7 +38,6 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
 
   // Premium Theme Colors
 
-
   @override
   void initState() {
     super.initState();
@@ -77,7 +76,10 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
         );
       },
       orElse: () {
-        _showCustomSnackbar('No bill data available. Please try again.', isError: true);
+        _showCustomSnackbar(
+          'No bill data available. Please try again.',
+          isError: true,
+        );
       },
     );
   }
@@ -165,7 +167,7 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
                       'billdetails': {
                         'txnRefId': transactionId,
                         'responseReason': 'FAILED',
-                      }
+                      },
                     },
                   },
                   provider: widget.provider,
@@ -174,7 +176,8 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
               ),
             );
           },
-          paymentError: (message) => _showCustomSnackbar(message, isError: true),
+          paymentError: (message) =>
+              _showCustomSnackbar(message, isError: true),
         );
       },
       builder: (context, confirmState) {
@@ -231,7 +234,8 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
                   return state.maybeWhen(
                     loading: () => _buildShimmer(),
                     error: (message) => _buildErrorState(message),
-                    success: (bill, receiptId) => _buildBillContent(bill, receiptId),
+                    success: (bill, receiptId) =>
+                        _buildBillContent(bill, receiptId),
                     orElse: () => const SizedBox.shrink(),
                   );
                 },
@@ -240,7 +244,10 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
               // 3. Navigation
               SafeArea(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 10,
+                  ),
                   child: Row(
                     children: [
                       GestureDetector(
@@ -251,7 +258,11 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
                             color: Colors.white.withOpacity(0.1),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 18),
+                          child: const Icon(
+                            Icons.arrow_back_ios_new_rounded,
+                            color: Colors.white,
+                            size: 18,
+                          ),
                         ),
                       ),
                     ],
@@ -298,7 +309,11 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
                     children: [
                       Text(
                         "Total Payable Amount",
-                        style: TextStyle(color: textSecondary, fontWeight: FontWeight.w700, fontSize: 13),
+                        style: TextStyle(
+                          color: textSecondary,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Text(
@@ -314,13 +329,21 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.water_drop_rounded, color: Colors.blue, size: 16),
+                          Icon(
+                            Icons.water_drop_rounded,
+                            color: Colors.blue,
+                            size: 16,
+                          ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               widget.provider,
                               textAlign: TextAlign.center,
-                              style: TextStyle(color: maincolor1, fontWeight: FontWeight.w800, fontSize: 14),
+                              style: TextStyle(
+                                color: maincolor1,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 14,
+                              ),
                             ),
                           ),
                         ],
@@ -351,7 +374,10 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
                       const Divider(height: 24),
                       _buildDetailRow("Consumer Number", bill.billNumber),
                       const Divider(height: 24),
-                      _buildDetailRow("Bill Period", bill.billPeriod.isNotEmpty ? bill.billPeriod : "N/A"),
+                      _buildDetailRow(
+                        "Bill Period",
+                        bill.billPeriod.isNotEmpty ? bill.billPeriod : "N/A",
+                      ),
                       const Divider(height: 24),
                       _buildDetailRow("Due Date", bill.dueDate),
                     ],
@@ -371,66 +397,107 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: TextStyle(color: textSecondary, fontSize: 12, fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: TextStyle(
+            color: textSecondary,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         Flexible(
           child: Text(
             value,
             textAlign: TextAlign.right,
-            style: TextStyle(color: maincolor1, fontSize: 14, fontWeight: FontWeight.w800),
+            style: TextStyle(
+              color: maincolor1,
+              fontSize: 14,
+              fontWeight: FontWeight.w800,
+            ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildBottomAction(ElectricityBillModel bill, double amount, String receiptId) {
+  Widget _buildBottomAction(
+    ElectricityBillModel bill,
+    double amount,
+    String receiptId,
+  ) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: backgroundColor,
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5)),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -5),
+          ),
         ],
       ),
       child: BlocBuilder<ConfirmBillBloc, ConfirmBillState>(
         builder: (context, confirmState) {
-          final bool isProcessing = confirmState.maybeWhen(paymentProcessing: () => true, orElse: () => false);
+          final bool isProcessing = confirmState.maybeWhen(
+            paymentProcessing: () => true,
+            orElse: () => false,
+          );
           return SizedBox(
             width: double.infinity,
             height: 60,
             child: ElevatedButton(
-              onPressed: isProcessing ? null : () async {
-                final isLoggedIn = context.read<LoginBloc>().state.isLoggedIn ?? false;
-                if (!isLoggedIn) {
-                  await showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => const LoginBottomSheet(login: 1),
-                  );
-                  if (context.read<LoginBloc>().state.isLoggedIn != true) return;
-                }
-                context.read<ConfirmBillBloc>().add(
-                  InitiatePayment(
-                    bill: bill,
-                    providerID: widget.providerID,
-                    phoneNo: widget.phoneNo,
-                    consumerId: widget.consumerId,
-                    providerName: widget.provider,
-                    receiptId: receiptId,
-                  ),
-                );
-              },
+              onPressed: isProcessing
+                  ? null
+                  : () async {
+                      final isLoggedIn =
+                          context.read<LoginBloc>().state.isLoggedIn ?? false;
+                      if (!isLoggedIn) {
+                        await showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) =>
+                              const LoginBottomSheet(login: 1),
+                        );
+                        if (context.read<LoginBloc>().state.isLoggedIn != true)
+                          return;
+                      }
+                      context.read<ConfirmBillBloc>().add(
+                        InitiatePayment(
+                          bill: bill,
+                          providerID: widget.providerID,
+                          phoneNo: widget.phoneNo,
+                          consumerId: widget.consumerId,
+                          providerName: widget.provider,
+                          receiptId: receiptId,
+                        ),
+                      );
+                    },
               style: ElevatedButton.styleFrom(
                 backgroundColor: maincolor1,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
                 elevation: 0,
               ),
               child: isProcessing
-                  ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3))
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 3,
+                      ),
+                    )
                   : const Text(
                       'PAY SECURELY NOW',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: 1),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 16,
+                        letterSpacing: 1,
+                      ),
                     ),
             ),
           );
@@ -448,7 +515,11 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
           const SizedBox(height: 16),
           Text(
             "No Dues Found",
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: maincolor1),
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+              color: maincolor1,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -461,7 +532,9 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
             onPressed: () => Navigator.pop(context),
             style: ElevatedButton.styleFrom(
               backgroundColor: maincolor1,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
             ),
             child: const Text('Go Back', style: TextStyle(color: Colors.white)),
           ),
@@ -481,7 +554,11 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
             const SizedBox(height: 16),
             Text(
               "Oops!",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: maincolor1),
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w900,
+                color: maincolor1,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -494,9 +571,14 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
               onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
                 backgroundColor: maincolor1,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
               ),
-              child: const Text('Try Again', style: TextStyle(color: Colors.white)),
+              child: const Text(
+                'Try Again',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         ),
@@ -515,7 +597,10 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Container(
               height: 150,
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+              ),
             ),
           ),
           const SizedBox(height: 24),
@@ -523,7 +608,10 @@ class _WaterBillDetailsPageState extends State<WaterBillDetailsPage> {
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Container(
               height: 250,
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+              ),
             ),
           ),
         ],

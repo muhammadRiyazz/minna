@@ -23,7 +23,6 @@ class BillPaymentStatusPage extends StatefulWidget {
 class _BillPaymentStatusPageState extends State<BillPaymentStatusPage> {
   // Use standardized theme colors from const.dart
 
-
   @override
   Widget build(BuildContext context) {
     final billDetails = widget.responseData['data']?['billdetails'] ?? {};
@@ -32,13 +31,22 @@ class _BillPaymentStatusPageState extends State<BillPaymentStatusPage> {
         .toUpperCase();
 
     // Status Determination
-    bool isSuccess = responseReason == 'SUCCESSFUL' || responseReason == 'SUCCESS';
+    bool isSuccess =
+        responseReason == 'SUCCESSFUL' || responseReason == 'SUCCESS';
     bool isAwaited = responseReason == 'AWAITED';
     bool isFailed = responseReason == 'FAILED';
 
-    Color statusColor = isSuccess ? successColor : (isAwaited ? warningColor : errorColor);
-    IconData statusIcon = isSuccess ? Icons.check_circle_rounded : (isAwaited ? Icons.hourglass_empty_rounded : Icons.error_outline_rounded);
-    String statusTitle = isSuccess ? 'Payment Successful' : (isAwaited ? 'Payment Awaited' : 'Payment Failed');
+    Color statusColor = isSuccess
+        ? successColor
+        : (isAwaited ? warningColor : errorColor);
+    IconData statusIcon = isSuccess
+        ? Icons.check_circle_rounded
+        : (isAwaited
+              ? Icons.hourglass_empty_rounded
+              : Icons.error_outline_rounded);
+    String statusTitle = isSuccess
+        ? 'Payment Successful'
+        : (isAwaited ? 'Payment Awaited' : 'Payment Failed');
 
     return WillPopScope(
       onWillPop: () async {
@@ -60,7 +68,7 @@ class _BillPaymentStatusPageState extends State<BillPaymentStatusPage> {
               decoration: BoxDecoration(color: maincolor1),
               child: Stack(
                 children: [
-                   Positioned(
+                  Positioned(
                     top: -50,
                     right: -50,
                     child: Container(
@@ -75,12 +83,16 @@ class _BillPaymentStatusPageState extends State<BillPaymentStatusPage> {
                   Positioned(
                     bottom: 40,
                     left: -20,
-                    child: Icon(statusIcon, size: 180, color: Colors.white.withOpacity(0.04)),
+                    child: Icon(
+                      statusIcon,
+                      size: 180,
+                      color: Colors.white.withOpacity(0.04),
+                    ),
                   ),
                 ],
               ),
             ),
-            
+
             // Content
             Column(
               children: [
@@ -95,7 +107,11 @@ class _BillPaymentStatusPageState extends State<BillPaymentStatusPage> {
                           color: Colors.white,
                           shape: BoxShape.circle,
                           boxShadow: [
-                            BoxShadow(color: statusColor.withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 10)),
+                            BoxShadow(
+                              color: statusColor.withOpacity(0.3),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            ),
                           ],
                         ),
                         child: Icon(statusIcon, color: statusColor, size: 60),
@@ -114,15 +130,21 @@ class _BillPaymentStatusPageState extends State<BillPaymentStatusPage> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 40),
                         child: Text(
-                          isSuccess 
-                            ? 'Your bill payment was successful.' 
-                            : (isAwaited ? 'Payment is in process.' : 'Transaction could not be completed.'),
+                          isSuccess
+                              ? 'Your bill payment was successful.'
+                              : (isAwaited
+                                    ? 'Payment is in process.'
+                                    : 'Transaction could not be completed.'),
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 14, fontWeight: FontWeight.w500),
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.8),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                       if (isSuccess || isAwaited) ...[
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 10),
                         Text(
                           '₹ ${widget.responseData['data']?['paymentdetails']?['amount'] ?? '0.00'}',
                           style: const TextStyle(
@@ -136,9 +158,9 @@ class _BillPaymentStatusPageState extends State<BillPaymentStatusPage> {
                     ],
                   ),
                 ),
-                
-                const SizedBox(height: 48),
-                
+
+                const SizedBox(height: 28),
+
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -151,7 +173,11 @@ class _BillPaymentStatusPageState extends State<BillPaymentStatusPage> {
                             color: cardColor,
                             borderRadius: BorderRadius.circular(28),
                             boxShadow: [
-                              BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 20, offset: const Offset(0, 10)),
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.06),
+                                blurRadius: 20,
+                                offset: const Offset(0, 10),
+                              ),
                             ],
                           ),
                           child: Column(
@@ -159,36 +185,66 @@ class _BillPaymentStatusPageState extends State<BillPaymentStatusPage> {
                             children: [
                               Row(
                                 children: [
-                                  Icon(Icons.receipt_long_rounded, color: maincolor1, size: 20),
+                                  Icon(
+                                    Icons.receipt_long_rounded,
+                                    color: maincolor1,
+                                    size: 20,
+                                  ),
                                   const SizedBox(width: 12),
                                   Text(
                                     'Transaction Details',
-                                    style: TextStyle(color: maincolor1, fontWeight: FontWeight.w900, fontSize: 16),
+                                    style: TextStyle(
+                                      color: maincolor1,
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 16,
+                                    ),
                                   ),
                                 ],
                               ),
                               const Divider(height: 40),
                               _buildDetailRow('Provider', widget.provider),
                               _buildDetailRow('Consumer ID', widget.consumerId),
-                              _buildDetailRow('Bill Number', billDetails['txtBillNumber'] ?? 'N/A'),
+                              _buildDetailRow(
+                                'Bill Number',
+                                billDetails['txtBillNumber'] ?? 'N/A',
+                              ),
                               _buildDetailRow(
                                 'Date & Time',
-                                billDetails['date_time'] ?? DateFormat('dd MMM yyyy, hh:mm a').format(DateTime.now()),
+                                billDetails['date_time'] ??
+                                    DateFormat(
+                                      'dd MMM yyyy, hh:mm a',
+                                    ).format(DateTime.now()),
                               ),
                               const Divider(height: 40),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text('Status', style: TextStyle(color: textSecondary, fontSize: 13, fontWeight: FontWeight.w600)),
+                                  Text(
+                                    'Status',
+                                    style: TextStyle(
+                                      color: textSecondary,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 6,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: statusColor.withOpacity(0.1),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Text(
                                       responseReason,
-                                      style: TextStyle(color: statusColor, fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 0.5),
+                                      style: TextStyle(
+                                        color: statusColor,
+                                        fontWeight: FontWeight.w900,
+                                        fontSize: 12,
+                                        letterSpacing: 0.5,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -196,18 +252,28 @@ class _BillPaymentStatusPageState extends State<BillPaymentStatusPage> {
                             ],
                           ),
                         ),
-                        
+
                         const SizedBox(height: 24),
-                        
-                        if (isAwaited) _buildInfoCard(warningColor, 'Verification Pending', 'Your payment is under verification and will reflect in operator records within 24-48 hours.'),
-                        if (isFailed) _buildInfoCard(errorColor, 'Refund Policy', 'If amount was deducted, it will be automatically refunded within 3-7 working days.'),
-                        
+
+                        if (isAwaited)
+                          _buildInfoCard(
+                            warningColor,
+                            'Verification Pending',
+                            'Your payment is under verification and will reflect in operator records within 24-48 hours.',
+                          ),
+                        if (isFailed)
+                          _buildInfoCard(
+                            errorColor,
+                            'Refund Policy',
+                            'If amount was deducted, it will be automatically refunded within 3-7 working days.',
+                          ),
+
                         const SizedBox(height: 40),
                       ],
                     ),
                   ),
                 ),
-                
+
                 // Bottom Buttons
                 Container(
                   padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
@@ -218,14 +284,30 @@ class _BillPaymentStatusPageState extends State<BillPaymentStatusPage> {
                         height: 60,
                         child: ElevatedButton(
                           onPressed: () {
-                            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomePage()), (route) => false);
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const HomePage(),
+                              ),
+                              (route) => false,
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: maincolor1,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
                             elevation: 0,
                           ),
-                          child: const Text('GO TO HOME', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: 1)),
+                          child: const Text(
+                            'GO TO HOME',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 15,
+                              letterSpacing: 1,
+                            ),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -234,13 +316,31 @@ class _BillPaymentStatusPageState extends State<BillPaymentStatusPage> {
                         height: 60,
                         child: OutlinedButton(
                           onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => const BillPaymentPage(title: 'Bill Reports', billerCategory: 'Electricity')));
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const BillPaymentPage(
+                                  title: 'Bill Reports',
+                                  billerCategory: 'Electricity',
+                                ),
+                              ),
+                            );
                           },
                           style: OutlinedButton.styleFrom(
                             side: BorderSide(color: maincolor1, width: 2),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
                           ),
-                          child: Text('VIEW REPORTS', style: TextStyle(color: maincolor1, fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: 1)),
+                          child: Text(
+                            'VIEW REPORTS',
+                            style: TextStyle(
+                              color: maincolor1,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 15,
+                              letterSpacing: 1,
+                            ),
+                          ),
                         ),
                       ),
                     ],
@@ -248,19 +348,33 @@ class _BillPaymentStatusPageState extends State<BillPaymentStatusPage> {
                 ),
               ],
             ),
-            
+
             // Close Button
             SafeArea(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomePage()), (route) => false);
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => const HomePage()),
+                      (route) => false,
+                    );
                   },
                   child: Container(
                     padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(color: Colors.white.withOpacity(0.1), shape: BoxShape.circle),
-                    child: const Icon(Icons.close_rounded, color: Colors.white, size: 24),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.close_rounded,
+                      color: Colors.white,
+                      size: 24,
+                    ),
                   ),
                 ),
               ),
@@ -277,12 +391,23 @@ class _BillPaymentStatusPageState extends State<BillPaymentStatusPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(color: textSecondary, fontSize: 13, fontWeight: FontWeight.w600)),
+          Text(
+            label,
+            style: TextStyle(
+              color: textSecondary,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           Flexible(
             child: Text(
               value,
               textAlign: TextAlign.right,
-              style: TextStyle(color: maincolor1, fontSize: 14, fontWeight: FontWeight.w800),
+              style: TextStyle(
+                color: maincolor1,
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+              ),
             ),
           ),
         ],
@@ -306,9 +431,24 @@ class _BillPaymentStatusPageState extends State<BillPaymentStatusPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: TextStyle(color: color, fontWeight: FontWeight.w900, fontSize: 14)),
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: color,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 14,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text(message, style: TextStyle(color: color.withOpacity(0.8), fontSize: 12, height: 1.4, fontWeight: FontWeight.w500)),
+                Text(
+                  message,
+                  style: TextStyle(
+                    color: color.withOpacity(0.8),
+                    fontSize: 12,
+                    height: 1.4,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ],
             ),
           ),

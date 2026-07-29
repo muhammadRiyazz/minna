@@ -125,22 +125,25 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
           children: [
             // Trip Summary Card
             Expanded(
-              child: Form(
-                key: formKey2,
-                child: ListView(
-                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                  children: [
-                    _buildTripSummaryCard(),
-                    SizedBox(height: 16),
-
-                    _buildContactCard(),
-                    SizedBox(height: 16),
-                    ...List.generate(
-                      widget.selctseat.length,
-                      (i) => buildPassengerCard(i),
-                    ),
-                    SizedBox(height: 20),
-                  ],
+              child: GestureDetector(
+                onTap: () => FocusScope.of(context).unfocus(),
+                child: Form(
+                  key: formKey2,
+                  child: ListView(
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    children: [
+                      _buildTripSummaryCard(),
+                      SizedBox(height: 16),
+  
+                      _buildContactCard(),
+                      SizedBox(height: 16),
+                      ...List.generate(
+                        widget.selctseat.length,
+                        (i) => buildPassengerCard(i),
+                      ),
+                      SizedBox(height: 20),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -257,6 +260,7 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
               return null;
             },
             keyboardType: TextInputType.emailAddress,
+            textInputAction: TextInputAction.next,
             style: TextStyle(
               color: textPrimary,
               fontWeight: FontWeight.w600,
@@ -301,6 +305,7 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
                     return null;
                   },
                   keyboardType: TextInputType.phone,
+                  textInputAction: TextInputAction.next,
                   style: TextStyle(
                     color: textPrimary,
                     fontWeight: FontWeight.w600,
@@ -475,6 +480,7 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
               validator: (value) => (value == null || value.trim().isEmpty)
                   ? 'Please enter name'
                   : null,
+              textInputAction: TextInputAction.next,
               style: TextStyle(
                 color: textPrimary,
                 fontWeight: FontWeight.w600,
@@ -497,6 +503,7 @@ class _ScreenPassengerInputState extends State<ScreenPassengerInput> {
                 }
                 return null;
               },
+              textInputAction: TextInputAction.done,
               style: TextStyle(
                 color: textPrimary,
                 fontWeight: FontWeight.w600,

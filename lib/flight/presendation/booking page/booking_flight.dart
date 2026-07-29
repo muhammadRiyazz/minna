@@ -488,386 +488,199 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
             );
           }
         },
-        child: BlocBuilder<FareRequestBloc, FareRequestState>(
-          builder: (context, state) {
-            if (state.isLoading) {
-              return bookingLoading();
-            } else {
-              final FFlightResponse flightResponse = state.respo!;
-              final flightOption = flightResponse.journey?.flightOption;
-              final searchState = context.read<SearchDataBloc>().state;
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: BlocBuilder<FareRequestBloc, FareRequestState>(
+            builder: (context, state) {
+              if (state.isLoading) {
+                return bookingLoading();
+              } else {
+                final FFlightResponse flightResponse = state.respo!;
+                final flightOption = flightResponse.journey?.flightOption;
+                final searchState = context.read<SearchDataBloc>().state;
 
-              final int travellers =
-                  searchState.travellers['adults']! +
-                  searchState.travellers['children']! +
-                  searchState.travellers['infants']!;
+                final int travellers =
+                    searchState.travellers['adults']! +
+                    searchState.travellers['children']! +
+                    searchState.travellers['infants']!;
 
-              final isInternational =
-                  searchState.from?.countryCode != 'IN' ||
-                  searchState.to?.countryCode != 'IN';
+                final isInternational =
+                    searchState.from?.countryCode != 'IN' ||
+                    searchState.to?.countryCode != 'IN';
 
-              if (firstNameControllers.length != travellers) {
-                _initializePassengerData(travellers, flightOption);
-              }
+                if (firstNameControllers.length != travellers) {
+                  _initializePassengerData(travellers, flightOption);
+                }
 
-              final hasSSRAvailability = flightResponse.ssrAvailability != null;
-              final hasMealOptions =
-                  hasSSRAvailability &&
-                  flightResponse.ssrAvailability!.mealInfo != null &&
-                  flightResponse.ssrAvailability!.mealInfo!.isNotEmpty;
-              final hasBaggageOptions =
-                  hasSSRAvailability &&
-                  flightResponse.ssrAvailability!.baggageInfo != null &&
-                  flightResponse.ssrAvailability!.baggageInfo!.isNotEmpty;
+                final hasSSRAvailability =
+                    flightResponse.ssrAvailability != null;
+                final hasMealOptions =
+                    hasSSRAvailability &&
+                    flightResponse.ssrAvailability!.mealInfo != null &&
+                    flightResponse.ssrAvailability!.mealInfo!.isNotEmpty;
+                final hasBaggageOptions =
+                    hasSSRAvailability &&
+                    flightResponse.ssrAvailability!.baggageInfo != null &&
+                    flightResponse.ssrAvailability!.baggageInfo!.isNotEmpty;
 
-              return CustomScrollView(
-                slivers: [
-                  // App Bar
-                  SliverAppBar(
-                    backgroundColor: maincolor1,
-                    expandedHeight: 120,
-                    floating: false,
-                    pinned: true,
-                    elevation: 0,
-                    leading: IconButton(
-                      icon: Icon(
-                        Iconsax.arrow_left,
-                        color: Colors.white,
-                        size: 22,
+                return CustomScrollView(
+                  slivers: [
+                    // App Bar
+                    SliverAppBar(
+                      backgroundColor: maincolor1,
+                      expandedHeight: 120,
+                      floating: false,
+                      pinned: true,
+                      elevation: 0,
+                      leading: IconButton(
+                        icon: Icon(
+                          Iconsax.arrow_left,
+                          color: Colors.white,
+                          size: 22,
+                        ),
+                        onPressed: () => Navigator.pop(context),
                       ),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                    centerTitle: true,
-                    title: Text(
-                      'Booking Details',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: -0.5,
+                      centerTitle: true,
+                      title: Text(
+                        'Booking Details',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -0.5,
+                        ),
                       ),
-                    ),
-                    flexibleSpace: FlexibleSpaceBar(
-                      background: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [maincolor1, maincolor1.withOpacity(0.8)],
+                      flexibleSpace: FlexibleSpaceBar(
+                        background: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [maincolor1, maincolor1.withOpacity(0.8)],
+                            ),
                           ),
-                        ),
-                        child: Stack(
-                          children: [
-                            Positioned(
-                              right: -20,
-                              top: -20,
-                              child: Icon(
-                                Iconsax.airplane,
-                                size: 140,
-                                color: Colors.white.withOpacity(0.05),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  // Flight Info Section
-                  _buildFlightInfoSection(flightResponse),
-
-                  // SSR Availability Card
-                  if (hasSSRAvailability &&
-                      (hasMealOptions || hasBaggageOptions))
-                    SliverToBoxAdapter(
-                      child: Container(
-                        margin: EdgeInsets.all(16),
-                        padding: EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: secondaryColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.all(6),
-                                  decoration: BoxDecoration(
-                                    color: secondaryColor,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Icon(
-                                    Iconsax.star,
-                                    size: 16,
-                                    color: Colors.white,
-                                  ),
+                          child: Stack(
+                            children: [
+                              Positioned(
+                                right: -20,
+                                top: -20,
+                                child: Icon(
+                                  Iconsax.airplane,
+                                  size: 140,
+                                  color: Colors.white.withOpacity(0.05),
                                 ),
-                                SizedBox(width: 12),
-                                Text(
-                                  'Enhance Your Flight',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                    color: maincolor1,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'Add meals and extra baggage for a comfortable journey',
-                              style: TextStyle(
-                                color: textSecondary,
-                                fontSize: 13,
-                                height: 1.5,
-                              ),
-                            ),
-                            if (hasMealOptions || hasBaggageOptions) ...[
-                              SizedBox(height: 16),
-                              Wrap(
-                                spacing: 12,
-                                runSpacing: 12,
-                                children: [
-                                  if (hasMealOptions)
-                                    _buildAddOnChip(
-                                      icon: Iconsax.coffee,
-                                      label: 'In-Flight Meals',
-                                    ),
-                                  if (hasBaggageOptions)
-                                    _buildAddOnChip(
-                                      icon: Iconsax.briefcase,
-                                      label: 'Extra Baggage',
-                                    ),
-                                ],
                               ),
                             ],
-                          ],
+                          ),
                         ),
                       ),
                     ),
 
-                  // Contact Information
-                  SliverToBoxAdapter(
-                    child: Container(
-                      margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                      decoration: BoxDecoration(
-                        color: cardColor,
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(
-                          color: Colors.grey.shade100,
-                          width: 1,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: maincolor1.withOpacity(0.04),
-                            blurRadius: 20,
-                            offset: const Offset(0, 8),
+                    // Flight Info Section
+                    _buildFlightInfoSection(flightResponse),
+
+                    // SSR Availability Card
+                    if (hasSSRAvailability &&
+                        (hasMealOptions || hasBaggageOptions))
+                      SliverToBoxAdapter(
+                        child: Container(
+                          margin: EdgeInsets.all(16),
+                          padding: EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: secondaryColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(16),
                           ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          // Header
-                          Container(
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: maincolor1.withOpacity(0.02),
-                              borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: secondaryColor,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      Iconsax.star,
+                                      size: 16,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  SizedBox(width: 12),
+                                  Text(
+                                    'Enhance Your Flight',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: maincolor1,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color: maincolor1.withOpacity(0.05),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Icon(
-                                    Iconsax.user_square,
-                                    size: 20,
-                                    color: maincolor1,
-                                  ),
+                              SizedBox(height: 8),
+                              Text(
+                                'Add meals and extra baggage for a comfortable journey',
+                                style: TextStyle(
+                                  color: textSecondary,
+                                  fontSize: 13,
+                                  height: 1.5,
                                 ),
-                                const SizedBox(width: 16),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                              ),
+                              if (hasMealOptions || hasBaggageOptions) ...[
+                                SizedBox(height: 16),
+                                Wrap(
+                                  spacing: 12,
+                                  runSpacing: 12,
                                   children: [
-                                    Text(
-                                      'Contact Details',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w900,
-                                        color: maincolor1,
+                                    if (hasMealOptions)
+                                      _buildAddOnChip(
+                                        icon: Iconsax.coffee,
+                                        label: 'In-Flight Meals',
                                       ),
-                                    ),
-                                    Text(
-                                      'Receive your ticket & updates here',
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        color: textSecondary,
-                                        fontWeight: FontWeight.w600,
+                                    if (hasBaggageOptions)
+                                      _buildAddOnChip(
+                                        icon: Iconsax.briefcase,
+                                        label: 'Extra Baggage',
                                       ),
-                                    ),
                                   ],
                                 ),
                               ],
-                            ),
+                            ],
                           ),
-                          // Content
-                          Padding(
-                            padding: const EdgeInsets.all(15),
-                            child: Form(
-                              key: _formKey,
-                              child: Column(
-                                children: [
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                        flex: 3,
-                                        child: _buildModernDropdown<String>(
-                                          label: 'Code',
-                                          value: _selectedISD,
-                                          icon: Iconsax.global,
-                                          hint: '+91',
-                                          items: countryCodes.map((country) {
-                                            return DropdownMenuItem<String>(
-                                              value: country['code'],
-                                              child: Text(
-                                                '${country['flag']} ${country['code']}',
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            );
-                                          }).toList(),
-                                          selectedItemBuilder: (context) {
-                                            return countryCodes.map((country) {
-                                              return Text(
-                                                country['code']!,
-                                                style: const TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              );
-                                            }).toList();
-                                          },
-                                          onChanged: (val) {
-                                            if (val != null) {
-                                              setState(() {
-                                                _selectedISD = val;
-                                                countryCodeController.text =
-                                                    val;
-                                              });
-                                            }
-                                          },
-                                          validator: (value) =>
-                                              value == null ? 'Required' : null,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        flex: 5,
-                                        child: _buildModernTextField(
-                                          label: 'Phone Number',
-                                          controller: contactNumberController,
-                                          icon: Iconsax.mobile,
-                                          hint: '9876543210',
-                                          keyboardType: TextInputType.phone,
-                                          validator: (value) {
-                                            if (value == null ||
-                                                value.isEmpty) {
-                                              return 'Required';
-                                            }
-                                            if (!RegExp(
-                                              r'^[0-9]{7,12}$',
-                                            ).hasMatch(value)) {
-                                              return 'Invalid number';
-                                            }
-                                            return null;
-                                          },
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 20),
-                                  _buildModernTextField(
-                                    label: 'Email Address',
-                                    controller: emailController,
-                                    icon: Iconsax.direct_right,
-                                    hint: 'e.g. name@example.com',
-                                    keyboardType: TextInputType.emailAddress,
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Required field';
-                                      }
-                                      if (!RegExp(
-                                        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                                      ).hasMatch(value)) {
-                                        return 'Invalid email';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  // Traveller Details Section
-                  SliverToBoxAdapter(
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: cardColor,
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(
-                          color: Colors.grey.shade100,
-                          width: 1,
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: maincolor1.withOpacity(0.04),
-                            blurRadius: 20,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
                       ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(24),
-                        child: Theme(
-                          data: Theme.of(
-                            context,
-                          ).copyWith(dividerColor: Colors.transparent),
-                          child: ExpansionTile(
-                            collapsedIconColor: maincolor1,
-                            iconColor: maincolor1,
-                            initiallyExpanded: true,
-                            textColor: maincolor1,
-                            tilePadding: EdgeInsets.zero,
-                            collapsedBackgroundColor: maincolor1.withOpacity(
-                              0.02,
+
+                    // Contact Information
+                    SliverToBoxAdapter(
+                      child: Container(
+                        margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                        decoration: BoxDecoration(
+                          color: cardColor,
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: Colors.grey.shade100,
+                            width: 1,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: maincolor1.withOpacity(0.04),
+                              blurRadius: 20,
+                              offset: const Offset(0, 8),
                             ),
-                            collapsedTextColor: maincolor1,
-                            backgroundColor: Colors.transparent,
-                            collapsedShape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                            title: Container(
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            // Header
+                            Container(
                               padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: maincolor1.withOpacity(0.02),
+                                borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(24),
+                                ),
+                              ),
                               child: Row(
                                 children: [
                                   Container(
@@ -877,197 +690,393 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
                                       shape: BoxShape.circle,
                                     ),
                                     child: Icon(
-                                      Iconsax.user_tag,
+                                      Iconsax.user_square,
                                       size: 20,
                                       color: maincolor1,
                                     ),
                                   ),
                                   const SizedBox(width: 16),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Text(
-                                              'Traveller Details',
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w900,
-                                                color: maincolor1,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 12),
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 8,
-                                                    vertical: 4,
-                                                  ),
-                                              decoration: BoxDecoration(
-                                                color: maincolor1.withOpacity(
-                                                  0.1,
-                                                ),
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                              ),
-                                              child: Text(
-                                                travellers.toString(),
-                                                style: TextStyle(
-                                                  fontSize: 11,
-                                                  fontWeight: FontWeight.w900,
-                                                  color: maincolor1,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Contact Details',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w900,
+                                          color: maincolor1,
                                         ),
-                                        Text(
-                                          'Add passenger information for booking',
-                                          style: TextStyle(
-                                            fontSize: 11,
-                                            color: textSecondary,
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                                      ),
+                                      Text(
+                                        'Receive your ticket & updates here',
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          color: textSecondary,
+                                          fontWeight: FontWeight.w600,
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
                             ),
-                            children: List.generate(travellers, (index) {
-                              final isAdult =
-                                  index < searchState.travellers['adults']!;
-                              final isChild =
-                                  !isAdult &&
-                                  index <
-                                      searchState.travellers['adults']! +
-                                          searchState.travellers['children']!;
-                              final isInfant = !isAdult && !isChild;
-                              final isFirstPassenger = index == 0;
+                            // Content
+                            Padding(
+                              padding: const EdgeInsets.all(15),
+                              child: Form(
+                                key: _formKey,
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Expanded(
+                                          flex: 3,
+                                          child: _buildModernDropdown<String>(
+                                            label: 'Code',
+                                            value: _selectedISD,
+                                            icon: Iconsax.global,
+                                            hint: '+91',
+                                            items: countryCodes.map((country) {
+                                              return DropdownMenuItem<String>(
+                                                value: country['code'],
+                                                child: Text(
+                                                  '${country['flag']} ${country['code']}',
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              );
+                                            }).toList(),
+                                            selectedItemBuilder: (context) {
+                                              return countryCodes.map((
+                                                country,
+                                              ) {
+                                                return Text(
+                                                  country['code']!,
+                                                  style: const TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                );
+                                              }).toList();
+                                            },
+                                            onChanged: (val) {
+                                              if (val != null) {
+                                                setState(() {
+                                                  _selectedISD = val;
+                                                  countryCodeController.text =
+                                                      val;
+                                                });
+                                              }
+                                            },
+                                            validator: (value) => value == null
+                                                ? 'Required'
+                                                : null,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          flex: 5,
+                                          child: _buildModernTextField(
+                                            label: 'Phone Number',
+                                            controller: contactNumberController,
+                                            icon: Iconsax.mobile,
+                                            hint: '9876543210',
+                                            keyboardType: TextInputType.phone,
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'Required';
+                                              }
+                                              if (!RegExp(
+                                                r'^[0-9]{7,12}$',
+                                              ).hasMatch(value)) {
+                                                return 'Invalid number';
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 20),
+                                    _buildModernTextField(
+                                      label: 'Email Address',
+                                      controller: emailController,
+                                      icon: Iconsax.direct_right,
+                                      hint: 'e.g. name@example.com',
+                                      keyboardType: TextInputType.emailAddress,
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Required field';
+                                        }
+                                        if (!RegExp(
+                                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                                        ).hasMatch(value)) {
+                                          return 'Invalid email';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
 
-                              return _buildPassengerForm(
-                                context: context,
-                                index: index,
-                                isAdult: isAdult,
-                                isChild: isChild,
-                                isInfant: isInfant,
-                                isFirstPassenger: isFirstPassenger,
-                                hasMeals: hasMealOptions,
-                                hasBaggage: hasBaggageOptions,
-                                isInternational: isInternational,
-                                flightResponse: flightResponse,
-                              );
-                            }),
+                    // Traveller Details Section
+                    SliverToBoxAdapter(
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: cardColor,
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: Colors.grey.shade100,
+                            width: 1,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: maincolor1.withOpacity(0.04),
+                              blurRadius: 20,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(24),
+                          child: Theme(
+                            data: Theme.of(
+                              context,
+                            ).copyWith(dividerColor: Colors.transparent),
+                            child: ExpansionTile(
+                              collapsedIconColor: maincolor1,
+                              iconColor: maincolor1,
+                              initiallyExpanded: true,
+                              textColor: maincolor1,
+                              tilePadding: EdgeInsets.zero,
+                              collapsedBackgroundColor: maincolor1.withOpacity(
+                                0.02,
+                              ),
+                              collapsedTextColor: maincolor1,
+                              backgroundColor: Colors.transparent,
+                              collapsedShape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              title: Container(
+                                padding: const EdgeInsets.all(20),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        color: maincolor1.withOpacity(0.05),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        Iconsax.user_tag,
+                                        size: 20,
+                                        color: maincolor1,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(
+                                                'Traveller Details',
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w900,
+                                                  color: maincolor1,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 4,
+                                                    ),
+                                                decoration: BoxDecoration(
+                                                  color: maincolor1.withOpacity(
+                                                    0.1,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: Text(
+                                                  travellers.toString(),
+                                                  style: TextStyle(
+                                                    fontSize: 11,
+                                                    fontWeight: FontWeight.w900,
+                                                    color: maincolor1,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Text(
+                                            'Add passenger information for booking',
+                                            style: TextStyle(
+                                              fontSize: 11,
+                                              color: textSecondary,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              children: List.generate(travellers, (index) {
+                                final isAdult =
+                                    index < searchState.travellers['adults']!;
+                                final isChild =
+                                    !isAdult &&
+                                    index <
+                                        searchState.travellers['adults']! +
+                                            searchState.travellers['children']!;
+                                final isInfant = !isAdult && !isChild;
+                                final isFirstPassenger = index == 0;
+
+                                return _buildPassengerForm(
+                                  context: context,
+                                  index: index,
+                                  isAdult: isAdult,
+                                  isChild: isChild,
+                                  isInfant: isInfant,
+                                  isFirstPassenger: isFirstPassenger,
+                                  hasMeals: hasMealOptions,
+                                  hasBaggage: hasBaggageOptions,
+                                  isInternational: isInternational,
+                                  flightResponse: flightResponse,
+                                );
+                              }),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
 
-                  // Submit Button
-                  SliverToBoxAdapter(
-                    child: BlocBuilder<BookingBloc, BookingState>(
-                      builder: (context, bookingState) {
-                        final isProcessing =
-                            _isSubmitting || bookingState.isRepriceLoading;
+                    // Submit Button
+                    SliverToBoxAdapter(
+                      child: BlocBuilder<BookingBloc, BookingState>(
+                        builder: (context, bookingState) {
+                          final isProcessing =
+                              _isSubmitting || bookingState.isRepriceLoading;
 
-                        return Container(
-                          margin: EdgeInsets.all(16),
-                          child: Column(
-                            children: [
-                              ElevatedButton(
-                                onPressed: isProcessing
-                                    ? null
-                                    : () => _submitForm(
-                                        context,
-                                        state,
-                                        flightOption!,
-                                        searchState,
-                                      ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: isProcessing
-                                      ? textLight
-                                      : maincolor1,
-                                  foregroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
+                          return Container(
+                            margin: EdgeInsets.all(16),
+                            child: Column(
+                              children: [
+                                ElevatedButton(
+                                  onPressed: isProcessing
+                                      ? null
+                                      : () => _submitForm(
+                                          context,
+                                          state,
+                                          flightOption!,
+                                          searchState,
+                                        ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: isProcessing
+                                        ? textLight
+                                        : maincolor1,
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    padding: EdgeInsets.symmetric(vertical: 18),
+                                    elevation: 2,
+                                    minimumSize: Size(double.infinity, 50),
                                   ),
-                                  padding: EdgeInsets.symmetric(vertical: 18),
-                                  elevation: 2,
-                                  minimumSize: Size(double.infinity, 50),
+                                  child: isProcessing
+                                      ? Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            SizedBox(
+                                              height: 20,
+                                              width: 20,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                                valueColor:
+                                                    AlwaysStoppedAnimation<
+                                                      Color
+                                                    >(Colors.white),
+                                              ),
+                                            ),
+                                            SizedBox(width: 12),
+                                            Text(
+                                              'Processing...',
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      : Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.arrow_forward_rounded,
+                                              size: 20,
+                                            ),
+                                            SizedBox(width: 12),
+                                            Text(
+                                              'Continue to Payment',
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                 ),
-                                child: isProcessing
-                                    ? Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          SizedBox(
-                                            height: 20,
-                                            width: 20,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                              valueColor:
-                                                  AlwaysStoppedAnimation<Color>(
-                                                    Colors.white,
-                                                  ),
-                                            ),
-                                          ),
-                                          SizedBox(width: 12),
-                                          Text(
-                                            'Processing...',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ],
-                                      )
-                                    : Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.arrow_forward_rounded,
-                                            size: 20,
-                                          ),
-                                          SizedBox(width: 12),
-                                          Text(
-                                            'Continue to Payment',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                              ),
-                              if (isProcessing) ...[
-                                SizedBox(height: 16),
-                                Text(
-                                  'Please wait while we update your flight details...',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: textSecondary,
-                                    fontStyle: FontStyle.italic,
+                                if (isProcessing) ...[
+                                  SizedBox(height: 16),
+                                  Text(
+                                    'Please wait while we update your flight details...',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: textSecondary,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                    textAlign: TextAlign.center,
                                   ),
-                                  textAlign: TextAlign.center,
-                                ),
+                                ],
                               ],
-                            ],
-                          ),
-                        );
-                      },
+                            ),
+                          );
+                        },
+                      ),
                     ),
-                  ),
 
-                  SliverToBoxAdapter(child: const SizedBox(height: 30)),
-                ],
-              );
-            }
-          },
+                    SliverToBoxAdapter(child: const SizedBox(height: 30)),
+                  ],
+                );
+              }
+            },
+          ),
         ),
       ),
     );
@@ -1641,6 +1650,7 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
     required IconData icon,
     String? hint,
     TextInputType? keyboardType,
+    TextInputAction textInputAction = TextInputAction.next,
     String? Function(String?)? validator,
     VoidCallback? onTap,
     bool readOnly = false,
@@ -1663,6 +1673,7 @@ class _FlightBookingPageState extends State<FlightBookingPage> {
         TextFormField(
           controller: controller,
           keyboardType: keyboardType,
+          textInputAction: textInputAction,
           validator: validator,
           onTap: onTap,
           readOnly: readOnly,

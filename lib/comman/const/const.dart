@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
 // Deep Ocean Blue and Gold Theme
-const Color maincolor1 = Color(0xFF003875); // Deep Ocean Blue
+const Color maincolor1 =
+
+
+Color(0xFF520082);
+//  Color(0xFF003875); // Deep Ocean Blue
 const Color secondaryColor = Color(0xFFFFB703); // Premium Gold/Amber
 const Color accentColor = Color(0xFF3B82F6); // Vibrant Blue
 const Color backgroundColor = Color(0xFFF8FAFC);
