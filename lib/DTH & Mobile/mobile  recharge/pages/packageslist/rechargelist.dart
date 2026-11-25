@@ -25,7 +25,6 @@ class _MobileRechargePlansPageState extends State<MobileRechargePlansPage> {
 
   // Use standardized theme colors from const.dart
 
-
   Color _getOperatorColor(String operatorName) {
     switch (operatorName.toUpperCase()) {
       case 'AIRTEL':
@@ -86,8 +85,8 @@ class _MobileRechargePlansPageState extends State<MobileRechargePlansPage> {
   void initState() {
     super.initState();
     context.read<PlansBloc>().add(
-          FetchPlansEvent(operatorName: widget.operator),
-        );
+      FetchPlansEvent(operatorName: widget.operator),
+    );
   }
 
   @override
@@ -179,19 +178,27 @@ class _MobileRechargePlansPageState extends State<MobileRechargePlansPage> {
                               color: Colors.white,
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: _getOperatorColor(widget.operator).withOpacity(0.2),
+                                color: _getOperatorColor(
+                                  widget.operator,
+                                ).withOpacity(0.2),
                                 width: 2,
                               ),
                             ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(25),
-                              child: _getOperatorImageURL(widget.operator).isNotEmpty
+                              child:
+                                  _getOperatorImageURL(
+                                    widget.operator,
+                                  ).isNotEmpty
                                   ? Image.network(
                                       _getOperatorImageURL(widget.operator),
                                       fit: BoxFit.contain,
-                                      errorBuilder: (context, error, stackTrace) {
-                                        return _buildTextFallback(widget.operator);
-                                      },
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                            return _buildTextFallback(
+                                              widget.operator,
+                                            );
+                                          },
                                     )
                                   : _buildTextFallback(widget.operator),
                             ),
@@ -230,18 +237,33 @@ class _MobileRechargePlansPageState extends State<MobileRechargePlansPage> {
                               decoration: BoxDecoration(
                                 color: backgroundColor,
                                 borderRadius: BorderRadius.circular(16),
-                                border: Border.all(color: Colors.grey.withOpacity(0.1)),
+                                border: Border.all(
+                                  color: Colors.grey.withOpacity(0.1),
+                                ),
                               ),
                               child: TextField(
                                 controller: amountController,
                                 keyboardType: TextInputType.number,
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
                                 decoration: InputDecoration(
                                   hintText: 'Enter amount manually',
-                                  hintStyle: TextStyle(color: textSecondary.withOpacity(0.5), fontSize: 14),
-                                  prefixIcon: Icon(Icons.currency_rupee, size: 18, color: maincolor1),
+                                  hintStyle: TextStyle(
+                                    color: textSecondary.withOpacity(0.5),
+                                    fontSize: 14,
+                                  ),
+                                  prefixIcon: Icon(
+                                    Icons.currency_rupee,
+                                    size: 18,
+                                    color: maincolor1,
+                                  ),
                                   border: InputBorder.none,
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 14,
+                                  ),
                                 ),
                               ),
                             ),
@@ -276,7 +298,10 @@ class _MobileRechargePlansPageState extends State<MobileRechargePlansPage> {
                                   ),
                                 ],
                               ),
-                              child: const Icon(Icons.arrow_forward_rounded, color: Colors.white),
+                              child: const Icon(
+                                Icons.arrow_forward_rounded,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ],
@@ -292,7 +317,8 @@ class _MobileRechargePlansPageState extends State<MobileRechargePlansPage> {
               Expanded(
                 child: BlocBuilder<PlansBloc, PlansState>(
                   builder: (context, state) {
-                    if (state is PlansStateLoading || state is PlansStateInitial) {
+                    if (state is PlansStateLoading ||
+                        state is PlansStateInitial) {
                       return _buildShimmerLoading();
                     } else if (state is PlansStateError) {
                       return Center(
@@ -317,34 +343,59 @@ class _MobileRechargePlansPageState extends State<MobileRechargePlansPage> {
                               unselectedLabelColor: textSecondary,
                               indicatorColor: secondaryColor,
                               indicatorWeight: 3,
-                              labelStyle: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14),
-                              unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
-                              tabs: tabs.map((t) => Tab(text: t.title)).toList(),
+                              labelStyle: const TextStyle(
+                                fontWeight: FontWeight.w900,
+                                fontSize: 14,
+                              ),
+                              unselectedLabelStyle: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                              ),
+                              tabs: tabs
+                                  .map((t) => Tab(text: t.title))
+                                  .toList(),
                             ),
                             Expanded(
                               child: TabBarView(
                                 children: tabs.map((tab) {
                                   if (tab.plans.isEmpty) {
-                                    return const Center(child: Text("No plans in this category."));
+                                    return const Center(
+                                      child: Text("No plans in this category."),
+                                    );
                                   }
                                   return ListView.builder(
-                                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+                                    padding: const EdgeInsets.fromLTRB(
+                                      24,
+                                      16,
+                                      24,
+                                      24,
+                                    ),
                                     itemCount: tab.plans.length,
                                     itemBuilder: (context, index) {
                                       final plan = tab.plans[index];
                                       return Container(
-                                        margin: const EdgeInsets.only(bottom: 16),
+                                        margin: const EdgeInsets.only(
+                                          bottom: 16,
+                                        ),
                                         decoration: BoxDecoration(
                                           color: cardColor,
-                                          borderRadius: BorderRadius.circular(24),
+                                          borderRadius: BorderRadius.circular(
+                                            24,
+                                          ),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: Colors.black.withOpacity(0.04),
+                                              color: Colors.black.withOpacity(
+                                                0.04,
+                                              ),
                                               blurRadius: 15,
                                               offset: const Offset(0, 5),
                                             ),
                                           ],
-                                          border: Border.all(color: Colors.grey.withOpacity(0.05)),
+                                          border: Border.all(
+                                            color: Colors.grey.withOpacity(
+                                              0.05,
+                                            ),
+                                          ),
                                         ),
                                         child: InkWell(
                                           onTap: () {
@@ -359,26 +410,38 @@ class _MobileRechargePlansPageState extends State<MobileRechargePlansPage> {
                                               ),
                                             );
                                           },
-                                          borderRadius: BorderRadius.circular(24),
+                                          borderRadius: BorderRadius.circular(
+                                            24,
+                                          ),
                                           child: Padding(
                                             padding: const EdgeInsets.all(20),
                                             child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
                                                   children: [
                                                     Row(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
                                                       children: [
                                                         Padding(
-                                                          padding: const EdgeInsets.only(top: 4),
+                                                          padding:
+                                                              const EdgeInsets.only(
+                                                                top: 4,
+                                                              ),
                                                           child: Text(
                                                             '₹',
                                                             style: TextStyle(
                                                               fontSize: 16,
                                                               color: maincolor1,
-                                                              fontWeight: FontWeight.bold,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
                                                             ),
                                                           ),
                                                         ),
@@ -386,7 +449,8 @@ class _MobileRechargePlansPageState extends State<MobileRechargePlansPage> {
                                                           plan.amt,
                                                           style: TextStyle(
                                                             fontSize: 28,
-                                                            fontWeight: FontWeight.w900,
+                                                            fontWeight:
+                                                                FontWeight.w900,
                                                             color: maincolor1,
                                                             letterSpacing: -0.5,
                                                           ),
@@ -394,20 +458,39 @@ class _MobileRechargePlansPageState extends State<MobileRechargePlansPage> {
                                                       ],
                                                     ),
                                                     Container(
-                                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            horizontal: 12,
+                                                            vertical: 6,
+                                                          ),
                                                       decoration: BoxDecoration(
-                                                        color: secondaryColor.withOpacity(0.1),
-                                                        borderRadius: BorderRadius.circular(30),
+                                                        color: secondaryColor
+                                                            .withOpacity(0.1),
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              30,
+                                                            ),
                                                       ),
                                                       child: Row(
                                                         children: [
-                                                          Icon(Icons.timer_outlined, color: secondaryColor, size: 14),
-                                                          const SizedBox(width: 4),
+                                                          Icon(
+                                                            Icons
+                                                                .timer_outlined,
+                                                            color:
+                                                                secondaryColor,
+                                                            size: 14,
+                                                          ),
+                                                          const SizedBox(
+                                                            width: 4,
+                                                          ),
                                                           Text(
                                                             plan.validity,
                                                             style: TextStyle(
-                                                              color: secondaryColor,
-                                                              fontWeight: FontWeight.w900,
+                                                              color:
+                                                                  secondaryColor,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w900,
                                                               fontSize: 12,
                                                             ),
                                                           ),
@@ -461,9 +544,15 @@ class _MobileRechargePlansPageState extends State<MobileRechargePlansPage> {
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.1),
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white.withOpacity(0.1)),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.1),
+                        ),
                       ),
-                      child: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 18),
+                      child: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: Colors.white,
+                        size: 18,
+                      ),
                     ),
                   ),
                   Text(
@@ -495,7 +584,17 @@ class _MobileRechargePlansPageState extends State<MobileRechargePlansPage> {
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(4, (index) => Container(width: 80, height: 30, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)))),
+              children: List.generate(
+                4,
+                (index) => Container(
+                  width: 80,
+                  height: 30,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ),
             ),
           ),
           Expanded(
@@ -505,7 +604,10 @@ class _MobileRechargePlansPageState extends State<MobileRechargePlansPage> {
               itemBuilder: (context, index) => Container(
                 margin: const EdgeInsets.only(bottom: 16),
                 height: 150,
-                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                ),
               ),
             ),
           ),

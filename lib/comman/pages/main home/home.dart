@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:minna/bbps_dynamic/pages/bbps_dynamic_input_page.dart';
 import 'package:upgrader/upgrader.dart';
 import 'package:minna/Electyicity%20&%20Water/water%20bill/water%20bill%20home/water_input.dart';
 import 'package:minna/hotel%20booking/pages/holel%20home%20page/home_page_hotel.dart';
@@ -254,7 +255,15 @@ class _HomeContentPageState extends State<HomeContentPage> {
       'asset': 'asset/servise/fastag.png',
       'color': Color(0xFF003875),
       'onTap': (BuildContext context) {
-        _showComingSoonBottomSheet(context, "FASTag");
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const BbpsDynamicInputPage(
+              category: 'Fastag',
+              title: 'FASTag Recharge',
+            ),
+          ),
+        );
       },
     },
   ];
@@ -308,6 +317,57 @@ class _HomeContentPageState extends State<HomeContentPage> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => WaterBillInputPage()),
+        );
+      },
+    },
+    {
+      'icon': Iconsax.card,
+      'label': 'Credit Card',
+      'asset': 'asset/servise/credit_card.png',
+      'color': Color(0xFF003875),
+      'onTap': (BuildContext context) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const BbpsDynamicInputPage(
+              category: 'CreditCard',
+              title: 'Credit Card Bill',
+            ),
+          ),
+        );
+      },
+    },
+    {
+      'icon': Iconsax.bank,
+      'label': 'Loan',
+      'asset': 'asset/servise/loan.png', // Assuming you have a loan.png asset, fallback to icon if not
+      'color': Color(0xFF003875),
+      'onTap': (BuildContext context) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const BbpsDynamicInputPage(
+              category: 'Loan',
+              title: 'Loan Repayment',
+            ),
+          ),
+        );
+      },
+    },
+    {
+      'icon': Icons.electric_car,
+      'label': 'EV',
+      'asset': 'asset/servise/ev.png', 
+      'color': Color(0xFF003875),
+      'onTap': (BuildContext context) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const BbpsDynamicInputPage(
+              category: 'EV',
+              title: 'EV Recharge',
+            ),
+          ),
         );
       },
     },

@@ -45,6 +45,7 @@ post_install do |installer|
     # Add this to ensure all targets have the correct deployment target
     target.build_configurations.each do |config|
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '14.0'
+      config.build_settings['DEBUG_INFORMATION_FORMAT'] = 'dwarf-with-dsym'
       
       # Optional: Set Swift version if you have Swift dependencies
       # config.build_settings['SWIFT_VERSION'] = '5.0'

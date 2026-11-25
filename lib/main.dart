@@ -39,6 +39,10 @@ import 'package:minna/Electyicity%20&%20Water/application/fetch%20bill/fetch_bil
 import 'package:minna/Electyicity%20&%20Water/application/providers/providers_bloc.dart';
 import 'package:minna/Electyicity%20&%20Water/function/report_api.dart';
 
+// BBPS Dynamic (Fastag, Credit Card)
+import 'package:minna/bbps_dynamic/application/bbps_dynamic_bloc.dart';
+import 'package:minna/bbps_dynamic/domain/bbps_dynamic_repository.dart';
+
 // Flight
 import 'package:minna/flight/application/booking/booking_bloc.dart';
 import 'package:minna/flight/application/fare%20request/fare_request_bloc.dart';
@@ -212,12 +216,14 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(create: (_) => DthConfirmBloc()),
         BlocProvider(create: (_) => PlansBloc()),
         BlocProvider(create: (_) => DTHPlansBloc()),
-
         // Electricity & Water BlocProviders
         BlocProvider(create: (_) => ProvidersBloc()),
         BlocProvider(create: (_) => FetchBillBloc()),
         BlocProvider(create: (_) => ConfirmBillBloc()),
         BlocProvider(create: (_) => BillPaymentBloc(BillPaymentRepository())),
+        
+        // BBPS Dynamic (Credit Card & Fastag)
+        BlocProvider(create: (_) => BbpsDynamicBloc(repository: BbpsDynamicRepository())),
 
         // Hotel BlocProviders
         BlocProvider(create: (_) => HotelBookingConfirmBloc()),

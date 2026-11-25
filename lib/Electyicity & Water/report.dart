@@ -77,16 +77,16 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
             Expanded(
               child: BlocBuilder<BillPaymentBloc, BillPaymentState>(
                 builder: (context, state) {
-                  if (state is BillPaymentLoading) {
+                  if (state is BillPaymentLoading || state is BillPaymentInitial) {
                     return _buildShimmerLoading();
                   } else if (state is BillPaymentLoaded) {
                     return _buildTransactionsList(state.transactions);
-                  } else if (state is BillPaymentEmpty ||
-                      state is BillPaymentInitial ||
-                      state is BillPaymentError) {
+                  } else if (state is BillPaymentEmpty) {
                     return _buildEmptyState(
                       'No ${widget.title.toLowerCase()} found',
                     );
+                  } else if (state is BillPaymentError) {
+                    return _buildErrorState(state.message);
                   } else {
                     return _buildEmptyState('No data available');
                   }
@@ -150,9 +150,7 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      widget.title.contains('Electricity')
-                          ? Iconsax.flash_1
-                          : Iconsax.drop,
+                      _getCategoryIcon(transaction.billerCategory),
                       size: 20,
                       color: maincolor1,
                     ),
@@ -174,7 +172,7 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
                           overflow: TextOverflow.ellipsis,
                         ),
                         Text(
-                          "Consumer ID: ${transaction.txtConsumer}",
+                          "${_getConsumerLabel(transaction.billerCategory)}: ${transaction.txtConsumer}",
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
@@ -549,5 +547,31 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
         ],
       ),
     );
+  }
+
+  IconData _getCategoryIcon(String category) {
+    final cat = category.toLowerCase();
+    if (cat.contains('electricity')) return Iconsax.flash_1;
+    if (cat.contains('water')) return Iconsax.drop;
+    if (cat.contains('gas')) return Icons.gas_meter_outlined;
+    if (cat.contains('fastag')) return Iconsax.car;
+    if (cat.contains('creditcard') || cat.contains('card')) return Iconsax.card;
+    if (cat.contains('loan') || cat.contains('emi')) return Iconsax.bank;
+    if (cat.contains('ev')) return Iconsax.battery_charging;
+    if (cat.contains('dth') || cat.contains('tv')) return Iconsax.monitor;
+    if (cat.contains('mobile') || cat.contains('postpaid'))
+      return Iconsax.mobile;
+    if (cat.contains('broadband') || cat.contains('landline'))
+      return Iconsax.wifi;
+    return Iconsax.receipt_item;
+  }
+
+  String _getConsumerLabel(String category) {
+    final cat = category.toLowerCase();
+    if (cat.contains('fastag')) return 'Vehicle No';
+    if (cat.contains('creditcard') || cat.contains('card')) return 'Card No';
+    if (cat.contains('loan') || cat.contains('emi')) return 'Loan No';
+    if (cat.contains('mobile') || cat.contains('postpaid')) return 'Mobile No';
+    return 'Consumer ID';
   }
 }

@@ -52,6 +52,50 @@ class _HistoryPageState extends State<HistoryPage> {
         ),
       ),
     },
+    {
+      'name': 'Credit Card',
+      'icon': Iconsax.card,
+      'page': BlocProvider(
+        create: (context) => BillPaymentBloc(BillPaymentRepository()),
+        child: const BillPaymentPage(
+          title: 'Credit Card Bill Payments',
+          billerCategory: 'Credit Card',
+        ),
+      ),
+    },
+    {
+      'name': 'Loan',
+      'icon': Iconsax.bank,
+      'page': BlocProvider(
+        create: (context) => BillPaymentBloc(BillPaymentRepository()),
+        child: const BillPaymentPage(
+          title: 'Loan Payments',
+          billerCategory: 'Loan',
+        ),
+      ),
+    },
+    {
+      'name': 'Fastag',
+      'icon': Iconsax.car,
+      'page': BlocProvider(
+        create: (context) => BillPaymentBloc(BillPaymentRepository()),
+        child: const BillPaymentPage(
+          title: 'Fastag Recharges',
+          billerCategory: 'FASTAG',
+        ),
+      ),
+    },
+    {
+      'name': 'EV',
+      'icon': Iconsax.battery_charging,
+      'page': BlocProvider(
+        create: (context) => BillPaymentBloc(BillPaymentRepository()),
+        child: const BillPaymentPage(
+          title: 'EV Recharges',
+          billerCategory: 'EV',
+        ),
+      ),
+    },
   ];
 
   int selectedIndex = 0;
@@ -174,64 +218,75 @@ class _HistoryPageState extends State<HistoryPage> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(6),
+      width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.white.withOpacity(0.1)),
       ),
-      child: Row(
-        children: List.generate(services.length, (index) {
-          final isSelected = selectedIndex == index;
-          final service = services[index];
-          return Expanded(
-            child: GestureDetector(
-              onTap: () => setState(() => selectedIndex = index),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: isSelected ? _secondaryColor : Colors.transparent,
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: isSelected
-                      ? [
-                          BoxShadow(
-                            color: _secondaryColor.withOpacity(0.3),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ]
-                      : [],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      service['icon'],
-                      color: isSelected
-                          ? Colors.white
-                          : Colors.white.withOpacity(0.6),
-                      size: 13,
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      service['name'],
-                      style: TextStyle(
-                        fontSize: 10,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        child: Row(
+          children: List.generate(services.length, (index) {
+            final isSelected = selectedIndex == index;
+            final service = services[index];
+            return Padding(
+              padding: EdgeInsets.only(
+                right: index == services.length - 1 ? 0 : 4.0,
+              ),
+              child: GestureDetector(
+                onTap: () => setState(() => selectedIndex = index),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 16,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isSelected ? _secondaryColor : Colors.transparent,
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: isSelected
+                        ? [
+                            BoxShadow(
+                              color: _secondaryColor.withOpacity(0.3),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ]
+                        : [],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        service['icon'],
                         color: isSelected
                             ? Colors.white
                             : Colors.white.withOpacity(0.6),
-                        fontWeight: isSelected
-                            ? FontWeight.w800
-                            : FontWeight.w600,
-                        letterSpacing: -0.7,
+                        size: 13,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 5),
+                      Text(
+                        service['name'],
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: isSelected
+                              ? Colors.white
+                              : Colors.white.withOpacity(0.6),
+                          fontWeight: isSelected
+                              ? FontWeight.w800
+                              : FontWeight.w600,
+                          letterSpacing: -0.7,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          );
-        }),
+            );
+          }),
+        ),
       ),
     );
   }
